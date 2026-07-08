@@ -158,7 +158,7 @@ for(var i=0;i<6;i++){
 }
 
 // ==== ROBOT ====
-var robot=new THREE.Group();robot.position.set(0,-.65,0);scene.add(robot);
+var robot=new THREE.Group();robot.position.set(0,-.65,.8);scene.add(robot);
 var base=new THREE.Group();robot.add(base);
 base.add(set(mk(new THREE.CylinderGeometry(.2,.23,.1,24),Q.dark),0,.05,0));
 base.add(set(mk(new THREE.BoxGeometry(.3,.012,.02),Q.blue),0,.07,.2));
@@ -231,12 +231,13 @@ scene.add(mkl("光纤","#ffaa00",new THREE.Vector3(-1.0,.65,.7)));
 scene.add(mkl("检测箱","#8888cc",new THREE.Vector3(.3,TEST_H+.1,.7)));
 scene.add(mkl("示波器","#44ccff",new THREE.Vector3(1.2,.5,.7)));
 
-// ==== ANIMATION ====
-var POS_APPROACH=.35, POS_CENTER=0; // robot stays in FRONT of table (table front edge=0.35)
-var TURN_LEFT=.8, TURN_FRONT=0, TURN_RIGHT=-.8;
+// ==== ANIMATION (robot behind table, moves horizontally along x-axis) ====
+var POS_FIBER=-1.0, POS_CABINET=.3, POS_SCOPE=1.2; // robot x positions along table
+var TURN_TABLE=Math.PI; // waist=π: robot faces table (-z direction)
+
 var ARM_REST=[0,.1,-.2], ARM_REACH=[1.3,.95,-.7], ARM_INSERT=[.95,.5,-.55];
 var cycle=0,phase=0,timer=0,PHASES=9;
-var phaseDurs=[1.2,.5,.8,.6,1.0,.5,1.0,.7,1.0];
+var phaseDurs=[1.2,.5,1.0,.6,.8,.5,1.0,.7,1.0];
 var clk=new THREE.Clock(),eyePhase=0,currentSlotIdx=0;
 
 function lerp(a,b,t){return a+(b-a)*t;}
@@ -258,19 +259,19 @@ function loop(){
     if(phase===0){cycle++;currentSlotIdx=findFreeSlot();}
   }
   var raw=Math.min(timer/phaseDurs[phase],1),t=ease(raw);
-  var rz=POS_CENTER,wy=TURN_FRONT,la=ARM_REST,ra=ARM_REST;
+  var rx=POS_CABINET, la=ARM_REST, ra=ARM_REST;
 
   switch(phase){
-    case 0: // 前进→光纤架(左转)
-      rz=lerp(POS_CENTER,POS_APPROACH,t); wy=lerp(0,TURN_LEFT,t); break;
+    case 0: // 横移→光纤架(左)
+      rx=lerp(POS_CABINET,POS_FIBER,t); break;
     case 1: // 左臂取光模块
-      rz=POS_APPROACH; wy=TURN_LEFT;
+      rx=POS_FIBER;
       la=lerp3(ARM_REST,ARM_REACH,t); heldL.visible=t>.5; break;
-    case 2: // 移到检测箱(转身正中)
-      rz=POS_APPROACH; wy=lerp(TURN_LEFT,0,t);
+    case 2: // 横移→检测箱(中)
+      rx=lerp(POS_FIBER,POS_CABINET,t);
       la=lerp3(ARM_REACH,ARM_INSERT,t); heldL.visible=true; break;
     case 3: // 插入空槽位
-      rz=POS_APPROACH; wy=0; la=ARM_INSERT;
+      rx=POS_CABINET; la=ARM_INSERT;
       heldL.visible=t<.6;
       if(t>.5&&currentSlotIdx>=0&&!slots[currentSlotIdx].occupied){
         var sg=slots[currentSlotIdx];
@@ -281,33 +282,34 @@ function loop(){
         sg.occupied=true; sg.led.material.color.set(0x00ff44);
       }
       break;
-    case 4: // 后退→示波器(右转)
-      rz=POS_APPROACH; wy=lerp(0,TURN_RIGHT,t);
+    case 4: // 横移→示波器(右)
+      rx=lerp(POS_CABINET,POS_SCOPE,t);
       la=lerp3(ARM_INSERT,ARM_REST,t); heldL.visible=false; break;
-    case 5: // 眼图测试(示波器屏幕激活)
-      rz=POS_APPROACH; wy=TURN_RIGHT; break;
-    case 6: // 回到检测箱(左转)
-      rz=POS_APPROACH; wy=lerp(TURN_RIGHT,0,t); break;
+    case 5: // 眼图测试
+      rx=POS_SCOPE; break;
+    case 6: // 横移→检测箱(中)
+      rx=lerp(POS_SCOPE,POS_CABINET,t); break;
     case 7: // 取出模块
-      rz=POS_APPROACH; wy=0; la=lerp3(ARM_REST,ARM_INSERT,t);
+      rx=POS_CABINET; la=lerp3(ARM_REST,ARM_INSERT,t);
       heldL.visible=t>.4;
       if(t>.5&&currentSlotIdx>=0){
         var sg2=slots[currentSlotIdx];
         if(sg2.occupied&&sg2.modG){sg2.group.remove(sg2.modG);sg2.modG=null;sg2.occupied=false;sg2.led.material.color.set(0xff4400);}
       }
       break;
-    case 8: // 后退→中心
-      rz=lerp(POS_APPROACH,POS_CENTER,t); wy=0;
+    case 8: // 横移→光纤架(归还)
+      rx=lerp(POS_CABINET,POS_FIBER,t);
       la=lerp3(ARM_INSERT,ARM_REST,t); heldL.visible=false; break;
   }
 
-  robot.position.z=rz; waist.rotation.y=wy;
+  robot.position.x=rx;
+  waist.rotation.y=TURN_TABLE;
   shL.rotation.x=la[0]; uaL.rotation.z=la[1]; elL.rotation.z=la[2];
   shR.rotation.x=ra[0]; uaR.rotation.z=-ra[1]; elR.rotation.z=-ra[2];
 
-  var ws=Math.abs(rz-(robot.userData?.prevZ||0))/Math.max(dt,.001)||0;
+  var ws=Math.abs(rx-(robot.userData?.prevX||0))/Math.max(dt,.001)||0;
   for(var c of base.children){if(c.type==="Group"&&c.children[0]?.material===Q.wheel)c.children[0].rotation.z+=ws*8;}
-  if(!robot.userData)robot.userData={};robot.userData.prevZ=rz;
+  if(!robot.userData)robot.userData={};robot.userData.prevX=rx;
 
   // Eye diagram
   if(phase===5){
@@ -317,7 +319,7 @@ function loop(){
     eyeDot.scale.setScalar(.6+Math.abs(Math.sin(eyePhase*2.3))*.6); eyeDot.visible=true;
   }else{eyeDot.visible=false;}
 
-  var phNames=["↺光纤","↓取模块","→检测箱","⇩插入","↺示波器","◉眼图","↺检测箱","⇧取出","↺返回"];
+  var phNames=["↺光纤架","↓取模块","→检测箱","⇩插入","→示波器","◉眼图","→检测箱","⇧取出","↺归还"];
   sEl.textContent=(phase===5?"◉ 眼图测试中 · 槽位:"+(currentSlotIdx+1):"● 第"+(cycle+1)+"轮 "+phNames[phase]+" | 空槽:"+slots.filter(function(s){return!s.occupied;}).length);
   ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
 
