@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z700 光模块眼图测试</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#151a24;overflow:hidden;font-family:Arial,sans-serif}
+  canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
+  #status{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;font-weight:bold;z-index:10;pointer-events:none;white-space:nowrap;background:rgba(10,10,26,.75);padding:5px 16px;border-radius:16px}
+  #info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#888;font-size:11px;opacity:.5;z-index:10;pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="status">● 眼图测试</div>
+<div id="info">Z700 · 光模块检测箱 · 示波器眼图 · 拖拽旋转 | 滚轮缩放</div>
+
+<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
+<script>
+(function(){
+if(typeof THREE==="undefined")return;
+var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status");
+var scene=new THREE.Scene();scene.background=new THREE.Color(0x151a24);
+var camera=new THREE.PerspectiveCamera(45,W/Math.max(H,1),0.1,40);
+camera.position.set(3.5,1.8,3.5);camera.lookAt(0,-.1,-.4);
+
+var renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setSize(W,H);
+renderer.shadowMap.enabled=true;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+renderer.domElement.style.cssText="position:absolute;top:0;left:0;z-index:1";document.body.appendChild(renderer.domElement);
+
+var target=new THREE.Vector3(0,-.1,-.4),sph=new THREE.Spherical(5,Math.PI/5,-Math.PI/12);
+var dragging=false,pm={x:0,y:0};
+renderer.domElement.addEventListener("mousedown",function(e){dragging=true;pm.x=e.clientX;pm.y=e.clientY});
+window.addEventListener("mouseup",function(){dragging=false});
+window.addEventListener("mousemove",function(e){if(!dragging)return;sph.theta-=(e.clientX-pm.x)*0.005;sph.phi-=(e.clientY-pm.y)*0.005;sph.phi=Math.max(0.05,Math.min(Math.PI/2.5,sph.phi));pm.x=e.clientX;pm.y=e.clientY});
+renderer.domElement.addEventListener("wheel",function(e){e.preventDefault();sph.radius=Math.max(2,Math.min(10,sph.radius+e.deltaY*0.01))});
+
+scene.add(new THREE.AmbientLight(0x8899bb,5.5));
+var key=new THREE.DirectionalLight(0xffffff,7);key.position.set(5,10,2);key.castShadow=true;
+key.shadow.mapSize.set(2048,2048);key.shadow.camera.near=0.3;key.shadow.camera.far=40;
+key.shadow.camera.left=-6;key.shadow.camera.right=6;key.shadow.camera.top=6;key.shadow.camera.bottom=-2;scene.add(key);
+scene.add(new THREE.DirectionalLight(0x8899cc,3).position.set(-3,3,-3));
+
+function mk(geo,mat){var m=new THREE.Mesh(geo,mat);m.castShadow=true;m.receiveShadow=true;return m;}
+function set(m,x,y,z){m.position.set(x,y,z);return m;}
+function mkNS(geo,mat){return new THREE.Mesh(geo,mat);}
+
+var Q={};
+Q.floor=new THREE.MeshStandardMaterial({color:0x3a4050,roughness:.15,metalness:.8});
+Q.tableTop=new THREE.MeshStandardMaterial({color:0x5a6068,roughness:.2,metalness:.5});
+Q.tableLeg=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.3,metalness:.6});
+Q.white=new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.2});
+Q.gray=new THREE.MeshStandardMaterial({color:0x778088,roughness:.25,metalness:.5});
+Q.dark=new THREE.MeshStandardMaterial({color:0x2a3040,roughness:.3,metalness:.5});
+Q.blue=new THREE.MeshStandardMaterial({color:0x3388cc,roughness:.15,metalness:.3,emissive:0x112244,emissiveIntensity:.3});
+Q.joint=new THREE.MeshStandardMaterial({color:0x00d4aa,roughness:.1,metalness:.4,emissive:0x003322,emissiveIntensity:.5});
+Q.wheel=new THREE.MeshStandardMaterial({color:0x1a1a22,roughness:.3,metalness:.2});
+Q.whub=new THREE.MeshStandardMaterial({color:0x889099,roughness:.15,metalness:.7});
+Q.face=new THREE.MeshStandardMaterial({color:0x112244,roughness:.1,metalness:.8,emissive:0x112244,emissiveIntensity:.4});
+Q.eye=new THREE.MeshStandardMaterial({color:0x00ccff,emissive:0x0088cc,emissiveIntensity:1.5,roughness:.1});
+Q.hand=new THREE.MeshStandardMaterial({color:0x445566,roughness:.2,metalness:.6});
+Q.modG=new THREE.MeshStandardMaterial({color:0xccaa44,roughness:.3,metalness:.8,emissive:0x221100,emissiveIntensity:.3});
+Q.glow=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:1.5,roughness:.1});
+Q.rack=new THREE.MeshStandardMaterial({color:0x3a4450,roughness:.2,metalness:.7});
+Q.rackS=new THREE.MeshStandardMaterial({color:0x1a1a28,roughness:.1,metalness:.9});
+Q.scope=new THREE.MeshStandardMaterial({color:0x3a3a4a,roughness:.15,metalness:.7});
+Q.scopeScr=new THREE.MeshStandardMaterial({color:0x112233,roughness:.05,metalness:.2,emissive:0x112244,emissiveIntensity:.8});
+Q.fiber=new THREE.MeshStandardMaterial({color:0xffaa00,roughness:.1,metalness:.1,emissive:0x331100,emissiveIntensity:.4});
+
+// Floor
+var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
+fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
+
+// ==== BIG TABLE (like robot.html production line) ====
+var tableY=-.72;
+function mkTable(gx,gz,w,d){
+  var t=new THREE.Group();t.position.set(gx,tableY,gz);scene.add(t);
+  t.add(set(mk(new THREE.BoxGeometry(w,.03,d),Q.tableTop),0,.33,0));
+  var hw=w/2-.08, hd=d/2-.08;
+  [t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.3,8),Q.tableLeg),-hw,.15,hd)),
+   t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.3,8),Q.tableLeg),hw,.15,hd)),
+   t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.3,8),Q.tableLeg),-hw,.15,-hd)),
+   t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.3,8),Q.tableLeg),hw,.15,-hd))];
+  return t;
+}
+// One large table spanning left→right, z=0.7 (table surface at y=-0.39)
+mkTable(0,.7,2.8,.7);
+
+// ==== TEST BOX CABINET (center-right on table, large multi-slot) ====
+var TEST_W=1.2, TEST_H=.9, TEST_D=.4, TEST_ROWS=3, TEST_COLS=5;
+var testCabinet=new THREE.Group();testCabinet.position.set(.3,tableY+.33,.7);scene.add(testCabinet);
+// Cabinet body
+testCabinet.add(set(mk(new THREE.BoxGeometry(TEST_W+.08,TEST_H+.08,TEST_D+.04),Q.rack),0,TEST_H/2,0));
+// Front panel
+testCabinet.add(set(mkNS(new THREE.BoxGeometry(TEST_W-.04,TEST_H-.04,.015),Q.rackS),0,TEST_H/2,TEST_D/2));
+// Slots
+var slotH=TEST_H/TEST_ROWS, slotW=TEST_W/TEST_COLS;
+var slots=[]; // track slots for module placement
+for(var r=0;r<TEST_ROWS;r++){
+  var ly=slotH*(r+.5);
+  for(var c=0;c<TEST_COLS;c++){
+    var sx=(c-TEST_COLS/2+.5)*slotW;
+    var slotG=new THREE.Group();slotG.position.set(sx,ly,TEST_D/2+.06);testCabinet.add(slotG);
+    // Slot opening
+    slotG.add(set(mkNS(new THREE.BoxGeometry(slotW*.65,.022,.08),Q.rackS),0,0,0));
+    // LED indicator
+    var led=set(mkNS(new THREE.SphereGeometry(.008,6,6),
+      new THREE.MeshBasicMaterial({color:0x00ff44})),slotW*.2,-.02,.04);
+    slotG.add(led);
+    slots.push({group:slotG, led:led, occupied:false, modG:null, row:r, col:c});
+  }
+  // Row separator
+  if(r<TEST_ROWS-1)testCabinet.add(set(mkNS(new THREE.BoxGeometry(TEST_W,.005,.01),Q.gray),0,slotH*(r+1),TEST_D/2));
+}
+
+// Pre-fill some slots with modules
+var modCount=0;
+for(var i=0;i<slots.length;i++){
+  if(Math.random()<.55&&modCount<8){
+    var sg=slots[i];
+    var modGeo=new THREE.BoxGeometry(slotW*.45,.015,.06);
+    var modMesh=mk(modGeo,Q.modG);
+    modMesh.position.set(0,.012,.03);
+    sg.group.add(modMesh);
+    sg.occupied=true; sg.modG=modMesh;
+    sg.led.material.color.set(0x00ff44);
+    modCount++;
+  }
+}
+
+// ==== INFEED AREA (far left, bare modules) ====
+var infeedMods=[];
+for(var i=0;i<5;i++){
+  var mod=new THREE.Group();mod.position.set(-1.2+(i-2)*.08,tableY+.01,.7+(Math.random()-.5)*.06);
+  scene.add(mod);
+  mod.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,0,0));
+  infeedMods.push(mod);
+}
+
+// ==== FIBER SPOOL (left-center of table, fiber cables) ====
+var fiberSpools=new THREE.Group();fiberSpools.position.set(-.6,tableY+.33,.7);scene.add(fiberSpools);
+fiberSpools.add(set(mkNS(new THREE.BoxGeometry(.3,.45,.04),Q.dark),0,.23,0));
+for(var s=0;s<3;s++){
+  var sp=new THREE.Group();sp.position.set(0,.06+s*.14,.02);fiberSpools.add(sp);
+  sp.add(set(mk(new THREE.CylinderGeometry(.025,.025,.02,12),Q.fiber),0,0,0).rotateX(Math.PI/2));
+}
+
+// ==== OSCILLOSCOPE (right side of table) ====
+var scopeG=new THREE.Group();scopeG.position.set(1.2,tableY+.33,.7);scene.add(scopeG);
+scopeG.add(set(mk(new THREE.BoxGeometry(.28,.2,.23),Q.scope),0,.42,0));
+scopeG.add(set(mkNS(new THREE.BoxGeometry(.24,.14,.01),Q.scopeScr),0,.44,.116));
+// Screen grid + eye dot
+var scrnG=new THREE.Group();scrnG.position.set(0,.44,.117);scopeG.add(scrnG);
+for(var i=0;i<4;i++){scrnG.add(set(mkNS(new THREE.BoxGeometry(.2,.001,.001),new THREE.MeshBasicMaterial({color:0x004466})),0,-.05+i*.033,0));}
+for(var i=0;i<4;i++){scrnG.add(set(mkNS(new THREE.BoxGeometry(.001,.1,.001),new THREE.MeshBasicMaterial({color:0x004466})),-.07+i*.047,0,0));}
+var eyeDot=set(mkNS(new THREE.SphereGeometry(.007,8,8),new THREE.MeshBasicMaterial({color:0x00ff88})),0,0,0);
+scrnG.add(eyeDot);
+// Fiber cable from scope to test box (visual)
+var fiberLine=new THREE.Group();scene.add(fiberLine);
+for(var i=0;i<6;i++){
+  var seg=set(mkNS(new THREE.CylinderGeometry(.003,.003,.1,6),Q.fiber),1.2-(i*.25),-.32+.04*Math.sin(i*.7),.7-(i*.03));
+  seg.rotation.z=.6;seg.castShadow=false;fiberLine.add(seg);
+}
+
+// ==== ROBOT ====
+var robot=new THREE.Group();robot.position.set(0,-.65,1.3);scene.add(robot);
+var base=new THREE.Group();robot.add(base);
+base.add(set(mk(new THREE.CylinderGeometry(.2,.23,.1,24),Q.dark),0,.05,0));
+base.add(set(mk(new THREE.BoxGeometry(.3,.012,.02),Q.blue),0,.07,.2));
+base.add(set(mk(new THREE.BoxGeometry(.3,.012,.02),Q.blue),0,.07,-.2));
+for(var sx=-1;sx<=1;sx+=2){
+  var wg=new THREE.Group();wg.position.set(sx*.18,.05,0);base.add(wg);
+  wg.add(set(new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.04,24),Q.wheel),0,0,0).rotateZ(Math.PI/2));
+  wg.add(set(new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.045,12),Q.whub),0,0,0).rotateZ(Math.PI/2));
+}
+var waist=new THREE.Group();waist.position.y=.12;base.add(waist);
+waist.add(set(mk(new THREE.CylinderGeometry(.06,.07,.07,16),Q.joint),0,.035,0));
+var torso=new THREE.Group();torso.position.y=.1;waist.add(torso);
+torso.add(set(mk(new THREE.BoxGeometry(.22,.38,.16),Q.white),0,.2,0));
+torso.add(set(mk(new THREE.BoxGeometry(.18,.12,.04),Q.blue),0,.28,.1));
+torso.add(set(mk(new THREE.BoxGeometry(.38,.06,.06),Q.gray),0,.4,0));
+var head=new THREE.Group();head.position.y=.46;torso.add(head);
+head.add(set(mk(new THREE.CylinderGeometry(.03,.04,.04,12),Q.gray),0,.02,0));
+head.add(set(mkNS(new THREE.SphereGeometry(.09,20,12),Q.white),0,.09,0));
+head.add(set(mkNS(new THREE.BoxGeometry(.08,.06,.015),Q.face),0,.09,.09));
+head.add(set(mkNS(new THREE.SphereGeometry(.015,8,8),Q.eye),.025,.11,.1));
+head.add(set(mkNS(new THREE.SphereGeometry(.015,8,8),Q.eye),-.025,.11,.1));
+var ring=mk(new THREE.TorusGeometry(.18,.007,16,48),Q.glow);ring.castShadow=ring.receiveShadow=false;
+ring.rotation.x=Math.PI/2;ring.position.y=.11;base.add(ring);
+
+// LEFT ARM
+var armL=new THREE.Group();armL.position.set(.2,.4,.03);torso.add(armL);
+var shL=new THREE.Group();armL.add(shL);
+shL.add(set(mk(new THREE.SphereGeometry(.045,12,8),Q.joint),0,0,0));
+var uaL=new THREE.Group();shL.add(uaL);
+uaL.add(set(mk(new THREE.BoxGeometry(.04,.22,.04),Q.white),0,-.12,0));
+var elL=new THREE.Group();elL.position.y=-.24;uaL.add(elL);
+elL.add(set(mk(new THREE.SphereGeometry(.035,10,6),Q.joint),0,0,0));
+var faL=new THREE.Group();elL.add(faL);
+faL.add(set(mk(new THREE.BoxGeometry(.035,.18,.035),Q.white),0,-.1,0));
+faL.add(set(mk(new THREE.BoxGeometry(.04,.015,.04),Q.blue),0,-.04,0));
+var handL=new THREE.Group();handL.position.y=-.19;faL.add(handL);
+handL.add(set(mk(new THREE.BoxGeometry(.03,.04,.03),Q.hand),0,-.02,0));
+handL.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),.015,-.04,0));
+handL.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),-.015,-.04,0));
+var heldL=new THREE.Group();heldL.visible=false;handL.add(heldL);
+heldL.position.set(0,-.05,0);
+heldL.add(set(mkNS(new THREE.BoxGeometry(.035,.016,.06),Q.modG),0,0,0));
+
+// RIGHT ARM
+var armR=new THREE.Group();armR.position.set(-.2,.4,.03);torso.add(armR);
+var shR=new THREE.Group();armR.add(shR);
+shR.add(set(mk(new THREE.SphereGeometry(.045,12,8),Q.joint),0,0,0));
+var uaR=new THREE.Group();shR.add(uaR);
+uaR.add(set(mk(new THREE.BoxGeometry(.04,.22,.04),Q.white),0,-.12,0));
+var elR=new THREE.Group();elR.position.y=-.24;uaR.add(elR);
+elR.add(set(mk(new THREE.SphereGeometry(.035,10,6),Q.joint),0,0,0));
+var faR=new THREE.Group();elR.add(faR);
+faR.add(set(mk(new THREE.BoxGeometry(.035,.18,.035),Q.white),0,-.1,0));
+faR.add(set(mk(new THREE.BoxGeometry(.04,.015,.04),Q.blue),0,-.04,0));
+var handR=new THREE.Group();handR.position.y=-.19;faR.add(handR);
+handR.add(set(mk(new THREE.BoxGeometry(.03,.04,.03),Q.hand),0,-.02,0));
+handR.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),.015,-.04,0));
+handR.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),-.015,-.04,0));
+var heldR=new THREE.Group();heldR.visible=false;handR.add(heldR);
+heldR.position.set(0,-.05,0);
+heldR.add(set(mkNS(new THREE.BoxGeometry(.035,.016,.06),Q.modG),0,0,0));
+
+// Labels
+function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.height=64;
+  var cx=cv.getContext("2d");cx.fillStyle=c;cx.font="bold 20px Arial";cx.textAlign="center";cx.fillText(t,128,38);
+  var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+  var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
+  s.position.copy(p);s.scale.set(1,.3,1);return s}
+scene.add(mkl("上料区","#cc9966",new THREE.Vector3(-1.2,.65,.7)));
+scene.add(mkl("光纤","#ffaa00",new THREE.Vector3(-.6,.5,.7)));
+scene.add(mkl("检测箱","#8888cc",new THREE.Vector3(.3,TEST_H+.1,.7)));
+scene.add(mkl("示波器","#44ccff",new THREE.Vector3(1.2,.5,.7)));
+
+// ==== ANIMATION (robot behind table, horizontal x-axis) ====
+var POS_INFEED=-1.2, POS_FIBER=-.6, POS_CABINET=.3, POS_SCOPE=1.2;
+var TURN_TABLE=Math.PI;
+
+var ARM_REST=[0,.1,-.2], ARM_REACH=[1.3,.95,-.7], ARM_INSERT=[.95,.5,-.55];
+var cycle=0,phase=0,timer=0,PHASES=9;
+var phaseDurs=[1.2,.5,.8,.6,.8,.5,.8,.7,1.0];
+var clk=new THREE.Clock(),eyePhase=0,currentSlotIdx=0,didPick=false;
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function lerp3(a,b,t){return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
+function ease(t){return t<.5?2*t*t:-1+(4-2*t)*t;}
+
+function findFreeSlot(){
+  var free=[];
+  for(var i=0;i<slots.length;i++){if(!slots[i].occupied)free.push(i);}
+  return free.length>0?free[Math.floor(Math.random()*free.length)]:-1;
+}
+
+function loop(){
+  requestAnimationFrame(loop);
+  var dt=Math.min(clk.getDelta(),.15);timer+=dt;
+
+  if(timer>phaseDurs[phase]){
+    timer=0;phase=(phase+1)%PHASES;
+    if(phase===0){cycle++;currentSlotIdx=findFreeSlot();didPick=false;}
+  }
+  var raw=Math.min(timer/phaseDurs[phase],1),t=ease(raw);
+  var rx=POS_CABINET, la=ARM_REST, ra=ARM_REST;
+
+  switch(phase){
+    case 0: // →上料区
+      rx=lerp(POS_CABINET,POS_INFEED,t); break;
+    case 1: // 取模块
+      rx=POS_INFEED;
+      la=lerp3(ARM_REST,ARM_REACH,t); heldL.visible=t>.5;
+      if(t>.6&&!didPick&&infeedMods.length>0){infeedMods[0].visible=false;infeedMods.shift();didPick=true;}
+      break;
+    case 2: // →光纤架, 连接光纤
+      rx=lerp(POS_INFEED,POS_FIBER,t);
+      la=lerp3(ARM_REACH,ARM_INSERT,t); heldL.visible=true; break;
+    case 3: // →检测箱, 插入模块
+      rx=lerp(POS_FIBER,POS_CABINET,t);
+      la=ARM_INSERT; heldL.visible=t<.6;
+      if(t>.5&&currentSlotIdx>=0&&!slots[currentSlotIdx].occupied){
+        var sg=slots[currentSlotIdx];
+        var modGeo=new THREE.BoxGeometry(slotW*.45,.015,.06);
+        sg.modG=mk(modGeo,Q.modG);
+        sg.modG.position.set(0,.012,.03);
+        sg.group.add(sg.modG);
+        sg.occupied=true; sg.led.material.color.set(0x00ff44);
+      }
+      break;
+    case 4: // →示波器
+      rx=lerp(POS_CABINET,POS_SCOPE,t);
+      la=ARM_REST; heldL.visible=false; break;
+    case 5: // 眼图测试
+      rx=POS_SCOPE; break;
+    case 6: // →检测箱, 取出
+      rx=lerp(POS_SCOPE,POS_CABINET,t); break;
+    case 7: // 取回模块→上料区
+      rx=lerp(POS_CABINET,POS_INFEED,t);
+      la=lerp3(ARM_REST,ARM_REACH,t);
+      heldL.visible=t>.4;
+      if(t>.5&&currentSlotIdx>=0){
+        var sg2=slots[currentSlotIdx];
+        if(sg2.occupied&&sg2.modG){sg2.group.remove(sg2.modG);sg2.modG=null;sg2.occupied=false;sg2.led.material.color.set(0xff4400);}
+      }
+      break;
+    case 8: // →待命
+      rx=lerp(POS_INFEED,POS_CABINET,t);
+      la=lerp3(ARM_REACH,ARM_REST,t); heldL.visible=false; break;
+  }
+
+  robot.position.x=rx;
+  waist.rotation.y=TURN_TABLE;
+  shL.rotation.x=la[0]; uaL.rotation.z=la[1]; elL.rotation.z=la[2];
+  shR.rotation.x=ra[0]; uaR.rotation.z=-ra[1]; elR.rotation.z=-ra[2];
+
+  var ws=Math.abs(rx-(robot.userData?.prevX||0))/Math.max(dt,.001)||0;
+  for(var c of base.children){if(c.type==="Group"&&c.children[0]?.material===Q.wheel)c.children[0].rotation.z+=ws*8;}
+  if(!robot.userData)robot.userData={};robot.userData.prevX=rx;
+
+  // Eye diagram
+  if(phase===5){
+    eyePhase+=dt*10;
+    eyeDot.position.set(Math.sin(eyePhase)*.07,Math.sin(eyePhase*1.7+.5)*.04,0);
+    eyeDot.material.color.setHSL(.3+Math.abs(Math.sin(eyePhase*.2))*.15,1,.5+.3*Math.abs(Math.sin(eyePhase*.3)));
+    eyeDot.scale.setScalar(.6+Math.abs(Math.sin(eyePhase*2.3))*.6); eyeDot.visible=true;
+  }else{eyeDot.visible=false;}
+
+  var phNames=["→上料","↓取模块","→接光纤","→插箱","→示波器","◉眼图","→取回","→归还","→待命"];
+  sEl.textContent=(phase===5?"◉ 眼图测试中 · 槽位:"+(currentSlotIdx+1):"● 第"+(cycle+1)+"轮 "+phNames[phase]+" | 上料:"+infeedMods.length);
+  ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
+
+  var p=new THREE.Vector3().setFromSpherical(sph).add(target);
+  camera.position.lerp(p,.1);camera.lookAt(target);
+  var w=window.innerWidth,h=window.innerHeight;
+  if(renderer.domElement.width!==w||renderer.domElement.height!==h){renderer.setSize(w,h);camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix()}
+  renderer.render(scene,camera);
+}
+loop();
+})();
+</script>
+</body>
+</html>
