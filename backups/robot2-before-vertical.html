@@ -81,13 +81,13 @@ function mkTable(gx,gz){
    t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),.2,.15,-.16))];
   return t;
 }
-mkTable(-.85,.8); // 入料台(前方左)
-mkTable(.85,.8);  // 出料台(前方右)
+mkTable(-.85,.05); // 入料台
+mkTable(.85,.05);  // 出料台
 
 // Modules on left table
 var modsL=[];
 for(var i=0;i<4;i++){
-  var m=new THREE.Group();m.position.set(-.85+(i-1.5)*.1,-.39,.8+(Math.random()-.5)*.1);
+  var m=new THREE.Group();m.position.set(-.85+(i-1.5)*.1,-.39,.05+(Math.random()-.5)*.1);
   scene.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),i%2?Q.modY:Q.modG),0,.01,0));
   modsL.push(m);
@@ -110,8 +110,8 @@ for(var l=0;l<LAYERS;l++){
   if(l<LAYERS-1)rackG.add(set(mkNS(new THREE.BoxGeometry(RACK_W,.006,.01),Q.gray),0,slotH*(l+1),RACK_D/2+.01));
 }
 
-// ==== ROBOT (moves on Z, between tables and rack) ====
-var robot=new THREE.Group();robot.position.set(0,-.65,0);scene.add(robot);
+// ==== ROBOT (moves on X) ====
+var robot=new THREE.Group();robot.position.set(0,-.65,.25);scene.add(robot);
 
 var base=new THREE.Group();robot.add(base);
 base.add(set(mk(new THREE.CylinderGeometry(.2,.23,.1,24),Q.dark),0,.05,0));
@@ -189,24 +189,30 @@ function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.heig
   var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
   s.position.copy(p);s.scale.set(1,.3,1);return s}
 scene.add(mkl("老化箱","#ff8844",new THREE.Vector3(0,RACK_H-.1,-1.4)));
-scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.8)));
-scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.8)));
+scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.05)));
+scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.05)));
 
-// ==== ANIMATION (Z-axis: tables at z=0.8, rack at z=-1.4) ====
-var POS_TABLE=0.8, POS_RACK=-1.0, POS_CENTER=0; // robot z positions
-var TURN_TABLE=0, TURN_RACK=Math.PI; // waist angles: 0=face+z(tables), π=face-z(rack)
+// ==== ANIMATION ====
+// Positions: 0=rack center, -0.85=left table, 0.85=right table
+var POS_RACK=0, POS_LEFT=-.85, POS_RIGHT=.85;
 
-// Arm poses: [shX, upZ, elZ]
-var ARM_REST =[0, .1, -.2];
-var ARM_REACH=[1.2, .9, -.65];  // reaching to table surface
+// Arm poses: each is [shX, upZ, elZ]
+// shX: shoulder forward tilt (0=down, >0=reach forward)
+// upZ: upper arm rotation (0=straight down, +positive=forward)  
+// elZ: elbow bend (0=straight, negative=bend back)
+var ARM_REST =[0, .1, -.2];     // arms hanging relaxed
+var ARM_REACH=[1.2, .9, -.65];  // reaching forward+down to table surface
 var ARM_RACK =[.6, .35, -.4];   // reaching into rack
+// Right arm mirrors upZ and elZ (negate them)
 
 var layerIdx=0,phase=0,timer=0;
 var PHASES=8;
-var phaseDurs=[1.5, .4, 1.2, 1.2, 1.2, .7, 1.2, 1.2];
-// drive→pick→drive→rack→drive→place→drive→idle
+var phaseDurs=[1.2, .4, .6, 1.2, .7, 1.2, .6, 1.2];
+// drive→pick→drive→insert→drive→place→drive→reset
+// Drive phases include turning+driving
 
 var placedThisCycle=false,didPick=false,didPlace=false;
+
 var clk=new THREE.Clock();
 
 function lerp(a,b,t){return a+(b-a)*t;}
@@ -229,76 +235,76 @@ function loop(){
   var raw=Math.min(timer/phaseDurs[phase],1);
   var t=ease(raw);
 
-  var rz=POS_CENTER, wy=TURN_TABLE; // robot z, waist y
-  var la=ARM_REST, ra=ARM_REST;
+  var rx=POS_RACK, wy=0; // robot x, waist y
+  var la=ARM_REST, ra=ARM_REST; // [shX,upZ,elZ]
 
   switch(phase){
-    case 0: // 前进→入料台
-      rz=lerp(POS_CENTER,POS_TABLE,t);
-      wy=TURN_TABLE;
+    case 0: // 移动→入料台: turn left + drive
+      wy=0+t*.9;         // turn left ~52°
+      rx=POS_RACK+lerp(0,POS_LEFT,t); // drive to table
       la=ARM_REST; ra=ARM_REST;
       heldL.visible=false;
       break;
-    case 1: // 左臂取料
-      rz=POS_TABLE; wy=TURN_TABLE;
+    case 1: // 左臂伸向桌面取料
+      wy=.9; rx=POS_LEFT;
       la=lerp3(ARM_REST,ARM_REACH,t);
       heldL.visible=t>.55;
       if(t>.65&&!didPick&&modsL.length>0){modsL[0].visible=false;didPick=true;}
       break;
-    case 2: // 后退→老化箱(转身)
-      rz=lerp(POS_TABLE,POS_RACK,t);
-      wy=lerp(TURN_TABLE,TURN_RACK,t);
+    case 2: // 收回手臂 + 移动→老化箱
+      wy=.9*lerp(1,0,t);  // turn back to center
+      rx=lerp(POS_LEFT,POS_RACK,t);
       la=lerp3(ARM_REACH,ARM_RACK,t);
       heldL.visible=true;
       break;
-    case 3: // 双臂老化箱操作
-      rz=POS_RACK; wy=TURN_RACK;
+    case 3: // 双臂伸入老化箱: 左放+右取
+      wy=0; rx=POS_RACK;
       la=ARM_RACK; ra=ARM_RACK;
       heldL.visible=t<.3; heldR.visible=t>.3;
       break;
-    case 4: // 前进→出料台(转身回)
-      rz=lerp(POS_RACK,POS_TABLE,t);
-      wy=lerp(TURN_RACK,TURN_TABLE,t);
+    case 4: // 移动→出料台
+      wy=0-lerp(0,.9,t); // turn right
+      rx=lerp(POS_RACK,POS_RIGHT,t);
       la=lerp3(ARM_RACK,ARM_REST,t);
       ra=lerp3(ARM_RACK,ARM_REACH,t);
       heldL.visible=false; heldR.visible=true;
       break;
-    case 5: // 右臂放料
-      rz=POS_TABLE; wy=TURN_TABLE;
-      ra=ARM_REACH;
+    case 5: // 右臂伸向桌面放料
+      wy=-.9; rx=POS_RIGHT;
+      ra=lerp3(ARM_REACH,ARM_REACH,t); // stay in reach position
       heldR.visible=t<.5;
       if(t>.4&&!didPlace){addPlacedMod();didPlace=true;}
       break;
-    case 6: // 后退→中心
-      rz=lerp(POS_TABLE,POS_CENTER,t);
-      wy=TURN_TABLE;
+    case 6: // 收回+右臂复位+移动→中心
+      wy=-.9*lerp(1,0,t);
+      rx=lerp(POS_RIGHT,POS_RACK,t);
       ra=lerp3(ARM_REACH,ARM_REST,t);
       heldR.visible=false;
       break;
-    case 7: // 待机
-      rz=POS_CENTER; wy=TURN_TABLE;
+    case 7: // 待机 (短暂停顿)
+      wy=0; rx=POS_RACK;
       la=ARM_REST; ra=ARM_REST;
       break;
   }
 
   // Apply
-  robot.position.z=rz;
+  robot.position.x=rx;
   waist.rotation.y=wy;
   shL.rotation.x=la[0]; uaL.rotation.z=la[1]; elL.rotation.z=la[2];
   shR.rotation.x=ra[0]; uaR.rotation.z=-ra[1]; elR.rotation.z=-ra[2];
 
-  // Wheel spin on Z movement
-  var ws=Math.abs(rz-(robot.userData?.prevZ||0))/Math.max(dt,.001)||0;
+  // Wheel spin (visual)
+  var ws=Math.abs(rx-robot.userData?.prevX||0)/dt||0;
   for(var c of base.children){
     if(c.type==="Group"&&c.children[0]?.material===Q.wheel)
       c.children[0].rotation.z+=ws*8;
   }
   if(!robot.userData)robot.userData={};
-  robot.userData.prevZ=rz;
+  robot.userData.prevX=rx;
 
   while(modsR&&modsR.length>6){var old=modsR.shift();scene.remove(old);}
 
-  var phNames=["⬆入料台","↓取料","⬇老化箱","⇅插拔","⬆出料台","↓放料","⬇返回","·待机"];
+  var phNames=["↺入料台","↓取料","↺老化箱","⇅插拔","↺出料台","↓放料","↺返回","·待机"];
   sEl.textContent="● 第"+(layerIdx+1)+"/"+LAYERS+"层 "+phNames[phase]+" | 待取:"+modsL.length;
   ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
 
@@ -312,7 +318,7 @@ function loop(){
 var modsR=[];
 function addPlacedMod(){
   var m=new THREE.Group();
-  m.position.set(.85+(Math.random()-.5)*.1,-.39,.8+(Math.random()-.5)*.1);
+  m.position.set(.85+(Math.random()-.5)*.1,-.39,.05+(Math.random()-.5)*.1);
   scene.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
   modsR.push(m);
