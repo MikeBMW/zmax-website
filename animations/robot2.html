@@ -14,7 +14,7 @@
 </head>
 <body>
 <div id="status">● 老化测试中</div>
-<div id="info">自主导航Z700 · 双臂老化箱插拔 · 拖拽旋转 | 滚轮缩放</div>
+<div id="info">Z轴往复 v2 · 自主导航Z700 · 拖拽旋转 | 滚轮缩放</div>
 
 <script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
 <script>
@@ -193,13 +193,13 @@ scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.8)));
 scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.8)));
 
 // ==== ANIMATION (Z-axis: tables at z=0.8, rack at z=-1.4) ====
-var POS_TABLE=0.8, POS_RACK=-1.0, POS_CENTER=0; // robot z positions
+var POS_TABLE=0.8, POS_RACK=-0.3, POS_CENTER=0; // robot z positions (rack approach: stay back to avoid collision)
 var TURN_TABLE=0, TURN_RACK=Math.PI; // waist angles: 0=face+z(tables), π=face-z(rack)
 
 // Arm poses: [shX, upZ, elZ]
 var ARM_REST =[0, .1, -.2];
 var ARM_REACH=[1.2, .9, -.65];  // reaching to table surface
-var ARM_RACK =[.6, .35, -.4];   // reaching into rack
+var ARM_RACK =[1.0, .55, -.55];   // reaching into rack (longer reach since robot stays back)
 
 var layerIdx=0,phase=0,timer=0;
 var PHASES=8;
