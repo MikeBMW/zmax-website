@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Z700 光模块测试</title>
+<title>Z700 光模块眼图测试</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;background:#151a24;overflow:hidden;font-family:Arial,sans-serif}
@@ -13,8 +13,8 @@
 </style>
 </head>
 <body>
-<div id="status">● 眼图测试中</div>
-<div id="info">Z700 光模块线束插拔 · 示波器眼图测试 · 拖拽旋转 | 滚轮缩放</div>
+<div id="status">● 眼图测试</div>
+<div id="info">Z700 · 光模块插入检测箱 · 光纤示波器眼图 · 拖拽旋转 | 滚轮缩放</div>
 
 <script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
 <script>
@@ -62,74 +62,74 @@ Q.hand=new THREE.MeshStandardMaterial({color:0x445566,roughness:.2,metalness:.6}
 Q.modG=new THREE.MeshStandardMaterial({color:0xccaa44,roughness:.3,metalness:.8,emissive:0x221100,emissiveIntensity:.3});
 Q.glow=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:1.5,roughness:.1});
 Q.scope=new THREE.MeshStandardMaterial({color:0x3a3a4a,roughness:.15,metalness:.7});
-Q.scopeScreen=new THREE.MeshStandardMaterial({color:0x112233,roughness:.05,metalness:.2,emissive:0x112244,emissiveIntensity:.8});
-Q.cable=new THREE.MeshStandardMaterial({color:0x334455,roughness:.4,metalness:.3});
+Q.scopeScr=new THREE.MeshStandardMaterial({color:0x112233,roughness:.05,metalness:.2,emissive:0x112244,emissiveIntensity:.8});
 Q.fiber=new THREE.MeshStandardMaterial({color:0xffaa00,roughness:.1,metalness:.1,emissive:0x331100,emissiveIntensity:.4});
+Q.testBox=new THREE.MeshStandardMaterial({color:0x4a4a58,roughness:.15,metalness:.7});
+Q.slot=new THREE.MeshStandardMaterial({color:0x1a1a28,roughness:.05,metalness:.9});
 
 // Floor
 var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
 fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
 
-// ==== OSCILLOSCOPE BENCH (right, z=0.8, x=0.9) ====
-var scopeBench=new THREE.Group();scopeBench.position.set(.9,-.72,.8);scene.add(scopeBench);
-scopeBench.add(set(mk(new THREE.BoxGeometry(.55,.03,.35),Q.gray),0,.33,0));
-for(var sx=-1;sx<=1;sx+=2)for(var sz=-1;sz<=1;sz+=2)
-  scopeBench.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.dark),sx*.22,.15,sz*.14));
-// Oscilloscope body
-var scopeBody=new THREE.Group();scopeBody.position.set(0,.35,0);scopeBench.add(scopeBody);
-scopeBody.add(set(mk(new THREE.BoxGeometry(.3,.22,.25),Q.scope),0,.11,0));
-scopeBody.add(set(mkNS(new THREE.BoxGeometry(.26,.16,.02),Q.scopeScreen),0,.13,.126));
-// Screen grid lines
-var scrnG=new THREE.Group();scrnG.position.set(0,.13,.127);scopeBody.add(scrnG);
-for(var i=0;i<4;i++){
-  scrnG.add(set(mkNS(new THREE.BoxGeometry(.22,.002,.001),new THREE.MeshBasicMaterial({color:0x004466})),0,-.05+i*.033,0));
-  scrnG.add(set(mkNS(new THREE.BoxGeometry(.001,.12,.001),new THREE.MeshBasicMaterial({color:0x004466})),-.08+i*.053,0,0));
-}
-// Eye diagram dot (animated)
-var eyeDot=set(mkNS(new THREE.SphereGeometry(.008,8,8),new THREE.MeshBasicMaterial({color:0x00ff88})),0,0,0);
-scrnG.add(eyeDot);
-// Knobs
-scopeBody.add(set(mk(new THREE.CylinderGeometry(.015,.015,.02,8),Q.dark),.1,-.05,.13));
-
-// ==== FIBER RACK (left, z=0.8, x=-0.9) ====
+// ==== FIBER RACK (left, z=0.8, x=-0.9) — 光纤架 ====
 var fiberRack=new THREE.Group();fiberRack.position.set(-.9,-.72,.8);scene.add(fiberRack);
-fiberRack.add(set(mk(new THREE.BoxGeometry(.5,.08,.3),Q.gray),0,.33,0));
-var rackFrame=new THREE.Group();rackFrame.position.y=.37;fiberRack.add(rackFrame);
-rackFrame.add(set(mkNS(new THREE.BoxGeometry(.46,.6,.04),Q.dark),0,.3,0));
-// Fiber spools
-for(var r=0;r<3;r++){
-  var spool=new THREE.Group();spool.position.set(0,.1+r*.2,.02);rackFrame.add(spool);
-  spool.add(set(mk(new THREE.CylinderGeometry(.04,.04,.03,16),Q.fiber),0,0,0).rotateX(Math.PI/2));
-  spool.add(set(mkNS(new THREE.TorusGeometry(.04,.01,8,16),Q.cable),0,0,0));
+fiberRack.add(set(mk(new THREE.BoxGeometry(.45,.04,.28),Q.gray),0,.33,0));
+// Vertical back panel
+fiberRack.add(set(mkNS(new THREE.BoxGeometry(.4,.5,.03),Q.dark),0,.58,0));
+// Fiber spools on rack
+for(var r=0;r<2;r++){
+  var sp=new THREE.Group();sp.position.set(0,.4+r*.22,.02);fiberRack.add(sp);
+  sp.add(set(mk(new THREE.CylinderGeometry(.035,.035,.025,16),Q.fiber),0,0,0).rotateX(Math.PI/2));
 }
-// Optical modules on rack
+// Optical modules with fiber tails on rack
 var modsOnRack=[];
-for(var i=0;i<3;i++){
-  var mod=new THREE.Group();mod.position.set((i-1)*.12,-.39,.82+(Math.random()-.5)*.05);
+for(var i=0;i<4;i++){
+  var mod=new THREE.Group();mod.position.set((i-1.5)*.1,-.38,.82+(Math.random()-.5)*.05);
   scene.add(mod);
   mod.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
+  // Fiber tail (yellow line from module)
+  var ft=new THREE.Mesh(new THREE.CylinderGeometry(.004,.004,.08,6),Q.fiber);
+  ft.position.set(0,.01,-.07);ft.rotation.x=Math.PI/2;ft.castShadow=false;mod.add(ft);
   modsOnRack.push(mod);
 }
 
-// ==== HARNESS STATION (center front, z=0.8, x=0) ====
-var harnessStation=new THREE.Group();harnessStation.position.set(0,-.72,.85);scene.add(harnessStation);
-harnessStation.add(set(mk(new THREE.BoxGeometry(.3,.03,.2),Q.gray),0,.33,0));
-// Cable bundle
-var harness=new THREE.Group();harness.position.set(0,.34,.05);harnessStation.add(harness);
-harness.add(set(mk(new THREE.CylinderGeometry(.015,.015,.15,8),Q.cable),-.04,0,.04).rotateZ(.3));
-harness.add(set(mk(new THREE.CylinderGeometry(.015,.015,.15,8),Q.cable),.04,0,.04).rotateZ(-.3));
-harness.add(set(mk(new THREE.CylinderGeometry(.015,.015,.12,8),Q.cable),0,0,-.05));
-// Connector
-harness.add(set(mk(new THREE.BoxGeometry(.06,.025,.025),Q.blue),0,.02,0));
+// ==== TEST BOX (center, z=0.85) — 检测箱 ====
+var testBox=new THREE.Group();testBox.position.set(0,-.72,.85);scene.add(testBox);
+// Box body
+testBox.add(set(mk(new THREE.BoxGeometry(.28,.22,.25),Q.testBox),0,.3,0));
+// Front slot (where module inserts)
+testBox.add(set(mkNS(new THREE.BoxGeometry(.06,.018,.12),Q.slot),0,.22,.13));
+// Status LEDs
+testBox.add(set(mkNS(new THREE.SphereGeometry(.012,8,8),new THREE.MeshBasicMaterial({color:0x00ff44})),.1,.22,.13));
+testBox.add(set(mkNS(new THREE.SphereGeometry(.012,8,8),new THREE.MeshBasicMaterial({color:0xff4400})),-.1,.22,.13));
+// Fiber port on back of test box (where fiber cable connects)
+testBox.add(set(mkNS(new THREE.CylinderGeometry(.015,.015,.03,8),Q.dark),0,.2,-.12).rotateX(Math.PI/2));
 
-// Module on harness station (to be plugged)
-var moduleOnHarness=new THREE.Group();moduleOnHarness.position.set(0,-.38,.85);
-scene.add(moduleOnHarness);
-moduleOnHarness.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
+// ==== OSCILLOSCOPE BENCH (right, z=1.0, x=0.9) — 示波器 ====
+var scopeBench=new THREE.Group();scopeBench.position.set(.9,-.72,1.0);scene.add(scopeBench);
+scopeBench.add(set(mk(new THREE.BoxGeometry(.5,.03,.3),Q.gray),0,.33,0));
+for(var sx=-1;sx<=1;sx+=2)for(var sz=-1;sz<=1;sz+=2)
+  scopeBench.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.dark),sx*.2,.15,sz*.12));
+// Scope body
+scopeBench.add(set(mk(new THREE.BoxGeometry(.28,.2,.23),Q.scope),0,.44,0));
+// Scope screen
+scopeBench.add(set(mkNS(new THREE.BoxGeometry(.24,.14,.01),Q.scopeScr),0,.46,.116));
+// Screen grid
+var scrnG=new THREE.Group();scrnG.position.set(0,.46,.117);scopeBench.add(scrnG);
+for(var i=0;i<4;i++){scrnG.add(set(mkNS(new THREE.BoxGeometry(.2,.001,.001),new THREE.MeshBasicMaterial({color:0x004466})),0,-.05+i*.033,0));}
+for(var i=0;i<4;i++){scrnG.add(set(mkNS(new THREE.BoxGeometry(.001,.1,.001),new THREE.MeshBasicMaterial({color:0x004466})),-.07+i*.047,0,0));}
+// Eye dot
+var eyeDot=set(mkNS(new THREE.SphereGeometry(.007,8,8),new THREE.MeshBasicMaterial({color:0x00ff88})),0,0,0);
+scrnG.add(eyeDot);
+// Fiber cable from test box back to scope (curved line)
+var fiberLine=new THREE.Group();fiberLine.position.set(0,0,0);scene.add(fiberLine);
+for(var i=0;i<8;i++){
+  var seg=set(mkNS(new THREE.CylinderGeometry(.004,.004,.08,6),Q.fiber),.9-(i*.12),-.32+.05*Math.sin(i*.5),1.0-(i*.12));
+  seg.rotation.z=.5;seg.castShadow=false;fiberLine.add(seg);
+}
 
 // ==== ROBOT (center) ====
 var robot=new THREE.Group();robot.position.set(0,-.65,0);scene.add(robot);
-
 var base=new THREE.Group();robot.add(base);
 base.add(set(mk(new THREE.CylinderGeometry(.2,.23,.1,24),Q.dark),0,.05,0));
 base.add(set(mk(new THREE.BoxGeometry(.3,.012,.02),Q.blue),0,.07,.2));
@@ -139,22 +139,18 @@ for(var sx=-1;sx<=1;sx+=2){
   wg.add(set(new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.04,24),Q.wheel),0,0,0).rotateZ(Math.PI/2));
   wg.add(set(new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.045,12),Q.whub),0,0,0).rotateZ(Math.PI/2));
 }
-
 var waist=new THREE.Group();waist.position.y=.12;base.add(waist);
 waist.add(set(mk(new THREE.CylinderGeometry(.06,.07,.07,16),Q.joint),0,.035,0));
-
 var torso=new THREE.Group();torso.position.y=.1;waist.add(torso);
 torso.add(set(mk(new THREE.BoxGeometry(.22,.38,.16),Q.white),0,.2,0));
 torso.add(set(mk(new THREE.BoxGeometry(.18,.12,.04),Q.blue),0,.28,.1));
 torso.add(set(mk(new THREE.BoxGeometry(.38,.06,.06),Q.gray),0,.4,0));
-
 var head=new THREE.Group();head.position.y=.46;torso.add(head);
 head.add(set(mk(new THREE.CylinderGeometry(.03,.04,.04,12),Q.gray),0,.02,0));
 head.add(set(mkNS(new THREE.SphereGeometry(.09,20,12),Q.white),0,.09,0));
 head.add(set(mkNS(new THREE.BoxGeometry(.08,.06,.015),Q.face),0,.09,.09));
 head.add(set(mkNS(new THREE.SphereGeometry(.015,8,8),Q.eye),.025,.11,.1));
 head.add(set(mkNS(new THREE.SphereGeometry(.015,8,8),Q.eye),-.025,.11,.1));
-
 var ring=mk(new THREE.TorusGeometry(.18,.007,16,48),Q.glow);ring.castShadow=ring.receiveShadow=false;
 ring.rotation.x=Math.PI/2;ring.position.y=.11;base.add(ring);
 
@@ -202,22 +198,26 @@ function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.heig
   var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
   var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
   s.position.copy(p);s.scale.set(1,.3,1);return s}
-scene.add(mkl("示波器","#44ccff",new THREE.Vector3(.9,.2,.8)));
 scene.add(mkl("光纤架","#ffaa00",new THREE.Vector3(-.9,.2,.8)));
-scene.add(mkl("线束台","#8888cc",new THREE.Vector3(0,.15,.9)));
+scene.add(mkl("检测箱","#8888cc",new THREE.Vector3(0,.25,.9)));
+scene.add(mkl("示波器","#44ccff",new THREE.Vector3(.9,.35,1.0)));
+
+// Module inside test box (appears when inserted)
+var moduleInBox=new THREE.Group();moduleInBox.visible=false;
+moduleInBox.position.set(0,-.39,.98);scene.add(moduleInBox);
+moduleInBox.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
 
 // ==== ANIMATION ====
-var POS_FRONT=.75, POS_CENTER=0, POS_LEFT=-.9, POS_RIGHT=.9; // robot z + x targets
-var TURN_FRONT=0, TURN_LEFT=.9, TURN_RIGHT=-.9;
+var POS_FRONT=.75, POS_CENTER=0;
+var TURN_LEFT=.85, TURN_FRONT=0, TURN_RIGHT=-.85;
 
 var ARM_REST =[0, .1, -.2];
 var ARM_REACH=[1.2, .9, -.65];
-var ARM_HARN=[.8, .45, -.5];
+var ARM_INSERT=[.9, .5, -.55];
 
-var cycle=0,phase=0,timer=0;
-var PHASES=8;
-var phaseDurs=[1.2, .5, .8, .8, .8, .5, 1.0, 1.0];
-var didPick=false,didPlug=false,didPlace=false;
+var cycle=0,phase=0,timer=0,PHASES=9;
+var phaseDurs=[1.2,.5,.8,.6,.8,.5,1.0,.7,1.0];
+var didPick=false,didInsert=false;
 var clk=new THREE.Clock();
 
 function lerp(a,b,t){return a+(b-a)*t;}
@@ -236,20 +236,19 @@ function loop(){
     if(phase===0){
       cycle++;
       if(modsOnRack.length>0){var rm=modsOnRack.shift();scene.remove(rm);}
-      didPick=false;didPlug=false;didPlace=false;
-      moduleOnHarness.visible=true;
+      didPick=false;didInsert=false;
+      moduleInBox.visible=false;
     }
   }
   var raw=Math.min(timer/phaseDurs[phase],1);
   var t=ease(raw);
 
-  var rz=POS_CENTER, wx=0, wy=0;
+  var rz=POS_CENTER, wy=TURN_FRONT;
   var la=ARM_REST, ra=ARM_REST;
 
   switch(phase){
     case 0: // 前进→光纤架(左转)
-      rz=lerp(POS_CENTER,POS_FRONT,t);
-      wy=lerp(0,TURN_LEFT,t);
+      rz=lerp(POS_CENTER,POS_FRONT,t); wy=lerp(0,TURN_LEFT,t);
       break;
     case 1: // 左臂取光模块
       rz=POS_FRONT; wy=TURN_LEFT;
@@ -257,38 +256,38 @@ function loop(){
       heldL.visible=t>.55;
       if(t>.6&&!didPick&&modsOnRack.length>0){modsOnRack[0].visible=false;didPick=true;}
       break;
-    case 2: // 前进→线束台(转身正中)
-      rz=lerp(POS_FRONT,.85,t);
-      wy=lerp(TURN_LEFT,0,t);
-      la=lerp3(ARM_REACH,ARM_HARN,t);
-      heldL.visible=true;
+    case 2: // 移到检测箱(转身正中)
+      rz=lerp(POS_FRONT,.85,t); wy=lerp(TURN_LEFT,0,t);
+      la=lerp3(ARM_REACH,ARM_INSERT,t); heldL.visible=true;
       break;
-    case 3: // 右臂接线束+插线
+    case 3: // 左臂插入检测箱
       rz=.85; wy=0;
-      la=ARM_HARN; ra=lerp3(ARM_REST,ARM_HARN,t);
-      heldL.visible=true; heldR.visible=t>.4;
-      if(t>.5&&!didPlug){moduleOnHarness.visible=false;didPlug=true;}
+      la=lerp3(ARM_INSERT,ARM_INSERT,t);
+      heldL.visible=t<.6;
+      if(t>.5&&!didInsert){moduleInBox.visible=true;didInsert=true;}
       break;
-    case 4: // 后退+右转→示波器
-      rz=lerp(.85,POS_FRONT,t);
-      wy=lerp(0,TURN_RIGHT,t);
-      ra=lerp3(ARM_HARN,ARM_REACH,t);
-      heldL.visible=false; heldR.visible=true;
+    case 4: // 后退→示波器(右转)
+      rz=lerp(.85,1.0,t); wy=lerp(0,TURN_RIGHT,t);
+      la=lerp3(ARM_INSERT,ARM_REST,t);
+      heldL.visible=false;
       break;
-    case 5: // 右臂放模块到示波器
-      rz=POS_FRONT; wy=TURN_RIGHT;
-      ra=ARM_REACH;
-      heldR.visible=t<.5;
-      if(t>.4&&!didPlace){didPlace=true;}
+    case 5: // 光纤连接示波器，眼图测试
+      rz=1.0; wy=TURN_RIGHT;
+      // Eye diagram active during this phase
       break;
-    case 6: // 后退→中心(回收)
-      rz=lerp(POS_FRONT,POS_CENTER,t);
-      wy=lerp(TURN_RIGHT,0,t);
-      ra=lerp3(ARM_REACH,ARM_REST,t);
-      heldR.visible=false;
+    case 6: // 回到检测箱(左转)
+      rz=lerp(1.0,.85,t); wy=lerp(TURN_RIGHT,0,t);
       break;
-    case 7: // 待机
-      rz=POS_CENTER; wy=0;
+    case 7: // 左臂取回模块
+      rz=.85; wy=0;
+      la=lerp3(ARM_REST,ARM_INSERT,t);
+      heldL.visible=t>.4;
+      if(t>.5){moduleInBox.visible=false;}
+      break;
+    case 8: // 后退→中心
+      rz=lerp(.85,POS_CENTER,t); wy=0;
+      la=lerp3(ARM_INSERT,ARM_REST,t);
+      heldL.visible=false;
       break;
   }
 
@@ -297,7 +296,7 @@ function loop(){
   shL.rotation.x=la[0]; uaL.rotation.z=la[1]; elL.rotation.z=la[2];
   shR.rotation.x=ra[0]; uaR.rotation.z=-ra[1]; elR.rotation.z=-ra[2];
 
-  // Wheel spin
+  // Wheels
   var ws=Math.abs(rz-(robot.userData?.prevZ||0))/Math.max(dt,.001)||0;
   for(var c of base.children){
     if(c.type==="Group"&&c.children[0]?.material===Q.wheel)
@@ -306,14 +305,19 @@ function loop(){
   if(!robot.userData)robot.userData={};
   robot.userData.prevZ=rz;
 
-  // Eye diagram animation (Lissajous-like pattern)
-  eyePhase+=dt*8;
-  eyeDot.position.set(Math.sin(eyePhase)*.07,Math.sin(eyePhase*1.7+.5)*.04,0);
-  eyeDot.material.color.setHSL((.3+Math.sin(eyePhase*.3)*.1),1,.6);
-  eyeDot.scale.setScalar(.8+Math.abs(Math.sin(eyePhase*2))*.4);
+  // Eye diagram (active during phase 5 = testing)
+  if(phase===5){
+    eyePhase+=dt*10;
+    eyeDot.position.set(Math.sin(eyePhase)*.07,Math.sin(eyePhase*1.7+.5)*.04,0);
+    eyeDot.material.color.setHSL(.3+Math.abs(Math.sin(eyePhase*.2))*.15,1,.5+.3*Math.abs(Math.sin(eyePhase*.3)));
+    eyeDot.scale.setScalar(.6+Math.abs(Math.sin(eyePhase*2.3))*.6);
+    eyeDot.visible=true;
+  } else {
+    eyeDot.visible=false;
+  }
 
-  var phNames=["↺光纤架","↓取模块","→线束台","⇅插线束","↺示波器","↓测试","↺返回","·待机"];
-  sEl.textContent="● 第"+(cycle+1)+"轮 "+phNames[phase]+" | 光纤:"+modsOnRack.length;
+  var phNames=["↺光纤架","↓取模块","→检测箱","⇩插入","↺示波器","◉眼图","↺检测箱","⇧取回","↺返回"];
+  sEl.textContent=(phase===5?"◉ 眼图测试中 · 光纤:"+modsOnRack.length:"● 第"+(cycle+1)+"轮 "+phNames[phase]+" | 光纤:"+modsOnRack.length);
   ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
 
   var p=new THREE.Vector3().setFromSpherical(sph).add(target);
@@ -322,7 +326,6 @@ function loop(){
   if(renderer.domElement.width!==w||renderer.domElement.height!==h){renderer.setSize(w,h);camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix()}
   renderer.render(scene,camera);
 }
-
 loop();
 })();
 </script>
