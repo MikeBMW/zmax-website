@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z700 老化箱操作</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#151a24;overflow:hidden;font-family:Arial,sans-serif}
+  canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
+  #info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#888;font-size:11px;opacity:.5;z-index:10;pointer-events:none;white-space:nowrap}
+  #status{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;font-weight:bold;z-index:10;pointer-events:none;white-space:nowrap;background:rgba(10,10,26,.75);padding:5px 16px;border-radius:16px}
+</style>
+</head>
+<body>
+<div id="status">● 老化测试中</div>
+<div id="info">自主导航Z700 · 双臂老化箱插拔 · 拖拽旋转 | 滚轮缩放</div>
+
+<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
+<script>
+(function(){
+if(typeof THREE==="undefined")return;
+var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status");
+var scene=new THREE.Scene();scene.background=new THREE.Color(0x151a24);
+var camera=new THREE.PerspectiveCamera(45,W/Math.max(H,1),0.1,40);
+camera.position.set(3,1.5,3.5);camera.lookAt(0,-.2,-.8);
+
+var renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setSize(W,H);
+renderer.shadowMap.enabled=true;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+renderer.domElement.style.cssText="position:absolute;top:0;left:0;z-index:1";document.body.appendChild(renderer.domElement);
+
+var target=new THREE.Vector3(0,-.2,-.8),sph=new THREE.Spherical(4.5,Math.PI/5.5,-Math.PI/12);
+var dragging=false,pm={x:0,y:0};
+renderer.domElement.addEventListener("mousedown",function(e){dragging=true;pm.x=e.clientX;pm.y=e.clientY});
+window.addEventListener("mouseup",function(){dragging=false});
+window.addEventListener("mousemove",function(e){if(!dragging)return;sph.theta-=(e.clientX-pm.x)*0.005;sph.phi-=(e.clientY-pm.y)*0.005;sph.phi=Math.max(0.05,Math.min(Math.PI/2.5,sph.phi));pm.x=e.clientX;pm.y=e.clientY});
+renderer.domElement.addEventListener("wheel",function(e){e.preventDefault();sph.radius=Math.max(2,Math.min(10,sph.radius+e.deltaY*0.01))});
+
+scene.add(new THREE.AmbientLight(0x8899bb,5.5));
+var key=new THREE.DirectionalLight(0xffffff,7);key.position.set(5,10,2);key.castShadow=true;
+key.shadow.mapSize.set(2048,2048);key.shadow.camera.near=0.3;key.shadow.camera.far=40;
+key.shadow.camera.left=-6;key.shadow.camera.right=6;key.shadow.camera.top=6;key.shadow.camera.bottom=-2;scene.add(key);
+scene.add(new THREE.DirectionalLight(0x8899cc,3).position.set(-3,3,-3));
+
+function mk(geo,mat){var m=new THREE.Mesh(geo,mat);m.castShadow=true;m.receiveShadow=true;return m;}
+function set(m,x,y,z){m.position.set(x,y,z);return m;}
+function mkNS(geo,mat){return new THREE.Mesh(geo,mat);}
+
+var Q={};
+Q.floor=new THREE.MeshStandardMaterial({color:0x3a4050,roughness:.15,metalness:.8});
+Q.white=new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.2});
+Q.gray=new THREE.MeshStandardMaterial({color:0x778088,roughness:.25,metalness:.5});
+Q.dark=new THREE.MeshStandardMaterial({color:0x2a3040,roughness:.3,metalness:.5});
+Q.blue=new THREE.MeshStandardMaterial({color:0x3388cc,roughness:.15,metalness:.3,emissive:0x112244,emissiveIntensity:.3});
+Q.joint=new THREE.MeshStandardMaterial({color:0x00d4aa,roughness:.1,metalness:.4,emissive:0x003322,emissiveIntensity:.5});
+Q.wheel=new THREE.MeshStandardMaterial({color:0x1a1a22,roughness:.3,metalness:.2});
+Q.whub=new THREE.MeshStandardMaterial({color:0x889099,roughness:.15,metalness:.7});
+Q.face=new THREE.MeshStandardMaterial({color:0x112244,roughness:.1,metalness:.8,emissive:0x112244,emissiveIntensity:.4});
+Q.eye=new THREE.MeshStandardMaterial({color:0x00ccff,emissive:0x0088cc,emissiveIntensity:1.5,roughness:.1});
+Q.hand=new THREE.MeshStandardMaterial({color:0x445566,roughness:.2,metalness:.6});
+Q.modG=new THREE.MeshStandardMaterial({color:0x33cc66,roughness:.3,metalness:.4,emissive:0x112211,emissiveIntensity:.4});
+Q.modY=new THREE.MeshStandardMaterial({color:0xddbb55,roughness:.3,metalness:.8,emissive:0x221100,emissiveIntensity:.3});
+Q.rack=new THREE.MeshStandardMaterial({color:0x3a4450,roughness:.2,metalness:.7});
+Q.rackS=new THREE.MeshStandardMaterial({color:0x1a1a28,roughness:.1,metalness:.9});
+Q.glow=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:1.5,roughness:.1});
+Q.tableTop=new THREE.MeshStandardMaterial({color:0x5a6068,roughness:.2,metalness:.5});
+Q.tableLeg=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.3,metalness:.6});
+
+// Floor
+var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
+fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
+
+// ==== TABLES ====
+function mkTable(gx,gz){
+  var t=new THREE.Group();t.position.set(gx,-.72,gz);scene.add(t);
+  t.add(set(mk(new THREE.BoxGeometry(.5,.03,.4),Q.tableTop),0,.33,0));
+  [t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),-.2,.15,.16)),
+   t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),.2,.15,.16)),
+   t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),-.2,.15,-.16)),
+   t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),.2,.15,-.16))];
+  return t;
+}
+mkTable(-.85,.05); // 入料台
+mkTable(.85,.05);  // 出料台
+
+// Modules on left table
+var modsL=[];
+for(var i=0;i<4;i++){
+  var m=new THREE.Group();m.position.set(-.85+(i-1.5)*.1,-.39,.05+(Math.random()-.5)*.1);
+  scene.add(m);
+  m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),i%2?Q.modY:Q.modG),0,.01,0));
+  modsL.push(m);
+}
+
+// ==== BURN-IN RACK ====
+var RACK_W=1.8,RACK_H=1.2,RACK_D=.5,LAYERS=4,SLOTS=12;
+var rackG=new THREE.Group();rackG.position.set(0,-.7,-1.4);scene.add(rackG);
+rackG.add(set(mk(new THREE.BoxGeometry(RACK_W+.1,RACK_H+.1,RACK_D+.05),Q.rack),0,RACK_H/2,0));
+rackG.add(set(mkNS(new THREE.BoxGeometry(RACK_W-.05,RACK_H-.05,.02),Q.rackS),0,RACK_H/2,RACK_D/2-.02));
+var slotH=RACK_H/LAYERS,slotW=RACK_W/SLOTS;
+for(var l=0;l<LAYERS;l++){
+  var ly=slotH*(l+.5);
+  for(var s=0;s<SLOTS;s++){
+    var sx=(s-SLOTS/2+.5)*slotW;
+    rackG.add(set(mkNS(new THREE.BoxGeometry(slotW*.7,.02,.4),Q.rackS),sx,ly,RACK_D/2+.12));
+    if(Math.random()<.6)
+      rackG.add(set(mk(new THREE.BoxGeometry(slotW*.5,.016,.25),Math.random()<.4?Q.modG:Q.modY),sx,ly+.015,RACK_D/2+.12));
+  }
+  if(l<LAYERS-1)rackG.add(set(mkNS(new THREE.BoxGeometry(RACK_W,.006,.01),Q.gray),0,slotH*(l+1),RACK_D/2+.01));
+}
+
+// ==== ROBOT (moves on X) ====
+var robot=new THREE.Group();robot.position.set(0,-.65,.25);scene.add(robot);
+
+var base=new THREE.Group();robot.add(base);
+base.add(set(mk(new THREE.CylinderGeometry(.2,.23,.1,24),Q.dark),0,.05,0));
+base.add(set(mk(new THREE.BoxGeometry(.3,.012,.02),Q.blue),0,.07,.2));
+base.add(set(mk(new THREE.BoxGeometry(.3,.012,.02),Q.blue),0,.07,-.2));
+for(var sx=-1;sx<=1;sx+=2){
+  var wg=new THREE.Group();wg.position.set(sx*.18,.05,0);base.add(wg);
+  wg.add(set(new THREE.Mesh(new THREE.CylinderGeometry(.1,.1,.04,24),Q.wheel),0,0,0).rotateZ(Math.PI/2));
+  wg.add(set(new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.045,12),Q.whub),0,0,0).rotateZ(Math.PI/2));
+}
+
+// Waist (rotates on Y)
+var waist=new THREE.Group();waist.position.y=.12;base.add(waist);
+waist.add(set(mk(new THREE.CylinderGeometry(.06,.07,.07,16),Q.joint),0,.035,0));
+
+// Torso
+var torso=new THREE.Group();torso.position.y=.1;waist.add(torso);
+torso.add(set(mk(new THREE.BoxGeometry(.22,.38,.16),Q.white),0,.2,0));
+torso.add(set(mk(new THREE.BoxGeometry(.18,.12,.04),Q.blue),0,.28,.1));
+torso.add(set(mk(new THREE.BoxGeometry(.38,.06,.06),Q.gray),0,.4,0));
+
+// Head
+var head=new THREE.Group();head.position.y=.46;torso.add(head);
+head.add(set(mk(new THREE.CylinderGeometry(.03,.04,.04,12),Q.gray),0,.02,0));
+head.add(set(mkNS(new THREE.SphereGeometry(.09,20,12),Q.white),0,.09,0));
+head.add(set(mkNS(new THREE.BoxGeometry(.08,.06,.015),Q.face),0,.09,.09));
+head.add(set(mkNS(new THREE.SphereGeometry(.015,8,8),Q.eye),.025,.11,.1));
+head.add(set(mkNS(new THREE.SphereGeometry(.015,8,8),Q.eye),-.025,.11,.1));
+
+var ring=mk(new THREE.TorusGeometry(.18,.007,16,48),Q.glow);ring.castShadow=ring.receiveShadow=false;
+ring.rotation.x=Math.PI/2;ring.position.y=.11;base.add(ring);
+
+// ==== LEFT ARM ====
+var armL=new THREE.Group();armL.position.set(.2,.4,.03);torso.add(armL);
+var shL=new THREE.Group();armL.add(shL);
+shL.add(set(mk(new THREE.SphereGeometry(.045,12,8),Q.joint),0,0,0));
+var uaL=new THREE.Group();shL.add(uaL);
+uaL.add(set(mk(new THREE.BoxGeometry(.04,.22,.04),Q.white),0,-.12,0));
+var elL=new THREE.Group();elL.position.y=-.24;uaL.add(elL);
+elL.add(set(mk(new THREE.SphereGeometry(.035,10,6),Q.joint),0,0,0));
+var faL=new THREE.Group();elL.add(faL);
+faL.add(set(mk(new THREE.BoxGeometry(.035,.18,.035),Q.white),0,-.1,0));
+faL.add(set(mk(new THREE.BoxGeometry(.04,.015,.04),Q.blue),0,-.04,0));
+var handL=new THREE.Group();handL.position.y=-.19;faL.add(handL);
+handL.add(set(mk(new THREE.BoxGeometry(.03,.04,.03),Q.hand),0,-.02,0));
+handL.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),.015,-.04,0));
+handL.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),-.015,-.04,0));
+var heldL=new THREE.Group();heldL.visible=false;handL.add(heldL);
+heldL.position.set(0,-.05,0);
+heldL.add(set(mkNS(new THREE.BoxGeometry(.035,.016,.06),Q.modG),0,0,0));
+
+// ==== RIGHT ARM (mirror) ====
+var armR=new THREE.Group();armR.position.set(-.2,.4,.03);torso.add(armR);
+var shR=new THREE.Group();armR.add(shR);
+shR.add(set(mk(new THREE.SphereGeometry(.045,12,8),Q.joint),0,0,0));
+var uaR=new THREE.Group();shR.add(uaR);
+uaR.add(set(mk(new THREE.BoxGeometry(.04,.22,.04),Q.white),0,-.12,0));
+var elR=new THREE.Group();elR.position.y=-.24;uaR.add(elR);
+elR.add(set(mk(new THREE.SphereGeometry(.035,10,6),Q.joint),0,0,0));
+var faR=new THREE.Group();elR.add(faR);
+faR.add(set(mk(new THREE.BoxGeometry(.035,.18,.035),Q.white),0,-.1,0));
+faR.add(set(mk(new THREE.BoxGeometry(.04,.015,.04),Q.blue),0,-.04,0));
+var handR=new THREE.Group();handR.position.y=-.19;faR.add(handR);
+handR.add(set(mk(new THREE.BoxGeometry(.03,.04,.03),Q.hand),0,-.02,0));
+handR.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),.015,-.04,0));
+handR.add(set(mkNS(new THREE.BoxGeometry(.01,.03,.01),Q.hand),-.015,-.04,0));
+var heldR=new THREE.Group();heldR.visible=false;handR.add(heldR);
+heldR.position.set(0,-.05,0);
+heldR.add(set(mkNS(new THREE.BoxGeometry(.035,.016,.06),Q.modG),0,0,0));
+
+// Labels
+function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.height=64;
+  var cx=cv.getContext("2d");cx.fillStyle=c;cx.font="bold 20px Arial";cx.textAlign="center";cx.fillText(t,128,38);
+  var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+  var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
+  s.position.copy(p);s.scale.set(1,.3,1);return s}
+scene.add(mkl("老化箱","#ff8844",new THREE.Vector3(0,RACK_H-.1,-1.4)));
+scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.05)));
+scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.05)));
+
+// ==== ANIMATION ====
+// Positions: 0=rack center, -0.85=left table, 0.85=right table
+var POS_RACK=0, POS_LEFT=-.85, POS_RIGHT=.85;
+
+// Arm poses: each is [shX, upZ, elZ]
+// shX: shoulder forward tilt (0=down, >0=reach forward)
+// upZ: upper arm rotation (0=straight down, +positive=forward)  
+// elZ: elbow bend (0=straight, negative=bend back)
+var ARM_REST =[0, .1, -.2];     // arms hanging relaxed
+var ARM_REACH=[1.2, .9, -.65];  // reaching forward+down to table surface
+var ARM_RACK =[.6, .35, -.4];   // reaching into rack
+// Right arm mirrors upZ and elZ (negate them)
+
+var layerIdx=0,phase=0,timer=0;
+var PHASES=8;
+var phaseDurs=[1.2, .4, .6, 1.2, .7, 1.2, .6, 1.2];
+// drive→pick→drive→insert→drive→place→drive→reset
+// Drive phases include turning+driving
+
+var placedThisCycle=false,didPick=false,didPlace=false;
+
+var clk=new THREE.Clock();
+
+function lerp(a,b,t){return a+(b-a)*t;}
+function lerp3(a,b,t){return [lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];}
+function ease(t){return t<.5?2*t*t:-1+(4-2*t)*t;}
+
+function loop(){
+  requestAnimationFrame(loop);
+  var dt=Math.min(clk.getDelta(),.15);
+  timer+=dt;
+
+  if(timer>phaseDurs[phase]){
+    timer=0;phase=(phase+1)%PHASES;
+    if(phase===0){
+      layerIdx=(layerIdx+1)%LAYERS;
+      if(modsL.length>0){var rm=modsL.shift();scene.remove(rm);}
+      placedThisCycle=false;didPick=false;didPlace=false;
+    }
+  }
+  var raw=Math.min(timer/phaseDurs[phase],1);
+  var t=ease(raw);
+
+  var rx=POS_RACK, wy=0; // robot x, waist y
+  var la=ARM_REST, ra=ARM_REST; // [shX,upZ,elZ]
+
+  switch(phase){
+    case 0: // 移动→入料台: turn left + drive
+      wy=0+t*.9;         // turn left ~52°
+      rx=POS_RACK+lerp(0,POS_LEFT,t); // drive to table
+      la=ARM_REST; ra=ARM_REST;
+      heldL.visible=false;
+      break;
+    case 1: // 左臂伸向桌面取料
+      wy=.9; rx=POS_LEFT;
+      la=lerp3(ARM_REST,ARM_REACH,t);
+      heldL.visible=t>.55;
+      if(t>.65&&!didPick&&modsL.length>0){modsL[0].visible=false;didPick=true;}
+      break;
+    case 2: // 收回手臂 + 移动→老化箱
+      wy=.9*lerp(1,0,t);  // turn back to center
+      rx=lerp(POS_LEFT,POS_RACK,t);
+      la=lerp3(ARM_REACH,ARM_RACK,t);
+      heldL.visible=true;
+      break;
+    case 3: // 双臂伸入老化箱: 左放+右取
+      wy=0; rx=POS_RACK;
+      la=ARM_RACK; ra=ARM_RACK;
+      heldL.visible=t<.3; heldR.visible=t>.3;
+      break;
+    case 4: // 移动→出料台
+      wy=0-lerp(0,.9,t); // turn right
+      rx=lerp(POS_RACK,POS_RIGHT,t);
+      la=lerp3(ARM_RACK,ARM_REST,t);
+      ra=lerp3(ARM_RACK,ARM_REACH,t);
+      heldL.visible=false; heldR.visible=true;
+      break;
+    case 5: // 右臂伸向桌面放料
+      wy=-.9; rx=POS_RIGHT;
+      ra=lerp3(ARM_REACH,ARM_REACH,t); // stay in reach position
+      heldR.visible=t<.5;
+      if(t>.4&&!didPlace){addPlacedMod();didPlace=true;}
+      break;
+    case 6: // 收回+右臂复位+移动→中心
+      wy=-.9*lerp(1,0,t);
+      rx=lerp(POS_RIGHT,POS_RACK,t);
+      ra=lerp3(ARM_REACH,ARM_REST,t);
+      heldR.visible=false;
+      break;
+    case 7: // 待机 (短暂停顿)
+      wy=0; rx=POS_RACK;
+      la=ARM_REST; ra=ARM_REST;
+      break;
+  }
+
+  // Apply
+  robot.position.x=rx;
+  waist.rotation.y=wy;
+  shL.rotation.x=la[0]; uaL.rotation.z=la[1]; elL.rotation.z=la[2];
+  shR.rotation.x=ra[0]; uaR.rotation.z=-ra[1]; elR.rotation.z=-ra[2];
+
+  // Wheel spin (visual)
+  var ws=Math.abs(rx-robot.userData?.prevX||0)/dt||0;
+  for(var c of base.children){
+    if(c.type==="Group"&&c.children[0]?.material===Q.wheel)
+      c.children[0].rotation.z+=ws*8;
+  }
+  if(!robot.userData)robot.userData={};
+  robot.userData.prevX=rx;
+
+  while(modsR&&modsR.length>6){var old=modsR.shift();scene.remove(old);}
+
+  var phNames=["↺入料台","↓取料","↺老化箱","⇅插拔","↺出料台","↓放料","↺返回","·待机"];
+  sEl.textContent="● 第"+(layerIdx+1)+"/"+LAYERS+"层 "+phNames[phase]+" | 待取:"+modsL.length;
+  ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
+
+  var p=new THREE.Vector3().setFromSpherical(sph).add(target);
+  camera.position.lerp(p,.1);camera.lookAt(target);
+  var w=window.innerWidth,h=window.innerHeight;
+  if(renderer.domElement.width!==w||renderer.domElement.height!==h){renderer.setSize(w,h);camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix()}
+  renderer.render(scene,camera);
+}
+
+var modsR=[];
+function addPlacedMod(){
+  var m=new THREE.Group();
+  m.position.set(.85+(Math.random()-.5)*.1,-.39,.05+(Math.random()-.5)*.1);
+  scene.add(m);
+  m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
+  modsR.push(m);
+}
+
+loop();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-MAX Robot</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#1a1f2e;overflow:hidden;font-family:Arial,sans-serif}
+  canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
+  #info{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#aaa;font-size:12px;opacity:.6;z-index:10;pointer-events:none;white-space:nowrap}
+  #status{position:absolute;top:15px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:15px;font-weight:bold;z-index:10;pointer-events:none;white-space:nowrap;background:rgba(10,10,26,.75);padding:6px 18px;border-radius:20px}
+  #coords{position:absolute;top:15px;right:20px;color:#00d4aa;font-size:13px;z-index:10;pointer-events:none;text-align:right;font-family:monospace;background:rgba(10,10,26,.75);padding:8px 14px;border-radius:10px;line-height:1.6}
+  #coords span{color:#aaa}
+</style>
+</head>
+<body>
+<div id="status">● 产线运行中</div>
+<div id="coords"><span>末端坐标</span><br>X:<b id="cx">0.00</b> Y:<b id="cy">0.00</b> Z:<b id="cz">0.00</b></div>
+<div id="info">Z700 F · 珞石SR5-C + DH PEGA-50-26 · 拖拽旋转 | 滚轮缩放</div>
+
+<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
+<script>
+(function(){
+if(typeof THREE==="undefined")return;
+var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status");
+var cxEl=document.getElementById("cx"),cyEl=document.getElementById("cy"),czEl=document.getElementById("cz");
+var scene=new THREE.Scene();scene.background=new THREE.Color(0x1a1f2e);
+var camera=new THREE.PerspectiveCamera(50,W/Math.max(H,1),0.1,30);
+camera.position.set(3,4,5);camera.lookAt(0,0,-0.7);
+
+var renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setSize(W,H);
+renderer.shadowMap.enabled=true;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+renderer.domElement.style.cssText="position:absolute;top:0;left:0;z-index:1";document.body.appendChild(renderer.domElement);
+
+var target=new THREE.Vector3(0,0,-0.7),sph=new THREE.Spherical(5.5,Math.PI/4.5,-Math.PI/7);
+var dragging=false,pm={x:0,y:0};
+renderer.domElement.addEventListener("mousedown",function(e){dragging=true;pm.x=e.clientX;pm.y=e.clientY});
+window.addEventListener("mouseup",function(){dragging=false});
+window.addEventListener("mousemove",function(e){if(!dragging)return;sph.theta-=(e.clientX-pm.x)*0.005;sph.phi-=(e.clientY-pm.y)*0.005;sph.phi=Math.max(0.1,Math.min(Math.PI/2.3,sph.phi));pm.x=e.clientX;pm.y=e.clientY});
+renderer.domElement.addEventListener("wheel",function(e){e.preventDefault();sph.radius=Math.max(2,Math.min(12,sph.radius+e.deltaY*0.01))});
+renderer.domElement.addEventListener("touchstart",function(e){if(e.touches.length===1){dragging=true;pm.x=e.touches[0].clientX;pm.y=e.touches[0].clientY}});
+window.addEventListener("touchend",function(){dragging=false});
+window.addEventListener("touchmove",function(e){if(!dragging||e.touches.length!==1)return;sph.theta-=(e.touches[0].clientX-pm.x)*0.005;sph.phi-=(e.touches[0].clientY-pm.y)*0.005;sph.phi=Math.max(0.1,Math.min(Math.PI/2.3,sph.phi));pm.x=e.touches[0].clientX;pm.y=e.touches[0].clientY},{passive:true});
+
+scene.add(new THREE.AmbientLight(0x8899aa,6));
+var key=new THREE.DirectionalLight(0xffffff,8);key.position.set(5,10,-2);key.castShadow=true;
+key.shadow.mapSize.set(2048,2048);key.shadow.camera.near=0.3;key.shadow.camera.far=30;
+key.shadow.camera.left=-6;key.shadow.camera.right=6;key.shadow.camera.top=5;key.shadow.camera.bottom=-2;scene.add(key);
+scene.add(new THREE.DirectionalLight(0x8899bb,4).position.set(-3,3,-4));
+scene.add(new THREE.DirectionalLight(0xffffff,3).position.set(0,1,-4));
+
+function mk(geo,mat){var m=new THREE.Mesh(geo,mat);m.castShadow=true;m.receiveShadow=true;return m;}
+function set(m,x,y,z){m.position.set(x,y,z);return m;}
+
+var M={};
+M.floor=new THREE.MeshStandardMaterial({color:0x3a4050,roughness:.2,metalness:.7});
+M.table=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.25,metalness:.6});
+M.trayL=new THREE.MeshStandardMaterial({color:0x4488bb,roughness:.3,metalness:.4,emissive:0x112233,emissiveIntensity:.4});
+M.trayR=new THREE.MeshStandardMaterial({color:0x44aa66,roughness:.3,metalness:.4,emissive:0x112211,emissiveIntensity:.4});
+M.prog=new THREE.MeshStandardMaterial({color:0x666677,roughness:.2,metalness:.7});
+M.slot=new THREE.MeshStandardMaterial({color:0x111122,roughness:.1,metalness:.9});
+M.accent=new THREE.MeshStandardMaterial({color:0xd73a49,roughness:.3,metalness:.2});
+M.body=new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.25});
+M.base=new THREE.MeshStandardMaterial({color:0x4a4f58,roughness:.3,metalness:.5});
+M.joint=new THREE.MeshStandardMaterial({color:0x00d4aa,roughness:.1,metalness:.4,emissive:0x005544,emissiveIntensity:.7});
+M.grip=new THREE.MeshStandardMaterial({color:0x999aaa,roughness:.2,metalness:.6});
+M.finger=new THREE.MeshStandardMaterial({color:0x555566,roughness:.15,metalness:.7});
+M.ftip=new THREE.MeshStandardMaterial({color:0x222233,roughness:.3,metalness:.3});
+M.red=new THREE.MeshStandardMaterial({color:0xd73a49,roughness:.3,metalness:.2});
+M.scanner=new THREE.MeshStandardMaterial({color:0xccccdd,roughness:.2,metalness:.6});
+M.scanBeam=new THREE.MeshStandardMaterial({color:0xff2222,emissive:0xff0000,emissiveIntensity:1.5,roughness:.1,transparent:true});
+M.aoi=new THREE.MeshStandardMaterial({color:0x556677,roughness:.2,metalness:.7});
+M.aoiLens=new THREE.MeshStandardMaterial({color:0x222244,roughness:.05,metalness:.9,emissive:0x000022,emissiveIntensity:.3});
+M.aoiRing=new THREE.MeshStandardMaterial({color:0x00aaff,emissive:0x004488,emissiveIntensity:.8,roughness:.1});
+M.mod=new THREE.MeshStandardMaterial({color:0xddbb55,roughness:.3,metalness:.8,emissive:0x221100,emissiveIntensity:.3});
+M.mlbl=new THREE.MeshStandardMaterial({color:0xd73a49,roughness:.3,metalness:.2});
+M.led=new THREE.MeshStandardMaterial({color:0x00ff44,emissive:0x00ff44,emissiveIntensity:1});
+M.ring=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:1.5,roughness:.1});
+
+var armBase=new THREE.Vector3(0,0,0);
+
+// Table
+var tbl=new THREE.Group();scene.add(tbl);
+tbl.add(set(mk(new THREE.BoxGeometry(3.5,.1,1.2),M.table),0,-.05,-1));
+for(var lx=-1.5;lx<=1.5;lx+=3)for(var lz=-1.3;lz<=-0.7;lz+=0.6)
+  tbl.add(set(mk(new THREE.CylinderGeometry(.08,.1,.6,16),M.base),lx,-.35,lz));
+
+// Infeed Tray (-1, 0, -1) — physical
+var trayL=new THREE.Group();trayL.position.set(-1,0,-1);tbl.add(trayL);
+trayL.add(set(mk(new THREE.BoxGeometry(.45,.04,.3),M.trayL),0,.02,0));
+trayL.add(set(mk(new THREE.BoxGeometry(.04,.06,.26),M.trayL),.2,.05,0));
+trayL.add(set(mk(new THREE.BoxGeometry(.04,.06,.26),M.trayL),-.2,.05,0));
+trayL.add(set(mk(new THREE.BoxGeometry(.45,.06,.04),M.trayL),0,.05,.13));
+var modIn=new THREE.Group();modIn.position.set(0,.05,-.04);trayL.add(modIn);
+modIn.add(set(new THREE.Mesh(new THREE.BoxGeometry(.06,.025,.1),M.mod),0,0,0));
+modIn.add(set(new THREE.Mesh(new THREE.BoxGeometry(.05,.004,.08),M.mlbl),0,.016,0));
+
+// Outfeed Tray (1, 0, -1) — physical
+var trayR=new THREE.Group();trayR.position.set(1,0,-1);tbl.add(trayR);
+trayR.add(set(mk(new THREE.BoxGeometry(.45,.04,.3),M.trayR),0,.02,0));
+trayR.add(set(mk(new THREE.BoxGeometry(.04,.06,.26),M.trayR),.2,.05,0));
+trayR.add(set(mk(new THREE.BoxGeometry(.04,.06,.26),M.trayR),-.2,.05,0));
+trayR.add(set(mk(new THREE.BoxGeometry(.45,.06,.04),M.trayR),0,.05,.13));
+var modOut=new THREE.Group();modOut.visible=false;modOut.position.set(0,.05,0);trayR.add(modOut);
+modOut.add(set(new THREE.Mesh(new THREE.BoxGeometry(.06,.025,.1),M.mod),0,0,0));
+modOut.add(set(new THREE.Mesh(new THREE.BoxGeometry(.05,.004,.08),M.mlbl),0,.016,0));
+
+// Programmer (0, 0, -1)
+var prog=new THREE.Group();prog.position.set(0,0,-1);tbl.add(prog);
+prog.add(set(mk(new THREE.BoxGeometry(.3,.22,.45),M.prog),0,.13,0));
+prog.add(set(mk(new THREE.BoxGeometry(.26,.02,.4),M.grip),0,.25,0));
+prog.add(set(mk(new THREE.BoxGeometry(.07,.03,.14),M.slot),0,.26,.07));
+prog.add(set(mk(new THREE.BoxGeometry(.3,.02,.04),M.accent),0,.18,.23));
+prog.add(set(mk(new THREE.CylinderGeometry(.012,.012,.01,12),M.led),-.07,.25,.23));
+prog.add(set(mk(new THREE.CylinderGeometry(.012,.012,.01,12),M.led),.07,.25,.23));
+
+// Scanner (-0.5, 0, -1)
+var scan=new THREE.Group();scan.position.set(-.5,0,-1);tbl.add(scan);
+scan.add(set(mk(new THREE.CylinderGeometry(.025,.03,.22,16),M.scanner),0,.11,0));
+scan.add(set(mk(new THREE.BoxGeometry(.08,.04,.06),M.scanner),0,.23,0));
+scan.add(set(mk(new THREE.BoxGeometry(.05,.005,.035),M.scanBeam),0,.21,-.02));
+var beam=new THREE.Mesh(new THREE.BoxGeometry(.002,.02,.04),M.scanBeam);beam.castShadow=beam.receiveShadow=false;
+beam.position.set(0,.22,-.04);scan.add(beam);
+scan.add(set(mk(new THREE.CylinderGeometry(.04,.05,.015,16),M.scanner),0,.008,0));
+
+// AOI (0.5, 0, -1)
+var aoi=new THREE.Group();aoi.position.set(.5,0,-1);tbl.add(aoi);
+aoi.add(set(mk(new THREE.BoxGeometry(.2,.15,.2),M.aoi),0,.09,0));
+aoi.add(set(mk(new THREE.CylinderGeometry(.03,.04,.08,16),M.aoiLens),0,.2,0));
+var aoiRing=mk(new THREE.TorusGeometry(.035,.008,8,24),M.aoiRing);aoiRing.castShadow=aoiRing.receiveShadow=false;
+aoiRing.rotation.x=Math.PI/2;aoiRing.position.set(0,.24,0);aoi.add(aoiRing);
+aoi.add(set(mk(new THREE.CylinderGeometry(.008,.008,.01,8),M.led),-.06,.2,.1));
+aoi.add(set(mk(new THREE.BoxGeometry(.06,.01,.1),M.aoi),0,.17,0));
+
+// Floor
+var fm=mk(new THREE.CircleGeometry(4,64),M.floor);fm.receiveShadow=true;
+fm.position.set(0,-.65,-1);fm.rotation.x=-Math.PI/2;scene.add(fm);
+var grid=new THREE.PolarGridHelper(3.5,32,20,64,0x00d4aa,0x445566);grid.position.set(0,-.59,-1);scene.add(grid);
+
+// Labels + coordinates
+function mkCoordLabel(name,color,pos){
+  var cv=document.createElement("canvas");cv.width=512;cv.height=96;
+  var cx=cv.getContext("2d");
+  cx.fillStyle=color;cx.font="bold 26px Arial";cx.textAlign="center";cx.fillText(name,256,30);
+  cx.fillStyle="#aaaaaa";cx.font="16px monospace";cx.textAlign="center";
+  cx.fillText("X:"+pos.x.toFixed(1)+" Y:"+pos.y.toFixed(2)+" Z:"+pos.z.toFixed(1),256,60);
+  var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+  var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
+  s.position.copy(pos.clone().add(new THREE.Vector3(0,.2,0)));
+  s.scale.set(1.6,.3,1);return s;
+}
+
+// Labels at hover positions
+scene.add(mkCoordLabel("入料 Pick","#6699cc",new THREE.Vector3(-1,.06,-.85)));
+scene.add(mkCoordLabel("扫码 Scan","#ff6666",new THREE.Vector3(-.5,.16,-1)));
+scene.add(mkCoordLabel("刷程序 Program","#ff8844",new THREE.Vector3(0,.28,-1)));
+scene.add(mkCoordLabel("AOI 检测","#66aaff",new THREE.Vector3(.5,.16,-1)));
+scene.add(mkCoordLabel("出料 Place","#66cc66",new THREE.Vector3(1,.06,-.85)));
+
+// Robot Arm
+var arm=new THREE.Group();scene.add(arm);
+arm.add(set(mk(new THREE.CylinderGeometry(.22,.27,.15,32),M.base),0,.075,0));
+arm.add(set(mk(new THREE.TorusGeometry(.215,.012,8,48),M.red),0,.082,0));
+var j1=new THREE.Group();j1.position.y=.15;arm.add(j1);
+j1.add(set(mk(new THREE.CylinderGeometry(.13,.17,.28,32),M.body),0,0,0));
+j1.add(set(mk(new THREE.TorusGeometry(.125,.022,16,32),M.joint),0,-.07,0));
+var j2=new THREE.Group();j2.position.y=.26;j1.add(j2);
+j2.add(set(mk(new THREE.SphereGeometry(.13,32,16),M.joint),0,0,0));
+var upper=new THREE.Group();j2.add(upper);
+upper.add(set(mk(new THREE.BoxGeometry(.1,.55,.1),M.body),0,.275,0));
+upper.add(set(mk(new THREE.BoxGeometry(.11,.035,.11),M.red),0,.12,0));
+var j3=new THREE.Group();j3.position.y=.55;upper.add(j3);
+j3.add(set(mk(new THREE.SphereGeometry(.1,32,16),M.joint),0,0,0));
+var forearm=new THREE.Group();j3.add(forearm);
+forearm.add(set(mk(new THREE.BoxGeometry(.08,.55,.08),M.body),0,.275,0));
+forearm.add(set(mk(new THREE.BoxGeometry(.09,.03,.09),M.red),0,.09,0));
+var j4=new THREE.Group();j4.position.y=.55;forearm.add(j4);
+j4.add(set(mk(new THREE.SphereGeometry(.07,32,16),M.joint),0,0,0));
+var wrist=new THREE.Group();j4.add(wrist);
+wrist.add(set(mk(new THREE.BoxGeometry(.065,.13,.065),M.body),0,.065,0));
+var j5=new THREE.Group();j5.position.y=.13;wrist.add(j5);
+j5.add(set(mk(new THREE.SphereGeometry(.05,32,16),M.joint),0,0,0));
+var gb=new THREE.Group();j5.add(gb);
+gb.add(set(mk(new THREE.CylinderGeometry(.04,.045,.035,24),M.grip),0,0,0));
+gb.add(set(mk(new THREE.BoxGeometry(.065,.08,.055),M.grip),0,-.055,0));
+var fL=new THREE.Group();gb.add(fL);
+fL.add(set(mk(new THREE.BoxGeometry(.012,.07,.015),M.finger),.022,-.095,0));
+fL.add(set(mk(new THREE.BoxGeometry(.01,.018,.018),M.ftip),.022,-.14,0));
+var fR=new THREE.Group();gb.add(fR);
+fR.add(set(mk(new THREE.BoxGeometry(.012,.07,.015),M.finger),-.022,-.095,0));
+fR.add(set(mk(new THREE.BoxGeometry(.01,.018,.018),M.ftip),-.022,-.14,0));
+var heldMod=new THREE.Group();heldMod.visible=false;heldMod.position.set(0,-.15,0);gb.add(heldMod);
+heldMod.add(set(new THREE.Mesh(new THREE.BoxGeometry(.06,.025,.1),M.mod),0,0,0));
+heldMod.add(set(new THREE.Mesh(new THREE.BoxGeometry(.05,.004,.08),M.mlbl),0,.016,0));
+var ring=mk(new THREE.TorusGeometry(.22,.012,16,64),M.ring);ring.castShadow=ring.receiveShadow=false;
+ring.rotation.x=Math.PI/2;ring.position.set(0,.075,0);arm.add(ring);
+
+// ---- Custom coordinate axes with arrows ----
+function makeAxis(dir,color,len){
+  var g=new THREE.Group();
+  var shaft=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,len,8),new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:.5,roughness:.1}));
+  shaft.position.set(0,len/2,0);shaft.castShadow=false;shaft.receiveShadow=false;g.add(shaft);
+  var head=new THREE.Mesh(new THREE.ConeGeometry(.04,.12,8),new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:.5,roughness:.1}));
+  head.position.set(0,len,0);head.castShadow=false;head.receiveShadow=false;g.add(head);
+  if(dir==="x")g.rotation.z=-Math.PI/2;
+  else if(dir==="z")g.rotation.x=Math.PI/2;
+  return g;
+}
+function makeAxisLabel(text,color,pos){
+  var cv=document.createElement("canvas");cv.width=128;cv.height=64;
+  var cx=cv.getContext("2d");cx.fillStyle=color;cx.font="bold 40px Arial";cx.textAlign="center";cx.fillText(text,64,44);
+  var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+  var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
+  s.position.copy(pos);s.scale.set(.35,.18,1);return s;
+}
+var axX=new THREE.Group();
+var xShaft=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.5,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.5,roughness:.1}));xShaft.rotation.x=Math.PI/2;xShaft.position.set(0,0,-.75);xShaft.castShadow=xShaft.receiveShadow=false;axX.add(xShaft);
+var xHead=new THREE.Mesh(new THREE.ConeGeometry(.04,.12,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.5,roughness:.1}));xHead.position.set(0,0,-1.5);xHead.rotation.x=-Math.PI/2;xHead.castShadow=xHead.receiveShadow=false;axX.add(xHead);
+scene.add(axX);
+var axY=makeAxis("x",0x44ff44,1.5);axY.rotation.z=Math.PI/2;scene.add(axY);
+var axZ=makeAxis("y",0x4488ff,1.5);scene.add(axZ);
+scene.add(makeAxisLabel("X","#ff4444",new THREE.Vector3(0,0,-1.7)));
+scene.add(makeAxisLabel("Y","#44ff44",new THREE.Vector3(-1.7,0,0)));
+scene.add(makeAxisLabel("Z","#4488ff",new THREE.Vector3(0,1.7,0)));
+var od=new THREE.Mesh(new THREE.SphereGeometry(.05,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:2,roughness:.1}));od.castShadow=false;od.receiveShadow=false;scene.add(od);
+
+// ---- Coordinate axes ----
+
+// ==== IK ====
+var L1=.72,L2=.75,shoulderY=.41;
+// Pick/Place Z closer: -0.85 instead of -1
+var posPick   =new THREE.Vector3(-1,.06,-.85);
+var posScan   =new THREE.Vector3(-.5,.16,-1);
+var posInsert =new THREE.Vector3(0,.28,-1);
+var posAOI    =new THREE.Vector3(.5,.16,-1);
+var posPlace  =new THREE.Vector3(1,.06,-.85);
+var posRest   =new THREE.Vector3(0,.7,0);
+var targetPos=posRest.clone();
+var gripOpen=.017;
+
+var state=0,timer=0;
+var durs=[1.2,.35,.5, .8,.6, .8,.35,1.5,.35, .8,.6, .8,.35,.5,.8];
+var labs=["→取料","↓抓取","↑抬起","→扫码","≈扫码中","→刷程序","↓插入","●刷写中","↑拔出","→AOI","≈检测中","→放料","↓放置","↑抬起","→待命"];
+
+function ik(tgt){
+  var l=tgt.clone();l.y-=shoulderY;
+  var pd=Math.sqrt(l.x*l.x+l.z*l.z),d=Math.sqrt(pd*pd+l.y*l.y);
+  d=Math.min(d,L1+L2-.02);
+  j1.rotation.y=Math.atan2(l.x,l.z)-Math.PI/2;
+  var ce=(L1*L1+L2*L2-d*d)/(2*L1*L2);ce=Math.max(-.99,Math.min(.99,ce));
+  var el=Math.PI-Math.acos(ce);j3.rotation.z=-el;
+  var st=Math.atan2(l.y,pd),so=Math.atan2(L2*Math.sin(el),L1+L2*Math.cos(el));
+  j2.rotation.z=st-so;j4.rotation.z=-(j2.rotation.z+j3.rotation.z);j5.rotation.z=0;
+}
+function upCam(){
+  var p=new THREE.Vector3().setFromSpherical(sph).add(target);
+  camera.position.lerp(p,.1);camera.lookAt(target);
+}
+
+var clk=new THREE.Clock();
+function loop(){
+  requestAnimationFrame(loop);
+  var dt=Math.min(clk.getDelta(),.12);
+  timer+=dt;var mt=durs[state],pg=Math.min(timer/mt,1);
+  var t=pg<.5?2*pg*pg:-1+(4-2*pg)*pg;
+  var fr,to,gt=gripOpen;
+  switch(state){
+    case 0:fr=posRest;to=posPick;break;
+    case 1:fr=posPick;to=posPick.clone();to.y=.04;gt=0;break;
+    case 2:fr=posPick.clone();fr.y=.04;to=posPick;gt=0;break;
+    case 3:fr=posPick.clone();fr.y=.04;to=posScan;gt=0;break;
+    case 4:fr=to=posScan;gt=0;break;
+    case 5:fr=posScan;to=posInsert;gt=0;break;
+    case 6:fr=posInsert;to=posInsert.clone();to.y=.25;gt=0;break;
+    case 7:fr=to=posInsert.clone();fr.y=to.y=.25;gt=0;break;
+    case 8:fr=posInsert.clone();fr.y=.25;to=posInsert;gt=0;break;
+    case 9:fr=posInsert;to=posAOI;gt=0;break;
+    case 10:fr=to=posAOI;gt=0;break;
+    case 11:fr=posAOI;to=posPlace;gt=0;break;
+    case 12:fr=posPlace;to=posPlace.clone();to.y=.04;gt=gripOpen;break;
+    case 13:fr=posPlace.clone();fr.y=.04;to=posPlace;gt=gripOpen;break;
+    case 14:fr=posPlace;to=posRest;gt=gripOpen;break;
+    default:fr=to=posRest;
+  }
+  targetPos.lerpVectors(fr,to,t);
+  var gv=fL.position.x;fL.position.x+=(gt-gv)*12*dt;fR.position.x=-fL.position.x;
+  if(state>=1&&state<=10){heldMod.visible=true;modIn.visible=false;modOut.visible=false}
+  else if(state>=11){heldMod.visible=false;modIn.visible=true;modOut.visible=true}
+  else{heldMod.visible=false;modIn.visible=true;modOut.visible=false}
+  if(state>=6&&state<=8){var sy=state===7?.3:1-pg*.7;heldMod.children.forEach(function(c){c.scale.y=sy})}
+  else heldMod.children.forEach(function(c){c.scale.y=1});
+  if(pg>=1){timer=0;state=(state+1)%durs.length}
+  sEl.textContent="● "+labs[state];
+  ik(targetPos);
+  cxEl.textContent=targetPos.x.toFixed(2);
+  cyEl.textContent=targetPos.y.toFixed(2);
+  czEl.textContent=targetPos.z.toFixed(2);
+  ring.material.emissiveIntensity=1.3+Math.sin(Date.now()*.005)*.3;
+  beam.material.opacity=state===4?0.5+Math.sin(Date.now()*.03)*0.5:0.2;
+  upCam();
+  var w=window.innerWidth,h=window.innerHeight;
+  if(renderer.domElement.width!==w||renderer.domElement.height!==h){renderer.setSize(w,h);camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix()}
+  renderer.render(scene,camera);
+}
+loop();
+})();
+</script>
+</body>
+</html>

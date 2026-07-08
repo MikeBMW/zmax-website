@@ -1,0 +1,25 @@
+# Large binary files
+*.zip
+*.pdf
+*.pptx
+
+# WordPress core (not our code)
+wp-*.php
+index.php
+xmlrpc.php
+license.txt
+readme.html
+
+# WP uploads
+wp-content/uploads/
+
+# Temp
+/tmp/
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.pyc
+__pycache__/
