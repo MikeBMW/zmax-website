@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>类脑计算 — SmolVLA 神经映射</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0e17;color:#c8d1d9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{color:#00d4aa;font-size:36px;text-align:center;margin-bottom:8px}
+.subtitle{text-align:center;color:#586069;font-size:16px;margin-bottom:48px}
+h2{color:#58a6ff;font-size:24px;margin:48px 0 20px;padding-bottom:8px;border-bottom:2px solid #58a6ff33}
+.section{margin-bottom:48px}
+
+/* 映射表格 */
+.map-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0}
+.map-table th{background:#161b22;color:#00d4aa;padding:10px 12px;text-align:left;font-weight:700;border-bottom:2px solid #00d4aa44}
+.map-table td{padding:8px 12px;border-bottom:1px solid #21262d}
+.map-table tr:hover{background:#161b2233}
+.map-table .brain{color:#ffa657;font-weight:600}
+.map-table .model{color:#58a6ff;font-family:monospace;font-size:12px}
+.map-table .params{color:#8b949e;font-size:11px}
+
+/* 流程图 */
+.flow{display:flex;flex-direction:column;gap:4px;margin:24px 0;font-family:monospace;font-size:13px;line-height:1.8}
+.flow-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px 20px}
+.flow-box h3{color:#00d4aa;font-size:15px;margin-bottom:8px}
+.flow-box .item{display:flex;gap:16px;margin:4px 0}
+.flow-box .brain-label{color:#ffa657;min-width:120px}
+.flow-box .model-label{color:#58a6ff}
+
+.arrow{text-align:center;color:#30363d;font-size:20px;margin:0}
+
+/* 卡片网格 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:20px 0}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px}
+.card h3{color:#00d4aa;font-size:16px;margin-bottom:12px}
+.card p{font-size:13px;color:#8b949e;margin:4px 0}
+.card .num{color:#58a6ff;font-size:28px;font-weight:800}
+
+/* 对比表 */
+.compare{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0}
+.compare th{background:#161b22;color:#8b949e;padding:10px}
+.compare td{padding:10px;text-align:center;border-bottom:1px solid #21262d}
+.compare .gap{color:#f85149;font-size:11px}
+
+.highlight{color:#ffa657}
+.dim{color:#8b949e;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🧠 类脑计算</h1>
+<p class="subtitle">SmolVLA × 认知神经科学 结构映射  |  Z-MAX 技术文档</p>
+
+<!-- ═══════════════ VLM ═══════════════ -->
+<h2>📷 VLM — 腹侧通路 (What: 识别理解)</h2>
+<p class="dim">视觉信号从视网膜到语义理解，对应12层Vision + 16层Language</p>
+
+<div class="flow">
+<div class="flow-box">
+<h3>👁️ 视觉编码器 (Vision Encoder 12层)</h3>
+<table class="map-table">
+<tr><th>层级</th><th>🧠 脑区</th><th>神经原理</th><th>SmolVLA 实现</th><th>参数</th></tr>
+<tr><td>Embed</td><td class="brain">视网膜<br>LGN</td><td>光子→电信号<br>中心-周边拮抗</td><td class="model">PatchEmbed Conv2d(3→768)<br>PositionEmbedding</td><td class="params">0.6M<br>0.8M</td></tr>
+<tr><td>L0-2</td><td class="brain">V1 (17区)</td><td>朝向选择柱<br>Gabor滤波器</td><td class="model">SelfAttn(768) + MLP(768→3072)</td><td class="params">21M</td></tr>
+<tr><td>L3-5</td><td class="brain">V2</td><td>轮廓整合<br>纹理分割</td><td class="model">SelfAttn(768) + MLP(768→3072)</td><td class="params">21M</td></tr>
+<tr><td>L6-8</td><td class="brain">V4</td><td>颜色恒常性<br>形状识别</td><td class="model">SelfAttn(768) + MLP(768→3072)</td><td class="params">21M</td></tr>
+<tr><td>L9-11</td><td class="brain">IT (颞下皮层)</td><td>祖母细胞<br>语义分类</td><td class="model">SelfAttn(768) + MLP(768→3072)</td><td class="params">21M</td></tr>
+</table>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="flow-box">
+<h3>🔗 跨模态连接</h3>
+<div class="item"><span class="brain-label">角回 Angular Gyrus</span><span class="model-label">Connector Linear(12288→960) — 视觉空间→语言空间</span></div>
+</div>
+
+<div class="arrow">↓</div>
+
+<div class="flow-box">
+<h3>📝 语言编码器 (Text Model 16层)</h3>
+<table class="map-table">
+<tr><th>层级</th><th>🧠 脑区</th><th>神经原理</th><th>SmolVLA 实现</th><th>参数</th></tr>
+<tr><td>Embed</td><td class="brain">梭状回</td><td>字形→语义映射</td><td class="model">Embedding(49152→960)</td><td class="params">47M</td></tr>
+<tr><td>L0-7</td><td class="brain">Wernicke区</td><td>语音理解<br>语义整合</td><td class="model">LlamaDecoder ×8<br>SelfAttn(960)+MLP(2560)</td><td class="params">78M</td></tr>
+<tr><td>L8-15</td><td class="brain">Broca区</td><td>语法加工<br>意图生成</td><td class="model">LlamaDecoder ×8<br>SelfAttn(960)+MLP(2560)</td><td class="params">78M</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════ Expert ═══════════════ -->
+<h2>🤖 Expert — 背侧通路 (Where: 空间定位)</h2>
+<p class="dim">16层交错注意力，每2层切换：奇数层读VLM(Cross-Attn)，偶数层自整理(Self-Attn)</p>
+
+<table class="map-table">
+<tr><th>层号</th><th>🧠 脑区</th><th>注意力</th><th>神经原理</th><th>SmolVLA 实现</th><th>参数</th></tr>
+<tr><td>L0</td><td class="brain">PPC 后顶叶</td><td style="color:#f85149">Cross</td><td>视觉-空间坐标转换</td><td class="model">CrossAttn 读VLM-L0</td><td class="params">6.3M</td></tr>
+<tr><td>L1</td><td class="brain">PMC 前运动</td><td style="color:#58a6ff">Self</td><td>动作序列预演</td><td class="model">SelfAttn(960)+MLP</td><td class="params">6.0M</td></tr>
+<tr><td>L2</td><td class="brain">PPC</td><td style="color:#f85149">Cross</td><td>多感觉整合</td><td class="model">CrossAttn 读VLM-L2</td><td class="params">6.3M</td></tr>
+<tr><td>L3</td><td class="brain">PMC</td><td style="color:#58a6ff">Self</td><td>运动块分割</td><td class="model">SelfAttn(960)+MLP</td><td class="params">6.0M</td></tr>
+<tr><td colspan="6" style="text-align:center;color:#8b949e">... 交替16层 ...</td></tr>
+<tr><td>L14</td><td class="brain">M1 初级运动</td><td style="color:#f85149">Cross</td><td>精细运动编码</td><td class="model">CrossAttn 读VLM-L14</td><td class="params">6.3M</td></tr>
+<tr><td>L15</td><td class="brain">脊髓前角</td><td style="color:#58a6ff">Self</td><td>最终运动输出</td><td class="model">SelfAttn(960)+MLP</td><td class="params">6.0M</td></tr>
+</table>
+
+<!-- ═══════════════ Flow Matching ═══════════════ -->
+<h2>🎯 Flow Matching — 皮层下运动控制</h2>
+
+<table class="map-table">
+<tr><th>组件</th><th>🧠 脑区</th><th>神经原理</th><th>SmolVLA 实现</th><th>参数</th></tr>
+<tr><td>state_proj</td><td class="brain">丘脑 VA/VL核</td><td>感觉→运动中继</td><td class="model">Linear(32→960)</td><td class="params">0.03M</td></tr>
+<tr><td>time_mlp_in</td><td class="brain">基底节 直接通路</td><td>噪声→动作候选</td><td class="model">Linear(1440→720)+SiLU</td><td class="params">1.0M</td></tr>
+<tr><td>time_mlp_out</td><td class="brain">基底节 间接通路</td><td>精炼，抑制多余</td><td class="model">Linear(720→720)</td><td class="params">0.5M</td></tr>
+<tr><td>ODE 10步积分</td><td class="brain">小脑皮层</td><td>轨迹平滑</td><td class="model">Euler积分 ×10步</td><td class="params">—</td></tr>
+<tr><td>min_period=4ms</td><td class="brain">橄榄核</td><td>40Hz时序基准</td><td class="model">正弦位置编码下界</td><td class="params">—</td></tr>
+<tr><td>max_period=4s</td><td class="brain">纹状体</td><td>长时序窗口</td><td class="model">正弦位置编码上界</td><td class="params">—</td></tr>
+</table>
+
+<!-- ═══════════════ 参数总览 ═══════════════ -->
+<h2>📊 参数总览</h2>
+<div class="cards">
+<div class="card"><h3>VLM (腹侧)</h3><span class="num">350M</span><p class="dim">Vision 86M + Connector 12M + Text 204M + lm_head 47M</p></div>
+<div class="card"><h3>Expert (背侧)</h3><span class="num">98M</span><p class="dim">16层 LlamaDecoder × 960维 × 0.75宽度</p></div>
+<div class="card"><h3>Flow Head</h3><span class="num">1.5M</span><p class="dim">state_proj + action_proj + time_mlp</p></div>
+<div class="card"><h3>总计</h3><span class="num">450M</span><p class="dim">可训练 100M (Expert+Head) | 冻结 350M (VLM)</p></div>
+</div>
+
+<!-- ═══════════════ 差异表 ═══════════════ -->
+<h2>⚡ SmolVLA vs 人脑</h2>
+<table class="compare">
+<tr><th>维度</th><th>🧠 人脑</th><th>🤖 SmolVLA</th><th>差距</th></tr>
+<tr><td>并行度</td><td>10¹¹ 突触</td><td>层内并行</td><td class="gap">10⁶ ×</td></tr>
+<tr><td>反馈连接</td><td>V1↔IT↔PPC 处处反馈</td><td>纯前馈 ❌</td><td class="gap">关键缺失</td></tr>
+<tr><td>学习方式</td><td>Hebb + 多巴胺</td><td>梯度下降</td><td class="gap">无在线学习</td></tr>
+<tr><td>多模态</td><td>视+触+本体+前庭</td><td>视+语</td><td class="gap">缺触觉</td></tr>
+<tr><td>预测</td><td>持续预测编码</td><td>一次去噪</td><td class="gap">无持续预测</td></tr>
+<tr><td>能耗</td><td>~20W</td><td>150W GPU</td><td class="gap">7×</td></tr>
+<tr><td>参数</td><td>~100T 突触</td><td>450M</td><td class="gap">20万×</td></tr>
+</table>
+
+</div>
+</body>
+</html>
