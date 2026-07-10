@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>专利技术 · Z-MAX</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6}
+  .wrap{max-width:1000px;margin:0 auto;padding:60px 24px}
+  h1{font-size:36px;font-weight:900;color:#00d4aa;text-align:center;margin-bottom:6px}
+  .sub{text-align:center;color:#8b949e;font-size:15px;margin-bottom:32px}
+  .hero-tag{display:inline-block;padding:4px 14px;border:1px solid #00d4aa44;border-radius:50px;color:#00d4aa;font-size:11px;letter-spacing:2px;margin-bottom:16px;text-transform:uppercase}
+  .section{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:28px;margin-bottom:20px}
+  .section h2{font-size:20px;color:#00d4aa;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #1a1f2b}
+  .section h3{font-size:16px;color:#e6edf3;margin:16px 0 8px}
+  .section p{font-size:14px;color:#c8d1d9;line-height:1.8;margin-bottom:8px}
+  .section ul,.section ol{padding-left:20px;margin:8px 0}
+  .section li{font-size:14px;color:#c8d1d9;line-height:1.8;margin-bottom:4px}
+  .claim{background:#06080d;border-left:3px solid #00d4aa;padding:12px 16px;margin:8px 0;font-size:14px;line-height:1.7}
+  .claim strong{color:#00d4aa}
+  .dl-box{text-align:center;padding:28px;background:#0d1117;border:1px dashed #00d4aa44;border-radius:12px;margin:20px 0}
+  .dl-btn{display:inline-block;padding:10px 28px;border:1.5px solid #00d4aa;color:#00d4aa;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;transition:all .2s}
+  .dl-btn:hover{background:#00d4aa22}
+  footer{text-align:center;padding:40px 24px;border-top:1px solid #1a1f2b;color:#484f58;font-size:12px;margin-top:40px}
+  footer a{color:#8b949e;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="text-align:center"><div class="hero-tag">Z-MAX v1.0.4 · 知识产权</div>
+<h1>专利技术</h1>
+<p class="sub">实用新型 · 多模态VLA具身机器人精细操作控制系统</p></div>
+
+<!-- 下载 -->
+<div class="dl-box">
+  <p style="color:#8b949e;margin-bottom:12px">📥 完整专利交底书下载：</p>
+  <a href="/patent.docx" class="dl-btn">下载 .docx 专利交底书</a>
+</div>
+
+<!-- 基本信息 -->
+<div class="section">
+  <h2>专利基本信息</h2>
+  <table style="width:100%;border-collapse:collapse">
+    <tr><td style="padding:8px 14px;color:#8b949e;width:120px">发明名称</td><td style="padding:8px 14px"><strong>一种基于多模态视觉-语言-动作模型的具身机器人精细操作控制系统</strong></td></tr>
+    <tr><td style="padding:8px 14px;color:#8b949e">申请人</td><td style="padding:8px 14px">智蜂创元（ZFCY）</td></tr>
+    <tr><td style="padding:8px 14px;color:#8b949e">专利类型</td><td style="padding:8px 14px">实用新型</td></tr>
+    <tr><td style="padding:8px 14px;color:#8b949e">技术领域</td><td style="padding:8px 14px">机器人控制、人工智能、多模态模型</td></tr>
+  </table>
+</div>
+
+<!-- 技术方案 -->
+<div class="section">
+  <h2>核心技术方案</h2>
+  
+  <h3>1. 多模态VLA模型</h3>
+  <p>视觉编码器（SmolVLM2-500M）+ 语言编码器 + 动作解码器（DiT-B扩散Transformer）+ 内嵌世界模型（LeWorldModel）。端到端理解场景、语言指令，生成连续精细动作序列。</p>
+
+  <h3>2. 类脑四阶段迭代</h3>
+  <p>感知（多模态特征提取）→ 理解（任务嵌入生成）→ 决策（动作序列输出）→ 执行（力控闭环反馈）。模拟人脑认知闭环，实现可解释、可追溯的智能决策。</p>
+
+  <h3>3. 双臂协同控制</h3>
+  <p>左臂取料 + 右臂插拔，异步并行。通过中转区解耦，整体节拍≤5秒/个。视觉引导±0.02mm对准精度。</p>
+
+  <h3>4. 智能力控闭环</h3>
+  <p>关节力控闭环带宽>10kHz。关节力矩 + 末端六维力 + 指尖触觉三路冗余校验。自适应力控策略保护工件不受损伤。</p>
+
+  <h3>5. 软件定义自动化等级</h3>
+  <p>同一硬件平台，纯软件OTA升级：L2基线版（分段式）→ L3增强版（多模态端到端）→ L4旗舰版（精细感知全自主）。硬件投资保护。</p>
+
+  <h3>6. Client/Server仿真联调</h3>
+  <p>ROS2 Client端（Mac M1）负责传感器信号采集与动作执行，gRPC Server端（WSL RTX4060）负责AI推理。支持离线仿真、在线联调、性能基准测试。</p>
+</div>
+
+<!-- 权利要求 -->
+<div class="section">
+  <h2>权利要求书（摘要）</h2>
+  <div class="claim"><strong>权利要求1</strong> — 一种基于多模态视觉-语言-动作模型的具身机器人精细操作控制系统，包括感知层（3D相机/力觉/触觉）、模型层（视觉编码器+语言编码器+动作解码器+世界模型）、控制层（双臂协同+力控闭环>10kHz）、执行层（轮式底盘+双臂力控机械臂）。</div>
+  <div class="claim"><strong>权利要求2</strong> — 类脑四阶段迭代架构：感知→理解→决策→执行→反馈闭环。</div>
+  <div class="claim"><strong>权利要求3</strong> — 双臂异步并行控制策略，整体节拍≤5秒/个。</div>
+  <div class="claim"><strong>权利要求4</strong> — 关节力矩+末端力+触觉三路冗余校验，自适应力控。</div>
+  <div class="claim"><strong>权利要求5</strong> — 纯软件升级L2→L3→L4，无需更换硬件。</div>
+  <div class="claim"><strong>权利要求6</strong> — 世界模型预测动作效果+安全校验。</div>
+</div>
+
+<footer>
+  <p>Z-MAX v1.0.4 · 智蜂创元 ZFCY</p>
+  <p style="margin-top:6px"><a href="/">首页</a> · <a href="/?page_id=501">Z-MAX产品</a> · <a href="/?page_id=506">仿真报告</a></p>
+</footer>
+</div>
+</body>
+</html>

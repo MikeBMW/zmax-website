@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>仿真联调 · Z-MAX</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6}
+  .wrap{max-width:1100px;margin:0 auto;padding:60px 24px}
+  h1{font-size:36px;font-weight:900;color:#00d4aa;text-align:center;margin-bottom:6px}
+  .sub{text-align:center;color:#8b949e;font-size:15px;margin-bottom:32px}
+  .hero-tag{display:inline-block;padding:4px 14px;border:1px solid #00d4aa44;border-radius:50px;color:#00d4aa;font-size:11px;letter-spacing:2px;margin-bottom:16px;text-transform:uppercase}
+  .section{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:28px;margin-bottom:20px}
+  .section h2{font-size:20px;color:#00d4aa;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #1a1f2b}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0}
+  th{background:#00d4aa22;padding:10px 14px;text-align:left;color:#00d4aa;font-size:13px;font-weight:700}
+  td{padding:10px 14px;font-size:13px;border-bottom:1px solid #1a1f2b}
+  tr:nth-child(even) td{background:#080c14}
+  .num{text-align:right;font-family:monospace;color:#00d4aa;font-weight:700}
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+  .tag-green{background:#00d4aa22;color:#00d4aa}
+  .tag-gray{background:#8b949e22;color:#8b949e}
+
+  .arch-box{background:#06080d;border:1px solid #00d4aa33;border-radius:10px;padding:24px;margin:16px 0;font-family:monospace;font-size:12px;line-height:1.8;white-space:pre;overflow-x:auto}
+  .arch-box .hl{color:#00d4aa}
+  .arch-box .dim{color:#8b949e}
+  .arrow-row{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px 0;color:#00d4aa;font-size:13px}
+
+  footer{text-align:center;padding:40px 24px;border-top:1px solid #1a1f2b;color:#484f58;font-size:12px;margin-top:40px}
+  footer a{color:#8b949e;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="text-align:center"><div class="hero-tag">Z-MAX v1.0.4 · 仿真联调</div>
+<h1>模型性能报告</h1>
+<p class="sub">Client/Server架构 · 三模型基准 · 实时仿真联调</p></div>
+
+<!-- 架构图 -->
+<div class="section">
+  <h2>仿真联调架构</h2>
+  <div class="arch-box">
+┌─ <span class="hl">小芳 (Mac M1 · ROS2 Client)</span> ─────────────────────┐
+│                                                  │
+│  📷 摄像头节点 → /camera/rgb                       │
+│  💪 力传感器   → /force_torque                    │
+│  ✋ 触觉阵列   → /tactile                          │
+│  📡 接收Action ← /robot/action                    │
+│                                                  │
+└────────────────────┬─────────────────────────────┘
+                     │ <span class="hl">gRPC / TCP Bridge</span>
+┌────────────────────┴─────────────────────────────┐
+│  <span class="hl">静静 (WSL RTX4060 · gRPC Server)</span>               │
+│                                                  │
+│  🧠 SmolVLA 450M (<span class="hl">~215ms/帧</span>)                  │
+│  🧠 ACT 52M     (<span class="hl">~8.4ms/帧</span>)                 │
+│  🧠 MLP-1024    (<span class="hl"><5ms/帧</span>)                  │
+│  📊 性能监控 · 数据记录 · 在线评估                   │
+│                                                  │
+└──────────────────────────────────────────────────┘
+  </div>
+</div>
+
+<!-- 模型对比 -->
+<div class="section">
+  <h2>已训练模型总览</h2>
+  <table>
+    <tr><th>模型</th><th>数据集</th><th>步数</th><th>参数量</th><th>最终Loss</th><th>降幅</th></tr>
+    <tr><td><span class="tag tag-green">SmolVLA-FlowMatching</span></td><td>lerobot/pusht</td><td class="num">200</td><td class="num">450M</td><td class="num">2.10</td><td>—</td></tr>
+    <tr><td><span class="tag tag-green">SmolVLA-FlowMatching</span></td><td>lerobot/metaworld_mt50</td><td class="num">300</td><td class="num">450M</td><td class="num">2.10</td><td>—</td></tr>
+    <tr><td><span class="tag tag-gray">SmolVLA-MLP-1024</span></td><td>lerobot/metaworld_mt50</td><td class="num">500</td><td class="num">14.7M</td><td class="num">0.085</td><td class="num">81.1%</td></tr>
+  </table>
+</div>
+
+<!-- 推理性能 -->
+<div class="section">
+  <h2>推理性能基准</h2>
+  <table>
+    <tr><th>指标</th><th>SmolVLA (450M)</th><th>ACT (52M)</th><th>MLP-1024 (14.7M)</th></tr>
+    <tr><td>GPU显存(加载)</td><td class="num">0.93 GB</td><td class="num">0.22 GB</td><td class="num">—</td></tr>
+    <tr><td>GPU显存(峰值)</td><td class="num">0.97 GB</td><td class="num">0.28 GB</td><td class="num">—</td></tr>
+    <tr><td>推理延迟</td><td class="num" style="color:#ff9944">214.7 ms</td><td class="num" style="color:#00d4aa">8.4 ms</td><td class="num" style="color:#00d4aa"><5 ms</td></tr>
+    <tr><td>帧率(FPS)</td><td class="num">4.7</td><td class="num">119.2</td><td class="num">200+</td></tr>
+    <tr><td>架构</td><td>VLM+FlowMatching</td><td>Transformer</td><td>MLP-1024</td></tr>
+  </table>
+  <p style="margin-top:12px;color:#8b949e;font-size:12px">测试环境: WSL2 · RTX 4060 8GB · CUDA 11.8 · PyTorch 2.7.1 | 延迟含GPU同步, 20轮平均, 预热5轮</p>
+</div>
+
+<!-- 场景矩阵 -->
+<div class="section">
+  <h2>适用场景推荐</h2>
+  <table>
+    <tr><th>场景</th><th>推荐模型</th><th>推理位置</th><th>延迟</th><th>原因</th></tr>
+    <tr><td>固定重复操作</td><td><span class="tag tag-green">ACT 52M</span></td><td>Orin本地</td><td class="num">8.4ms</td><td>极快+省显存</td></tr>
+    <tr><td>多任务/多指令</td><td><span class="tag tag-green">SmolVLA 450M</span></td><td>WSL(gRPC)</td><td class="num">215ms</td><td>VLM理解自然语言</td></tr>
+    <tr><td>快速原型验证</td><td><span class="tag tag-gray">MLP-1024</span></td><td>Orin本地</td><td class="num"><5ms</td><td>极简+极快</td></tr>
+    <tr><td>精细力控操作</td><td><span class="tag tag-green">SmolVLA 450M</span></td><td>WSL(gRPC)</td><td class="num">215ms</td><td>FlowMatching轨迹平滑</td></tr>
+    <tr><td>离线仿真调试</td><td>任意</td><td>WSL本地</td><td class="num">—</td><td>无网络延迟</td></tr>
+  </table>
+</div>
+
+<!-- 通信协议 -->
+<div class="section">
+  <h2>Client/Server 通信协议</h2>
+  <table>
+    <tr><th>信号</th><th>方向</th><th>格式</th><th>频率</th><th>带宽</th></tr>
+    <tr><td>RGB图像</td><td>Client→Server</td><td>3×512×512, JPEG</td><td>30Hz</td><td>~2MB/s</td></tr>
+    <tr><td>力/力矩</td><td>Client→Server</td><td>float32[6]</td><td>1000Hz</td><td>24KB/s</td></tr>
+    <tr><td>触觉阵列</td><td>Client→Server</td><td>float32[16]</td><td>100Hz</td><td>6.4KB/s</td></tr>
+    <tr><td>动作指令</td><td>Server→Client</td><td>float32[50×6]</td><td>10Hz</td><td>12KB/s</td></tr>
+  </table>
+  <p style="margin-top:12px;color:#8b949e;font-size:12px">传输层: gRPC (protobuf) | 延迟预算: 网络<5ms + 推理=总延迟</p>
+</div>
+
+<footer>
+  <p>Z-MAX v1.0.4 · 智蜂创元 ZFCY</p>
+  <p style="margin-top:6px"><a href="/">首页</a> · <a href="/?page_id=501">Z-MAX产品</a> · <a href="/?page_id=507">专利</a></p>
+</footer>
+</div>
+</body>
+</html>
