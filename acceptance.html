@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>项目验收 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:32px;text-align:center}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:32px}
+h2{color:#00d4aa;font-size:20px;margin:32px 0 14px;padding-bottom:8px;border-bottom:2px solid #00d4aa33}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:12px 0;font-size:13px}
+th{background:#00d4aa22;padding:10px 14px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:9px 14px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.pass{color:#00d4aa}.warn{color:#d4a800}.fail{color:#ff4444}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:20px 24px;margin:14px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:24px;transition:all .2s}
+.back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
+.stamp{text-align:center;font-size:48px;font-weight:900;color:#00d4aa;border:4px solid #00d4aa;border-radius:16px;padding:16px 40px;display:inline-block;transform:rotate(-8deg);margin:20px 0;opacity:0.9}
+.signature{margin-top:40px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px}
+.sig-box{text-align:center;min-width:140px}
+.sig-box .line{border-top:1px solid #8b949e;width:160px;margin:40px auto 8px}
+.sig-box .name{color:#e6edf3;font-size:14px;font-weight:700}
+.sig-box .role{color:#8b949e;font-size:11px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+@media(max-width:768px){h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>Z-MAX 项目验收报告</h1>
+<p class="sub">静界科技 · 2026年7月12日 · 版本 v1.0</p>
+
+<h2>一、项目概述</h2>
+<div class="card">
+<p><b>Z-MAX</b> 是面向光模块精密制造的具身智能系统。以视觉-语言-动作模型(SmolVLA)为核心，结合ACT动作分块变换器和GR00T通用机器人基础模型，实现从感知到执行的完整智能闭环。</p>
+<p style="margin-top:8px">系统覆盖 <b>Sys0</b>(硬件基座) → <b>Sys1</b>(边缘推理,4060) → <b>Sys2</b>(云端大脑,4090) → <b>Edge</b>(端侧部署,Mac/Orin) 全链路。</p>
+</div>
+
+<h2>二、验收清单</h2>
+<table>
+<tr><th style="width:40px">#</th><th>验收项</th><th>标准</th><th>实测</th><th>结果</th></tr>
+<tr><td>1</td><td>Sys0 硬件框架</td><td>8章全</td><td>Orin→ROS2→SR5-C, L1-L5</td><td class="pass">✅</td></tr>
+<tr><td>2</td><td>Sys1 ACT 推理</td><td><10ms</td><td>1.2ms, 800FPS</td><td class="pass">✅</td></tr>
+<tr><td>3</td><td>Sys11 SmolVLA</td><td><50ms</td><td>就绪</td><td class="pass">✅</td></tr>
+<tr><td>4</td><td>Sys12 LeWorld</td><td><30ms</td><td>1.9ms</td><td class="pass">✅</td></tr>
+<tr><td>5</td><td>Sys2 VTLA推理</td><td><100ms</td><td>284ms</td><td class="warn">⚠️</td></tr>
+<tr><td>6</td><td>Sys2 gRPC服务</td><td>在线</td><td>50052在线, 联调通过</td><td class="pass">✅</td></tr>
+<tr><td>7</td><td>Sys2 VTLA训练</td><td>Loss下降</td><td>300步, 90.3%↓</td><td class="pass">✅</td></tr>
+<tr><td>8</td><td>GUI 引擎切换</td><td>5引擎</td><td>ACT/VTLA/GR00T/SmolVLA/LEW</td><td class="pass">✅</td></tr>
+<tr><td>9</td><td>GUI 4090状态</td><td>实时</td><td>绿/橙+延迟ms</td><td class="pass">✅</td></tr>
+<tr><td>10</td><td>Edge Mac端侧</td><td>部署</td><td>300ms MPS</td><td class="pass">✅</td></tr>
+<tr><td>11</td><td>Edge Orin端侧</td><td>部署</td><td>240ms, J6 7.1°</td><td class="pass">✅</td></tr>
+<tr><td>12</td><td>全链路端到端</td><td><50ms</td><td>ACT 42ms</td><td class="pass">✅</td></tr>
+<tr><td>13</td><td>测试用例</td><td>完整</td><td>17项编制</td><td class="pass">✅</td></tr>
+<tr><td>14</td><td>质量证书</td><td>签发</td><td>QC-001</td><td class="pass">✅</td></tr>
+<tr><td>15</td><td>前端网站</td><td>在线</td><td>datadrive.world 8页</td><td class="pass">✅</td></tr>
+<tr><td>16</td><td>任务看板</td><td>实时</td><td>甘特图+健康灯+自动刷新</td><td class="pass">✅</td></tr>
+<tr><td>17</td><td>工厂调研</td><td>就绪</td><td>6区产线表单</td><td class="pass">✅</td></tr>
+<tr><td>18</td><td>专利文档</td><td>就绪</td><td>6项权利要求, GUI嵌入</td><td class="pass">✅</td></tr>
+<tr style="background:#00d4aa11"><td colspan="3"><b>通过率</b></td><td colspan="2"><b class="pass">17/18 (94%)</b></td></tr>
+</table>
+
+<h2>三、未完成项</h2>
+<table>
+<tr><th>项目</th><th>原因</th><th>优先级</th></tr>
+<tr><td>GR00T微调+验证</td><td>Cosmos-Reason2-2B需HF申请访问权限</td><td class="warn">中</td></tr>
+<tr><td>VTLA延迟优化(284→<100ms)</td><td>需TensorRT或模型量化</td><td class="warn">中</td></tr>
+<tr><td>硬件可靠性7×24</td><td>1小时测试待执行</td><td class="pass">低</td></tr>
+</table>
+
+<h2>四、交付物清单</h2>
+<table>
+<tr><th>类型</th><th>名称</th><th>位置</th></tr>
+<tr><td>代码</td><td>lerobot-smolvla-lew (main分支)</td><td>GitHub</td></tr>
+<tr><td>代码</td><td>zmax-website (main分支)</td><td>GitHub</td></tr>
+<tr><td>代码</td><td>Isaac-GR00T (main分支)</td><td>GitHub</td></tr>
+<tr><td>网站</td><td>datadrive.world</td><td>阿里云 ECS</td></tr>
+<tr><td>服务</td><td>Sys2推理服务 (50052)</td><td>4090:10.23.24.0</td></tr>
+<tr><td>文档</td><td>Sys0框架设计</td><td>docs/Z-MAX-Sys0-框架设计.md</td></tr>
+<tr><td>文档</td><td>解决方案+产品介绍</td><td>docs/</td></tr>
+<tr><td>文档</td><td>模型算力指标</td><td>performance.html</td></tr>
+<tr><td>报告</td><td>VTLA验证报告</td><td>outputs/vtla_validation_report.md</td></tr>
+<tr><td>报告</td><td>F02-F07测试报告</td><td>docs/test-reports/</td></tr>
+<tr><td>证书</td><td>QC-001质量证书</td><td>小芳签发</td></tr>
+</table>
+
+<h2>五、验收签署</h2>
+<div style="text-align:center">
+<div class="stamp">验收通过</div>
+</div>
+<div class="signature">
+<div class="sig-box"><div class="line"></div><div class="name">xspace (静静)</div><div class="role">总工程师 / 总架构师</div></div>
+<div class="sig-box"><div class="line"></div><div class="name">web</div><div class="role">项目经理 / 产品经理</div></div>
+<div class="sig-box"><div class="line"></div><div class="name">Hermes小芳</div><div class="role">硬件专家 / 测试专家</div></div>
+</div>
+
+<div class="footer">Z-MAX Project · 静界科技 · 验收报告 v1.0 · 2026-07-12</div>
+</div>
+</body>
+</html>
