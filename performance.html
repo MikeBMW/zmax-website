@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>算力指标 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6}
+.wrap{max-width:1000px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:32px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:32px}
+h2{color:#00d4aa;font-size:20px;margin:36px 0 16px;padding-bottom:8px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:16px;margin:20px 0 10px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:12px 0;font-size:13px}
+th{background:#00d4aa22;padding:10px 14px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:9px 14px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.num{color:#00d4aa;font-weight:700;font-family:monospace}
+.green{color:#00d4aa}.yellow{color:#d4a800}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:24px;transition:all .2s}
+.back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
+.checklist{list-style:none;padding:0}
+.checklist li{padding:6px 0;font-size:13px;color:#c8d1d9}
+.checklist li::before{content:'☐ ';color:#8b949e;margin-right:6px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+@media(max-width:768px){h1{font-size:24px}td,th{padding:6px 8px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+
+<h1>⚡ 模型算力要求与性能指标</h1>
+<p class="sub">定义人: web (模型专家) · v1.0 · 待 xspace 评审 | 供小芳测试用例参考</p>
+
+<h2>一、算力分层总览</h2>
+<table>
+<tr><th>层级</th><th>模型</th><th>硬件</th><th>参数</th><th>精度</th><th>GPU显存</th><th>推理延迟</th><th>帧率</th></tr>
+<tr><td>Sys1</td><td>ACT</td><td>4060 8GB</td><td>52M</td><td>FP32</td><td class="num"><0.5GB</td><td class="num"><10ms</td><td class="num">>100Hz</td></tr>
+<tr><td>Sys11</td><td>SmolVLA</td><td>4060 8GB</td><td>450M</td><td>BF16</td><td class="num"><1.5GB</td><td class="num"><50ms</td><td class="num">>20Hz</td></tr>
+<tr><td>Sys12</td><td>LeWorld</td><td>4060 8GB</td><td>200M</td><td>FP32</td><td class="num"><1GB</td><td class="num"><30ms</td><td class="num">>30Hz</td></tr>
+<tr><td>Sys2</td><td>VTLA</td><td>4090 24GB</td><td>450M+</td><td>BF16</td><td class="num"><3GB</td><td class="num"><100ms</td><td class="num">>10Hz</td></tr>
+<tr><td>Sys2</td><td>GR00T</td><td>4090 24GB</td><td>~7B</td><td>BF16</td><td class="num"><18GB</td><td class="num"><500ms</td><td class="num">>2Hz</td></tr>
+<tr><td>Edge</td><td>SmolVLA-INT8</td><td>Mac M1</td><td>450M</td><td>INT8</td><td class="num"><2GB</td><td class="num"><30ms</td><td class="num">>30Hz</td></tr>
+<tr><td>Edge</td><td>SmolVLA-INT8</td><td>Orin Nano</td><td>450M</td><td>INT8</td><td class="num"><1.5GB</td><td class="num"><15ms</td><td class="num">>60Hz</td></tr>
+</table>
+
+<h2>二、Sys2 · VTLA (触觉VLA) — 4090</h2>
+<table>
+<tr><th>指标</th><th>目标值</th><th>测试方法</th></tr>
+<tr><td>触觉融合推理</td><td class="num"><100ms</td><td>视觉+触觉+语言三模态</td></tr>
+<tr><td>力控精度</td><td class="num">±0.1N</td><td>插拔力跟踪误差</td></tr>
+<tr><td>GPU显存</td><td class="num"><3GB</td><td>含触觉编码器</td></tr>
+<tr><td>精细操作成功率</td><td class="num">>97%</td><td>光模块插拔100次</td></tr>
+<tr><td>插拔对中精度</td><td class="num">±0.02mm</td><td>光模块金手指对准</td></tr>
+</table>
+
+<h2>三、Sys2 · GR00T N1.7 — 4090</h2>
+<table>
+<tr><th>指标</th><th>目标值</th><th>测试方法</th></tr>
+<tr><td>端到端推理</td><td class="num"><500ms</td><td>输入→动作输出</td></tr>
+<tr><td>GPU显存</td><td class="num"><18GB</td><td>BF16加载</td></tr>
+<tr><td>复杂任务成功率</td><td class="num">>85%</td><td>多步骤长序列任务</td></tr>
+<tr><td>动作质量得分</td><td class="num">>0.8</td><td>GR00T内置评估</td></tr>
+<tr><td>任务泛化</td><td class="num">>70%</td><td>未见任务类型</td></tr>
+</table>
+
+<h2>四、端到端全链路</h2>
+<table>
+<tr><th>指标</th><th>目标值</th><th>路径</th></tr>
+<tr><td>Sys1→Sys2 通信</td><td class="num"><5ms</td><td>4060→4090 gRPC</td></tr>
+<tr><td>Sys2→Edge 指令</td><td class="num"><10ms</td><td>4090→Mac/Orin TCP</td></tr>
+<tr><td>全链路(ACT)</td><td class="num"><30ms</td><td>相机→Sys1→Edge→动作</td></tr>
+<tr><td>全链路(VTLA)</td><td class="num"><150ms</td><td>相机→Sys2→Edge→动作</td></tr>
+<tr><td>全链路(GR00T)</td><td class="num"><600ms</td><td>相机→Sys2→Edge→动作</td></tr>
+<tr><td>系统可用性</td><td class="num">>99.9%</td><td>7×24小时</td></tr>
+</table>
+
+<h2>五、测试用例框架 (小芳负责)</h2>
+<h3>功能测试</h3>
+<ul class="checklist"><li>模型加载/卸载</li><li>单帧推理正确性</li><li>批量推理吞吐量</li><li>模型热切换(ACT↔VTLA↔GR00T)</li></ul>
+<h3>性能测试</h3>
+<ul class="checklist"><li>各模型延迟/P99</li><li>GPU显存峰值/均值</li><li>CPU利用率</li><li>通信延迟(gRPC/TCP)</li></ul>
+<h3>鲁棒性测试</h3>
+<ul class="checklist"><li>连续运行8小时</li><li>异常输入(黑帧/噪声/超范围)</li><li>模型热重启</li><li>GPU OOM恢复</li></ul>
+<h3>精度测试</h3>
+<ul class="checklist"><li>Isaac Sim仿真环境验证</li><li>光模块插拔成功率</li><li>力控精度验证</li><li>换型泛化测试</li></ul>
+
+<div class="footer">Z-MAX · 静界科技 · 指标 v1.0 · 待 xspace 评审</div>
+</div>
+</body>
+</html>
