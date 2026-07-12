@@ -155,7 +155,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <div class="kanban" id="kanban"></div>
-<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -278,8 +278,7 @@ function renderKanban() {
   document.getElementById('kpi-todo').textContent = cols.todo.length;
   document.getElementById('kpi-progress').textContent = cols.progress.length;
   document.getElementById('kpi-done').textContent = cols.done.length;
-  const reds = TASKS.filter(t => getHealth(t) === 'red').length;
-  document.getElementById('kpi-red').textContent = reds;
+  document.getElementById('kpi-red').textContent = cols.blocked.length;
 
   // Health helpers
   const hclsMap = {green:'health-green',yellow:'health-yellow',red:'health-red',done:'health-done'};
@@ -331,11 +330,12 @@ setInterval(render, 60000);
 </script>
 
 
+
 <!-- AUTO-GENERATED STATUS
 {
   "zmax-website": {
     "branch": "main",
-    "last_commit": "e188f1a 新增任务 X11/W16/F10 + 主页加算力指标入口 — 方案文档+前端展示+质量证书",
+    "last_commit": "1d1bac1 状态更新: W05/W12/W13标记为阻塞(网络不通HF) — 代码全部就绪,等模型权重",
     "dirty": false,
     "modified": ""
   },
