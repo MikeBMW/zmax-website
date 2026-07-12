@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z-MAX 前端逻辑校验报告</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:13px}
+th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.pass{color:#00d4aa}.warn{color:#d4a800}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px;transition:all .2s}
+.back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>Z-MAX 前端逻辑完备性校验</h1>
+<p class="sub">静界科技 · 2026-07-12 · web 自查</p>
+
+<h2>一、页面清单 (9页)</h2>
+<table>
+<tr><th>页面</th><th>URL</th><th>返回按钮</th><th>导航入口</th><th>状态</th></tr>
+<tr><td>主页</td><td>/index.html</td><td>—</td><td>—</td><td class="pass">✅</td></tr>
+<tr><td>任务看板</td><td>/kanban.html</td><td>🏠主页</td><td>主页footer+header</td><td class="pass">✅</td></tr>
+<tr><td>算力指标</td><td>/performance.html</td><td>←返回看板</td><td>主页footer</td><td class="pass">✅</td></tr>
+<tr><td>工厂调研</td><td>/survey.html</td><td>←返回主页</td><td>主页footer</td><td class="pass">✅</td></tr>
+<tr><td>项目复盘</td><td>/retrospective.html</td><td>←返回看板</td><td>主页footer+看板header</td><td class="pass">✅</td></tr>
+<tr><td>项目验收</td><td>/acceptance.html</td><td>←返回看板</td><td>主页footer+看板header</td><td class="pass">✅</td></tr>
+<tr><td>仿真报告</td><td>/simulation.html</td><td>←返回主页</td><td>主页footer</td><td class="pass">✅</td></tr>
+<tr><td>专利技术</td><td>/patent.html</td><td>←返回主页</td><td>主页footer</td><td class="pass">✅</td></tr>
+<tr><td>自主系统</td><td>/autonomous.html</td><td>←返回主页</td><td>主页footer</td><td class="pass">✅</td></tr>
+</table>
+
+<h2>二、产品逻辑完备性</h2>
+<table>
+<tr><th>逻辑链路</th><th>路径</th><th>状态</th></tr>
+<tr><td>主页→产品介绍</td><td>系统架构卡片 + L2/L4产品卡片</td><td class="pass">✅</td></tr>
+<tr><td>主页→技术详情</td><td>技术栈6卡片 → 算力指标页</td><td class="pass">✅</td></tr>
+<tr><td>主页→项目管理</td><td>footer→看板/复盘/验收</td><td class="pass">✅</td></tr>
+<tr><td>主页→客户入口</td><td>工厂调研表单</td><td class="pass">✅</td></tr>
+<tr><td>看板→详情</td><td>header→复盘/验收/主页</td><td class="pass">✅</td></tr>
+<tr><td>验收→依据</td><td>复盘提供背景, 算力指标提供数据</td><td class="pass">✅</td></tr>
+</table>
+
+<h2>三、与GUI对应关系</h2>
+<div class="card" style="border-color:#d4a80044">
+<p style="color:#d4a800">⚠️ 需要 xspace 确认以下GUI功能与前端描述一致:</p>
+<table style="margin-top:8px">
+<tr><th>前端描述</th><th>GUI对应</th><th>需确认</th></tr>
+<tr><td>5引擎切换(ACT/VTLA/GR00T/smolvla/LEW)</td><td>引擎下拉框</td><td class="warn">⚠️</td></tr>
+<tr><td>4090连接灯(绿/橙)</td><td>状态栏指示灯</td><td class="warn">⚠️</td></tr>
+<tr><td>推理延迟实时ms</td><td>状态栏延迟显示</td><td class="warn">⚠️</td></tr>
+<tr><td>硬件总线一行一设备</td><td>硬件面板</td><td class="warn">⚠️</td></tr>
+<tr><td>任务看板嵌入</td><td>QWebEngineView</td><td class="warn">⚠️</td></tr>
+<tr><td>VTLA推理284ms</td><td>选VTLA时显示</td><td class="warn">⚠️</td></tr>
+<tr><td>Sys0→Edge全链路42ms</td><td>全链路状态展示</td><td class="warn">⚠️</td></tr>
+</table>
+</div>
+
+<h2>四、逻辑问题修正</h2>
+<table>
+<tr><th>问题</th><th>修复</th><th>状态</th></tr>
+<tr><td>看板阻塞数KPI算法错误</td><td>getHealth→cols.blocked.length</td><td class="pass">✅</td></tr>
+<tr><td>子页面缺返回按钮(4页)</td><td>全部加.back-home</td><td class="pass">✅</td></tr>
+<tr><td>主页缺看板/自主系统链接</td><td>footer补全</td><td class="pass">✅</td></tr>
+<tr><td>看板缺复盘/验收入口</td><td>header加3按钮</td><td class="pass">✅</td></tr>
+<tr><td>验收页验收章旋转过度</td><td>已调整</td><td class="pass">✅</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · 前端校验 v1.0</div>
+</div>
+</body>
+</html>
