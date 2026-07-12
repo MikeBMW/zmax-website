@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>自主系统 · Z-MAX</title>
+<style>
+*{box-sizing:border-box}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;margin:0;padding:0;line-height:1.6}
+p,li{color:#c8d1d9!important;font-size:15px;line-height:1.9}
+h2{color:#e6edf3!important;font-size:26px;font-weight:900;margin:40px 0 16px;border-bottom:2px solid #00d4aa44;padding-bottom:8px}
+h3{color:#00d4aa!important;font-size:20px;font-weight:800;margin:16px 0 8px}
+strong{color:#e6edf3}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:16px 0}
+th{background:#00d4aa22;padding:12px 16px;text-align:left;color:#00d4aa!important;font-size:14px}
+td{padding:10px 16px;font-size:14px;border-bottom:1px solid #21262d;color:#c8d1d9}
+.card{background:#0d1117;border-radius:10px;padding:24px;margin:12px 0}
+@media(max-width:768px){h1{font-size:28px!important}h2{font-size:21px!important}td,th{padding:8px 10px;font-size:13px}}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:14px;font-weight:600;margin:16px 20px;transition:all .2s;position:relative;z-index:10}
+.back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
+</style></head><body>
+
+<a href="/" class="back-home">← 返回主页</a>
+
+<div style="background:#0a0a1a;text-align:center;padding:40px 20px 30px">
+<h1 style="color:#00d4aa;font-size:44px;font-weight:900;margin:0">自主系统</h1>
+<p style="color:#c8d1d9;font-size:20px;margin:12px 0 8px">从概念设计到系统工程</p>
+<p style="color:#8b949e;font-size:13px">智蜂创元 ZFCY · Z-MAX v1.0.4</p>
+</div>
+
+<div style="max-width:900px;margin:20px auto;padding:0 20px">
+<div style="max-width:900px;margin:20px auto;padding:0 20px">
+<svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0a0e17"/><stop offset="50%" stop-color="#0d1117"/><stop offset="100%" stop-color="#0a0e17"/></linearGradient>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d4aa33"/><stop offset="100%" stop-color="#00d4aa08"/></linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#58a6ff33"/><stop offset="100%" stop-color="#58a6ff08"/></linearGradient>
+    <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffa65733"/><stop offset="100%" stop-color="#ffa65708"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00d4aa"/></marker>
+  </defs>
+  
+  <rect width="900" height="340" fill="url(#bgGrad)" rx="16" stroke="#1a1f2b" stroke-width="1"/>
+  
+  <!-- Title -->
+  <text x="450" y="28" text-anchor="middle" fill="#00d4aa" font-size="15" font-weight="bold">自主系统核心循环 · 类脑四阶段映射</text>
+  
+  <!-- Brain region labels -->
+  <text x="130" y="58" text-anchor="middle" fill="#ffa657" font-size="10">视觉皮层 V1-V4</text>
+  <text x="370" y="58" text-anchor="middle" fill="#ffa657" font-size="10">前额叶 PFC</text>
+  <text x="610" y="58" text-anchor="middle" fill="#ffa657" font-size="10">运动皮层 M1</text>
+  <text x="820" y="58" text-anchor="middle" fill="#ffa657" font-size="10">小脑 Cerebellum</text>
+  
+  <!-- Box 1: 感知 -->
+  <rect x="50" y="70" width="160" height="100" fill="url(#g1)" stroke="#00d4aa66" stroke-width="1.5" rx="12"/>
+  <text x="130" y="100" text-anchor="middle" font-size="28">🔍</text>
+  <text x="130" y="125" text-anchor="middle" fill="#00d4aa" font-size="16" font-weight="bold">感知</text>
+  <text x="130" y="142" text-anchor="middle" fill="#8b949e" font-size="10">Perception</text>
+  <text x="130" y="158" text-anchor="middle" fill="#484f58" font-size="9">3D深度·六维力·触觉·IMU</text>
+  
+  <!-- Arrow 1→2 -->
+  <line x1="210" y1="120" x2="280" y2="120" stroke="#00d4aa" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Box 2: 理解 -->
+  <rect x="290" y="70" width="160" height="100" fill="url(#g2)" stroke="#58a6ff66" stroke-width="1.5" rx="12"/>
+  <text x="370" y="100" text-anchor="middle" font-size="28">🧠</text>
+  <text x="370" y="125" text-anchor="middle" fill="#58a6ff" font-size="16" font-weight="bold">理解</text>
+  <text x="370" y="142" text-anchor="middle" fill="#8b949e" font-size="10">Understanding</text>
+  <text x="370" y="158" text-anchor="middle" fill="#484f58" font-size="9">SmolVLM2-500M 多模态编码</text>
+  
+  <!-- Arrow 2→3 -->
+  <line x1="450" y1="120" x2="520" y2="120" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Box 3: 决策 -->
+  <rect x="530" y="70" width="160" height="100" fill="url(#g3)" stroke="#ffa65766" stroke-width="1.5" rx="12"/>
+  <text x="610" y="100" text-anchor="middle" font-size="28">⚡</text>
+  <text x="610" y="125" text-anchor="middle" fill="#ffa657" font-size="16" font-weight="bold">决策</text>
+  <text x="610" y="142" text-anchor="middle" fill="#8b949e" font-size="10">Decision</text>
+  <text x="610" y="158" text-anchor="middle" fill="#484f58" font-size="9">DiT-B FlowMatching 动作解码</text>
+  
+  <!-- Arrow 3→4 -->
+  <line x1="690" y1="120" x2="760" y2="120" stroke="#ffa657" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Box 4: 执行 -->
+  <rect x="770" y="70" width="100" height="100" fill="url(#g1)" stroke="#00d4aa66" stroke-width="1.5" rx="12"/>
+  <text x="820" y="100" text-anchor="middle" font-size="28">🤖</text>
+  <text x="820" y="125" text-anchor="middle" fill="#00d4aa" font-size="16" font-weight="bold">执行</text>
+  <text x="820" y="142" text-anchor="middle" fill="#8b949e" font-size="10">Execution</text>
+  <text x="820" y="158" text-anchor="middle" fill="#484f58" font-size="9">双臂协同</text>
+  
+  <!-- Feedback loop -->
+  <path d="M 820 180 Q 820 260, 450 270 Q 80 270, 130 180" fill="none" stroke="#00d4aa33" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+  <text x="450" y="290" text-anchor="middle" fill="#8b949e" font-size="10">反馈闭环 Feedback Loop · 持续学习</text>
+  
+  <!-- Bottom: Neural mapping comparison -->
+  <text x="50" y="320" fill="#484f58" font-size="10">🧠 脑区映射:</text>
+  <rect x="130" y="310" width="12" height="12" fill="#00d4aa33" rx="2"/>
+  <text x="146" y="321" fill="#8b949e" font-size="10">视觉皮层</text>
+  <rect x="220" y="310" width="12" height="12" fill="#58a6ff33" rx="2"/>
+  <text x="236" y="321" fill="#8b949e" font-size="10">前额叶</text>
+  <rect x="300" y="310" width="12" height="12" fill="#ffa65733" rx="2"/>
+  <text x="316" y="321" fill="#8b949e" font-size="10">运动皮层</text>
+  <rect x="390" y="310" width="12" height="12" fill="#00d4aa33" rx="2"/>
+  <text x="406" y="321" fill="#8b949e" font-size="10">小脑</text>
+  <text x="500" y="321" fill="#484f58" font-size="10">| 类脑四阶段迭代架构</text>
+</svg>
+</div>
+</div>
+<img style="max-width:100%;height:auto;border-radius:8px;display:block;margin:20px auto;padding:0 20px" src="http://datadrive.world/wp-content/uploads/2026/07/zmax-chart.jpg" alt="Z-MAX Chart">
+
+
+
+
+<div style="max-width:1100px;margin:0 auto;padding:0 20px 60px">
+
+<h2>一、何谓自主系统</h2>
+<div class="card"><p>自主系统与"自动系统"的本质区别，在于<strong>应对不确定性的能力</strong>。自动系统依赖预设程序，环境一旦偏离设计假设便失效。自主系统通过实时感知和理解环境，在信息不完全、条件动态变化的开放场景中做出合理决策。</p></div>
+
+<h2>自主系统与传统系统的核心区别</h2>
+<table>
+<tr><th>特性维度</th><th>传统（自动）系统</th><th>自主系统</th></tr>
+<tr><td><strong>核心驱动力</strong></td><td>数据、预设程序</td><td>信息、知识、环境理解</td></tr>
+<tr><td><strong>人类角色</strong></td><td>直接操作、监控、协调</td><td>高级监督、设定边界、处理异常</td></tr>
+<tr><td><strong>决策依据</strong></td><td>明确的逻辑规则与假设</td><td>复杂环境模型、实时态势评估与预测</td></tr>
+<tr><td><strong>适应性</strong></td><td>低，仅在预定范围内稳定工作</td><td>高，能容忍故障并适应未预见情况</td></tr>
+<tr><td><strong>互操作性</strong></td><td>技术标准（通信协议、接口）</td><td>技术标准 + 行为假设（协同可预测）</td></tr>
+<tr><td><strong>典型实例</strong></td><td>自动流水线、定速巡航</td><td>无人驾驶、协作无人机群、智能机器人</td></tr>
+</table>
+
+<h2>二、类脑四阶段迭代</h2>
+<div class="card"><h3>🔍 感知</h3><p>3D深度相机 + 六维力(>10kHz) + 触觉阵列(0.1N) + IMU — 多模态实时融合</p></div>
+<div class="card"><h3>🧠 理解</h3><p>VTLA多模态模型将自然语言指令转化为任务表征 — "将800G光模块插入测试座1号位"</p></div>
+<div class="card"><h3>⚡ 决策</h3><p>DiT-B FlowMatching 生成50步平滑动作序列 · 因果世界模型事前安全校验</p></div>
+<div class="card"><h3>🤖 执行</h3><p>双臂协同(左取料+右插拔) · 力控闭环实时调节 · 触觉反馈异常自动释放</p></div>
+
+<h2>三、五层系统架构</h2>
+<table>
+<tr><th>层级</th><th>产品等级</th><th>引擎</th><th>自主程度</th><th>部署</th></tr>
+<tr><td><strong>Sys-0</strong></td><td>L2 基线</td><td>ROS2 规则引擎</td><td>分段式自动</td><td>Orin Nano</td></tr>
+<tr><td><strong>Sys-1</strong></td><td>L3 增强</td><td>VTLA (ACT)</td><td>条件自主</td><td>Orin AGX</td></tr>
+<tr><td><strong>Sys-11</strong></td><td>L4 旗舰</td><td>SmolVLA 纯动作</td><td>高度自主</td><td>Orin AGX</td></tr>
+<tr><td><strong>Sys-12</strong></td><td>L4 旗舰</td><td>SmolVLA + 因果世界模型</td><td>预测自主</td><td>Orin+RK</td></tr>
+<tr><td><strong>Sys-2</strong></td><td>云端</td><td>Hermes Agent 框架</td><td>协同自主</td><td>WSL/Cloud</td></tr>
+</table>
+
+<h2>四、关键工程挑战与对策</h2>
+<table>
+<tr><th>挑战</th><th>传统方案局限</th><th>Z-MAX 对策</th></tr>
+<tr><td><strong>精度与柔性的矛盾</strong></td><td>固定专机精度高但无柔性</td><td>VLA柔性理解 + 力控闭环精度保障</td></tr>
+<tr><td><strong>实时性与智能性</strong></td><td>大模型推理延迟高(>200ms)</td><td>分层路由：ACT(8ms)·SmolVLA(215ms)·云端</td></tr>
+<tr><td><strong>模型可解释性</strong></td><td>端到端黑盒难以审计</td><td>类脑四阶段可追溯 · 因果世界模型</td></tr>
+<tr><td><strong>多品种小批量</strong></td><td>换型需重新编程</td><td>语言编码器零样本，换型<60秒</td></tr>
+<tr><td><strong>硬件投资保护</strong></td><td>升级需更换硬件</td><td>OTA纯软件升级 L2→L3→L4</td></tr>
+</table>
+
+<h2>五、系统设计</h2>
+<div class="card"><h3>感知层</h3><p>3D深度+腕部RGB+六维力+触觉+IMU — 冗余异构架构</p></div>
+<div class="card"><h3>推理层</h3><p>分层路由：ACT(8ms)·SmolVLA(215ms)·Sys-2云端Agent</p></div>
+<div class="card"><h3>控制层</h3><p>双臂异步并行 · 中转区解耦 · 节拍≤5秒/个 · 力控>10kHz</p></div>
+<div class="card"><h3>安全层</h3><p>L2光幕联动 · L3视触觉反馈 · L4五层主动保护</p></div>
+
+<h2>六、未来演进</h2>
+<div class="card"><p><strong style="color:#00d4aa">Sys-2 云端协同</strong> — 仿真数据反馈闭环：小芳(Mac)→Sys-2→动作下发</p></div>
+<div class="card"><p><strong style="color:#00d4aa">多智能体协同</strong> — 多台Z700共享环境模型、协调任务</p></div>
+<div class="card"><p><strong style="color:#00d4aa">全栈自主可控</strong> — 芯片→总线→OS→模型→应用</p></div>
+
+<div style="background:#0d1117;border-radius:12px;padding:32px;margin:32px 0;text-align:center;border:1px solid #00d4aa33">
+<p style="color:#00d4aa;font-size:20px;font-weight:900;margin-bottom:8px">自主系统，由此诞生</p>
+<p style="color:#8b949e;font-size:15px;line-height:1.8;margin:0">从光模块工厂的一台Z700F开始 — 每一步都是能力累进，而非替代。</p></div>
+
+<p style="color:#484f58;font-size:11px;text-align:center;margin-top:24px">v20260710-2 · ZFCY</p>
+
+</div>
+</body>
+</html>
