@@ -1,0 +1,232 @@
+diff --git a/gr00t/configs/model/gr00t_n1d7.py b/gr00t/configs/model/gr00t_n1d7.py
+index 6026b1f..20e3502 100644
+--- a/gr00t/configs/model/gr00t_n1d7.py
++++ b/gr00t/configs/model/gr00t_n1d7.py
+@@ -24,7 +24,7 @@ from transformers import PretrainedConfig
+ from . import register_model_config
+ 
+ 
+-@dataclass
++@dataclass(kw_only=True)
+ class Gr00tN1d7Config(PretrainedConfig):
+     """Unified configuration for Gr00tN1d7 model with backbone and action head.
+ 
+diff --git a/pyproject.toml b/pyproject.toml
+index 9beb9e5..a52a7a7 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -48,7 +48,7 @@ dependencies = [
+     # triton is needed on aarch64 (GB200) but ships with torch on x86_64
+     "triton==3.5.0; sys_platform == 'linux' and platform_machine == 'aarch64'",
+     # flash-attn wheels are sourced from `[tool.uv.sources]` below (official cp312 wheels for x86_64 and aarch64).
+-    "flash-attn==2.8.3; sys_platform == 'linux' and (platform_machine == 'x86_64' or platform_machine == 'aarch64')",
++#    "flash-attn==2.8.3; sys_platform == 'linux' and (platform_machine == 'x86_64' or platform_machine == 'aarch64')",
+     "onnx>=1.20.0",
+     "onnxscript",
+     # cu12 wheels only exist for x86_64; Blackwell / aarch64 requires cu13.
+@@ -81,7 +81,7 @@ include = ["gr00t*"]
+ [tool.uv]
+ required-environments = [
+     "sys_platform == 'linux' and platform_machine == 'x86_64'",
+-    "sys_platform == 'linux' and platform_machine == 'aarch64'",
++#    "sys_platform == 'linux' and platform_machine == 'aarch64'",
+ ]
+ 
+ [tool.uv.sources]
+@@ -94,13 +94,11 @@ torchvision = [
+ triton = [
+     { index = "pytorch-cu128", marker = "sys_platform == 'linux'" },
+ ]
+-flash-attn = [
+-    { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
+-    { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_aarch64.whl", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
+-]
+-torchcodec = [
+-    { path = "scripts/deployment/dgpu/wheels/torchcodec-0.8.0-cp312-cp312-linux_aarch64.whl", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
+-]
++#    { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl", marker = "sys_platform == 'linux' and platform_machine == 'x86_64'" },
++#    { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_aarch64.whl", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
++#torchcodec = [
++#    { path = "scripts/deployment/dgpu/wheels/torchcodec-0.8.0-cp312-cp312-linux_aarch64.whl", marker = "sys_platform == 'linux' and platform_machine == 'aarch64'" },
++#]
+ tensorrt-cu12-libs = [
+     { index = "nvidia-pypi", marker = "platform_machine == 'x86_64'" },
+ ]
+@@ -109,7 +107,6 @@ tensorrt-cu13-libs = [
+ ]
+ 
+ [tool.uv.extra-build-dependencies]
+-flash-attn = ["torch==2.9.0", "numpy==1.26.4", "triton==3.5.0"]
+ 
+ [tool.pytest.ini_options]
+ pythonpath = [".", "tests"]
+diff --git a/uv.lock b/uv.lock
+index 1b5f43d..4ed90b4 100644
+--- a/uv.lock
++++ b/uv.lock
+@@ -12,7 +12,6 @@ resolution-markers = [
+ ]
+ required-markers = [
+     "platform_machine == 'x86_64' and sys_platform == 'linux'",
+-    "platform_machine == 'aarch64' and sys_platform == 'linux'",
+ ]
+ 
+ [[package]]
+@@ -567,48 +566,6 @@ wheels = [
+     { url = "https://files.pythonhosted.org/packages/a4/a5/842ae8f0c08b61d6484b52f99a03510a3a72d23141942d216ebe81fefbce/filelock-3.25.2-py3-none-any.whl", hash = "sha256:ca8afb0da15f229774c9ad1b455ed96e85a81373065fb10446672f64444ddf70", size = 26759, upload-time = "2026-03-11T20:45:37.437Z" },
+ ]
+ 
+-[[package]]
+-name = "flash-attn"
+-version = "2.8.3"
+-source = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_aarch64.whl" }
+-resolution-markers = [
+-    "platform_machine == 'aarch64' and sys_platform == 'linux'",
+-]
+-dependencies = [
+-    { name = "einops", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
+-    { name = "torch", version = "2.9.0+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
+-]
+-wheels = [
+-    { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_aarch64.whl", hash = "sha256:db81083bcc579753140c647fecfb082919b0cce746f9c355af4e37e965e9c224" },
+-]
+-
+-[package.metadata]
+-requires-dist = [
+-    { name = "einops" },
+-    { name = "torch" },
+-]
+-
+-[[package]]
+-name = "flash-attn"
+-version = "2.8.3"
+-source = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl" }
+-resolution-markers = [
+-    "platform_machine == 'x86_64' and sys_platform == 'linux'",
+-]
+-dependencies = [
+-    { name = "einops", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+-    { name = "torch", version = "2.9.0+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+-]
+-wheels = [
+-    { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl", hash = "sha256:4e2f9e39313266b1544b68138b15b91ee6221eccf14f7902b7c6620351340810" },
+-]
+-
+-[package.metadata]
+-requires-dist = [
+-    { name = "einops" },
+-    { name = "torch" },
+-]
+-
+ [[package]]
+ name = "fonttools"
+ version = "4.62.1"
+@@ -702,8 +659,6 @@ dependencies = [
+     { name = "diffusers" },
+     { name = "dm-tree" },
+     { name = "einops" },
+-    { name = "flash-attn", version = "2.8.3", source = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_aarch64.whl" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
+-    { name = "flash-attn", version = "2.8.3", source = { url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl" }, marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
+     { name = "gitpython" },
+     { name = "gymnasium" },
+     { name = "huggingface-hub", extra = ["cli"] },
+@@ -728,8 +683,7 @@ dependencies = [
+     { name = "termcolor" },
+     { name = "torch", version = "2.9.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux'" },
+     { name = "torch", version = "2.9.0+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "sys_platform == 'linux'" },
+-    { name = "torchcodec", version = "0.8.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64'" },
+-    { name = "torchcodec", version = "0.8.0", source = { path = "scripts/deployment/dgpu/wheels/torchcodec-0.8.0-cp312-cp312-linux_aarch64.whl" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
++    { name = "torchcodec", marker = "platform_machine == 'x86_64' or (platform_machine == 'aarch64' and sys_platform == 'linux')" },
+     { name = "torchvision", version = "0.24.0", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
+     { name = "torchvision", version = "0.24.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux'" },
+     { name = "torchvision", version = "0.24.0+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
+@@ -765,8 +719,6 @@ requires-dist = [
+     { name = "diffusers", specifier = "==0.35.1" },
+     { name = "dm-tree" },
+     { name = "einops", specifier = "==0.8.1" },
+-    { name = "flash-attn", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'", url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_aarch64.whl" },
+-    { name = "flash-attn", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'", url = "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu12torch2.9cxx11abiTRUE-cp312-cp312-linux_x86_64.whl" },
+     { name = "gitpython", specifier = "==3.1.50" },
+     { name = "gymnasium", specifier = "==1.2.2" },
+     { name = "huggingface-hub", extras = ["cli"] },
+@@ -800,7 +752,7 @@ requires-dist = [
+     { name = "tomli", marker = "python_full_version < '3.11' and extra == 'dev'" },
+     { name = "torch", marker = "sys_platform != 'linux'", specifier = "==2.9.0" },
+     { name = "torch", marker = "sys_platform == 'linux'", specifier = "==2.9.0", index = "https://download.pytorch.org/whl/cu128" },
+-    { name = "torchcodec", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'", path = "scripts/deployment/dgpu/wheels/torchcodec-0.8.0-cp312-cp312-linux_aarch64.whl" },
++    { name = "torchcodec", marker = "platform_machine == 'aarch64' and sys_platform == 'linux'", specifier = "==0.8.0" },
+     { name = "torchcodec", marker = "platform_machine == 'x86_64'", specifier = "==0.8.0" },
+     { name = "torchvision", marker = "sys_platform != 'linux'", specifier = "==0.24.0" },
+     { name = "torchvision", marker = "sys_platform == 'linux'", specifier = "==0.24.0", index = "https://download.pytorch.org/whl/cu128" },
+@@ -1251,7 +1203,15 @@ version = "1.13.0"
+ source = { registry = "https://pypi.org/simple" }
+ sdist = { url = "https://files.pythonhosted.org/packages/43/73/79a0b22fc731989c708068427579e840a6cf4e937fe7ae5c5d0b7356ac22/ninja-1.13.0.tar.gz", hash = "sha256:4a40ce995ded54d9dc24f8ea37ff3bf62ad192b547f6c7126e7e25045e76f978", size = 242558, upload-time = "2025-08-11T15:10:19.421Z" }
+ wheels = [
++    { url = "https://files.pythonhosted.org/packages/56/c7/ba22748fb59f7f896b609cd3e568d28a0a367a6d953c24c461fe04fc4433/ninja-1.13.0-py3-none-manylinux2014_ppc64le.manylinux_2_17_ppc64le.whl", hash = "sha256:60056592cf495e9a6a4bea3cd178903056ecb0943e4de45a2ea825edb6dc8d3e", size = 202736, upload-time = "2025-08-11T15:09:55.745Z" },
++    { url = "https://files.pythonhosted.org/packages/79/22/d1de07632b78ac8e6b785f41fa9aad7a978ec8c0a1bf15772def36d77aac/ninja-1.13.0-py3-none-manylinux2014_s390x.manylinux_2_17_s390x.whl", hash = "sha256:1c97223cdda0417f414bf864cfb73b72d8777e57ebb279c5f6de368de0062988", size = 179034, upload-time = "2025-08-11T15:09:57.394Z" },
+     { url = "https://files.pythonhosted.org/packages/ed/de/0e6edf44d6a04dabd0318a519125ed0415ce437ad5a1ec9b9be03d9048cf/ninja-1.13.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:fb46acf6b93b8dd0322adc3a4945452a4e774b75b91293bafcc7b7f8e6517dfa", size = 180716, upload-time = "2025-08-11T15:09:58.696Z" },
++    { url = "https://files.pythonhosted.org/packages/54/28/938b562f9057aaa4d6bfbeaa05e81899a47aebb3ba6751e36c027a7f5ff7/ninja-1.13.0-py3-none-manylinux_2_28_armv7l.manylinux_2_31_armv7l.whl", hash = "sha256:4be9c1b082d244b1ad7ef41eb8ab088aae8c109a9f3f0b3e56a252d3e00f42c1", size = 146843, upload-time = "2025-08-11T15:10:00.046Z" },
++    { url = "https://files.pythonhosted.org/packages/2a/fb/d06a3838de4f8ab866e44ee52a797b5491df823901c54943b2adb0389fbb/ninja-1.13.0-py3-none-manylinux_2_31_riscv64.whl", hash = "sha256:6739d3352073341ad284246f81339a384eec091d9851a886dfa5b00a6d48b3e2", size = 154402, upload-time = "2025-08-11T15:10:01.657Z" },
++    { url = "https://files.pythonhosted.org/packages/9d/70/c99d0c2c809f992752453cce312848abb3b1607e56d4cd1b6cded317351a/ninja-1.13.0-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:aa45b4037b313c2f698bc13306239b8b93b4680eb47e287773156ac9e9304714", size = 472501, upload-time = "2025-08-11T15:10:04.735Z" },
++    { url = "https://files.pythonhosted.org/packages/8c/45/9151bba2c8d0ae2b6260f71696330590de5850e5574b7b5694dce6023e20/ninja-1.13.0-py3-none-musllinux_1_2_ppc64le.whl", hash = "sha256:3d7d7779d12cb20c6d054c61b702139fd23a7a964ec8f2c823f1ab1b084150db", size = 642420, upload-time = "2025-08-11T15:10:08.35Z" },
++    { url = "https://files.pythonhosted.org/packages/3c/fb/95752eb635bb8ad27d101d71bef15bc63049de23f299e312878fc21cb2da/ninja-1.13.0-py3-none-musllinux_1_2_riscv64.whl", hash = "sha256:d741a5e6754e0bda767e3274a0f0deeef4807f1fec6c0d7921a0244018926ae5", size = 585106, upload-time = "2025-08-11T15:10:09.818Z" },
++    { url = "https://files.pythonhosted.org/packages/c1/31/aa56a1a286703800c0cbe39fb4e82811c277772dc8cd084f442dd8e2938a/ninja-1.13.0-py3-none-musllinux_1_2_s390x.whl", hash = "sha256:e8bad11f8a00b64137e9b315b137d8bb6cbf3086fbdc43bf1f90fd33324d2e96", size = 707138, upload-time = "2025-08-11T15:10:11.366Z" },
+     { url = "https://files.pythonhosted.org/packages/34/6f/5f5a54a1041af945130abdb2b8529cbef0cdcbbf9bcf3f4195378319d29a/ninja-1.13.0-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:b4f2a072db3c0f944c32793e91532d8948d20d9ab83da9c0c7c15b5768072200", size = 581758, upload-time = "2025-08-11T15:10:13.295Z" },
+ ]
+ 
+@@ -2241,8 +2201,8 @@ name = "tensorrt-cu12-libs"
+ version = "10.15.1.29"
+ source = { registry = "https://pypi.nvidia.com/" }
+ wheels = [
+-    { url = "https://pypi.nvidia.com/tensorrt-cu12-libs/tensorrt_cu12_libs-10.15.1.29-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:eebdc8740f40179ae0c0a974535b2ced47ac98dc0b93699581533ad980e84b98" },
+-    { url = "https://pypi.nvidia.com/tensorrt-cu12-libs/tensorrt_cu12_libs-10.15.1.29-py2.py3-none-win_amd64.whl", hash = "sha256:79343fa678dd4b5270c01d6e56985db08c55bb82898959bd3d028238268745c2" },
++    { url = "https://pypi.nvidia.cn/tensorrt-cu12-libs/tensorrt_cu12_libs-10.15.1.29-py2.py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:eebdc8740f40179ae0c0a974535b2ced47ac98dc0b93699581533ad980e84b98" },
++    { url = "https://pypi.nvidia.cn/tensorrt-cu12-libs/tensorrt_cu12_libs-10.15.1.29-py2.py3-none-win_amd64.whl", hash = "sha256:79343fa678dd4b5270c01d6e56985db08c55bb82898959bd3d028238268745c2" },
+ ]
+ 
+ [[package]]
+@@ -2268,7 +2228,7 @@ name = "tensorrt-cu13-libs"
+ version = "10.15.1.29"
+ source = { registry = "https://pypi.nvidia.com/" }
+ wheels = [
+-    { url = "https://pypi.nvidia.com/tensorrt-cu13-libs/tensorrt_cu13_libs-10.15.1.29-py2.py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:f2f6fdaba477ef5536e9932d7f0ce2952ab3c87c5d0fbf93f080388390cba1de" },
++    { url = "https://pypi.nvidia.cn/tensorrt-cu13-libs/tensorrt_cu13_libs-10.15.1.29-py2.py3-none-manylinux_2_35_aarch64.whl", hash = "sha256:f2f6fdaba477ef5536e9932d7f0ce2952ab3c87c5d0fbf93f080388390cba1de" },
+ ]
+ 
+ [[package]]
+@@ -2386,35 +2346,11 @@ wheels = [
+ name = "torchcodec"
+ version = "0.8.0"
+ source = { registry = "https://pypi.org/simple" }
+-resolution-markers = [
+-    "platform_machine == 'x86_64' and sys_platform == 'linux'",
+-    "platform_machine == 'x86_64' and sys_platform == 'darwin'",
+-    "platform_machine == 'x86_64' and sys_platform != 'darwin' and sys_platform != 'linux'",
+-]
+ wheels = [
+     { url = "https://files.pythonhosted.org/packages/f6/fd/eec92c82545038a90ffd24e3626bb3a85f7d51577b04819c1c753d380a9b/torchcodec-0.8.0-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:2ec2e874dfb6fbf9bbeb792bea56317529636e78db175f56aad1e4efd6e12502", size = 1898382, upload-time = "2025-10-16T14:43:37.699Z" },
+     { url = "https://files.pythonhosted.org/packages/fe/09/ce7436151a3825f27c00263d722b0cf093609921da6cf24b0fa8133cc415/torchcodec-0.8.0-cp312-cp312-win_amd64.whl", hash = "sha256:318da9af9179d156be0a84296e909d51e4cd758598eaaea08c828790c80bf977", size = 2070488, upload-time = "2025-10-16T14:43:21.803Z" },
+ ]
+ 
+-[[package]]
+-name = "torchcodec"
+-version = "0.8.0"
+-source = { path = "scripts/deployment/dgpu/wheels/torchcodec-0.8.0-cp312-cp312-linux_aarch64.whl" }
+-resolution-markers = [
+-    "platform_machine == 'aarch64' and sys_platform == 'linux'",
+-]
+-wheels = [
+-    { filename = "torchcodec-0.8.0-cp312-cp312-linux_aarch64.whl", hash = "sha256:3c5bf377f922d2126041b3c49846504083a015d44979ca594e368ccc8c4c0814" },
+-]
+-
+-[package.metadata]
+-requires-dist = [
+-    { name = "numpy", marker = "extra == 'dev'" },
+-    { name = "pillow", marker = "extra == 'dev'" },
+-    { name = "pytest", marker = "extra == 'dev'" },
+-]
+-provides-extras = ["dev"]
+-
+ [[package]]
+ name = "torchvision"
+ version = "0.24.0"

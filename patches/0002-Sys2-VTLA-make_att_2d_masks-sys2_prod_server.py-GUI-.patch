@@ -1,0 +1,202 @@
+From fb5bf2cfd97deca4c7ef54100272a67eade46768 Mon Sep 17 00:00:00 2001
+From: "web (Z-MAX Sys2)" <web@jingjie.tech>
+Date: Sun, 12 Jul 2026 12:47:50 +0000
+Subject: [PATCH 2/2] =?UTF-8?q?Sys2=E9=83=A8=E7=BD=B2:=20VTLA=E8=AE=AD?=
+ =?UTF-8?q?=E7=BB=83=E4=BF=AE=E5=A4=8D(make=5Fatt=5F2d=5Fmasks=E5=AF=B9?=
+ =?UTF-8?q?=E9=BD=90)=20+=20=E7=94=9F=E4=BA=A7=E6=9C=8D=E5=8A=A1(sys2=5Fpr?=
+ =?UTF-8?q?od=5Fserver.py)=20+=20GUI=E7=9C=8B=E6=9D=BF=E5=B5=8C=E5=85=A5(k?=
+ =?UTF-8?q?anban=5Fembed.py)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../policies/smolvla/modeling_smolvla.py      |  4 +
+ sys2_prod_server.py                           | 94 +++++++++++++++++++
+ tools/gui/kanban_embed.py                     | 43 +++++++++
+ zmax_full_pipeline.py                         |  3 +-
+ 4 files changed, 143 insertions(+), 1 deletion(-)
+ create mode 100644 sys2_prod_server.py
+ create mode 100644 tools/gui/kanban_embed.py
+
+diff --git a/src/lerobot/policies/smolvla/modeling_smolvla.py b/src/lerobot/policies/smolvla/modeling_smolvla.py
+index 8fd60c1f..dcaf424f 100644
+--- a/src/lerobot/policies/smolvla/modeling_smolvla.py
++++ b/src/lerobot/policies/smolvla/modeling_smolvla.py
+@@ -125,6 +125,10 @@ def make_att_2d_masks(pad_masks, att_masks):
+         raise ValueError(att_masks.ndim)
+     if pad_masks.ndim != 2:
+         raise ValueError(pad_masks.ndim)
++    # Align dimensions if they differ (e.g., prefix_length=0 causes mismatch)
++    min_len = min(pad_masks.shape[1], att_masks.shape[1])
++    pad_masks = pad_masks[:, :min_len]
++    att_masks = att_masks[:, :min_len]
+ 
+     cumsum = torch.cumsum(att_masks, dim=1)
+     att_2d_masks = cumsum[:, None, :] <= cumsum[:, :, None]
+diff --git a/sys2_prod_server.py b/sys2_prod_server.py
+new file mode 100644
+index 00000000..0376e190
+--- /dev/null
++++ b/sys2_prod_server.py
+@@ -0,0 +1,94 @@
++#!/usr/bin/env python3
++"""Z-MAX Sys2 生产服务 — 4090 上的 VTLA/GR00T 推理 API"""
++import json, sys, os, time
++sys.path.insert(0, '/root/lerobot-smolvla-lew/src')
++os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
++
++import torch, numpy as np
++from http.server import HTTPServer, BaseHTTPRequestHandler
++
++DEVICE = torch.device("cuda")
++MODELS = {}
++
++def load_vtla():
++    from lerobot.policies.smolvla import SmolVLAPolicy
++    from transformers import AutoTokenizer
++    from lerobot.policies.smolvla.modeling_smolvla import resize_with_pad
++    from lerobot.utils.constants import OBS_LANGUAGE_TOKENS, OBS_LANGUAGE_ATTENTION_MASK
++    
++    t0 = time.time()
++    # Override config to use local model path
++    import json as _json
++    cfg = _json.load(open('/root/models/smolvla_base/config.json'))
++    cfg['vlm_model_name'] = '/root/models/smolvlm2-500m'
++    _json.dump(cfg, open('/root/models/smolvla_base/config.json','w'))
++    
++    model = SmolVLAPolicy.from_pretrained("/root/models/smolvla_base").to(DEVICE).eval()
++    tokenizer = AutoTokenizer.from_pretrained("/root/models/smolvlm2-500m")
++    
++    def predict(obs):
++        B=1
++        img = obs.get('image', torch.rand(B,3,480,640,device=DEVICE))
++        if isinstance(img, list): img = torch.tensor(img,device=DEVICE).reshape(B,3,480,640)
++        img = resize_with_pad(img,512,512,pad_value=0)*2-1
++        state = obs.get('state', torch.zeros(B,14,device=DEVICE))
++        if isinstance(state, list): state = torch.tensor(state,device=DEVICE).reshape(B,-1)
++        task = obs.get('task', 'complete the task')
++        enc = tokenizer(str(task), return_tensors="pt", padding="max_length", max_length=48, truncation=True)
++        batch = {
++            "observation.images.camera1": img,
++            "observation.images.camera2": torch.ones(B,3,512,512,device=DEVICE)*-1,
++            "observation.images.camera3": torch.ones(B,3,512,512,device=DEVICE)*-1,
++            "observation.state": state,
++            OBS_LANGUAGE_TOKENS: enc["input_ids"].to(DEVICE),
++            OBS_LANGUAGE_ATTENTION_MASK: enc["attention_mask"].to(torch.bool).to(DEVICE),
++        }
++        with torch.no_grad():
++            action = model.predict_action_chunk(batch)
++        return action[0,0,:].cpu().tolist()
++    
++    return {"name":"vtla","params_M":round(sum(p.numel() for p in model.parameters())/1e6),
++            "load_s":round(time.time()-t0,1),"predict":predict}
++
++class Sys2Handler(BaseHTTPRequestHandler):
++    def do_GET(self):
++        if self.path == '/health':
++            self._json({"status":"ok","gpu":"RTX 4090","vram_gb":round(torch.cuda.get_device_properties(0).total_memory/1e9,1),
++                        "models":list(MODELS.keys()),"ready":len(MODELS)>0})
++        else:
++            self._json({"service":"Z-MAX Sys2","endpoints":["GET /health","POST /predict"]})
++    
++    def do_POST(self):
++        if self.path == '/predict':
++            cl = int(self.headers.get('Content-Length',0) or 0)
++            body = json.loads(self.rfile.read(cl)) if cl > 0 else {}
++            engine = body.get('engine','vtla')
++            obs = body.get('observation',{})
++            
++            if engine in MODELS:
++                t0 = time.time()
++                action = MODELS[engine]['predict'](obs)
++                lat = (time.time()-t0)*1000
++                self._json({"action":action,"model_used":engine,"latency_ms":round(lat,1),"status":"ok"})
++            else:
++                self._json({"action":[0.0]*14,"model_used":"fallback","status":"model_not_loaded"})
++        else:
++            self._json({"error":"unknown"})
++    
++    def _json(self, data):
++        self.send_response(200); self.send_header('Content-Type','application/json')
++        self.send_header('Access-Control-Allow-Origin','*'); self.end_headers()
++        self.wfile.write(json.dumps(data).encode())
++    def log_message(self,*a): pass
++
++# Load models
++print("Loading VTLA...")
++MODELS['vtla'] = load_vtla()
++print(f"✅ VTLA: {MODELS['vtla']['params_M']}M params, {MODELS['vtla']['load_s']}s load")
++
++# Start server
++port = 50052
++print(f"\n🚀 Sys2 Server @ 0.0.0.0:{port}")
++print(f"   Models: {list(MODELS.keys())}")
++print(f"   Health: http://10.23.24.0:{port}/health")
++HTTPServer(('0.0.0.0', port), Sys2Handler).serve_forever()
+diff --git a/tools/gui/kanban_embed.py b/tools/gui/kanban_embed.py
+new file mode 100644
+index 00000000..29307d6b
+--- /dev/null
++++ b/tools/gui/kanban_embed.py
+@@ -0,0 +1,43 @@
++"""
++Z-MAX 任务看板嵌入 LeRobot Studio — PyQt5 QWebEngineView
++
++使用方法:
++1. 在 le_robot_studio.py 顶部加:
++   from PyQt5.QtWebEngineWidgets import QWebEngineView
++
++2. 在 __init__ 方法的 tab_widget 初始化后加:
++   self.add_kanban_tab()
++
++3. 把这个类粘贴到文件末尾
++"""
++
++from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout, QLabel
++from PyQt5.QtWebEngineWidgets import QWebEngineView
++from PyQt5.QtCore import QUrl
++
++class KanbanTab(QWidget):
++    """Z-MAX 任务看板嵌入"""
++    def __init__(self, parent=None):
++        super().__init__(parent)
++        layout = QVBoxLayout()
++        
++        # 工具栏
++        toolbar = QHBoxLayout()
++        title = QLabel("📋 Z-MAX 任务看板")
++        title.setStyleSheet("font-size:16px;font-weight:bold;color:#00d4aa;")
++        toolbar.addWidget(title)
++        toolbar.addStretch()
++        refresh_btn = QPushButton("🔄 刷新")
++        refresh_btn.clicked.connect(self.refresh)
++        toolbar.addWidget(refresh_btn)
++        layout.addLayout(toolbar)
++        
++        # WebView 嵌入看板
++        self.webview = QWebEngineView()
++        self.webview.setUrl(QUrl("http://datadrive.world/kanban.html"))
++        layout.addWidget(self.webview)
++        
++        self.setLayout(layout)
++    
++    def refresh(self):
++        self.webview.reload()
+diff --git a/zmax_full_pipeline.py b/zmax_full_pipeline.py
+index 442b2c66..251c4918 100644
+--- a/zmax_full_pipeline.py
++++ b/zmax_full_pipeline.py
+@@ -3,7 +3,8 @@
+ Z-MAX SmolVLA 全流程 v3 — 直接用推理验证训练可行性
+ 先用最简单的流程: 加载模型 → 过一遍数据 → 看loss变化
+ """
+-import torch, json, time, os
++import torch, json, time, os, sys
++sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+ 
+ device = torch.device("cuda")
+ from lerobot.datasets import LeRobotDataset
+-- 
+2.34.1
+

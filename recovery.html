@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4090恢复指南 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:880px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:14px;margin:16px 0 8px}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:11px;color:#c8d1d9;margin:10px 0}
+code{font-family:'Cascadia Code','Fira Code',monospace;font-size:11px}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+.warn{color:#d4a800}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🔄 Z-MAX 4090 环境恢复指南</h1>
+<p class="sub">2026-07-12 · 4090即将回收 · 下次快速启动</p>
+
+<h2>一、代码仓库</h2>
+<div class="card">
+<table style="width:100%;font-size:13px">
+<tr><th>仓库</th><th>分支</th><th>地址</th></tr>
+<tr><td>lerobot-smolvla-lew</td><td>main + web</td><td>github.com/MikeBMW/lerobot-smolvla-lew</td></tr>
+<tr><td>zmax-website</td><td>main</td><td>github.com/MikeBMW/zmax-website</td></tr>
+<tr><td>Isaac-GR00T</td><td>main (local)</td><td>NVIDIA/Isaac-GR00T (补丁在 patches/)</td></tr>
+</table>
+</div>
+
+<h2>二、环境搭建</h2>
+<h3>2.1 Python 3.12</h3>
+<pre><code># 安装uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Python 3.12 路径
+~/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12
+# 装包必须加
+--break-system-packages</code></pre>
+
+<h3>2.2 HuggingFace 镜像（必须！）</h3>
+<pre><code>export HF_ENDPOINT=https://hf-mirror.com
+export HF_HUB_DISABLE_XET=1  # 禁用Xet协议，走镜像
+# 登录（需要token）
+huggingface-cli login</code></pre>
+
+<h3>2.3 模型权重下载</h3>
+<pre><code># SmolVLA base (873MB)
+huggingface-cli download --local-dir /root/models/smolvla_base lerobot/smolvla_base
+# SmolVLM2-500M (7.4GB)  
+huggingface-cli download --local-dir /root/models/smolvlm2-500m HuggingFaceTB/SmolVLM2-500M-Video-Instruct
+# GR00T N1.7-3B (6.9GB)
+huggingface-cli download --local-dir /root/models/gr00t-n1.7-3b nvidia/GR00T-N1.7-3B
+# Cosmos-Reason2-2B (4.6GB, 需HF授权)
+huggingface-cli download --local-dir /root/models/cosmos-reason2-2b nvidia/Cosmos-Reason2-2B</code></pre>
+
+<h3>2.4 Isaac-GR00T 环境</h3>
+<pre><code>cd Isaac-GR00T
+# 1. 打补丁
+git apply zmax-website/patches/isaac-gr00t-4090-fixes.patch
+# 2. uv sync
+UV_HTTP_TIMEOUT=180 uv sync
+# 3. 激活
+source .venv/bin/activate</code></pre>
+
+<h2>三、Sys2 推理服务</h2>
+<pre><code># 启动服务（Python 3.12）
+cd /root/lerobot-smolvla-lew
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HUB_DISABLE_XET=1
+~/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 sys2_prod_server.py
+# 验证
+curl localhost:50052/health
+curl -X POST localhost:50052/predict -H 'Content-Type: application/json' -d '{"engine":"vtla","observation":{}}'</code></pre>
+
+<h2>四、GR00T 推理（Mock HF API）</h2>
+<pre><code>import huggingface_hub
+huggingface_hub.model_info = lambda *a,**kw: type('o',(),{
+    'sha':'9ce19a1','siblings':[],'id':'Cosmos',
+    'tags':['qwen3'],'library_name':'transformers'})()
+
+from gr00t.policy.gr00t_policy import Gr00tPolicy
+policy = Gr00tPolicy(
+    embodiment_tag="OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT",
+    model_path="/root/models/gr00t-n1.7-3b",
+    device="cuda:0", strict=False)
+# 观察格式: video{exterior_image_1_left,wrist_image_left}+state{eef_9d,joint_position,gripper_position}+language{annotation.language.language_instruction}</code></pre>
+
+<h2>五、VTLA 训练</h2>
+<pre><code>cd /root/lerobot-smolvla-lew
+export HF_ENDPOINT=https://hf-mirror.com
+export HF_HUB_DISABLE_XET=1
+~/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 zmax_full_pipeline.py</code></pre>
+
+<h2>六、ECS 运维</h2>
+<ul style="margin-left:20px;font-size:13px">
+<li>IP: 39.102.211.79</li>
+<li>宝塔面板: https://39.102.211.79:41000/agentFace</li>
+<li class="warn">⚠️ 系统nginx必须禁用! systemctl stop nginx && systemctl disable nginx</li>
+<li>只用宝塔nginx: /www/server/nginx/sbin/nginx</li>
+<li>网站路径: /www/wwwroot/datadrive.world/</li>
+</ul>
+
+<h2>七、补丁清单</h2>
+<div class="card">
+<table style="font-size:12px">
+<tr><th>文件</th><th>内容</th></tr>
+<tr><td>patches/0001-feat-web-Sys2-*.patch</td><td>Sys2 VTLA+GR00T引擎+gRPC服务(初始)</td></tr>
+<tr><td>patches/0002-Sys2-VTLA-make_att_2d_masks-*.patch</td><td>训练mask修复+生产服务+GUI嵌入</td></tr>
+<tr><td>patches/isaac-gr00t-4090-fixes.patch</td><td>dataclass kw_only+pyproject环境限制</td></tr>
+</table>
+</div>
+
+<h2>八、网页清单</h2>
+<table style="font-size:12px;width:100%">
+<tr><th>页面</th><th>URL</th></tr>
+<tr><td>主页</td><td>/index.html</td></tr>
+<tr><td>任务看板</td><td>/kanban.html (cron自动刷新)</td></tr>
+<tr><td>算力指标</td><td>/performance.html</td></tr>
+<tr><td>工厂调研</td><td>/survey.html</td></tr>
+<tr><td>项目复盘</td><td>/retrospective.html</td></tr>
+<tr><td>项目验收</td><td>/acceptance.html</td></tr>
+<tr><td>恢复指南</td><td>/recovery.html (本页)</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · 4090环境恢复指南 v1.0 · 2026-07-12</div>
+</div>
+</body>
+</html>
