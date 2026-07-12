@@ -3,157 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>用户需求调研 · Z-MAX</title>
+<title>工厂需求调研 · Z-MAX</title>
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:900px;margin:0 auto;padding:60px 24px}
-
-  h1{font-size:36px;font-weight:900;color:#00d4aa;text-align:center;margin-bottom:6px}
-  .sub{text-align:center;color:#8b949e;font-size:15px;margin-bottom:40px}
-  .hero-tag{display:inline-block;padding:4px 14px;border:1px solid #00d4aa44;border-radius:50px;color:#00d4aa;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
-
-  .section{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:28px;margin-bottom:20px}
-  .section h2{font-size:18px;color:#00d4aa;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #1a1f2b}
-  .section h3{font-size:15px;color:#e6edf3;margin:16px 0 8px}
-
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
-  @media(max-width:640px){.grid{grid-template-columns:1fr}}
-
-  .field{margin-bottom:8px}
-  .field label{display:block;font-size:13px;color:#e6edf3;margin-bottom:4px;font-weight:500}
-  .field label span{color:#8b949e;font-weight:400;font-size:12px}
-  .field input,.field select,.field textarea{width:100%;padding:10px 12px;background:#06080d;border:1px solid #1a1f2b;border-radius:6px;color:#c8d1d9;font-size:13px;font-family:inherit;transition:border-color .2s}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#00d4aa}
-  .field textarea{resize:vertical;min-height:80px}
-  .checkbox-group{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:4px}
-  .checkbox-group label{display:flex;align-items:center;gap:6px;font-size:13px;color:#c8d1d9;cursor:pointer;font-weight:400}
-  .checkbox-group input[type=checkbox]{accent-color:#00d4aa;width:auto}
-
-  .btn{display:block;width:100%;padding:14px;background:#00d4aa;color:#06080d;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;margin-top:24px;transition:all .25s}
-  .btn:hover{background:#00ffcc;transform:translateY(-2px);box-shadow:0 8px 30px #00d4aa33}
-
-  .download-box{text-align:center;padding:32px;background:#0d1117;border:1px dashed #00d4aa44;border-radius:12px;margin-bottom:40px}
-  .download-box p{color:#8b949e;font-size:14px;margin-bottom:12px}
-  .dl-btn{display:inline-block;padding:10px 28px;border:1.5px solid #00d4aa;color:#00d4aa;border-radius:6px;text-decoration:none;font-weight:600;font-size:14px;transition:all .2s}
-  .dl-btn:hover{background:#00d4aa22}
-
-  .note{text-align:center;color:#484f58;font-size:12px;margin-top:20px}
-  .note a{color:#8b949e}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:50px 24px}
+h1{font-size:34px;font-weight:900;color:#00d4aa;text-align:center}
+.sub{text-align:center;color:#8b949e;font-size:14px;margin:8px 0 36px}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px;transition:all .2s}
+.back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
+.section{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:24px 28px;margin-bottom:18px}
+.section h2{font-size:17px;color:#00d4aa;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #1a1f2b}
+.section h3{font-size:14px;color:#e6edf3;margin:14px 0 6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.field{margin-bottom:6px}
+.field label{display:block;font-size:12px;color:#e6edf3;margin-bottom:3px;font-weight:500}
+.field label span{color:#8b949e;font-weight:400;font-size:11px}
+.field input,.field select,.field textarea{width:100%;padding:9px 11px;background:#06080d;border:1px solid #1a1f2b;border-radius:6px;color:#c8d1d9;font-size:13px;font-family:inherit;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#00d4aa}
+.field textarea{resize:vertical;min-height:72px}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:3px}
+.checkbox-group label{display:flex;align-items:center;gap:5px;font-size:12px;color:#c8d1d9;cursor:pointer;font-weight:400}
+.checkbox-group input[type=checkbox]{accent-color:#00d4aa;width:auto}
+.btn{display:block;width:100%;padding:14px;background:#00d4aa;color:#06080d;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;margin-top:20px;transition:all .25s}
+.btn:hover{background:#00ffcc;transform:translateY(-2px);box-shadow:0 8px 30px #00d4aa33}
+.note{text-align:center;color:#484f58;font-size:11px;margin-top:16px}
+.note a{color:#8b949e}
 </style>
 </head>
 <body>
 <div class="wrap">
+<a href="/" class="back-home">← 返回主页</a>
 
-<div style="text-align:center">
-  <div class="hero-tag">Z-MAX v1.0.4</div>
-  <h1>用户需求调研</h1>
-  <p class="sub">请填写以下信息，Z-MAX团队将在3个工作日内为您提供定制化解决方案与ROI分析</p>
-</div>
-
-<!-- 下载区 -->
-<div class="download-box">
-  <p>📥 如需线下填写，可下载 Word 版问卷：</p>
-  <a href="/survey.docx" class="dl-btn">下载 .docx 问卷</a>
-</div>
+<h1>光模块工厂 · 真实场景调研</h1>
+<p class="sub">请提供工厂实际产线信息，Z-MAX团队将针对性设计自动化方案。非通用问卷，务必填写真实数据。</p>
 
 <form id="survey">
-<!-- 一、基本信息 -->
+<!-- 一、工厂基本信息 -->
 <div class="section">
-  <h2>一、客户基本信息</h2>
+  <h2>一、工厂基本信息</h2>
   <div class="grid">
-    <div class="field"><label>公司/单位名称 <span>*</span></label><input type="text" name="company" required></div>
-    <div class="field"><label>所属行业</label><select name="industry"><option value="">请选择</option><option>光模块制造</option><option>光通信设备</option><option>半导体封装</option><option>电子代工</option><option>其他</option></select></div>
-    <div class="field"><label>公司规模</label><select name="scale"><option value="">请选择</option><option><100人</option><option>100-500人</option><option>500-2000人</option><option>>2000人</option></select></div>
-    <div class="field"><label>现有自动化程度</label><select name="auto_level"><option value="">请选择</option><option>全人工</option><option>半自动</option><option>单机自动化</option><option>产线自动化</option></select></div>
-    <div class="field"><label>联系人</label><input type="text" name="contact"></div>
+    <div class="field"><label>工厂名称 <span>*</span></label><input type="text" name="factory" required></div>
+    <div class="field"><label>联系人/职务</label><input type="text" name="contact"></div>
     <div class="field"><label>联系电话</label><input type="tel" name="phone"></div>
-    <div class="field" style="grid-column:span 2"><label>邮箱 <span>*</span></label><input type="email" name="email" required></div>
+    <div class="field"><label>邮箱</label><input type="email" name="email"></div>
   </div>
 </div>
 
-<!-- 二、产线现状 -->
+<!-- 二、产线配置 -->
 <div class="section">
-  <h2>二、产线现状</h2>
+  <h2>二、产线工位配置</h2>
+  <p style="font-size:12px;color:#8b949e;margin-bottom:12px">请逐工位描述。Z-MAX系统最多支持8工位联动作业。</p>
   <div class="grid">
-    <div class="field"><label>产线类型</label><select name="line_type"><option value="">请选择</option><option>EVB测试线</option><option>模块组装线</option><option>老化测试线</option><option>成品检测线</option><option>其他</option></select></div>
-    <div class="field"><label>日产能（模块数）</label><select name="capacity"><option value="">请选择</option><option><1000</option><option>1000-5000</option><option>5000-20000</option><option>>20000</option></select></div>
-    <div class="field"><label>班次制度</label><select name="shift"><option value="">请选择</option><option>单班(8h)</option><option>双班(16h)</option><option>三班(24h)</option></select></div>
-    <div class="field"><label>当前关键工序良率</label><select name="yield"><option value="">请选择</option><option><95%</option><option>95%-97%</option><option>97%-99%</option><option>>99%</option></select></div>
-    <div class="field" style="grid-column:span 2">
-      <label>主要痛点（可多选）</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" name="pain" value="force"> 插拔力度不可控</label>
-        <label><input type="checkbox" name="pain" value="change"> 换型耗时长</label>
-        <label><input type="checkbox" name="pain" value="space"> 测试仓空间狭小</label>
-        <label><input type="checkbox" name="pain" value="error"> 人工误操作多</label>
-        <label><input type="checkbox" name="pain" value="hire"> 招工困难</label>
-        <label><input type="checkbox" name="pain" value="yield"> 良率波动大</label>
-      </div>
-    </div>
+    <div class="field"><label>工位数量</label><input type="number" name="station_count" min="1" max="8" placeholder="例: 5"></div>
+    <div class="field"><label>产线节拍(秒/个)</label><input type="text" name="takt" placeholder="例: 8"></div>
+    <div class="field"><label>日产能(模块数)</label><input type="text" name="capacity" placeholder="例: 5000"></div>
+    <div class="field"><label>班次制度</label><select name="shift"><option>单班 8h</option><option>双班 16h</option><option>三班 24h</option></select></div>
   </div>
+
+  <h3>工位详情 (请逐项填写)</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;margin:8px 0">
+    <tr style="background:#00d4aa22"><th style="padding:8px;text-align:left;color:#00d4aa">工位</th><th style="padding:8px;text-align:left;color:#00d4aa">工序名称</th><th style="padding:8px;text-align:left;color:#00d4aa">操作描述</th><th style="padding:8px;text-align:left;color:#00d4aa">力控要求</th><th style="padding:8px;text-align:left;color:#00d4aa">当前方式</th></tr>
+    <tr><td style="padding:6px">1</td><td style="padding:6px"><input type="text" name="s1_name" placeholder="入料/扫码" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><input type="text" name="s1_desc" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><select name="s1_force" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>无</option><option>需要 (±0.5N)</option><option>需要 (±0.1N)</option><option>需要 (±0.05N)</option></select></td><td style="padding:6px"><select name="s1_manual" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>人工</option><option>半自动</option><option>全自动</option></select></td></tr>
+    <tr><td style="padding:6px">2</td><td style="padding:6px"><input type="text" name="s2_name" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><input type="text" name="s2_desc" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><select name="s2_force" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>无</option><option>需要 (±0.5N)</option><option>需要 (±0.1N)</option><option>需要 (±0.05N)</option></select></td><td style="padding:6px"><select name="s2_manual" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>人工</option><option>半自动</option><option>全自动</option></select></td></tr>
+    <tr><td style="padding:6px">3</td><td style="padding:6px"><input type="text" name="s3_name" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><input type="text" name="s3_desc" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><select name="s3_force" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>无</option><option>需要 (±0.5N)</option><option>需要 (±0.1N)</option><option>需要 (±0.05N)</option></select></td><td style="padding:6px"><select name="s3_manual" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>人工</option><option>半自动</option><option>全自动</option></select></td></tr>
+    <tr><td style="padding:6px">4</td><td style="padding:6px"><input type="text" name="s4_name" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><input type="text" name="s4_desc" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><select name="s4_force" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>无</option><option>需要 (±0.5N)</option><option>需要 (±0.1N)</option><option>需要 (±0.05N)</option></select></td><td style="padding:6px"><select name="s4_manual" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>人工</option><option>半自动</option><option>全自动</option></select></td></tr>
+    <tr><td style="padding:6px">5</td><td style="padding:6px"><input type="text" name="s5_name" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><input type="text" name="s5_desc" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"></td><td style="padding:6px"><select name="s5_force" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>无</option><option>需要 (±0.5N)</option><option>需要 (±0.1N)</option><option>需要 (±0.05N)</option></select></td><td style="padding:6px"><select name="s5_manual" style="width:100%;padding:4px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;border-radius:4px;font-size:12px"><option>人工</option><option>半自动</option><option>全自动</option></select></td></tr>
+  </table>
 </div>
 
-<!-- 三、产品规格 -->
+<!-- 三、光模块规格 -->
 <div class="section">
   <h2>三、光模块产品规格</h2>
   <div class="grid">
-    <div class="field"><label>光模块型号（可多填）</label><textarea name="module_models" placeholder="例：800G OSFP, 400G QSFP-DD..."></textarea></div>
-    <div class="field"><label>封装类型</label><select name="package"><option value="">请选择</option><option>QSFP-DD</option><option>OSFP</option><option>SFP</option><option>CFP2</option><option>多型号混合</option></select></div>
-    <div class="field"><label>传输速率</label><select name="speed"><option value="">请选择</option><option>100G</option><option>400G</option><option>800G</option><option>1.6T</option><option>多速率混合</option></select></div>
-    <div class="field"><label>需要兼容的型号种类数</label><input type="text" name="variant_count" placeholder="例：3种"></div>
-    <div class="field"><label>换型频次</label><select name="change_freq"><option value="">请选择</option><option>不换型</option><option>≤1次/天</option><option>2-5次/天</option><option>>5次/天</option></select></div>
+    <div class="field"><label>主要型号</label><textarea name="models" placeholder="例: 800G OSFP, 400G QSFP-DD, 100G SFP28..."></textarea></div>
+    <div class="field"><label>封装类型</label><select name="package"><option>QSFP-DD</option><option>OSFP</option><option>SFP</option><option>CFP2</option><option>多型号混合</option></select></div>
+    <div class="field"><label>模块重量(g)</label><input type="text" name="weight" placeholder="例: 150"></div>
+    <div class="field"><label>金手指Pin数</label><input type="text" name="pins" placeholder="例: 76"></div>
+    <div class="field"><label>换型频次</label><select name="change_freq"><option>不换型</option><option>≤1次/天</option><option>2-5次/天</option><option>>5次/天</option></select></div>
+    <div class="field"><label>换型时间目标</label><select name="change_time"><option><5分钟</option><option><15分钟</option><option><30分钟</option><option>无要求</option></select></div>
   </div>
 </div>
 
-<!-- 四、技术要求 -->
+<!-- 四、测试环境 -->
 <div class="section">
-  <h2>四、技术要求</h2>
+  <h2>四、测试仓/老化箱环境</h2>
   <div class="grid">
-    <div class="field"><label>插拔对准精度要求</label><select name="precision"><option value="">请选择</option><option>±0.1mm</option><option>±0.05mm</option><option>±0.02mm</option><option>±0.01mm</option></select></div>
-    <div class="field"><label>单次操作节拍要求</label><select name="takt"><option value="">请选择</option><option><10s</option><option><8s</option><option><5s</option><option><3s</option></select></div>
-    <div class="field"><label>关键工序良率目标</label><select name="yield_target"><option value="">请选择</option><option>≥97%</option><option>≥99%</option><option>≥99.5%</option><option>≥99.9%</option></select></div>
-    <div class="field"><label>连续工作时长需求</label><select name="runtime"><option value="">请选择</option><option>8h</option><option>16h</option><option>24h(7×24)</option></select></div>
-    <div class="field"><label>是否需要力控保护</label><select name="force_ctrl"><option value="">请选择</option><option>需要</option><option>不需要</option></select></div>
-    <div class="field"><label>是否需要AOI检测</label><select name="aoi"><option value="">请选择</option><option>需要</option><option>不需要</option></select></div>
-    <div class="field"><label>是否需要扫码追溯</label><select name="barcode"><option value="">请选择</option><option>需要</option><option>不需要</option></select></div>
-    <div class="field"><label>ESD防护要求</label><select name="esd"><option value="">请选择</option><option>需要</option><option>不需要</option></select></div>
+    <div class="field"><label>测试仓品牌/型号</label><input type="text" name="tester" placeholder="例: Keysight, Anritsu"></div>
+    <div class="field"><label>老化箱品牌/型号</label><input type="text" name="oven"></div>
+    <div class="field"><label>测试仓内部空间(mm)</label><input type="text" name="tester_space" placeholder="例: 200×150×100"></div>
+    <div class="field"><label>插拔口距仓壁距离(mm)</label><input type="text" name="port_distance" placeholder="例: 30"></div>
+    <div class="field"><label>是否需要伸入操作</label><select name="reach_in"><option>是</option><option>否</option></select></div>
+    <div class="field"><label>门禁联锁要求</label><select name="interlock"><option>需要</option><option>不需要</option></select></div>
   </div>
 </div>
 
-<!-- 五、预算 -->
+<!-- 五、品质要求 -->
 <div class="section">
-  <h2>五、投资预算</h2>
+  <h2>五、品质与工艺要求</h2>
   <div class="grid">
-    <div class="field"><label>预算范围</label><select name="budget"><option value="">请选择</option><option><50万</option><option>50-100万</option><option>100-300万</option><option>300万+</option></select></div>
-    <div class="field"><label>预期ROI回收期</label><select name="roi"><option value="">请选择</option><option><12月</option><option>12-24月</option><option>24-36月</option><option>无要求</option></select></div>
-    <div class="field"><label>采购计划</label><select name="qty"><option value="">请选择</option><option>1台试点</option><option>2-5台</option><option>5-10台</option><option>10台以上</option></select></div>
-    <div class="field"><label>决策周期</label><select name="decision"><option value="">请选择</option><option>1个月内</option><option>1-3个月</option><option>3-6个月</option><option>6个月以上</option></select></div>
+    <div class="field"><label>插拔对准精度</label><select name="precision"><option>±0.1mm</option><option>±0.05mm</option><option>±0.02mm</option><option>±0.01mm</option></select></div>
+    <div class="field"><label>关键工序良率目标</label><select name="yield"><option>≥97%</option><option>≥99%</option><option>≥99.5%</option><option>≥99.9%</option></select></div>
+    <div class="field"><label>ESD防护等级</label><select name="esd"><option>Class 0 (0-249V)</option><option>Class 1A (250-499V)</option><option>Class 1B (500-999V)</option></select></div>
+    <div class="field"><label>洁净度要求</label><select name="clean"><option>Class 100</option><option>Class 1000</option><option>Class 10000</option><option>无要求</option></select></div>
+  </div>
+  <h3>工艺痛点</h3>
+  <div class="checkbox-group">
+    <label><input type="checkbox" name="pain" value="force"> 插拔力不可控</label>
+    <label><input type="checkbox" name="pain" value="align"> 对中困难</label>
+    <label><input type="checkbox" name="pain" value="space"> 测试仓空间狭小</label>
+    <label><input type="checkbox" name="pain" value="change"> 换型耗时长</label>
+    <label><input type="checkbox" name="pain" value="error"> 人工误操作</label>
+    <label><input type="checkbox" name="pain" value="hire"> 招工困难</label>
+    <label><input type="checkbox" name="pain" value="scratch"> 金手指划伤</label>
+    <label><input type="checkbox" name="pain" value="yield"> 良率波动</label>
   </div>
 </div>
 
-<!-- 六、其他 -->
+<!-- 六、补充 -->
 <div class="section">
   <h2>六、补充说明</h2>
-  <div class="field"><label>对自动化方案的期望和关注点</label><textarea name="expectation" placeholder="请描述您的核心期望..."></textarea></div>
-  <div class="field"><label>是否希望参观Z-MAX演示</label><select name="demo"><option value="">请选择</option><option>是，希望尽快安排</option><option>暂不需要</option></select></div>
-  <div class="field"><label>其他补充</label><textarea name="other" placeholder="任何其他信息..."></textarea></div>
+  <div class="field"><label>期望自动化改造的时间节点</label><select name="timeline"><option>1个月内</option><option>3个月内</option><option>6个月内</option><option>12个月内</option></select></div>
+  <div class="field"><label>是否需要Z-MAX团队现场勘测</label><select name="onsite"><option>是</option><option>暂不需要</option></select></div>
+  <div class="field"><label>其他补充</label><textarea name="other" placeholder="任何有助于方案设计的信息..."></textarea></div>
 </div>
 
-<button type="submit" class="btn">提交需求调研</button>
-<p class="note">提交即表示同意Z-MAX团队使用以上信息进行方案评估 · <a href="http://datadrive.world">返回首页</a></p>
+<button type="submit" class="btn">提交工厂调研数据</button>
+<p class="note">数据仅供Z-MAX方案设计使用，严格保密 · <a href="/">返回首页</a></p>
 </form>
-
 </div>
 
 <script>
-document.getElementById('survey').addEventListener('submit', function(e){
+document.getElementById('survey').addEventListener('submit',function(e){
   e.preventDefault();
-  var fd = new FormData(this);
-  var data = {};
-  fd.forEach(function(v,k){ data[k]=v; });
-  alert('✅ 收到！\n\n感谢您的需求提交。Z-MAX团队将在3个工作日内与您联系。\n\n—— 智蜂创元 ZFCY');
-  this.reset();
+  var fd=new FormData(this), data={};
+  fd.forEach(function(v,k){
+    if(data[k]){ if(!Array.isArray(data[k])) data[k]=[data[k]]; data[k].push(v); }
+    else data[k]=v;
+  });
+  alert('✅ 收到！\n\n感谢提供真实产线数据。Z-MAX团队将在2个工作日内输出定制化方案。\n\n—— 静界科技 Z-MAX');
 });
 </script>
 </body>

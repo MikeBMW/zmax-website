@@ -154,6 +154,42 @@
   </div>
 </section>
 
+<!-- ═══════ SYSTEM ARCH ═══════ -->
+<section id="architecture">
+  <div class="sec-label">系统架构</div>
+  <h2 class="sec-title">Z-MAX · 四级智能引擎</h2>
+  <p class="sec-sub">Sys0 硬件基座 → Sys1 边缘推理(4060) → Sys2 云端大脑(4090) → Edge 端侧部署(Orin/Mac)</p>
+  <div class="divider"></div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px">
+    <div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:20px">
+      <div style="font-size:12px;letter-spacing:2px;color:#00d4aa;margin-bottom:6px">Sys1 · ACT</div>
+      <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">边缘推理引擎</div>
+      <div style="font-size:11px;color:#8b949e;margin-bottom:8px">RTX 4060 · 8GB</div>
+      <div style="font-size:12px;color:#c8d1d9;line-height:1.6">Action Chunking Transformer，52M参数，<10ms推理。实时力控闭环>10kHz。</div>
+      <div style="margin-top:10px;font-size:11px;color:#00d4aa">← Sys11 SmolVLA · Sys12 LeWorld</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #00d4aa44;border-radius:10px;padding:20px">
+      <div style="font-size:12px;letter-spacing:2px;color:#00d4aa;margin-bottom:6px">Sys2 · 云端大脑</div>
+      <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">大模型推理</div>
+      <div style="font-size:11px;color:#8b949e;margin-bottom:8px">RTX 4090 · 24GB</div>
+      <div style="font-size:12px;color:#c8d1d9;line-height:1.6">VTLA触觉VLA(450M) + GR00T N1.7(7B)。复杂任务自主决策，多产线调度。</div>
+      <div style="margin-top:10px;font-size:11px;color:#00d4aa">← Sys1 gRPC调用 → Edge下发</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:20px">
+      <div style="font-size:12px;letter-spacing:2px;color:#00d4aa;margin-bottom:6px">Edge · 端侧</div>
+      <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">现场执行</div>
+      <div style="font-size:11px;color:#8b949e;margin-bottom:8px">Mac M1 · Orin Nano</div>
+      <div style="font-size:12px;color:#c8d1d9;line-height:1.6">SmolVLA-INT8量化模型，<15ms推理。即插即用智能硬件连接，7×24可靠运行。</div>
+      <div style="margin-top:10px;font-size:11px;color:#00d4aa">← 机械臂控制 · 传感器采集</div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:20px">
+    <a href="/performance.html" class="btn-outline" style="padding:10px 24px;font-size:14px">⚡ 查看完整算力指标 →</a>
+    <a href="/kanban.html" class="btn-outline" style="padding:10px 24px;font-size:14px;margin-left:10px">📋 任务看板 →</a>
+  </div>
+</section>
+
 <!-- ═══════ TECH STACK ═══════ -->
 <section>
   <div class="sec-label">技术栈</div>
