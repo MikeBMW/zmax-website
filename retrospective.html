@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>项目复盘 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:32px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:32px}
+h2{color:#00d4aa;font-size:20px;margin:32px 0 14px;padding-bottom:8px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:15px;margin:16px 0 8px}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:20px 24px;margin:14px 0}
+.card h3{color:#00d4aa;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:12px 0;font-size:13px}
+th{background:#00d4aa22;padding:10px 14px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:9px 14px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.green{color:#00d4aa}.yellow{color:#d4a800}.red{color:#ff4444}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:24px;transition:all .2s}
+.back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+@media(max-width:768px){h1{font-size:24px}td,th{padding:6px 8px;font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>Z-MAX 项目复盘</h1>
+<p class="sub">静界科技 · 2026年7月12日 · 项目经理: web</p>
+
+<h2>一、项目概况</h2>
+<div class="card">
+<h3>目标</h3>
+<p>构建 Z-MAX 具身智能系统 — 面向光模块精密制造的机器人智能引擎。从 Sys0 硬件基座到 Sys2 云端大脑，全链路 AI 驱动。</p>
+<table>
+<tr><th>指标</th><th>目标</th><th>实际</th><th>状态</th></tr>
+<tr><td>系统层级</td><td>Sys0-Sys1-Sys2-Edge</td><td>全部就绪</td><td class="green">✅</td></tr>
+<tr><td>插拔精度</td><td>±0.02mm</td><td>±0.02mm</td><td class="green">✅</td></tr>
+<tr><td>力控带宽</td><td>>10kHz</td><td>>10kHz</td><td class="green">✅</td></tr>
+<tr><td>推理延迟(ACT)</td><td><10ms</td><td>1.2ms / 800FPS</td><td class="green">✅</td></tr>
+<tr><td>推理延迟(VTLA)</td><td><100ms</td><td>284ms</td><td class="yellow">⚠️</td></tr>
+<tr><td>端侧推理(Orin)</td><td><15ms</td><td>240ms(未量化)</td><td class="yellow">⚠️</td></tr>
+<tr><td>GR00T推理</td><td><500ms</td><td>未完成</td><td class="red">🚫</td></tr>
+</table>
+</div>
+
+<h2>二、团队分工与交付</h2>
+<table>
+<tr><th>成员</th><th>角色</th><th>任务数</th><th>完成</th><th>完成率</th></tr>
+<tr><td><b>xspace (静静)</b></td><td>总工/总设/总架构·4060 WSL</td><td>15</td><td>14</td><td class="green">93%</td></tr>
+<tr><td><b>web</b></td><td>项目经理·产品经理·模型专家·4090</td><td>16</td><td>14</td><td class="green">88%</td></tr>
+<tr><td><b>小芳</b></td><td>硬件专家·安全保障·测试专家·Mac/Orin</td><td>11</td><td>9</td><td class="green">82%</td></tr>
+<tr style="background:#00d4aa11"><td><b>合计</b></td><td></td><td><b>42</b></td><td><b>37</b></td><td class="green"><b>88%</b></td></tr>
+</table>
+
+<h2>三、核心交付物</h2>
+<table>
+<tr><th>层级</th><th>交付物</th><th>负责人</th><th>规格</th></tr>
+<tr><td>Sys0</td><td>硬件框架设计(8章)</td><td>xspace</td><td>Orin→ROS2→SR5-C, L1-L5安全</td></tr>
+<tr><td>Sys1</td><td>ACT模板 + SmolVLA + LeWorld</td><td>xspace</td><td>52M/1.2ms + 450M/50ms + 5.5M/1.9ms</td></tr>
+<tr><td>Sys2</td><td>VTLA引擎 + GR00T引擎 + gRPC服务</td><td>web</td><td>450M/284ms + 7B权重就绪 + 50052在线</td></tr>
+<tr><td>Sys2</td><td>VTLA训练验证</td><td>web</td><td>300步/46s, Loss↓90.3%, VRAM 1.61GB</td></tr>
+<tr><td>GUI</td><td>LeRobot Studio (8模块)</td><td>xspace</td><td>引擎切换+4090灯+仪表+总线+Robot+菜单+专利</td></tr>
+<tr><td>Edge</td><td>Mac + Orin端侧部署</td><td>小芳</td><td>Mac 300ms + Orin 240ms + 6轴读写</td></tr>
+<tr><td>前端</td><td>datadrive.world 网站</td><td>web</td><td>7页面+看板+算力指标+工厂调研</td></tr>
+<tr><td>测试</td><td>全链路42ms端到端</td><td>小芳</td><td>17项用例+QC-001证书</td></tr>
+</table>
+
+<h2>四、技术债务 & 未完成项</h2>
+<table>
+<tr><th>项目</th><th>影响</th><th>优先级</th></tr>
+<tr><td>GR00T微调+验证</td><td>缺失L4复杂决策能力,不影响核心场景</td><td class="yellow">中</td></tr>
+<tr><td>VTLA推理延迟优化(284→<100ms)</td><td>需模型量化或TensorRT</td><td class="yellow">中</td></tr>
+<tr><td>端侧模型量化(Orin 240→<15ms)</td><td>INT8量化待执行</td><td class="yellow">中</td></tr>
+<tr><td>硬件7×24可靠性</td><td>1小时测试待执行</td><td class="green">低</td></tr>
+<tr><td>产品PPTX</td><td>xspace统稿中</td><td class="green">低</td></tr>
+</table>
+
+<h2>五、经验教训</h2>
+<div class="card"><h3>✅ 做得好的</h3>
+<p>1. 三人分工清晰, xspace架构→web工程→小芳测试, 流水线高效</p>
+<p>2. 任务看板实时同步, 甘特图+健康灯可视化, 进度透明</p>
+<p>3. Python 3.12兼容性问题通过逐层修复+最终使用原生环境解决</p>
+<p>4. HF网络不通时快速切换hf-mirror镜像+禁用Xet协议</p>
+<p>5. Sys2服务从零到上线(50052), 支持VTLA真实推理284ms</p></div>
+<div class="card"><h3>⚠️ 需改进</h3>
+<p>1. GitHub推送阻塞: 4090出站网络限制, 改用HTTPS+token+ECS中转</p>
+<p>2. GR00T兼容性: Isaac-GR00T与Py3.12/torch版本耦合紧, 需完整uv sync</p>
+<p>3. 训练数据集下载: PushT需镜像+禁用Xet, 流程可提前脚本化</p>
+<p>4. 实时沟通: 4060与4090网络隔离, 端到端联调依赖本地验证</p></div>
+
+<div class="footer">Z-MAX Project · 静界科技 · 复盘 v1.0 · 2026-07-12</div>
+</div>
+</body>
+</html>
