@@ -155,7 +155,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <div class="kanban" id="kanban"></div>
-<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 16:01 CST | 🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 17:01 CST | 🔄 2026-07-12 16:01 CST | 🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -181,13 +181,13 @@ const TASKS = [
   {id:"W02",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T N1.7引擎",desc:"~7B封装16种具身。权重已下载6.5GB+SmolVLA 873MB",repo:"web",start:"7/10",end:"7/12"},
   {id:"W03",owner:"web",status:"done",tag:"Sys2",title:"✅ gRPC+HTTP服务",desc:"port 50052/8080。验证:编译OK",repo:"web",start:"7/11",end:"7/12"},
   {id:"W06",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T训练环境",desc:"GR00T N1.7+SimplerEnv已装。跳过flash-attn",repo:"gr00t",start:"7/12",end:"7/12"},
-  {id:"W07",owner:"web",status:"todo",tag:"Train",title:"4090 VTLA微调",desc:"出训练验证报告",repo:"web",start:"7/13",end:"7/16"},
-  {id:"W08",owner:"web",status:"todo",tag:"Train",title:"4090 GR00T微调",desc:"出训练验证报告",repo:"gr00t",start:"7/14",end:"7/18"},
+  {id:"W07",owner:"web",status:"blocked",tag:"Train",title:"🚫 4090 VTLA微调",desc:"阻塞:lerobot代码Python3.12泛型语法不兼容3.10,已修复3处仍有依赖链问题",repo:"web",start:"7/13",end:"7/16"},
+  {id:"W08",owner:"web",status:"todo",tag:"Train",title:"4090 GR00T微调",desc:"GR00T N1.7-3B权重已就绪6.5GB。待启动训练",repo:"gr00t",start:"7/14",end:"7/18"},
   {id:"W09",owner:"web",status:"done",tag:"Integ",title:"✅ Sys1↔Sys2联调",desc:"4090 Sys2 VTLA服务运行中 10.23.24.0:50052。764ms推理。xspace可联调",repo:"main",start:"7/12",end:"7/12"},
   {id:"W10",owner:"web",status:"done",tag:"Web",title:"✅ 光模块工厂调研页",desc:"6区产线表单:工位配置+模块规格+测试仓+品质。已部署",repo:"zmax",start:"7/12",end:"7/12"},
   {id:"W05",owner:"web",status:"done",tag:"Sys2",title:"✅ 模型权重下载",desc:"SmolVLA 873MB + GR00T N1.7-3B 6.5GB。hf-mirror下载完成",repo:"gr00t",start:"7/12",end:"7/12"},
-  {id:"W12",owner:"web",status:"progress",tag:"Sim",title:"4090仿真验证VTLA模型",desc:"模型已就绪。正在跑VTLA验证脚本",repo:"web",start:"7/12",end:"7/12"},
-  {id:"W13",owner:"web",status:"progress",tag:"Sim",title:"4090仿真验证GR00T模型",desc:"GR00T N1-7下载中。权重到后立即跑验证",repo:"gr00t",start:"7/14",end:"7/17"},
+  {id:"W12",owner:"web",status:"blocked",tag:"Sim",title:"🚫 4090仿真验证VTLA",desc:"阻塞:同W07。VTLA推理服务已上线(50052可用),训练脚本待修复",repo:"web",start:"7/12",end:"7/13"},
+  {id:"W13",owner:"web",status:"todo",tag:"Sim",title:"4090仿真验证GR00T",desc:"GR00T权重已下载6.5GB。待VTLA训练链路跑通后启动",repo:"gr00t",start:"7/14",end:"7/17"},
   {id:"W14",owner:"web",status:"done",tag:"PM",title:"✅ 任务看板v2",desc:"时间线+健康色+自动部署+角色更新。已完成",repo:"zmax",start:"7/12",end:"7/12"},
   {id:"W15",owner:"web",status:"done",tag:"PM",title:"✅ 模型算力+性能指标",desc:"7级算力分层+全链路指标+测试框架。已完成: performance.html",repo:"all",start:"7/12",end:"7/12"},
   {id:"W16",owner:"web",status:"done",tag:"Web",title:"✅ 前端展示更新",desc:"主页加系统架构三级引擎卡片+Sys1/2/Edge概览+算力入口",repo:"zmax",start:"7/12",end:"7/12"},
@@ -334,19 +334,24 @@ setInterval(render, 60000);
 
 
 
+
 <!-- AUTO-GENERATED STATUS
 {
   "zmax-website": {
     "branch": "main",
-    "last_commit": "53fd088 W05 done: SmolVLA+GR00T权重下载完成 — 873MB+6.5GB",
-    "dirty": true,
-    "modified": "?? scripts/vtla_quick.py"
+    "last_commit": "959dd7f X03: GUI 8项全部交付 — 引擎切换+4090灯+仪表+总线+Robot+菜单+方案+专利",
+    "dirty": false,
+    "modified": ""
   },
   "lerobot-smolvla-lew": {
     "branch": "web",
     "last_commit": "621bbcb4 feat(web): Sys2 真实推理引擎 — VTLA + GR00T N1.7 + gRPC服务",
     "dirty": true,
-    "modified": "M src/lerobot/utils/io_utils.py"
+    "modified": "M src/lerobot/policies/pretrained.py
+ M src/lerobot/processor/pipeline.py
+ M src/lerobot/utils/io_utils.py
+ M zmax_full_pipeline.py
+?? sys2_prod_server.py"
   },
   "Isaac-GR00T": {
     "branch": "main",
