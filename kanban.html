@@ -7,251 +7,295 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6}
 
-/* ── HEADER ── */
-.header{background:#080c14;border-bottom:1px solid #1a1f2b;padding:16px 24px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.header-left{display:flex;align-items:center;gap:12px}
-.logo{font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px}
-.logo span{color:#00d4aa}
+.header{background:#080c14;border-bottom:1px solid #1a1f2b;padding:14px 24px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-1px}.logo span{color:#00d4aa}
 .refresh-badge{font-size:11px;color:#8b949e;padding:4px 8px;background:#0d1117;border-radius:4px;border:1px solid #1a1f2b}
-.header-right{display:flex;gap:8px;align-items:center}
-.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.dot-green{background:#00d4aa;box-shadow:0 0 8px #00d4aa66}
-.dot-yellow{background:#d4a800;box-shadow:0 0 8px #d4a80066}
-.dot-blue{background:#0088d4;box-shadow:0 0 8px #0088d466}
+.header-right{display:flex;gap:10px;align-items:center;font-size:11px}
+.legend{display:flex;gap:12px;align-items:center}
+.legend-item{display:flex;align-items:center;gap:4px}
+.ldot{width:10px;height:10px;border-radius:3px}
+.ldot-g{background:#00d4aa;box-shadow:0 0 6px #00d4aa44}
+.ldot-y{background:#d4a800;box-shadow:0 0 6px #d4a80044}
+.ldot-r{background:#ff4444;box-shadow:0 0 6px #ff444444}
 
-/* ── ARCH OVERVIEW ── */
-.arch-strip{display:flex;justify-content:center;gap:8px;padding:20px 24px;background:#080c14;border-bottom:1px solid #1a1f2b;flex-wrap:wrap;overflow-x:auto}
-.arch-box{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:12px 16px;min-width:100px;text-align:center;transition:all .2s;flex:0 0 auto}
+/* ── SCHEDULE BAR ── */
+.schedule-bar{overflow-x:auto;padding:16px 24px;background:#080c14;border-bottom:1px solid #1a1f2b}
+.schedule-bar h3{font-size:13px;color:#8b949e;margin-bottom:10px;letter-spacing:1px;text-transform:uppercase}
+.timeline{position:relative;min-width:800px;padding:8px 0}
+.timeline-track{position:relative;height:28px;margin-bottom:6px;display:flex;align-items:center}
+.timeline-label{width:60px;font-size:10px;color:#8b949e;flex-shrink:0;text-align:right;padding-right:8px}
+.timeline-bar-wrap{flex:1;position:relative;height:20px;background:#0d1117;border-radius:4px;overflow:visible}
+.timeline-bar{position:absolute;top:2px;height:16px;border-radius:3px;min-width:4px;display:flex;align-items:center;padding:0 4px;font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden}
+.timeline-bar.g{background:#00d4aa33;border:1px solid #00d4aa66;color:#00d4aa}
+.timeline-bar.y{background:#d4a80033;border:1px solid #d4a80066;color:#d4a800}
+.timeline-bar.r{background:#ff444433;border:1px solid #ff444466;color:#ff4444}
+.timeline-bar.d{background:#8b949e22;border:1px solid #8b949e44;color:#8b949e}
+.timeline-marker{position:absolute;top:0;width:2px;height:28px;background:#00d4aa;z-index:5}
+.timeline-marker::after{content:'今天';position:absolute;top:-16px;left:-12px;font-size:9px;color:#00d4aa}
+
+/* ── ARCH ── */
+.arch-strip{display:flex;justify-content:center;gap:8px;padding:16px 24px;background:#080c14;border-bottom:1px solid #1a1f2b;flex-wrap:wrap;overflow-x:auto}
+.arch-box{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:10px 14px;min-width:90px;text-align:center;transition:all .2s;flex:0 0 auto}
 .arch-box:hover{border-color:#00d4aa44;transform:translateY(-2px)}
-.arch-box.active{border-color:#00d4aa;box-shadow:0 0 12px #00d4aa22}
-.arch-label{font-size:10px;letter-spacing:2px;color:#8b949e;text-transform:uppercase;margin-bottom:4px}
-.arch-name{font-size:15px;font-weight:800;color:#fff}
+.arch-label{font-size:10px;letter-spacing:2px;color:#8b949e;text-transform:uppercase}
+.arch-name{font-size:14px;font-weight:800;color:#fff}
 .arch-owner{font-size:10px;color:#00d4aa;margin-top:2px}
-.arch-arrow{color:#1a1f2b;font-size:20px;display:flex;align-items:center}
+.arch-arrow{color:#1a1f2b;font-size:18px;display:flex;align-items:center}
 
 /* ── KPI ── */
-.kpi-strip{display:flex;justify-content:center;gap:clamp(16px,4vw,40px);padding:24px;background:#06080d;flex-wrap:wrap}
-.kpi{text-align:center;padding:12px 20px}
+.kpi-strip{display:flex;justify-content:center;gap:24px;padding:20px 24px;background:#06080d;flex-wrap:wrap}
+.kpi{text-align:center;padding:10px 18px}
 .kpi-num{font-size:28px;font-weight:900;color:#00d4aa}
-.kpi-label{font-size:11px;color:#8b949e;letter-spacing:1px;text-transform:uppercase}
+.kpi-label{font-size:10px;color:#8b949e;letter-spacing:1px}
 
 /* ── KANBAN ── */
-.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;padding:24px;max-width:1400px;margin:0 auto}
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:20px;padding:24px;max-width:1500px;margin:0 auto}
 .column{background:#0d1117;border-radius:12px;border:1px solid #1a1f2b;overflow:hidden}
-.column-header{padding:16px 20px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:10px}
-.column-header .icon{font-size:20px}
-.column-header .col-name{font-weight:800;font-size:14px;color:#fff}
-.column-header .count{font-size:12px;color:#8b949e;background:#06080d;padding:2px 8px;border-radius:10px;margin-left:auto}
-.column-body{padding:12px}
-.card{background:#06080d;border:1px solid #1a1f2b;border-radius:8px;padding:14px;margin-bottom:10px;transition:all .2s;cursor:default}
+.column-header{padding:14px 20px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:8px}
+.column-header .icon{font-size:18px}
+.column-header .col-name{font-weight:800;font-size:13px;color:#fff}
+.column-header .count{font-size:11px;color:#8b949e;background:#06080d;padding:2px 8px;border-radius:10px;margin-left:auto}
+.column-body{padding:10px}
+.card{background:#06080d;border:1px solid #1a1f2b;border-radius:8px;padding:14px;margin-bottom:10px;transition:all .2s;position:relative}
 .card:hover{border-color:#00d4aa44;transform:translateX(2px)}
-.card-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px}
+.card.health-green{border-left:3px solid #00d4aa}
+.card.health-yellow{border-left:3px solid #d4a800}
+.card.health-red{border-left:3px solid #ff4444}
+.card.health-done{border-left:3px solid #8b949e}
+.card-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
 .tag-todo{background:#d4a80022;color:#d4a800}
 .tag-progress{background:#0088d422;color:#0088d4}
-.tag-done{background:#00d4aa22;color:#00d4aa}
 .tag-blocked{background:#ff444422;color:#ff4444}
-.card-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
-.card-desc{font-size:12px;color:#8b949e;line-height:1.5}
-.card-meta{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:11px;color:#8b949e}
+.tag-done{background:#00d4aa22;color:#00d4aa}
+.card-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.card-desc{font-size:11px;color:#8b949e;line-height:1.5;margin-bottom:6px}
+.card-schedule{display:flex;align-items:center;gap:8px;font-size:10px;margin-bottom:6px;flex-wrap:wrap}
+.card-schedule .date{color:#8b949e;font-family:monospace}
+.card-schedule .health-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card-schedule .health-label{font-weight:700;font-size:10px}
+.hdot-g{background:#00d4aa;box-shadow:0 0 6px #00d4aa66}
+.hdot-y{background:#d4a800;box-shadow:0 0 6px #d4a80066}
+.hdot-r{background:#ff4444;box-shadow:0 0 6px #ff444466}
+.hlabel-g{color:#00d4aa}.hlabel-y{color:#d4a800}.hlabel-r{color:#ff4444}
+.card-meta{display:flex;gap:8px;align-items:center;font-size:10px;color:#8b949e}
 .card-owner{color:#00d4aa;font-weight:600}
-.card-repo{color:#8b949e;font-size:10px;font-family:monospace}
+.card-repo{font-size:9px;font-family:monospace}
 
 /* ── TEAM ── */
-.team-bar{display:flex;justify-content:center;gap:24px;padding:16px 24px;background:#080c14;border-top:1px solid #1a1f2b;border-bottom:1px solid #1a1f2b;flex-wrap:wrap}
-.team-member{display:flex;align-items:center;gap:8px;padding:8px 16px;background:#0d1117;border-radius:8px;border:1px solid #1a1f2b}
-.team-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff}
-.team-info .name{font-size:13px;font-weight:700;color:#fff}
+.team-bar{display:flex;justify-content:center;gap:20px;padding:14px 24px;background:#080c14;border-top:1px solid #1a1f2b;border-bottom:1px solid #1a1f2b;flex-wrap:wrap}
+.team-member{display:flex;align-items:center;gap:8px;padding:6px 14px;background:#0d1117;border-radius:8px;border:1px solid #1a1f2b}
+.team-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#fff}
+.team-info .name{font-size:12px;font-weight:700;color:#fff}
 .team-info .role{font-size:10px;color:#8b949e}
 
-/* ── FOOTER ── */
-.footer{text-align:center;padding:24px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b}
+.footer{text-align:center;padding:20px;color:#8b949e;font-size:10px;border-top:1px solid #1a1f2b}
 
 @media(max-width:768px){
-  .kanban{grid-template-columns:1fr;padding:12px}
-  .arch-strip{gap:4px;padding:12px}
-  .arch-box{min-width:80px;padding:8px 10px}
-  .arch-name{font-size:13px}
+  .kanban{grid-template-columns:1fr;padding:10px}
+  .arch-strip{gap:4px;padding:10px}
+  .arch-box{min-width:70px;padding:6px 8px}
+  .schedule-bar{padding:10px}
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-left">
     <div class="logo">Z-<span>MAX</span> · 任务看板</div>
-    <div class="refresh-badge">🔄 自动刷新 · <span id="refresh-time">--</span></div>
+    <div class="refresh-badge">🔄 <span id="refresh-time">--</span></div>
   </div>
   <div class="header-right">
-    <span style="color:#00d4aa;font-size:12px">静界科技</span>
-    <span class="dot dot-green"></span>
-    <span style="font-size:11px;color:#8b949e">Sys2:4090</span>
-    <span class="dot dot-yellow"></span>
-    <span style="font-size:11px;color:#8b949e">Sys1:4060</span>
-    <span class="dot dot-blue"></span>
-    <span style="font-size:11px;color:#8b949e">Edge:Orin</span>
+    <div class="legend">
+      <div class="legend-item"><span class="ldot ldot-g"></span> 正常</div>
+      <div class="legend-item"><span class="ldot ldot-y"></span> 预警</div>
+      <div class="legend-item"><span class="ldot ldot-r"></span> 阻塞/超期</div>
+    </div>
+    <span style="color:#00d4aa">静界科技</span>
   </div>
 </div>
 
-<!-- ARCHITECTURE -->
-<div class="arch-strip" id="arch">
-  <div class="arch-box active">
-    <div class="arch-label">Sys0 · 框架</div>
-    <div class="arch-name">Z-MAX Core</div>
-    <div class="arch-owner">xspace</div>
-  </div>
+<!-- TIMELINE -->
+<div class="schedule-bar" id="schedule">
+  <h3>📅 时间计划 · Time Schedule</h3>
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<!-- ARCH -->
+<div class="arch-strip">
+  <div class="arch-box"><div class="arch-label">Sys0</div><div class="arch-name">Z-MAX Core</div><div class="arch-owner">xspace</div></div>
   <div class="arch-arrow">→</div>
-  <div class="arch-box">
-    <div class="arch-label">Sys1 · ACT</div>
-    <div class="arch-name">动作模板</div>
-    <div class="arch-owner">xspace · 4060</div>
-  </div>
-  <div class="arch-arrow">↗</div>
-  <div class="arch-box">
-    <div class="arch-label">Sys11 · SmolVLA</div>
-    <div class="arch-name">潜空间压缩</div>
-    <div class="arch-owner">xspace</div>
-  </div>
-  <div class="arch-arrow">↗</div>
-  <div class="arch-box">
-    <div class="arch-label">Sys12 · LeWorld</div>
-    <div class="arch-name">世界模型</div>
-    <div class="arch-owner">xspace</div>
-  </div>
+  <div class="arch-box"><div class="arch-label">Sys1</div><div class="arch-name">ACT 4060</div><div class="arch-owner">xspace</div></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-box"><div class="arch-label">Sys11</div><div class="arch-name">SmolVLA</div><div class="arch-owner">xspace</div></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-box"><div class="arch-label">Sys12</div><div class="arch-name">LeWorld</div><div class="arch-owner">xspace</div></div>
   <div class="arch-arrow">⇄</div>
-  <div class="arch-box" style="border-color:#00d4aa">
-    <div class="arch-label">Sys2 · 云端大脑</div>
-    <div class="arch-name">VTLA+GR00T</div>
-    <div class="arch-owner">web · 4090</div>
-  </div>
+  <div class="arch-box" style="border-color:#00d4aa"><div class="arch-label">Sys2</div><div class="arch-name">VTLA+GR00T</div><div class="arch-owner">web·4090</div></div>
   <div class="arch-arrow">→</div>
-  <div class="arch-box">
-    <div class="arch-label">Edge · 端侧</div>
-    <div class="arch-name">Mac/Orin</div>
-    <div class="arch-owner">小芳</div>
-  </div>
+  <div class="arch-box"><div class="arch-label">Edge</div><div class="arch-name">Mac/Orin</div><div class="arch-owner">小芳</div></div>
 </div>
 
 <!-- KPI -->
-<div class="kpi-strip" id="kpi">
+<div class="kpi-strip">
   <div class="kpi"><div class="kpi-num" id="kpi-total">--</div><div class="kpi-label">总任务</div></div>
   <div class="kpi"><div class="kpi-num" id="kpi-todo">--</div><div class="kpi-label">待办</div></div>
   <div class="kpi"><div class="kpi-num" id="kpi-progress">--</div><div class="kpi-label">进行中</div></div>
   <div class="kpi"><div class="kpi-num" id="kpi-done">--</div><div class="kpi-label">已完成</div></div>
+  <div class="kpi"><div class="kpi-num" id="kpi-red">--</div><div class="kpi-label" style="color:#ff4444">阻塞/超期</div></div>
 </div>
 
 <!-- TEAM -->
 <div class="team-bar">
-  <div class="team-member">
-    <div class="team-avatar" style="background:#00d4aa33">静</div>
-    <div class="team-info"><div class="name">xspace (静静)</div><div class="role">总工/总设/总架构 · 4060 WSL</div></div>
-  </div>
-  <div class="team-member">
-    <div class="team-avatar" style="background:#0088d433">网</div>
-    <div class="team-info"><div class="name">web</div><div class="role">项目经理 · 4090 · 前端+训练</div></div>
-  </div>
-  <div class="team-member">
-    <div class="team-avatar" style="background:#d4a80033">芳</div>
-    <div class="team-info"><div class="name">Hermes小芳</div><div class="role">现场工程师 · 测试专家 · Mac/Orin</div></div>
-  </div>
+  <div class="team-member"><div class="team-avatar" style="background:#00d4aa33">静</div><div class="team-info"><div class="name">xspace (静静)</div><div class="role">总工/总设/总架构</div></div></div>
+  <div class="team-member"><div class="team-avatar" style="background:#0088d433">网</div><div class="team-info"><div class="name">web</div><div class="role">项目经理·产品经理·模型专家·4090</div></div></div>
+  <div class="team-member"><div class="team-avatar" style="background:#d4a80033">芳</div><div class="team-info"><div class="name">Hermes小芳</div><div class="role">测试专家·Mac/Orin</div></div></div>
 </div>
 
-<!-- KANBAN -->
-<div class="kanban" id="kanban">
-  <!-- Columns populated by JS -->
-</div>
-
-<div class="footer">
-  Z-MAX Project · 静界科技 Jingjie Tech · 看板更新时间: <span id="update-time">🔄 2026-07-12 12:01 CST | 🔄 2026-07-12 11:50 CST | --</span>
-</div>
+<div class="kanban" id="kanban"></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">--</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
-// Z-MAX 任务看板数据
+// TASKS — 含 start/end 日期
 // ═══════════════════════════════════════
 const TASKS = [
-  // ── xspace (静静) - 总工/总设/总架构 ──
-  {id:"X01",owner:"xspace",status:"progress",tag:"Sys0",title:"🏗️ Sys0 框架设计 [重大决定]",desc:"Sys0/1/2 整体架构定义，统一通信协议，子系统接口规范。所有重大技术决定由 xspace 审批。",repo:"lerobot-smolvla-lew main"},
-  {id:"X02",owner:"xspace",status:"progress",tag:"Sys1",title:"Sys1 ACT 标准模板底座",desc:"Action Chunking Transformer 在4060上运行，兼容 Sys11 SmolVLA 和 Sys12 LeWorldModel",repo:"lerobot-smolvla-lew main"},
-  {id:"X03",owner:"xspace",status:"progress",tag:"GUI",title:"Z-MAX GUI 工程更新 [重大决定]",desc:"LeRobot Studio GUI 界面设计，训练监控面板，推理可视化。需 xspace 审批设计。",repo:"lerobot-smolvla-lew main"},
-  {id:"X04",owner:"xspace",status:"todo",tag:"Sys11",title:"Sys11 SmolVLA 兼容 Sys2 切换",desc:"Sys1 ACT 模板通过 API 切换到 Sys2 的 VTLA/GR00T。4060只调用接口。",repo:"lerobot-smolvla-lew main"},
-  {id:"X05",owner:"xspace",status:"todo",tag:"Sys12",title:"Sys12 LeWorldModel 集成验证",desc:"世界模型 + 空间感知与 Sys1 联调",repo:"lerobot-smolvla-lew main"},
-  {id:"X06",owner:"xspace",status:"todo",tag:"Review",title:"审批 web 分支 PR [重大决定]",desc:"审查 web 分支的 Sys2 推理引擎代码，批准合并到 main。需 xspace 最终决定。",repo:"lerobot-smolvla-lew"},
-  {id:"X07",owner:"xspace",status:"todo",tag:"Deploy",title:"4060 WSL 环境部署",desc:"4060上部署 Sys1 ACT + SmolVLA + LeWorldModel 完整环境",repo:"lerobot-smolvla-lew main"},
-
-  // ── web (项目经理/4090) ──
-  {id:"W01",owner:"web",status:"done",tag:"Sys2",title:"✅ Sys2 VTLA 推理引擎",desc:"Vision-Touch-Language-Action 模型封装 (~450M)，触觉编码器+SmolVLA。验证报告: 编译通过, 接口完整。",repo:"lerobot-smolvla-lew web"},
-  {id:"W02",owner:"web",status:"done",tag:"Sys2",title:"✅ Sys2 GR00T N1.7 推理引擎",desc:"NVIDIA GR00T N1.7 封装 (~7B)，支持16种具身形态。验证报告: 代码OK, 待模型权重。",repo:"lerobot-smolvla-lew web"},
-  {id:"W03",owner:"web",status:"done",tag:"Sys2",title:"✅ Sys2 gRPC + HTTP 服务",desc:"JSON-RPC 服务 (port 50052/8080)，Sys2Client 供 Sys1 远程调用。验证报告: 编译OK, 待联调。",repo:"lerobot-smolvla-lew web"},
-  {id:"W04",owner:"web",status:"progress",tag:"PM",title:"Z-MAX 任务看板 v1",desc:"项目经理看板 kanban.html，汇总三人所有任务，部署到 datadrive.world。Cron每小时更新。",repo:"zmax-website"},
-  {id:"W05",owner:"web",status:"todo",tag:"Sys2",title:"下载 GR00T 预训练权重",desc:"从 HuggingFace 下载 GR00T N1.7 base model → 4090",repo:"Isaac-GR00T"},
-  {id:"W06",owner:"web",status:"todo",tag:"Sys2",title:"搭建 GR00T 训练环境",desc:"运行 uv sync --all-extras 安装 Isaac-GR00T 依赖",repo:"Isaac-GR00T"},
-  {id:"W07",owner:"web",status:"todo",tag:"Train",title:"4090 VTLA 微调训练",desc:"基于 xspace 架构在 4090 上微调 VTLA 模型。完成后需出训练验证报告。",repo:"lerobot-smolvla-lew web"},
-  {id:"W08",owner:"web",status:"todo",tag:"Train",title:"4090 GR00T 微调训练",desc:"在 4090 上对 GR00T N1.7 fine-tune。完成后需出训练验证报告。",repo:"Isaac-GR00T"},
-  {id:"W09",owner:"web",status:"todo",tag:"Integ",title:"Sys1↔Sys2 联调验证",desc:"4060 Sys1 通过 gRPC 调用 4090 Sys2。完成后需出联调验证报告。",repo:"lerobot-smolvla-lew"},
-
-  // ── Hermes小芳 (现场工程师/测试专家) ──
-  {id:"F01",owner:"小芳",status:"progress",tag:"Mac",title:"Mac 分支开发环境搭建",desc:"在 Mac 上搭建 lerobot-smolvla-lew mac 分支开发环境。",repo:"lerobot-smolvla-lew mac"},
-  {id:"F02",owner:"小芳",status:"todo",tag:"Edge",title:"端侧模型部署测试 (Mac)",desc:"SmolVLA量化模型→Mac端侧，推理延迟测试。需出测试报告 (延迟/精度/内存)。",repo:"lerobot-smolvla-lew mac",test:true},
-  {id:"F03",owner:"小芳",status:"todo",tag:"Edge",title:"端侧模型部署测试 (Orin Nano)",desc:"模型→Orin Nano端侧推理验证。需出测试报告 (延迟/功耗/精度)。",repo:"lerobot-smolvla-lew mac",test:true},
-  {id:"F04",owner:"小芳",status:"todo",tag:"HW",title:"硬件适配测试 (SR5-C+Z700)",desc:"机械臂真实硬件对接测试 (珞石SR5-C, Z700轮式双臂)。需出硬件适配测试报告。",repo:"lerobot-smolvla-lew mac",test:true},
-  {id:"F05",owner:"小芳",status:"todo",tag:"Test",title:"全链路端到端测试 [小芳主导]",desc:"Sys1(4060)→Sys2(4090)→Edge(Orin)全链路端到端测试。需出完整测试报告。",repo:"lerobot-smolvla-lew mac",test:true},
-  {id:"F06",owner:"小芳",status:"todo",tag:"TCP",title:"TCP Bridge 通信测试",desc:"PC-Orin 通信桥接 domain23 数据转发。需出通信测试报告。",repo:"lerobot-smolvla-lew mac",test:true},
+  // xspace
+  {id:"X01",owner:"xspace",status:"progress",tag:"Sys0",title:"🏗️ Sys0 框架设计",desc:"整体架构+通信协议+接口规范。xspace审批。",repo:"main",start:"7/12",end:"7/20"},
+  {id:"X02",owner:"xspace",status:"progress",tag:"Sys1",title:"Sys1 ACT 模板底座",desc:"4060运行ACT，兼容Sys11/12",repo:"main",start:"7/12",end:"7/22"},
+  {id:"X03",owner:"xspace",status:"progress",tag:"GUI",title:"GUI工程更新",desc:"Studio界面+训练监控+可视化",repo:"main",start:"7/12",end:"7/25"},
+  {id:"X04",owner:"xspace",status:"todo",tag:"Sys11",title:"Sys11↔Sys2 切换接口",desc:"ACT→Sys2 VTLA/GR00T API调用",repo:"main",start:"7/20",end:"7/28"},
+  {id:"X05",owner:"xspace",status:"todo",tag:"Sys12",title:"LeWorldModel 集成",desc:"世界模型+Sys1联调",repo:"main",start:"7/22",end:"7/30"},
+  {id:"X06",owner:"xspace",status:"todo",tag:"Review",title:"审批web分支PR [重大]",desc:"审查Sys2代码，批准合并",repo:"main",start:"7/12",end:"7/14"},
+  {id:"X07",owner:"xspace",status:"todo",tag:"Deploy",title:"4060 WSL环境部署",desc:"Sys1+SmolVLA+LeWorld完整环境",repo:"main",start:"7/14",end:"7/18"},
+  // web
+  {id:"W01",owner:"web",status:"done",tag:"Sys2",title:"✅ VTLA推理引擎",desc:"~450M触觉VLA。验证:编译OK",repo:"web",start:"7/10",end:"7/12"},
+  {id:"W02",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T N1.7引擎",desc:"~7B封装16种具身。验证:待权重",repo:"web",start:"7/10",end:"7/12"},
+  {id:"W03",owner:"web",status:"done",tag:"Sys2",title:"✅ gRPC+HTTP服务",desc:"port 50052/8080。验证:编译OK",repo:"web",start:"7/11",end:"7/12"},
+  {id:"W04",owner:"web",status:"progress",tag:"PM",title:"任务看板v2 (本页)",desc:"时间线+健康色+自动部署",repo:"zmax",start:"7/12",end:"7/12"},
+  {id:"W05",owner:"web",status:"todo",tag:"Sys2",title:"下载GR00T权重",desc:"HF→4090 GR00T N1.7",repo:"gr00t",start:"7/13",end:"7/14"},
+  {id:"W06",owner:"web",status:"todo",tag:"Sys2",title:"搭建GR00T训练环境",desc:"uv sync --all-extras",repo:"gr00t",start:"7/14",end:"7/15"},
+  {id:"W07",owner:"web",status:"todo",tag:"Train",title:"4090 VTLA微调",desc:"出训练验证报告",repo:"web",start:"7/16",end:"7/22"},
+  {id:"W08",owner:"web",status:"todo",tag:"Train",title:"4090 GR00T微调",desc:"出训练验证报告",repo:"gr00t",start:"7/20",end:"7/30"},
+  {id:"W09",owner:"web",status:"todo",tag:"Integ",title:"Sys1↔Sys2联调",desc:"4060→4090 gRPC端到端",repo:"main",start:"7/18",end:"7/25"},
+  {id:"W10",owner:"web",status:"todo",tag:"Web",title:"光模块工厂调研页",desc:"真实场景需求调研表单",repo:"zmax",start:"7/13",end:"7/15"},
+  // 小芳
+  {id:"F01",owner:"小芳",status:"progress",tag:"Mac",title:"Mac分支环境搭建",desc:"Mac上部署lerobot开发环境",repo:"mac",start:"7/12",end:"7/16"},
+  {id:"F02",owner:"小芳",status:"todo",tag:"Edge",title:"端侧测试(Mac)",desc:"SmolVLA量化→Mac。测试报告",repo:"mac",start:"7/16",end:"7/22"},
+  {id:"F03",owner:"小芳",status:"todo",tag:"Edge",title:"端侧测试(Orin Nano)",desc:"模型→Orin推理。测试报告",repo:"mac",start:"7/20",end:"7/28"},
+  {id:"F04",owner:"小芳",status:"todo",tag:"HW",title:"硬件适配(SR5+Z700)",desc:"机械臂对接。测试报告",repo:"mac",start:"7/22",end:"8/5"},
+  {id:"F05",owner:"小芳",status:"todo",tag:"Test",title:"全链路端到端测试",desc:"Sys1→Sys2→Edge。测试报告",repo:"mac",start:"7/28",end:"8/10"},
+  {id:"F06",owner:"小芳",status:"todo",tag:"TCP",title:"TCP Bridge测试",desc:"PC-Orin domain23转发。报告",repo:"mac",start:"7/15",end:"7/20"},
 ];
 
 // ═══════════════════════════════════════
-// 渲染
+// 健康检查
+// ═══════════════════════════════════════
+function parseDate(d) { const [m,d2]=d.split('/'); return new Date(2026,m-1,parseInt(d2)); }
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+function getHealth(t) {
+  if (t.status === 'done') return 'done';
+  const end = parseDate(t.end);
+  const diff = (end - TODAY) / (1000*60*60*24);
+  if (diff < 0) return 'red';        // 超期
+  if (diff <= 3) return 'yellow';     // 3天内到期
+  return 'green';                      // 正常
+}
+
+// ═══════════════════════════════════════
+// 渲染时间线 (Gantt)
+// ═══════════════════════════════════════
+function renderTimeline() {
+  const allDates = TASKS.flatMap(t => [parseDate(t.start), parseDate(t.end)]);
+  const minDate = new Date(Math.min(...allDates));
+  const maxDate = new Date(Math.max(...allDates));
+  const totalDays = Math.max((maxDate - minDate)/(1000*60*60*24) + 2, 1);
+
+  let html = '';
+  // Today marker
+  const todayPct = ((TODAY - minDate) / (maxDate - minDate)) * 100;
+
+  const owners = ['xspace','web','小芳'];
+  const ownerLabels = {xspace:'静静',web:'web',小芳:'小芳'};
+  const ownerColors = {xspace:'#00d4aa',web:'#0088d4',小芳:'#d4a800'};
+
+  for (const o of owners) {
+    const tasks = TASKS.filter(t => t.owner === o && t.status !== 'done');
+    if (!tasks.length) continue;
+    html += `<div class="timeline-track">`;
+    html += `<div class="timeline-label" style="color:${ownerColors[o]}">${ownerLabels[o]}</div>`;
+    html += `<div class="timeline-bar-wrap">`;
+    // Today line
+    html += `<div class="timeline-marker" style="left:${todayPct}%"></div>`;
+    for (const t of tasks) {
+      const start = parseDate(t.start);
+      const end = parseDate(t.end);
+      const left = ((start - minDate) / (maxDate - minDate)) * 100;
+      const width = Math.max(((end - start) / (maxDate - minDate)) * 100, 2);
+      const health = getHealth(t);
+      const hcls = health==='red'?'r':health==='yellow'?'y':'g';
+      html += `<div class="timeline-bar ${hcls}" style="left:${left}%;width:${width}%" title="${t.id}: ${t.title} (${t.start}→${t.end})">${t.id}</div>`;
+    }
+    html += `</div></div>`;
+  }
+  document.getElementById('timeline').innerHTML = html;
+}
+
+// ═══════════════════════════════════════
+// 渲染看板
 // ═══════════════════════════════════════
 const STATUS_MAP = {
-  todo: {col:"待办",tag:"tag-todo",order:0},
-  progress: {col:"进行中",tag:"tag-progress",order:1},
-  blocked: {col:"阻塞",tag:"tag-blocked",order:2},
-  done: {col:"已完成",tag:"tag-done",order:3},
+  todo: {col:"待办",tag:"tag-todo",icon:"📋",order:0},
+  progress: {col:"进行中",tag:"tag-progress",icon:"🔧",order:1},
+  blocked: {col:"阻塞",tag:"tag-blocked",icon:"🚫",order:2},
+  done: {col:"已完成",tag:"tag-done",icon:"✅",order:3},
 };
-const TAG_LABELS = {todo:"📋 待办",progress:"🔧 进行中",blocked:"🚫 阻塞",done:"✅ 完成"};
 
-function render() {
+function renderKanban() {
   const cols = {};
-  for (const [k,v] of Object.entries(STATUS_MAP)) {
-    cols[k] = [];
-  }
-
-  for (const t of TASKS) {
-    cols[t.status] = cols[t.status] || [];
-    cols[t.status].push(t);
-  }
+  for (const [k] of Object.entries(STATUS_MAP)) cols[k] = [];
+  for (const t of TASKS) cols[t.status].push(t);
 
   // KPI
   document.getElementById('kpi-total').textContent = TASKS.length;
-  document.getElementById('kpi-todo').textContent = (cols.todo||[]).length;
-  document.getElementById('kpi-progress').textContent = (cols.progress||[]).length;
-  document.getElementById('kpi-done').textContent = (cols.done||[]).length;
+  document.getElementById('kpi-todo').textContent = cols.todo.length;
+  document.getElementById('kpi-progress').textContent = cols.progress.length;
+  document.getElementById('kpi-done').textContent = cols.done.length;
+  const reds = TASKS.filter(t => getHealth(t) === 'red').length;
+  document.getElementById('kpi-red').textContent = reds;
 
-  // Kanban
+  // Health helpers
+  const hclsMap = {green:'health-green',yellow:'health-yellow',red:'health-red',done:'health-done'};
+  const hdotMap = {green:'hdot-g',yellow:'hdot-y',red:'hdot-r'};
+  const hlabMap = {green:'hlabel-g',yellow:'hlabel-y',red:'hlabel-r'};
+  const htxtMap = {green:'🟢 正常',yellow:'🟡 预警',red:'🔴 超期',done:'⚫ 完成'};
+  const avColors = {xspace:'#00d4aa33',web:'#0088d433','小芳':'#d4a80033'};
+  const avLets = {xspace:'静',web:'网','小芳':'芳'};
+
   let html = '';
-  const ordered = ['todo','progress','blocked','done'];
-  for (const status of ordered) {
-    const tasks = cols[status] || [];
+  for (const status of ['todo','progress','blocked','done']) {
+    const tasks = cols[status];
     const info = STATUS_MAP[status];
-    html += `<div class="column">
-      <div class="column-header">
-        <span class="icon">${TAG_LABELS[status].split(' ')[0]}</span>
-        <span class="col-name">${info.col}</span>
-        <span class="count">${tasks.length}</span>
-      </div>
-      <div class="column-body">`;
+    html += `<div class="column"><div class="column-header"><span class="icon">${info.icon}</span><span class="col-name">${info.col}</span><span class="count">${tasks.length}</span></div><div class="column-body">`;
 
     for (const t of tasks) {
-      const avatarColors = {xspace:'#00d4aa33',web:'#0088d433','小芳':'#d4a80033'};
-      const avatarLetters = {xspace:'静',web:'网','小芳':'芳'};
-      html += `<div class="card">
+      const h = getHealth(t);
+      const hcls = hclsMap[h];
+      html += `<div class="card ${hcls}">
         <span class="card-tag ${info.tag}">${t.tag}</span>
         <div class="card-title">${t.id} · ${t.title}</div>
         <div class="card-desc">${t.desc}</div>
+        <div class="card-schedule">
+          <span class="date">📅 ${t.start} → ${t.end}</span>
+          <span class="health-dot ${hdotMap[h]||''}"></span>
+          <span class="health-label ${hlabMap[h]||''}">${htxtMap[h]}</span>
+        </div>
         <div class="card-meta">
-          <span style="background:${avatarColors[t.owner]||'#333'};color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">${avatarLetters[t.owner]||'?'}</span>
+          <span style="background:${avColors[t.owner]};color:#fff;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${avLets[t.owner]}</span>
           <span class="card-owner">${t.owner}</span>
           <span class="card-repo">📦 ${t.repo}</span>
         </div>
@@ -260,41 +304,17 @@ function render() {
     html += `</div></div>`;
   }
   document.getElementById('kanban').innerHTML = html;
+}
 
-  // Time
-  const now = new Date();
-  const ts = now.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'});
+function render() {
+  renderTimeline();
+  renderKanban();
+  const ts = new Date().toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'});
   document.getElementById('update-time').textContent = ts;
   document.getElementById('refresh-time').textContent = ts;
 }
 render();
-
-// Auto refresh every 60s
 setInterval(render, 60000);
 </script>
-
-
-<!-- AUTO-GENERATED STATUS
-{
-  "zmax-website": {
-    "branch": "main",
-    "last_commit": "0a15ee4 feat: Z-MAX 任务看板 v1 — 项目经理看板 + 每小时自动更新",
-    "dirty": false,
-    "modified": ""
-  },
-  "lerobot-smolvla-lew": {
-    "branch": "web",
-    "last_commit": "621bbcb4 feat(web): Sys2 真实推理引擎 — VTLA + GR00T N1.7 + gRPC服务",
-    "dirty": false,
-    "modified": ""
-  },
-  "Isaac-GR00T": {
-    "branch": "main",
-    "last_commit": "9c7e746 - SimplerEnv and Robocasa setup script fixes.",
-    "dirty": false,
-    "modified": ""
-  }
-}
--->
 </body>
 </html>
