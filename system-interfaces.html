@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>系统接口总览 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:12px}
+th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:11px;margin:10px 0}
+code{font-size:11px}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
+.arch{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:16px 0}
+.arch-box{flex:1;min-width:120px;background:#0d1117;border:2px solid #1a1f2b;border-radius:10px;padding:14px;text-align:center}
+.arch-box.sys0{border-color:#d4a800}.arch-box.sys1{border-color:#58a6ff}.arch-box.sys2{border-color:#00d4aa}.arch-box.sys12{border-color:#a371f7}
+.arch-box h3{font-size:14px;margin-bottom:6px}.arch-box p{font-size:11px;color:#8b949e}
+.arrow-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font-size:11px;color:#8b949e;margin:4px 0}
+.api-method{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700;margin-right:4px}
+.get{background:#00d4aa33;color:#00d4aa}.post{background:#58a6ff33;color:#58a6ff}.grpc{background:#a371f733;color:#a371f7}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🔌 Z-MAX 系统接口总览</h1>
+<p class="sub">Sys0 · Sys1 · Sys2 · Sys11 · Sys12 全切换接口 · 2026-07-12</p>
+
+<h2>一、系统架构</h2>
+<div class="arch">
+<div class="arch-box sys0"><h3>Sys0</h3><p>Orin Nano<br>ROS2·SR5-C<br>6轴·8传感器</p></div>
+<div class="arch-box sys1"><h3>Sys1</h3><p>4060 WSL<br>ACT 1.2ms<br>192.168.23.26</p></div>
+<div class="arch-box sys12"><h3>Sys12</h3><p>4060 WSL<br>LeWorld 1.9ms<br>世界模型</p></div>
+<div class="arch-box sys2"><h3>Sys2</h3><p>4090<br>VTLA 284ms<br>10.23.24.0:50052</p></div>
+</div>
+<div class="arrow-row">
+Sys0(Orin) ──gRPC──→ Sys1(4060) ──HTTP──→ Sys2(4090) ──返回→ Sys0
+</div>
+
+<h2>二、引擎切换 (set_engine)</h2>
+<pre><code># xspace 实现 · GUI下拉框五选一
+set_engine('act')      # Sys1 本地 · 52M · 1.2ms · 800FPS
+set_engine('smolvla')  # Sys11 本地 · 450M · 50ms
+set_engine('lew')      # Sys12 本地 · 5.5M · 1.9ms
+set_engine('vtla')     # Sys2 远程 · 450M · 284ms · gRPC→10.23.24.0:50052
+set_engine('groot')    # Sys2 远程 · 7B · 1137ms · gRPC→10.23.24.0:50052</code></pre>
+
+<h2>三、Sys1 ↔ Sys2 切换接口</h2>
+<table>
+<tr><th>引擎</th><th>位置</th><th>IP:Port</th><th>协议</th><th>延迟</th><th>VRAM</th></tr>
+<tr><td>ACT</td><td>Sys1 (4060)</td><td>本地</td><td>内存</td><td>1.2ms</td><td>—</td></tr>
+<tr><td>SmolVLA</td><td>Sys11 (4060)</td><td>本地</td><td>内存</td><td>50ms</td><td>—</td></tr>
+<tr><td>LeWorld</td><td>Sys12 (4060)</td><td>本地</td><td>内存</td><td>1.9ms</td><td>0.03GB</td></tr>
+<tr><td>VTLA</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>284ms</td><td>0.93GB</td></tr>
+<tr><td>GR00T</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>1137ms</td><td>6.4GB</td></tr>
+</table>
+
+<h2>四、Sys2 HTTP API (4090:50052)</h2>
+<div class="card">
+<h3 style="color:#00d4aa;margin-bottom:8px"><span class="api-method get">GET</span> /health</h3>
+<pre><code>curl http://10.23.24.0:50052/health
+# → {"status":"ok","gpu":"RTX 4090","vram_gb":25.3,"models":["vtla"],"ready":true}</code></pre>
+</div>
+<div class="card">
+<h3 style="color:#00d4aa;margin-bottom:8px"><span class="api-method post">POST</span> /predict</h3>
+<pre><code>curl -X POST http://10.23.24.0:50052/predict \
+  -H 'Content-Type: application/json' \
+  -d '{"engine":"vtla","observation":{"task":"insert optical module"}}'
+# → {"action":[0.12,-0.03,0.45,...],"model_used":"vtla","latency_ms":284}</code></pre>
+</div>
+
+<h2>五、gRPC 断连回退</h2>
+<pre><code># xspace implement · 三引擎自动降级
+VTLA unreachable → 自动回退 ACT (零动作安全输出)
+GR00T unreachable → 自动回退 ACT
+# 连接恢复 → 自动切回远程引擎</code></pre>
+
+<h2>六、Sys2 服务端启动 (4090)</h2>
+<pre><code>cd /root/lerobot-smolvla-lew
+~/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 sys2_prod_server.py
+# 服务端代码:
+#   - modeling_zmax_sys2.py   VTLA+GR00T推理引擎
+#   - sys2_prod_server.py     HTTP JSON-RPC服务
+#   - configuration_zmax_sys2.py  模型配置</code></pre>
+
+<h2>七、Sys2 客户端调用 (4060侧)</h2>
+<pre><code># xspace implement · _get_grpc_client() 懒加载
+from src.lerobot.policies.zmax_sys2.sys2_server import Sys2Client
+client = Sys2Client("10.23.24.0:50052")
+result = client.infer("vtla", observation)
+
+# 内部调用 _infer_remote():
+#   try: gRPC→4090
+#   except: return ACT zero_action (断连回退)</code></pre>
+
+<h2>八、Orin → Sys1 → Sys2 全链路</h2>
+<pre><code>Orin(抓取位姿)──→ Sys1 ACT(1.2ms)──→ 抓取放置
+                                    └──→ Sys2 VTLA(284ms)──→ 力控插拔
+Orin(AOI×6)  ←── 测试结果 ←── 拔出 ←── </code></pre>
+
+<div class="footer">Z-MAX · 静界科技 · 系统接口总览 v1.0 · 2026-07-12</div>
+</div>
+</body>
+</html>
