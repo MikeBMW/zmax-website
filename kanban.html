@@ -158,7 +158,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <div class="kanban" id="kanban"></div>
-<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 18:02 CST | 🔄 2026-07-12 17:01 CST | 🔄 2026-07-12 16:01 CST | 🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 19:01 CST | 🔄 2026-07-12 18:02 CST | 🔄 2026-07-12 17:01 CST | 🔄 2026-07-12 16:01 CST | 🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -181,6 +181,7 @@ const TASKS = [
   {id:"X10",owner:"xspace",status:"done",tag:"Patent",title:"✅ 专利补充GUI+文档",desc:"帮助菜单→专利嵌入式面板弹出6项权利要求。§九本地-云端统一推理完成",repo:"main",start:"7/12",end:"7/12"},
   {id:"X11",owner:"xspace",status:"done",tag:"Docs",title:"✅ 整体解决方案+产品介绍",desc:"docs文档已推送。web前端据此展示",repo:"main",start:"7/12",end:"7/12"},
   {id:"X15",owner:"xspace",status:"progress",tag:"Docs",title:"解决方案PPTX + GUI前端对齐 [收尾]",desc:"统稿PPTX+确保GUI功能与前端描述一致。见frontend-check.html",repo:"main",start:"7/12",end:"7/13"},
+  {id:"X16",owner:"xspace",status:"done",tag:"Docs",title:"✅ 全员归档完成",desc:"xspace GUI main✅ web zmax-website+web分支✅ 小芳 mac分支✅。三仓全推,记忆技能文档完备",repo:"all",start:"7/12",end:"7/12"},
   // web
   {id:"W01",owner:"web",status:"done",tag:"Sys2",title:"✅ VTLA推理引擎",desc:"~450M触觉VLA。验证:编译OK",repo:"web",start:"7/10",end:"7/12"},
   {id:"W02",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T N1.7引擎",desc:"~7B封装16种具身。权重已下载6.5GB+SmolVLA 873MB",repo:"web",start:"7/10",end:"7/12"},
@@ -344,11 +345,12 @@ setInterval(render, 60000);
 
 
 
+
 <!-- AUTO-GENERATED STATUS
 {
   "zmax-website": {
     "branch": "main",
-    "last_commit": "f52e871 X14 done: 联调验证通过 — health✅ VTLA 280ms✅",
+    "last_commit": "4fb2b5c 收尾: 前端逻辑校验报告 + GUI对齐任务(X15/F12)",
     "dirty": true,
     "modified": "M kanban.html"
   },
@@ -365,7 +367,9 @@ setInterval(render, 60000);
     "branch": "main",
     "last_commit": "9c7e746 - SimplerEnv and Robocasa setup script fixes.",
     "dirty": true,
-    "modified": "M pyproject.toml"
+    "modified": "M gr00t/configs/model/gr00t_n1d7.py
+ M pyproject.toml
+ M uv.lock"
   }
 }
 -->
