@@ -155,7 +155,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <div class="kanban" id="kanban"></div>
-<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 16:01 CST | 🔄 2026-07-12 15:01 CST | 🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -163,7 +163,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 // ═══════════════════════════════════════
 const TASKS = [
   // xspace
-  {id:"X01",owner:"xspace",status:"progress",tag:"Sys0",title:"🏗️ Sys0 框架设计",desc:"整体架构+通信协议+接口规范。xspace审批。",repo:"main",start:"7/12",end:"7/20"},
+  {id:"X01",owner:"xspace",status:"done",tag:"Sys0",title:"✅ Sys0 框架设计",desc:"八章全:Orin→ROS2→SR5-C+通信+安全L1-L5+验收。docs/Z-MAX-Sys0-框架设计.md",repo:"main",start:"7/12",end:"7/12"},
   {id:"X02",owner:"xspace",status:"progress",tag:"Sys1",title:"Sys1 ACT 模板底座",desc:"4060运行ACT，兼容Sys11/12",repo:"main",start:"7/12",end:"7/22"},
   {id:"X03",owner:"xspace",status:"progress",tag:"GUI",title:"GUI工程更新",desc:"Studio界面+训练监控+可视化",repo:"main",start:"7/12",end:"7/25"},
   {id:"X04",owner:"xspace",status:"todo",tag:"Sys11",title:"Sys11↔Sys2 切换接口",desc:"ACT→Sys2 VTLA/GR00T API调用",repo:"main",start:"7/20",end:"7/28"},
@@ -331,19 +331,20 @@ setInterval(render, 60000);
 
 
 
+
 <!-- AUTO-GENERATED STATUS
 {
   "zmax-website": {
     "branch": "main",
-    "last_commit": "1d1bac1 状态更新: W05/W12/W13标记为阻塞(网络不通HF) — 代码全部就绪,等模型权重",
-    "dirty": false,
-    "modified": ""
+    "last_commit": "53fd088 W05 done: SmolVLA+GR00T权重下载完成 — 873MB+6.5GB",
+    "dirty": true,
+    "modified": "?? scripts/vtla_quick.py"
   },
   "lerobot-smolvla-lew": {
     "branch": "web",
     "last_commit": "621bbcb4 feat(web): Sys2 真实推理引擎 — VTLA + GR00T N1.7 + gRPC服务",
-    "dirty": false,
-    "modified": ""
+    "dirty": true,
+    "modified": "M src/lerobot/utils/io_utils.py"
   },
   "Isaac-GR00T": {
     "branch": "main",
