@@ -289,7 +289,7 @@ function renderKanban() {
   const avLets = {xspace:'静',web:'网','小芳':'芳'};
 
   let html = '';
-  for (const status of ['todo','progress','blocked','done']) {
+  for (const status of ['done','todo','progress','blocked']) {
     const tasks = cols[status];
     const info = STATUS_MAP[status];
     html += `<div class="column"><div class="column-header"><span class="icon">${info.icon}</span><span class="col-name">${info.col}</span><span class="count">${tasks.length}</span></div><div class="column-body">`;
