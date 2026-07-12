@@ -155,7 +155,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <div class="kanban" id="kanban"></div>
-<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 14:00 CST | 🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -180,16 +180,16 @@ const TASKS = [
   {id:"W03",owner:"web",status:"done",tag:"Sys2",title:"✅ gRPC+HTTP服务",desc:"port 50052/8080。验证:编译OK",repo:"web",start:"7/11",end:"7/12"},
   {id:"W05",owner:"web",status:"todo",tag:"Sys2",title:"下载GR00T权重",desc:"HF→4090 GR00T N1.7",repo:"gr00t",start:"7/13",end:"7/14"},
   {id:"W06",owner:"web",status:"todo",tag:"Sys2",title:"搭建GR00T训练环境",desc:"uv sync --all-extras",repo:"gr00t",start:"7/14",end:"7/15"},
-  {id:"W07",owner:"web",status:"todo",tag:"Train",title:"4090 VTLA微调",desc:"出训练验证报告",repo:"web",start:"7/16",end:"7/22"},
-  {id:"W08",owner:"web",status:"todo",tag:"Train",title:"4090 GR00T微调",desc:"出训练验证报告",repo:"gr00t",start:"7/20",end:"7/30"},
-  {id:"W09",owner:"web",status:"todo",tag:"Integ",title:"Sys1↔Sys2联调",desc:"4060→4090 gRPC端到端",repo:"main",start:"7/18",end:"7/25"},
-  {id:"W10",owner:"web",status:"todo",tag:"Web",title:"光模块工厂调研页",desc:"真实场景需求调研表单",repo:"zmax",start:"7/13",end:"7/15"},
-  {id:"W11",owner:"web",status:"progress",tag:"Sim",title:"4090 Isaac仿真环境安装",desc:"uv sync GR00T+Isaac Lab/Sim。仿真验证模型",repo:"gr00t",start:"7/12",end:"7/14"},
-  {id:"W12",owner:"web",status:"todo",tag:"Sim",title:"4090仿真验证VTLA模型",desc:"Isaac仿真中验证VTLA推理精度+延迟。验证报告",repo:"web",start:"7/15",end:"7/20"},
-  {id:"W13",owner:"web",status:"todo",tag:"Sim",title:"4090仿真验证GR00T模型",desc:"Isaac仿真验证GR00T N1.7动作质量。验证报告",repo:"gr00t",start:"7/18",end:"7/25"},
-  {id:"W14",owner:"web",status:"progress",tag:"PM",title:"任务看板v2 (本页)",desc:"时间线+健康色+自动部署+角色更新",repo:"zmax",start:"7/12",end:"7/12"},
-  {id:"W15",owner:"web",status:"progress",tag:"PM",title:"模型算力要求+性能指标定义",desc:"Sys1/2/Edge各级模型算力需求+延迟+精度+功耗指标。供小芳测试用例参考",repo:"all",start:"7/12",end:"7/14"},
-  {id:"W16",owner:"web",status:"progress",tag:"Web",title:"前端展示更新 (产品+方案+指标)",desc:"基于xspace产品介绍更新 datadrive.world。整合算力指标+系统架构",repo:"zmax",start:"7/12",end:"7/16"},
+  {id:"W07",owner:"web",status:"todo",tag:"Train",title:"4090 VTLA微调",desc:"出训练验证报告",repo:"web",start:"7/13",end:"7/16"},
+  {id:"W08",owner:"web",status:"todo",tag:"Train",title:"4090 GR00T微调",desc:"出训练验证报告",repo:"gr00t",start:"7/14",end:"7/18"},
+  {id:"W09",owner:"web",status:"todo",tag:"Integ",title:"Sys1↔Sys2联调",desc:"4060→4090 gRPC端到端",repo:"main",start:"7/14",end:"7/17"},
+  {id:"W10",owner:"web",status:"todo",tag:"Web",title:"光模块工厂调研页",desc:"真实场景需求调研表单",repo:"zmax",start:"7/12",end:"7/13"},
+  {id:"W11",owner:"web",status:"progress",tag:"Sim",title:"4090 Isaac仿真环境安装",desc:"uv sync GR00T+Isaac Lab/Sim。仿真验证模型",repo:"gr00t",start:"7/12",end:"7/13"},
+  {id:"W12",owner:"web",status:"todo",tag:"Sim",title:"4090仿真验证VTLA模型",desc:"Isaac仿真中验证VTLA推理精度+延迟。验证报告",repo:"web",start:"7/13",end:"7/15"},
+  {id:"W13",owner:"web",status:"todo",tag:"Sim",title:"4090仿真验证GR00T模型",desc:"Isaac仿真验证GR00T N1.7动作质量。验证报告",repo:"gr00t",start:"7/14",end:"7/17"},
+  {id:"W14",owner:"web",status:"done",tag:"PM",title:"✅ 任务看板v2",desc:"时间线+健康色+自动部署+角色更新。已完成",repo:"zmax",start:"7/12",end:"7/12"},
+  {id:"W15",owner:"web",status:"done",tag:"PM",title:"✅ 模型算力+性能指标",desc:"7级算力分层+全链路指标+测试框架。已完成: performance.html",repo:"all",start:"7/12",end:"7/12"},
+  {id:"W16",owner:"web",status:"progress",tag:"Web",title:"前端展示更新 (产品+方案+指标)",desc:"基于xspace产品介绍更新 datadrive.world。整合算力指标+系统架构",repo:"zmax",start:"7/12",end:"7/12"},
   // 小芳
   {id:"F01",owner:"小芳",status:"progress",tag:"Mac",title:"Mac分支环境搭建",desc:"Mac上部署lerobot开发环境",repo:"mac",start:"7/12",end:"7/16"},
   {id:"F02",owner:"小芳",status:"todo",tag:"Edge",title:"端侧测试(Mac)",desc:"SmolVLA量化→Mac。测试报告",repo:"mac",start:"7/16",end:"7/22"},
@@ -330,11 +330,12 @@ render();
 setInterval(render, 60000);
 </script>
 
+
 <!-- AUTO-GENERATED STATUS
 {
   "zmax-website": {
     "branch": "main",
-    "last_commit": "daf1286 feat: 模型算力要求+性能指标 v1.0 (W15) — 7级算力分层+全链路指标+测试用例框架",
+    "last_commit": "e188f1a 新增任务 X11/W16/F10 + 主页加算力指标入口 — 方案文档+前端展示+质量证书",
     "dirty": false,
     "modified": ""
   },
