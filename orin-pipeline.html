@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orin真机管线 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.pipeline{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;margin:16px 0}
+.node{background:#0d1117;border:2px solid #00d4aa44;border-radius:8px;padding:10px 14px;font-size:12px;text-align:center;min-width:80px}
+.node.sys1{border-color:#58a6ff;color:#58a6ff}
+.node.sys2{border-color:#00d4aa;color:#00d4aa}
+.node.orin{border-color:#d4a800;color:#d4a800}
+.node.done{border-color:#8b949e;color:#8b949e}
+.arrow{color:#8b949e;font-size:18px;align-self:center}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:12px}
+th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🔩 Orin Nano 真机产线管线</h1>
+<p class="sub">光模块精密制造 · 状态机真实配置 · 2026-07-12</p>
+
+<h2>一、产线总览</h2>
+<div class="pipeline">
+<div class="node">初始化</div><div class="arrow">→</div>
+<div class="node sys1">取料<br><small>Sys1 ACT</small></div><div class="arrow">→</div>
+<div class="node orin">扫码<br><small>Orin</small></div><div class="arrow">→</div>
+<div class="node sys2">插入×2<br><small>Sys2 VTLA</small></div><div class="arrow">→</div>
+<div class="node orin">测试</div><div class="arrow">→</div>
+<div class="node orin">拔出</div><div class="arrow">→</div>
+<div class="node orin">AOI×6</div><div class="arrow">→</div>
+<div class="node done">OK/NG</div><div class="arrow">↻</div>
+</div>
+
+<h2>二、Z-MAX 引擎分配</h2>
+<table>
+<tr><th>产线节点</th><th>Z-MAX引擎</th><th>硬件</th><th>延迟</th></tr>
+<tr><td>取料</td><td>Sys1 ACT (192.168.23.26)</td><td>4060 WSL</td><td>1.2ms</td></tr>
+<tr><td>扫码</td><td>Orin 本地视觉</td><td>Orin Nano</td><td>—</td></tr>
+<tr><td>尝试插入×2</td><td>Sys2 VTLA (10.23.24.0:50052)</td><td>4090</td><td>284ms</td></tr>
+<tr><td>测试</td><td>WaitContextValue</td><td>Orin</td><td>—</td></tr>
+<tr><td>拔出</td><td>机械臂程序</td><td>机械臂</td><td>—</td></tr>
+<tr><td>AOI×6</td><td>6工位视觉检测</td><td>Orin</td><td>—</td></tr>
+<tr><td>OK/NG</td><td>manual_pose_25/26 分拣</td><td>机械臂</td><td>—</td></tr>
+</table>
+
+<h2>三、力控策略</h2>
+<table>
+<tr><th>检测</th><th>条件</th><th>动作</th></tr>
+<tr><td>抓取失败</td><td>max_normal_force < 5.0N</td><td>开爪重试</td></tr>
+<tr><td>连续失败≥2</td><td>consecutive_grasp_fail ≥ 2</td><td>报错停线</td></tr>
+<tr><td>插入成功</td><td>end_pose[0] > 0.750</td><td>进入测试</td></tr>
+<tr><td>插入失败</td><td>end_pose[0] ≤ 0.750</td><td>二次尝试</td></tr>
+</table>
+
+<h2>四、AOI 6工位</h2>
+<table>
+<tr><th>工位</th><th>检测内容</th><th>NG处理</th></tr>
+<tr><td>AOI_1</td><td>端面平整度</td><td>标记+继续</td></tr>
+<tr><td>AOI_2</td><td>插芯对位</td><td>标记+继续</td></tr>
+<tr><td>AOI_3</td><td>外壳完整性</td><td>标记+继续</td></tr>
+<tr><td>AOI_4</td><td>引脚弯曲</td><td>标记+继续</td></tr>
+<tr><td>AOI_5</td><td>标签对齐</td><td>标记+继续</td></tr>
+<tr><td>AOI_6</td><td>综合判定</td><td>→ NG分拣</td></tr>
+</table>
+
+<h2>五、机器人端通信链路</h2>
+<table>
+<tr><th>链路</th><th>地址</th><th>引擎</th><th>全链路测试</th></tr>
+<tr><td>抓取位姿识别</td><td>192.168.23.26</td><td>Sys1 ACT</td><td>F05 ACT 42ms ✅</td></tr>
+<tr><td>力控插拔</td><td>10.23.24.0:50052</td><td>Sys2 VTLA</td><td>W09 联调 284ms ✅</td></tr>
+<tr><td>端侧备份</td><td>Orin 本地</td><td>SmolVLA量化</td><td>F03 240ms ✅</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · Orin真机管线 v1.0 · 2026-07-12</div>
+</div>
+</body>
+</html>
