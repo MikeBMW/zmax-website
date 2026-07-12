@@ -155,7 +155,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <div class="kanban" id="kanban"></div>
-<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">--</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
+<div class="footer">Z-MAX Project · 静界科技 · 更新时间: <span id="update-time">🔄 2026-07-12 13:00 CST | --</span> · <a href="/" style="color:#00d4aa">← 返回主页</a></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -173,6 +173,7 @@ const TASKS = [
   {id:"X08",owner:"xspace",status:"todo",tag:"GUI",title:"GUI集成所有Sys功能 [重大]",desc:"Sys1/11/12/2全部功能整合到GUI。可用+有效+UX极好",repo:"main",start:"7/15",end:"8/5"},
   {id:"X09",owner:"xspace",status:"todo",tag:"GUI",title:"GUI用户体验极致优化",desc:"交互流畅+视觉精致+操作直觉化。对标顶级产品",repo:"main",start:"7/20",end:"8/10"},
   {id:"X10",owner:"xspace",status:"todo",tag:"Patent",title:"专利补充到GUI+文档",desc:"多模态VLA精细操作专利完善+规避设计+GUI展示",repo:"main",start:"7/18",end:"8/1"},
+  {id:"X11",owner:"xspace",status:"progress",tag:"Docs",title:"整体解决方案+产品介绍文档 [重大]",desc:"docs文件夹。同步团队记忆+策略。web前端据此展示",repo:"main",start:"7/12",end:"7/18"},
   // web
   {id:"W01",owner:"web",status:"done",tag:"Sys2",title:"✅ VTLA推理引擎",desc:"~450M触觉VLA。验证:编译OK",repo:"web",start:"7/10",end:"7/12"},
   {id:"W02",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T N1.7引擎",desc:"~7B封装16种具身。验证:待权重",repo:"web",start:"7/10",end:"7/12"},
@@ -188,6 +189,7 @@ const TASKS = [
   {id:"W13",owner:"web",status:"todo",tag:"Sim",title:"4090仿真验证GR00T模型",desc:"Isaac仿真验证GR00T N1.7动作质量。验证报告",repo:"gr00t",start:"7/18",end:"7/25"},
   {id:"W14",owner:"web",status:"progress",tag:"PM",title:"任务看板v2 (本页)",desc:"时间线+健康色+自动部署+角色更新",repo:"zmax",start:"7/12",end:"7/12"},
   {id:"W15",owner:"web",status:"progress",tag:"PM",title:"模型算力要求+性能指标定义",desc:"Sys1/2/Edge各级模型算力需求+延迟+精度+功耗指标。供小芳测试用例参考",repo:"all",start:"7/12",end:"7/14"},
+  {id:"W16",owner:"web",status:"progress",tag:"Web",title:"前端展示更新 (产品+方案+指标)",desc:"基于xspace产品介绍更新 datadrive.world。整合算力指标+系统架构",repo:"zmax",start:"7/12",end:"7/16"},
   // 小芳
   {id:"F01",owner:"小芳",status:"progress",tag:"Mac",title:"Mac分支环境搭建",desc:"Mac上部署lerobot开发环境",repo:"mac",start:"7/12",end:"7/16"},
   {id:"F02",owner:"小芳",status:"todo",tag:"Edge",title:"端侧测试(Mac)",desc:"SmolVLA量化→Mac。测试报告",repo:"mac",start:"7/16",end:"7/22"},
@@ -198,6 +200,7 @@ const TASKS = [
   {id:"F07",owner:"小芳",status:"todo",tag:"HW",title:"硬件连接智能化",desc:"即插即用+自动识别+自适应配置。智能可靠",repo:"mac",start:"7/16",end:"7/28"},
   {id:"F08",owner:"小芳",status:"todo",tag:"HW",title:"硬件连接可靠性验证",desc:"7×24稳定性+热插拔+异常恢复。测试报告",repo:"mac",start:"7/22",end:"8/5"},
   {id:"F09",owner:"小芳",status:"todo",tag:"Test",title:"Z-MAX全部测试用例编制 [小芳主导]",desc:"硬件仿真测试(不动真实机器人)。测试项:xspace评审,web提算力指标。测试报告",repo:"mac",start:"7/13",end:"7/20"},
+  {id:"F10",owner:"小芳",status:"todo",tag:"Cert",title:"验证报告+质量证书发布",desc:"硬件仿真测试报告+性能验证+质量合规证书",repo:"mac",start:"7/18",end:"7/25"},
 ];
 
 // ═══════════════════════════════════════
@@ -326,5 +329,28 @@ function render() {
 render();
 setInterval(render, 60000);
 </script>
+
+<!-- AUTO-GENERATED STATUS
+{
+  "zmax-website": {
+    "branch": "main",
+    "last_commit": "daf1286 feat: 模型算力要求+性能指标 v1.0 (W15) — 7级算力分层+全链路指标+测试用例框架",
+    "dirty": false,
+    "modified": ""
+  },
+  "lerobot-smolvla-lew": {
+    "branch": "web",
+    "last_commit": "621bbcb4 feat(web): Sys2 真实推理引擎 — VTLA + GR00T N1.7 + gRPC服务",
+    "dirty": false,
+    "modified": ""
+  },
+  "Isaac-GR00T": {
+    "branch": "main",
+    "last_commit": "9c7e746 - SimplerEnv and Robocasa setup script fixes.",
+    "dirty": true,
+    "modified": "M pyproject.toml"
+  }
+}
+-->
 </body>
 </html>
