@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DDS节点地图 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:13px;margin:12px 0 4px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
+th{background:#00d4aa22;padding:7px 10px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:6px 10px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 16px;overflow-x:auto;font-size:10px;margin:10px 0}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.s0{color:#d4a800}.s1{color:#58a6ff}.s2{color:#00d4aa}.s3{color:#a371f7}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🗺️ DDS 节点感知地图</h1>
+<p class="sub">xspace 21节点·14技能·21Topic · web可感知·可定义·可应用 · 2026-07-13</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px">
+
+<!-- Skill 0 -->
+<div class="card"><h3 class="s0">Skill 0 · 传感器采集</h3>
+<pre><code>节点: realsense_rgb / realsense_depth / force_sensor / tactile_array
+Topic: sensor_rgb / sensor_depth / sensor_force_6d / sensor_tactile
+API:  gds.publish("sensor_force_6d", [fx,fy,fz,tx,ty,tz])
+Web:  → VTLA训练输入 / 数据质量L0校验
+模型: Sys21 VTLA 触觉编码器</code></pre></div>
+
+<!-- Skill 1 -->
+<div class="card"><h3 class="s0">Skill 1 · 关节状态</h3>
+<pre><code>节点: joint_state_raw / joint_calib
+Topic: joint_pos_7d / joint_vel_7d / joint_torque_7d
+API:  gds.get("joint_pos_7d") → [j1..j7]
+Web:  → Orin管线实时监控 / L1格式校验
+模型: Sys1 ACT 状态编码器</code></pre></div>
+
+<!-- Skill 2 -->
+<div class="card"><h3 class="s1">Skill 2 · ACT推理</h3>
+<pre><code>节点: infer_sys1_act
+Topic: infer_sys1_act / act_action_chunk
+API:  gds.get("infer_sys1_act") → (50,6) tensor
+Web:  → 远程控制面板引擎状态 / L2清洗
+模型: Sys1 ACT 52M (xspace 4060)</code></pre></div>
+
+<!-- Skill 3 -->
+<div class="card"><h3 class="s1">Skill 3 · SmolVLA推理</h3>
+<pre><code>节点: infer_sys11_smolvla
+Topic: infer_sys11_smolvla / smolvla_output
+API:  gds.publish("infer_sys11_smolvla", img, lang)
+Web:  → 系统接口页引擎切换 / L2校验
+模型: Sys11 SmolVLA 450M (xspace→web)</code></pre></div>
+
+<!-- Skill 4 -->
+<div class="card"><h3 class="s2">Skill 4 · VTLA力控</h3>
+<pre><code>节点: infer_sys21_vtla / lissajous_search
+Topic: infer_sys21_vtla / vtla_force_feedback
+API:  gds.get("infer_sys21_vtla") → (6轴力+置信度)
+Web:  → Orin管线Lissajous参数 / L3归一化
+模型: Sys21 VTLA 450M (web 4090)</code></pre></div>
+
+<!-- Skill 5 -->
+<div class="card"><h3 class="s2">Skill 5 · GR00T决策</h3>
+<pre><code>节点: infer_sys22_groot / groot_planner
+Topic: infer_sys22_groot / groot_action_40step
+API:  gds.publish("infer_sys22_groot", obs) → eef+joint+grip
+Web:  → 数据闭环面板 / L3增强
+模型: Sys22 GR00T 7B (web 4090)</code></pre></div>
+
+<!-- Skill 6 -->
+<div class="card"><h3 class="s3">Skill 6 · AOI检测</h3>
+<pre><code>节点: aoi_capture / aoi_analyze
+Topic: aoi_capture / aoi_result / aoi_detections
+API:  gds.get("aoi_result") → {code, msg, detections[]}
+Web:  → Orin管线AOI×6 / L2清洗
+模型: 4060:10082 HTTP POST</code></pre></div>
+
+<!-- Skill 7 -->
+<div class="card"><h3 class="s3">Skill 7 · 权重同步</h3>
+<pre><code>节点: weight_sync / version_check
+Topic: weight_vtla / weight_groot / model_version
+API:  gds.publish("weight_vtla", path, hash)
+Web:  → 数据闭环ECS中转 / L4入仓
+模型: 全模型 版本管理</code></pre></div>
+
+<!-- Skill 8-13 -->
+<div class="card"><h3>Skill 8-13 · 扩展技能</h3>
+<pre><code>Skill 8:  data_logger      → 所有数据持久化存储
+Skill 9:  data_quality      → L0-L4五层质量检查
+Skill 10: sim_bridge        → Mac旁路仿真桥接
+Skill 11: orin_bridge       → Orin真机部署桥接
+Skill 12: train_trigger     → 自动触发4090训练
+Skill 13: deploy_service    → 权重→Orin自动部署
+API:  gds.to_json("all")    → 全部数据JSON给web</code></pre></div>
+
+</div>
+
+<h2>DDS API 速查</h2>
+<pre><code>from dds_skill import gds
+gds.publish("sensor_force_6d", [1.2, 0.3, 5.0, 0, 0, 0])  # 发布
+gds.get("infer_sys1_act")                        # 读取最新值
+gds.subscribe("aoi_result", callback_fn)          # 订阅
+gds.to_json("all")                                # 全部JSON→Web
+gds.quality_check()                               # 运行质量检查</code></pre>
+
+<div class="footer">Z-MAX · 静界科技 · DDS节点感知地图 v1.0 · 21节点·14技能·21Topic · 2026-07-13</div>
+</div>
+</body>
+</html>
