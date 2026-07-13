@@ -92,7 +92,7 @@
 <div style="background:#0d1117;border:1px solid #00d4aa44;border-radius:12px;padding:40px 36px;text-align:center;max-width:360px;width:90%">
 <div style="font-size:28px;color:#00d4aa;font-weight:800;margin-bottom:6px">Z-MAX</div>
 <div style="font-size:12px;color:#8b949e;margin-bottom:28px">静界科技 · 内部系统</div>
-<input id="login-user" type="text" placeholder="用户名" style="width:100%;padding:12px 14px;margin-bottom:10px;background:#06080d;border:1px solid #1a1f2b;border-radius:8px;color:#c8d1d9;font-size:14px;outline:none" autocomplete="off">
+<input id="login-user" type="text" value="15840273872" placeholder="用户名" style="width:100%;padding:12px 14px;margin-bottom:10px;background:#06080d;border:1px solid #1a1f2b;border-radius:8px;color:#c8d1d9;font-size:14px;outline:none" autocomplete="off">
 <input id="login-pass" type="password" placeholder="密码" style="width:100%;padding:12px 14px;margin-bottom:6px;background:#06080d;border:1px solid #1a1f2b;border-radius:8px;color:#c8d1d9;font-size:14px;outline:none">
 <div id="login-err" style="color:#ff4444;font-size:11px;min-height:20px;margin-bottom:12px"></div>
 <button onclick="doLogin()" style="width:100%;padding:12px;background:#00d4aa;color:#06080d;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">🔐 登 录</button>
@@ -167,9 +167,50 @@
 
 <!-- ═══════ SYSTEM ARCH ═══════ -->
 <section id="architecture">
-  <div class="sec-label">系统架构</div>
-  <h2 class="sec-title">Z-MAX · 四级智能引擎</h2>
-  <p class="sec-sub">Sys0 硬件基座 → Sys1 边缘推理(4060) → Sys2 云端大脑(4090) → Edge 端侧部署(Orin/Mac)</p>
+
+<!-- 三层解耦架构 -->
+<div class="sec-label">系统架构</div>
+<h2 class="sec-title">Z-MAX · 三层解耦架构</h2>
+<p class="sec-sub">云端训练 · 边缘推理 · 终端执行。每一层独立演进，松耦合高内聚。</p>
+<div style="display:flex;flex-wrap:wrap;gap:14px;margin:20px 0">
+<div style="flex:1;min-width:240px;background:#0d1117;border:2px solid #d4a80044;border-radius:10px;padding:20px;text-align:center">
+<div style="font-size:13px;color:#d4a800;font-weight:700;margin-bottom:6px">Sys0 · 硬件基座</div>
+<div style="font-size:12px;color:#8b949e">Orin Nano · ROS2 · SR5-C<br>6轴·8传感器·Lissajous力搜</div>
+</div>
+<div style="flex:1;min-width:240px;background:#0d1117;border:2px solid #58a6ff44;border-radius:10px;padding:20px;text-align:center">
+<div style="font-size:13px;color:#58a6ff;font-weight:700;margin-bottom:6px">Sys1 · 边缘推理</div>
+<div style="font-size:12px;color:#8b949e">RTX 4060 WSL · ACT 1.2ms<br>SmolVLA · LeWorld · 五引擎切换</div>
+</div>
+<div style="flex:1;min-width:240px;background:#0d1117;border:2px solid #00d4aa44;border-radius:10px;padding:20px;text-align:center">
+<div style="font-size:13px;color:#00d4aa;font-weight:700;margin-bottom:6px">Sys2 · 云端大脑</div>
+<div style="font-size:12px;color:#8b949e">RTX 4090 · VTLA 284ms<br>GR00T N1.7-3B · gRPC 50052</div>
+</div>
+</div>
+<div style="text-align:center;color:#8b949e;font-size:11px;margin-bottom:30px">Sys0(执行) ←gRPC→ Sys1(推理) ←HTTP→ Sys2(决策) ←→ Edge(端侧备份)</div>
+
+<!-- Roadmap -->
+<div class="sec-label" style="margin-top:40px">产品迭代</div>
+<h2 class="sec-title">产品迭代 Roadmap</h2>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 30px">
+<div style="flex:1;min-width:200px;background:#0d1117;border:1px solid #00d4aa44;border-radius:10px;padding:16px 18px">
+<div style="font-size:11px;color:#00d4aa;font-weight:700;margin-bottom:4px">v1.0 · 2026Q3</div>
+<div style="font-size:14px;color:#e6edf3;font-weight:700;margin-bottom:6px">单工位验证</div>
+<div style="font-size:11px;color:#8b949e">光模块插拔 · ACT+SmolVLA<br>Orin Nano边缘部署 · 力控±0.02mm</div>
+</div>
+<div style="flex:1;min-width:200px;background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 18px">
+<div style="font-size:11px;color:#58a6ff;font-weight:700;margin-bottom:4px">v1.5 · 2026Q4</div>
+<div style="font-size:14px;color:#e6edf3;font-weight:700;margin-bottom:6px">多工位联线</div>
+<div style="font-size:11px;color:#8b949e">抓取→插拔→AOI×6全链条<br>Sys2 VTLA力控闭环 · 99%+良率</div>
+</div>
+<div style="flex:1;min-width:200px;background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 18px">
+<div style="font-size:11px;color:#a371f7;font-weight:700;margin-bottom:4px">v2.0 · 2027H1</div>
+<div style="font-size:14px;color:#e6edf3;font-weight:700;margin-bottom:6px">全产线智能</div>
+<div style="font-size:11px;color:#8b949e">多机协同 · 换型自适配<br>GR00T N1.7决策 · 云端训练闭环</div>
+</div>
+</div>
+
+<!-- 四级智能引擎 -->
+  <h2 class="sec-title" style="margin-top:10px">Z-MAX · 智能引擎</h2>
   <div class="divider"></div>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:20px">
