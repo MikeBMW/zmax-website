@@ -130,6 +130,7 @@ h1{font-size:34px;font-weight:900;color:#00d4aa;text-align:center}
 </div>
 
 <button type="submit" class="btn">提交工厂调研数据</button>
+<button type="button" class="btn" style="background:#0d1117;border-color:#58a6ff;color:#58a6ff;margin-left:12px" id="btn-download">📥 下载为 Word</button>
 <p class="note">数据仅供Z-MAX方案设计使用，严格保密 · <a href="/">返回首页</a></p>
 </form>
 </div>
@@ -142,7 +143,41 @@ document.getElementById('survey').addEventListener('submit',function(e){
     if(data[k]){ if(!Array.isArray(data[k])) data[k]=[data[k]]; data[k].push(v); }
     else data[k]=v;
   });
-  alert('✅ 收到！\n\n感谢提供真实产线数据。Z-MAX团队将在2个工作日内输出定制化方案。\n\n—— 静界科技 Z-MAX');
+  alert('✅ 收到！\\n\\n感谢提供真实产线数据。Z-MAX团队将在2个工作日内输出定制化方案。\\n\\n—— 静界科技 Z-MAX');
+});
+
+// 📥 Word 下载功能
+document.getElementById('btn-download').addEventListener('click',function(){
+  var fd=new FormData(document.getElementById('survey')), sections=[
+    {title:'工厂调研报告',fields:[]},
+    {title:'一、工厂基本信息',keys:['factory','contact','role','lines','modules_per_day','shift','auto_line_count','robot_count']},
+    {title:'二、工位配置',keys:['station_1','station_2','station_3','station_4','station_5']},
+    {title:'三、光模块规格',keys:['models','package','weight','pins','change_freq','change_time']},
+    {title:'四、测试仓/老化箱',keys:['tester','oven','tester_space','port_distance','reach_in','interlock']},
+    {title:'五、品质要求',keys:['precision','yield','esd','clean']},
+    {title:'六、补充说明',keys:['timeline','onsite','other']}
+  ];
+  var labels={
+    factory:'工厂名称',contact:'联系人',role:'职务',lines:'产线数量',modules_per_day:'日产量',shift:'班次',auto_line_count:'自动化产线',robot_count:'在用机器人',
+    station_1:'取料工位',station_2:'插拔工位',station_3:'测试工位',station_4:'检查工位',station_5:'包装工位',
+    models:'主要型号',package:'封装类型',weight:'模块重量(g)',pins:'Pin数',change_freq:'换型频次',change_time:'换型目标',
+    tester:'测试仓',oven:'老化箱',tester_space:'仓内空间',port_distance:'口距仓壁',reach_in:'伸入操作',interlock:'门禁联锁',
+    precision:'对准精度',yield:'良率目标',esd:'ESD防护',clean:'洁净度',
+    timeline:'时间节点',onsite:'现场勘测',other:'其他补充'
+  };
+  var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="UTF-8"><style>body{font-family:SimSun;font-size:12pt}h1{font-size:16pt;color:#00d4aa}h2{font-size:14pt;margin-top:16pt}table{width:100%;border-collapse:collapse}td{padding:6px 10px;border:1px solid #ccc}.label{font-weight:bold;width:150px}</style></head><body><h1>🏭 Z-MAX 工厂需求调研报告</h1><p>生成时间: '+new Date().toLocaleString()+'</p>';
+  sections.forEach(function(sec){
+    html+='<h2>'+sec.title+'</h2><table>';
+    sec.keys.forEach(function(k){
+      var v='';
+      fd.forEach(function(val,key){if(key===k){if(Array.isArray(val)){v+=val+' / '}else if(v){v+=', '+val}else{v=val}}});
+      html+='<tr><td class="label">'+(labels[k]||k)+'</td><td>'+(v||'(未填写)')+'</td></tr>';
+    });
+    html+='</table>';
+  });
+  html+='<p style="margin-top:24px;color:#888">—— 静界科技 Z-MAX</p></body></html>';
+  var blob=new Blob([html],{type:'application/msword'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Z-MAX工厂调研报告.doc';a.click();
 });
 </script>
 </body>
