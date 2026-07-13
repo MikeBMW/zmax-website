@@ -65,6 +65,20 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>插入失败</td><td>end_pose[0] ≤ 0.750</td><td>二次尝试</td></tr>
 </table>
 
+<h3 style="color:#00d4aa;margin-top:20px">⭐ Lissajous 力控搜索 (插入核心)</h3>
+<table>
+<tr><th>参数</th><th>值</th><th>说明</th></tr>
+<tr><td>搜索平面</td><td>XY (plane=0)</td><td>金手指对齐面</td></tr>
+<tr><td>Z轴期望力</td><td>6.0N</td><td>触觉力控闭环</td></tr>
+<tr><td>刚度 XY</td><td>6000 N/m (硬)</td><td>精确定位</td></tr>
+<tr><td>刚度 Z</td><td>0 N/m (柔性)</td><td>顺应性插入</td></tr>
+<tr><td>振幅1/频率1</td><td>6.0mm / 3.0Hz</td><td>主花瓣轨迹</td></tr>
+<tr><td>振幅2/频率2</td><td>4.0mm / 2.0Hz</td><td>副花瓣轨迹</td></tr>
+<tr><td>搜索框</td><td>±10mm × ±10mm × ±10mm</td><td>位置容差</td></tr>
+<tr><td>超时</td><td>8s</td><td>力搜超时</td></tr>
+<tr><td>力传感器校准</td><td>每次执行前校准</td><td>零漂补偿</td></tr>
+</table>
+
 <h2>四、AOI 6工位</h2>
 <table>
 <tr><th>工位</th><th>检测内容</th><th>NG处理</th></tr>
