@@ -1,4 +1,4 @@
-import os, base64, sys
+import os, json
 
 pages = [
     ('🏠 主页','index.html'),
@@ -11,15 +11,14 @@ pages = [
     ('🔄 恢复指南','recovery.html'),
 ]
 
-bars = ''
-contents = ''
-for i, (name, path) in enumerate(pages):
+# Build tab data as JSON array for inline embedding
+tabs = []
+for name, path in pages:
     with open(path, 'r', encoding='utf-8') as f:
         html = f.read()
-    b64 = base64.b64encode(html.encode('utf-8')).decode()
-    active = ' active' if i == 0 else ''
-    bars += f'''<div class="tab{active}" onclick="switchTab(this,'tab{i}')">{name}</div>'''
-    contents += f'''<div id="tab{i}" class="content{active}"><iframe src="about:blank" data-src="{b64}"></iframe></div>'''
+    tabs.append({'name': name, 'html': html})
+
+tabs_json = json.dumps(tabs, ensure_ascii=False)
 
 offline = f'''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -39,16 +38,23 @@ iframe{{width:100%;height:calc(100vh - 70px);border:none;background:#06080d}}
 </style>
 </head>
 <body>
-<div class="tab-bar">{bars}</div>
-{contents}
+<div class="tab-bar" id="tabbar"></div>
+<div id="contents"></div>
 <script>
-function switchTab(tab,id){{
-document.querySelectorAll(".tab").forEach(function(t){{t.classList.remove("active")}});
-tab.classList.add("active");
-document.querySelectorAll(".content").forEach(function(c){{c.classList.remove("active")}});
-var el=document.getElementById(id);el.classList.add("active");
-var iframe=el.querySelector("iframe");
-if(iframe&&iframe.src==="about:blank"){{iframe.srcdoc=atob(iframe.getAttribute("data-src"));iframe.src="about:srcdoc"}}
+var TABS = {tabs_json};
+var bar=document.getElementById("tabbar"), con=document.getElementById("contents");
+TABS.forEach(function(t,i){{
+  var active=i===0?' active':'';
+  bar.innerHTML+='<div class="tab'+active+'" onclick="switchTab(this,'+i+')">'+t.name+'</div>';
+  con.innerHTML+='<div id="tab'+i+'" class="content'+active+'"><iframe src="about:blank"></iframe></div>';
+}});
+function switchTab(tab,idx){{
+  document.querySelectorAll(".tab").forEach(function(t){{t.classList.remove("active")}});
+  tab.classList.add("active");
+  document.querySelectorAll(".content").forEach(function(c){{c.classList.remove("active")}});
+  var el=document.getElementById("tab"+idx);el.classList.add("active");
+  var iframe=el.querySelector("iframe");
+  if(iframe&&iframe.src==="about:blank"){{iframe.srcdoc=TABS[idx].html;iframe.src="about:srcdoc"}}
 }}
 </script>
 </body>
@@ -57,5 +63,5 @@ if(iframe&&iframe.src==="about:blank"){{iframe.srcdoc=atob(iframe.getAttribute("
 with open('offline.html','w',encoding='utf-8') as f:
     f.write(offline)
 
-size_mb = os.path.getsize('offline.html') / (1024*1024)
-print(f'✅ offline.html built: {size_mb:.1f}MB')
+size = os.path.getsize('offline.html')
+print(f'✅ offline.html: {size/1024:.0f}KB ({size} bytes)')
