@@ -107,6 +107,18 @@ result = client.infer("vtla", observation)
                                     └──→ Sys2 VTLA(284ms)──→ 力控插拔
 Orin(AOI×6)  ←── 测试结果 ←── 拔出 ←── </code></pre>
 
+<h2>九、数据闭环方案</h2>
+<div class="card" style="border-color:#d4a80044">
+<pre><code>┌─────────────┐     ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+│  Orin Nano  │────→│  Mac (小芳)  │────→│  4060(xspace)│────→│  4090 (web)  │
+│ 192.168.23.10│     │  订阅rosbag  │     │ Sys11/Sys12  │     │ VTLA+GR00T   │
+│ RealSense   │     │  ACT仿真推理 │     │  整体推理    │     │   持续训练    │
+└─────────────┘     └─────────────┘     └──────────────┘     └──────────────┘
+
+数据流: Orin(采集) → ROS2/rosbag → Mac(订阅)→ 混合数据 → 4060(推理)
+训练流: 4060(数据汇总) → ECS/SCP中转 → 4090(训练) → 权重回传ECS → 线上部署</code></pre>
+</div>
+
 <div class="footer">Z-MAX · 静界科技 · 系统接口总览 v1.0 · 2026-07-12</div>
 </div>
 </body>
