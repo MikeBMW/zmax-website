@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>远程控制 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6;max-width:480px;margin:0 auto;min-height:100vh}
+.header{background:#0d1117;border-bottom:2px solid #00d4aa33;padding:14px 16px;text-align:center;position:sticky;top:0;z-index:10}
+.header h1{font-size:18px;color:#00d4aa}.header p{font-size:11px;color:#8b949e}
+.section{padding:12px 16px}
+.section h2{font-size:14px;color:#00d4aa;margin:16px 0 10px;padding-bottom:4px;border-bottom:1px solid #1a1f2b}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 16px;margin:10px 0}
+.card h3{font-size:13px;color:#e6edf3;margin-bottom:8px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1a1f2b44;font-size:12px}
+.row:last-child{border-bottom:none}
+.label{color:#8b949e}.value{color:#e6edf3;font-weight:600}
+.btn{display:block;width:100%;padding:12px;margin:4px 0;border-radius:8px;font-size:13px;font-weight:700;text-align:center;cursor:pointer;border:none;transition:.2s}
+.btn-green{background:#00d4aa22;border:1px solid #00d4aa44;color:#00d4aa}
+.btn-green:hover{background:#00d4aa33}
+.btn-blue{background:#58a6ff22;border:1px solid #58a6ff44;color:#58a6ff}
+.btn-blue:hover{background:#58a6ff33}
+.btn-purple{background:#a371f722;border:1px solid #a371f744;color:#a371f7}
+.btn-yellow{background:#d4a80022;border:1px solid #d4a80044;color:#d4a800}
+.btn-red{background:#ff444422;border:1px solid #ff444444;color:#ff4444}
+select{padding:10px 12px;border-radius:8px;background:#06080d;border:1px solid #1a1f2b;color:#c8d1d9;font-size:13px;width:100%;margin:4px 0}
+.status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.status-green{background:#00d4aa;box-shadow:0 0 6px #00d4aa88}
+.status-orange{background:#d4a800;box-shadow:0 0 6px #d4a80088}
+.status-red{background:#ff4444;box-shadow:0 0 6px #ff444488}
+.msg{background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:10px 12px;min-height:50px;max-height:150px;overflow-y:auto;font-size:11px;color:#8b949e;margin:6px 0;font-family:monospace}
+.nav{display:flex;gap:6px;padding:10px 16px;flex-wrap:wrap}
+.nav a{font-size:10px;color:#8b949e;text-decoration:none;padding:3px 8px;border:1px solid #1a1f2b;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🔧 Z-MAX 远程控制</h1>
+<p id="clock">--</p>
+</div>
+
+<div class="nav">
+<a href="/">🏠</a><a href="/kanban.html">📋</a><a href="/system-interfaces.html">🔌</a><a href="/data-loop.html">🔄</a><a href="/robogen.html">🤖</a>
+</div>
+
+<!-- ═══ 1. 引擎切换 ═══ -->
+<div class="section">
+<h2>⚡ 引擎切换</h2>
+<select id="engine-select" onchange="changeEngine()">
+<option value="act">ACT · Sys1 · 1.2ms · 800FPS</option>
+<option value="smolvla">SmolVLA · Sys11 · 50ms</option>
+<option value="lew">LeWorldModel · Sys12 · 1.9ms</option>
+<option value="vtla" selected>VTLA · Sys2 · 284ms · 4090</option>
+<option value="groot">GR00T · Sys2 · 1137ms · 4090</option>
+</select>
+<div id="engine-status" class="card"><h3>当前引擎: VTLA</h3><div class="row"><span class="label">位置</span><span class="value">4090 (10.23.24.0:50052)</span></div><div class="row"><span class="label">状态</span><span class="value"><span class="status status-green"></span>已连接</span></div><div class="row"><span class="label">延迟</span><span class="value">284ms</span></div></div>
+
+<!-- ═══ 2. 4090 状态 ═══ -->
+<h2>🖥️ 4090 状态</h2>
+<div class="card" id="gpu-status">
+<div class="row"><span class="label">GPU</span><span class="value">RTX 4090 · 25.3GB</span></div>
+<div class="row"><span class="label">Sys2服务</span><span class="value"><span class="status status-green"></span>50052在线</span></div>
+<div class="row"><span class="label">VTLA模型</span><span class="value">450M · 已加载</span></div>
+<div class="row"><span class="label">GR00T模型</span><span class="value">7B · 就绪</span></div>
+<div class="row"><span class="label">VRAM使用</span><span class="value">6.4GB / 25.3GB</span></div>
+</div>
+
+<!-- ═══ 3. 训练控制 ═══ -->
+<h2>🏋️ 训练控制</h2>
+<div class="card">
+<select id="train-model">
+<option value="vtla">VTLA (Sys21) · 450M</option>
+<option value="groot">GR00T (Sys22) · 7B</option>
+</select>
+<button class="btn btn-green" onclick="startTrain()">▶️ 开始训练</button>
+<button class="btn btn-red" onclick="stopTrain()">⏹️ 停止训练</button>
+<div class="msg" id="train-log">训练日志...</div>
+</div>
+
+<!-- ═══ 4. 数据闭环 ═══ -->
+<h2>🔄 数据闭环控制</h2>
+<div class="card">
+<button class="btn btn-blue" onclick="startCollect()">📡 启动Orin数据采集</button>
+<button class="btn btn-purple" onclick="simMac()">💻 Mac旁路仿真</button>
+<button class="btn btn-green" onclick="deployModel()">🚀 部署模型到端侧</button>
+<div class="msg" id="loop-log">闭环状态...</div>
+</div>
+
+<!-- ═══ 5. 系统状态 ═══ -->
+<h2>📊 全系统状态</h2>
+<div class="card">
+<div class="row"><span class="label">Sys0 Orin</span><span class="value"><span class="status status-green"></span>192.168.23.10</span></div>
+<div class="row"><span class="label">Sys1 4060</span><span class="value"><span class="status status-green"></span>192.168.23.26</span></div>
+<div class="row"><span class="label">Sys2 4090</span><span class="value"><span class="status status-green"></span>10.23.24.0:50052</span></div>
+<div class="row"><span class="label">Mac 小芳</span><span class="value"><span class="status status-orange"></span>待确认</span></div>
+<div class="row"><span class="label">ECS</span><span class="value"><span class="status status-green"></span>39.102.211.79</span></div>
+</div>
+</div>
+
+<div style="text-align:center;padding:20px;color:#8b949e;font-size:10px">Z-MAX · 远程控制面板 · v1.0</div>
+
+<script>
+function log(el,msg){var d=document.getElementById(el);d.innerText+='\n'+new Date().toLocaleTimeString()+' '+msg;d.scrollTop=d.scrollHeight}
+function changeEngine(){var v=document.getElementById('engine-select').value;
+  var m={act:{name:'ACT',loc:'4060',lat:'1.2ms'},smolvla:{name:'SmolVLA',loc:'4060',lat:'50ms'},lew:{name:'LeWorld',loc:'4060',lat:'1.9ms'},vtla:{name:'VTLA',loc:'4090',lat:'284ms'},groot:{name:'GR00T',loc:'4090',lat:'1137ms'}};
+  var e=m[v];document.getElementById('engine-status').innerHTML='<h3>当前引擎: '+e.name+'</h3><div class="row"><span class="label">位置</span><span class="value">'+e.loc+'</span></div><div class="row"><span class="label">延迟</span><span class="value">'+e.lat+'</span></div>';
+  log('train-log','🔄 切换引擎: '+e.name)}
+function startTrain(){var m=document.getElementById('train-model').value;log('train-log','▶️ 启动训练: '+m.toUpperCase());log('train-log','⏳ 训练中...')}
+function stopTrain(){log('train-log','⏹️ 停止训练')}
+function startCollect(){log('loop-log','📡 Orin RealSense采集启动...');log('loop-log','✅ Orin→rosbag→Mac')}
+function simMac(){log('loop-log','💻 Mac旁路仿真启动...');log('loop-log','✅ ACT推理进行中')}
+function deployModel(){log('loop-log','🚀 模型部署中...');log('loop-log','✅ 权重→ECS→Orin')}
+setInterval(function(){document.getElementById('clock').innerText=new Date().toLocaleString()},1000);
+</script>
+</body>
+</html>
