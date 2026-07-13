@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数据闭环 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:14px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:12px}
+th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:11px;margin:10px 0}
+code{font-size:11px}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+.flow-box{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;margin:16px 0;font-size:12px}
+.flow-node{background:#0d1117;border:2px solid #00d4aa44;border-radius:8px;padding:10px 16px;text-align:center;white-space:nowrap}
+.flow-arrow{color:#00d4aa;font-size:18px;margin:0 2px}
+.n0{border-color:#d4a800;color:#d4a800}.n1{border-color:#58a6ff;color:#58a6ff}.n2{border-color:#00d4aa;color:#00d4aa}.n3{border-color:#a371f7;color:#a371f7}</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🔄 Z-MAX 数据闭环</h1>
+<p class="sub">Orin采集 → Mac旁路仿真 → 4060推理 → 4090训练 · 全自动闭环</p>
+
+<h2>一、闭环架构</h2>
+<div class="flow-box">
+<div class="flow-node n0">Orin Nano<br>RealSense采集<br>192.168.23.10</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n3">Mac 小芳<br>rosbag订阅<br>ACT旁路仿真</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n1">4060 xspace<br>Sys11+12推理<br>192.168.23.26</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n2">ECS 中转<br>数据汇总<br>39.102.211.79</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n2">4090 web<br>VTLA+GR00T训练<br>10.23.24.0</div>
+</div>
+
+<h2>二、6模型训练体系</h2>
+<table>
+<tr><th>编号</th><th>模型</th><th>参数量</th><th>位置</th><th>负责</th><th>状态</th></tr>
+<tr><td>Sys1</td><td>ACT 动作分块</td><td>52M</td><td>4060</td><td>xspace</td><td>⏳ 待开始</td></tr>
+<tr><td>Sys11</td><td>SmolVLA 视觉语言动作</td><td>450M</td><td>4060/4090</td><td>xspace→web</td><td>⏳ 待开始</td></tr>
+<tr><td>Sys12</td><td>LeWorldModel 世界模型</td><td>5.5M</td><td>4060</td><td>xspace</td><td>⏳ 待开始</td></tr>
+<tr><td>Sys11+12</td><td>SmolVLA+LeWorld 混合</td><td>~456M</td><td>4060→4090</td><td>xspace→web</td><td>⏳ 待联合</td></tr>
+<tr><td>Sys21</td><td>VTLA 触觉VLA</td><td>450M</td><td>4090</td><td>web</td><td style="color:#00d4aa">✅ 11轮完成</td></tr>
+<tr><td>Sys22</td><td>GR00T N1.7 通用模型</td><td>7B</td><td>4090</td><td>web</td><td>⏳ 待MetaWorld</td></tr>
+</table>
+
+<h2>三、GUI 操作界面 (xspace)</h2>
+<div class="card">
+<h3>GUI 新增 "数据闭环" 面板</h3>
+<table>
+<tr><th>功能</th><th>操作</th><th>说明</th></tr>
+<tr><td>启动数据采集</td><td>点击"开始采集"按钮</td><td>Orin RealSense → rosbag</td></tr>
+<tr><td>旁路仿真</td><td>选择"ACT仿真模式"</td><td>Mac订阅并推理</td></tr>
+<tr><td>数据下发</td><td>点击"下发训练"</td><td>4060汇总 → ECS → 4090</td></tr>
+<tr><td>训练监控</td><td>实时Loss曲线</td><td>4090返回训练状态</td></tr>
+<tr><td>模型部署</td><td>点击"上线模型"</td><td>权重回传 → 更新线上服务</td></tr>
+</table>
+</div>
+
+<h2>四、训练命令参考</h2>
+<div class="card">
+<h3>4090 统一训练管线</h3>
+<pre><code># VTLA 训练 (多轮)
+python unified_train.py --model vtla --rounds 5
+
+# GR00T 微调 (需要MetaWorld数据集)  
+python unified_train.py --model groot --dataset /path/to/metaworld
+
+# 检查数据闭环连通性
+python unified_train.py --ping</code></pre>
+</div>
+
+<div class="card">
+<h3>ECS 数据中转</h3>
+<pre><code># 4060上传训练数据到ECS
+scp training_data.tar.gz root@39.102.211.79:/www/wwwroot/datadrive.world/data/
+
+# 4090从ECS拉取数据
+wget http://datadrive.world/data/training_data.tar.gz
+
+# 4090训练完成 → 权重回传ECS
+scp model.pt root@39.102.211.79:/www/wwwroot/datadrive.world/models/</code></pre>
+</div>
+
+<h2>五、数据格式规范</h2>
+<table>
+<tr><th>来源</th><th>格式</th><th>路径</th></tr>
+<tr><td>Orin RealSense</td><td>rosbag2 (.mcap)</td><td>~/rosbag2_YYYY_MM_DD-HH_MM_SS/</td></tr>
+<tr><td>Mac 仿真输出</td><td>JSON + numpy (.npy)</td><td>~/zmax-sim-output/</td></tr>
+<tr><td>4060 推理结果</td><td>LeRobotDataset 格式</td><td>~/lerobot-data/</td></tr>
+<tr><td>4090 训练输入</td><td>LeRobotDataset / GR00T shard</td><td>/root/data/</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · 数据闭环文档 v1.0 · 2026-07-13</div>
+</div>
+</body>
+</html>
