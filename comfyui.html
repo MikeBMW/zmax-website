@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ComfyUI · Z-MAX 工作流</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:16px;margin:24px 0 10px;padding-bottom:4px;border-bottom:2px solid #00d4aa33}
+.workflow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:16px 0}
+.node{background:#0d1117;border:2px solid #1a1f2b;border-radius:10px;padding:12px 18px;text-align:center;cursor:pointer;transition:.2s;min-width:100px;font-size:11px}
+.node:hover{border-color:#00d4aa;transform:translateY(-2px)}
+.node.active{border-color:#00d4aa;box-shadow:0 0 10px #00d4aa33}
+.arrow{color:#00d4aa;font-size:20px;margin:0 2px;user-select:none}
+.n0{border-color:#d4a800}.n1{border-color:#58a6ff}.n2{border-color:#00d4aa}.n3{border-color:#a371f7}.n4{border-color:#ff4444}.n5{border-color:#8b949e}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
+th{background:#00d4aa22;padding:8px 10px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:7px 10px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 16px;overflow-x:auto;font-size:10px;margin:10px 0}
+.btn{display:inline-block;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;margin:4px}
+.btn-green{background:#00d4aa;color:#06080d}.btn-blue{background:#58a6ff;color:#fff}.btn-purple{background:#a371f7;color:#fff}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+.log{background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:10px 12px;min-height:40px;max-height:200px;overflow-y:auto;font-size:10px;color:#8b949e;margin:8px 0;font-family:monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🎨 ComfyUI 数据任务工作流</h1>
+<p class="sub">节点连线编排 → RoboGen生成 → Genesis仿真 → LeRobot训练 → DDS部署 · 4090后端</p>
+
+<!-- 工作流画布 -->
+<div class="workflow">
+<div class="node n0" onclick="select(1,this)">📝 Task<br><small>任务定义</small></div>
+<div class="arrow">→</div>
+<div class="node n1" onclick="select(2,this)">🤖 RoboGen<br><small>数据生成</small></div>
+<div class="arrow">→</div>
+<div class="node n2" onclick="select(3,this)">🌍 Genesis<br><small>物理仿真</small></div>
+<div class="arrow">→</div>
+<div class="node n3" onclick="select(4,this)">🏋️ LeRobot<br><small>模型训练</small></div>
+<div class="arrow">→</div>
+<div class="node n4" onclick="select(5,this)">🌐 DDS<br><small>数据分发</small></div>
+<div class="arrow">→</div>
+<div class="node n5" onclick="select(6,this)">🚀 Deploy<br><small>Mac/Orin</small></div>
+</div>
+
+<!-- 节点详情 -->
+<div class="card" id="detail">
+<h3>📝 点击上方节点查看详情</h3>
+<p style="font-size:11px;color:#8b949e">ComfyUI风格 · 节点连线式数据任务编排 · 全程在 4090 执行</p>
+</div>
+
+<!-- 快速预设 -->
+<h2>📋 预设工作流模板</h2>
+<table>
+<tr><th>模板</th><th>节点链</th><th>说明</th><th>操作</th></tr>
+<tr><td>光模块插拔</td><td>Task→RoboGen→Genesis→LeRobot(VTLA)→DDS→Deploy</td><td>完整6节点闭环</td><td><button class="btn btn-green" onclick="run('insert')">▶️ 运行</button></td></tr>
+<tr><td>取放搬运</td><td>Task→Genesis→LeRobot(ACT)→Deploy</td><td>4节点快速验证</td><td><button class="btn btn-blue" onclick="run('pickplace')">▶️ 运行</button></td></tr>
+<tr><td>AOI检测</td><td>Task→Genesis→DDS→Deploy</td><td>视觉检测链路</td><td><button class="btn btn-purple" onclick="run('aoi')">▶️ 运行</button></td></tr>
+</table>
+
+<h2>🛠️ 工程集成入口</h2>
+<table>
+<tr><th>工程</th><th>GitHub</th><th>角色</th><th>操作</th></tr>
+<tr><td>RoboGen</td><td>MikeBMW/robogen-deepseek</td><td>数据生成 (xspace)</td><td><a href="https://github.com/MikeBMW/robogen-deepseek" target="_blank">GitHub</a></td></tr>
+<tr><td>Genesis</td><td>MikeBMW/genesis-world</td><td>物理引擎 (xspace)</td><td><a href="https://github.com/MikeBMW/genesis-world" target="_blank">GitHub</a></td></tr>
+<tr><td>LeRobot</td><td>MikeBMW/lerobot-smolvla-lew</td><td>训练框架 (web)</td><td><a href="https://github.com/MikeBMW/lerobot-smolvla-lew" target="_blank">GitHub</a></td></tr>
+<tr><td>DDS Skill</td><td>MikeBMW/DDS_Skill_ros2_ws</td><td>全局数据 (xspace)</td><td><a href="https://github.com/MikeBMW/DDS_Skill_ros2_ws" target="_blank">GitHub</a></td></tr>
+<tr><td>Z-MAX Web</td><td>MikeBMW/zmax-website</td><td>前端总控 (web)</td><td><a href="/">🏠 主页</a></td></tr>
+</table>
+
+<div class="log" id="log">📋 工作流日志...</div>
+
+<script>
+function select(n,el){
+  document.querySelectorAll('.node').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  var m={1:{t:'📝 任务定义',d:'配置任务类型/参数/数据集。DeepSeek V4 Pro生成任务描述。输出→RoboGen',r:'robogen-deepseek'},
+         2:{t:'🤖 RoboGen 数据生成',d:'基于LLM自动生成多样化训练任务。DeepSeek V4 Pro驱动。输出→Genesis仿真',r:'robogen-deepseek'},
+         3:{t:'🌍 Genesis 物理仿真',d:'高保真物理引擎渲染。生成demonstration数据。输出→LeRobot训练',r:'genesis-world'},
+         4:{t:'🏋️ LeRobot 模型训练',d:'6模型训练管线(VTLA/GR00T/ACT/SmolVLA/LeWorld)。输出→DDS分发',r:'lerobot-smolvla-lew'},
+         5:{t:'🌐 DDS 数据分发',d:'21节点全局数据空间。14技能数据发布/订阅。输出→Deploy',r:'DDS_Skill_ros2_ws'},
+         6:{t:'🚀 部署上线',d:'模型→Orin真机+Mac旁路仿真。小芳负责验证测试',r:'mac/orin'}};
+  var v=m[n];document.getElementById('detail').innerHTML='<h3>'+v.t+'</h3><p style="font-size:11px;color:#8b949e">'+v.d+'</p><p style="font-size:10px;color:#00d4aa">仓库: github.com/MikeBMW/'+v.r+'</p>';
+}
+function log(m){var d=document.getElementById('log');d.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;d.scrollTop=d.scrollHeight}
+function run(type){
+  var steps={insert:['Task定义','RoboGen生成','Genesis仿真','VTLA训练','DDS分发','Mac/Orin部署'],pickplace:['Task定义','Genesis仿真','ACT训练','Orin部署'],aoi:['Task定义','Genesis仿真','DDS分发','Orin部署']};
+  log('▶️ 启动工作流: '+type);(steps[type]||[]).forEach(function(s,i){setTimeout(function(){log('  ✅ '+s+' 完成')},(i+1)*800)});
+}
+</script>
+
+<div class="footer">Z-MAX · 静界科技 · ComfyUI工作流 v1.0 · 4090后端 · 2026-07-13</div>
+</div>
+</body>
+</html>

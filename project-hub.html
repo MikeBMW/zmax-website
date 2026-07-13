@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工程集成总控 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:16px;margin:24px 0 10px;padding-bottom:4px;border-bottom:2px solid #00d4aa33}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:16px 0;font-size:10px}
+.flow-box{border:2px solid;border-radius:8px;padding:8px 12px;text-align:center;min-width:90px}
+.flow-arrow{color:#00d4aa;font-size:16px}
+.f0{border-color:#d4a800;color:#d4a800}.f1{border-color:#58a6ff;color:#58a6ff}.f2{border-color:#00d4aa;color:#00d4aa}.f3{border-color:#a371f7;color:#a371f7}.fw{border-color:#8b949e;color:#8b949e}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
+th{background:#00d4aa22;padding:8px 10px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:7px 10px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🏗️ Z-MAX 工程集成总控</h1>
+<p class="sub">7 仓库 · 6 模块 · 1 条数据闭环 · 产品总监 web · 2026-07-13</p>
+
+<h2>一、全工程架构</h2>
+<div class="flow">
+<div class="flow-box f0">ComfyUI<br>工作流编排</div><div class="flow-arrow">→</div>
+<div class="flow-box f1">RoboGen<br>DeepSeek</div><div class="flow-arrow">→</div>
+<div class="flow-box f2">Genesis<br>物理仿真</div><div class="flow-arrow">→</div>
+<div class="flow-box f3">LeRobot<br>训练框架</div><div class="flow-arrow">→</div>
+<div class="flow-box fw">DDS<br>数据分发</div><div class="flow-arrow">→</div>
+<div class="flow-box f0">Deploy<br>Mac/Orin</div>
+</div>
+
+<h2>二、仓库清单</h2>
+<table>
+<tr><th>#</th><th>仓库</th><th>角色</th><th>负责人</th><th>入口</th></tr>
+<tr><td>1</td><td><b>zmax-website</b></td><td>前端总控+PM</td><td>web</td><td><a href="/" style="color:#00d4aa">🏠 主页</a></td></tr>
+<tr><td>2</td><td><b>robogen-deepseek</b></td><td>数据生成引擎</td><td>xspace</td><td><a href="https://github.com/MikeBMW/robogen-deepseek" target="_blank">GitHub</a></td></tr>
+<tr><td>3</td><td><b>genesis-world</b></td><td>物理仿真引擎</td><td>xspace</td><td><a href="https://github.com/MikeBMW/genesis-world" target="_blank">GitHub</a></td></tr>
+<tr><td>4</td><td><b>lerobot-smolvla-lew</b></td><td>模型训练框架</td><td>web</td><td><a href="https://github.com/MikeBMW/lerobot-smolvla-lew" target="_blank">GitHub</a></td></tr>
+<tr><td>5</td><td><b>DDS_Skill_ros2_ws</b></td><td>全局数据空间</td><td>xspace</td><td><a href="https://github.com/MikeBMW/DDS_Skill_ros2_ws" target="_blank">GitHub</a></td></tr>
+<tr><td>6</td><td><b>Isaac-GR00T</b></td><td>GR00T N1.7训练</td><td>web</td><td><a href="https://github.com/NVIDIA/Isaac-GR00T" target="_blank">GitHub</a></td></tr>
+<tr><td>7</td><td><b>zmax-website</b></td><td>文档+看板+PM</td><td>web</td><td><a href="https://github.com/MikeBMW/zmax-website" target="_blank">GitHub</a></td></tr>
+</table>
+
+<h2>三、Web 功能入口总览</h2>
+<table>
+<tr><th>功能</th><th>Web页面</th><th>说明</th></tr>
+<tr><td>🎨 ComfyUI</td><td>/comfyui.html</td><td>数据任务工作流编排</td></tr>
+<tr><td>🔧 远程控制</td><td>/remote-control.html</td><td>手机端全功能操控</td></tr>
+<tr><td>🗺️ DDS节点地图</td><td>/dds-skill-map.html</td><td>21节点14Skill感知</td></tr>
+<tr><td>📊 数据质量</td><td>/data-quality.html</td><td>五层质量管控看板</td></tr>
+<tr><td>🔄 数据闭环</td><td>/data-loop.html</td><td>ECS中转+训练对接</td></tr>
+<tr><td>🌐 DDS数据空间</td><td>/dds-data-space.html</td><td>DDS架构文档</td></tr>
+<tr><td>🔌 系统接口</td><td>/system-interfaces.html</td><td>5引擎切换API</td></tr>
+<tr><td>🔩 Orin管线</td><td>/orin-pipeline.html</td><td>真机产线状态机</td></tr>
+<tr><td>🤖 RoboGen</td><td>/robogen.html</td><td>RoboGen+MetaWorld文档</td></tr>
+</table>
+
+<h2>四、数据闭环全链路</h2>
+<div class="card">
+<pre><code>
+ComfyUI(任务编排) ──→ RoboGen(数据生成) ──→ Genesis(物理仿真)
+                                                    ↓
+                                              LeRobot(模型训练)
+                                                    ↓
+                                            DDS(全局数据分发)
+                                                    ↓
+                                          Deploy(Mac旁路+Orin真机)
+</code></pre>
+</div>
+
+<h2>五、团队成员</h2>
+<table>
+<tr><th>角色</th><th>姓名</th><th>负责</th><th>工程</th></tr>
+<tr><td>总设计师</td><td>xspace (静静)</td><td>系统架构+RoboGen+Genesis+DDS</td><td>robogen-deepseek, genesis-world, DDS_Skill_ros2_ws</td></tr>
+<tr><td>产品总监</td><td>web</td><td>前端+训练+数据质量</td><td>zmax-website, lerobot-smolvla-lew, Isaac-GR00T</td></tr>
+<tr><td>硬件专家</td><td>小芳</td><td>Mac/Orin部署+测试</td><td>mac分支, Orin部署</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · 工程集成总控 v1.0 · 2026-07-13</div>
+</div>
+</body>
+</html>
