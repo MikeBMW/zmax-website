@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z-MAX 离线包</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9}
+.tab-bar{display:flex;flex-wrap:wrap;gap:4px;padding:12px 16px;background:#0d1117;border-bottom:1px solid #1a1f2b;position:sticky;top:0;z-index:100}
+.tab{background:transparent;border:1px solid #1a1f2b;color:#8b949e;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap;transition:.2s}
+.tab:hover{background:#00d4aa11;border-color:#00d4aa44;color:#00d4aa}
+.tab.active{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
+.content{display:none;padding:0}
+.content.active{display:block}
+iframe{width:100%;height:calc(100vh - 70px);border:none;background:#06080d}
+.banner{text-align:center;padding:20px;color:#8b949e;font-size:12px}
+@media(max-width:768px){.tab{font-size:10px;padding:5px 8px}}
+</style>
+</head>
+<body>
+<div class="banner">⚠️ <a href="/" style="color:#00d4aa">返回在线版</a> · 离线包包含当前版本 · 不含看板实时数据</div>
+<div class="tab-bar">
+<div class="tab active" onclick="switchTab(this,'main')">🏠 主页</div>
+<div class="tab" onclick="switchTab(this,'performance')">⚡ 算力指标</div>
+<div class="tab" onclick="switchTab(this,'survey')">🏭 工厂调研</div>
+<div class="tab" onclick="switchTab(this,'orin')">🔩 Orin管线</div>
+<div class="tab" onclick="switchTab(this,'interfaces')">🔌 系统接口</div>
+<div class="tab" onclick="switchTab(this,'retrospective')">📝 复盘</div>
+<div class="tab" onclick="switchTab(this,'acceptance')">✅ 验收</div>
+<div class="tab" onclick="switchTab(this,'recovery')">🔄 恢复指南</div>
+</div>
+<div id="main" class="content active"><iframe src="about:blank" data-src="MAIN_HTML"></iframe></div>
+<div id="performance" class="content"><iframe src="about:blank" data-src="PERF_HTML"></iframe></div>
+<div id="survey" class="content"><iframe src="about:blank" data-src="SURVEY_HTML"></iframe></div>
+<div id="orin" class="content"><iframe src="about:blank" data-src="ORIN_HTML"></iframe></div>
+<div id="interfaces" class="content"><iframe src="about:blank" data-src="IFACE_HTML"></iframe></div>
+<div id="retrospective" class="content"><iframe src="about:blank" data-src="RETRO_HTML"></iframe></div>
+<div id="acceptance" class="content"><iframe src="about:blank" data-src="ACCEPT_HTML"></iframe></div>
+<div id="recovery" class="content"><iframe src="about:blank" data-src="RECOV_HTML"></iframe></div>
+<script>
+function switchTab(tab,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+  var el=document.getElementById(id);
+  el.classList.add('active');
+  var iframe=el.querySelector('iframe');
+  if(iframe && iframe.src==='about:blank'){
+    iframe.srcdoc=iframe.getAttribute('data-src');
+    iframe.src='about:srcdoc';
+  }
+}
+</script>
+</body>
+</html>
