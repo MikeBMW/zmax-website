@@ -34,7 +34,7 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 1
 
 <h2>一、系统架构 (xspace设计)</h2>
 <div class="flow-box">
-<div class="flow-node n0">RoboGen<br>任务生成器</div>
+<div class="flow-node n0">DeepSeek V4 Pro<br>任务生成器</div>
 <div class="flow-arrow">→</div>
 <div class="flow-node n1">MetaWorld<br>仿真环境</div>
 <div class="flow-arrow">→</div>
@@ -48,7 +48,7 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 1
 <h2>二、RoboGen 任务生成</h2>
 <table>
 <tr><th>组件</th><th>负责</th><th>说明</th></tr>
-<tr><td>任务描述生成</td><td>RoboGen (LLM)</td><td>自动生成多样化的操作任务指令</td></tr>
+<tr><td>任务描述生成</td><td>DeepSeek V4 Pro</td><td>替代GPT-4，自动生成多样化操作任务指令</td></tr>
 <tr><td>场景生成</td><td>RoboGen + MetaWorld</td><td>随机物体位置/形状/颜色</td></tr>
 <tr><td>演示数据</td><td>MetaWorld SAC/SAC</td><td>专家策略生成最优轨迹</td></tr>
 <tr><td>数据格式转换</td><td>xspace 脚本</td><td>→ LeRobotDataset 格式</td></tr>
