@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RoboGen管线 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:14px;margin:16px 0 8px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:12px}
+th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:11px;margin:10px 0}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+.flow-box{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;margin:16px 0;font-size:11px}
+.flow-node{background:#0d1117;border:2px solid #00d4aa44;border-radius:8px;padding:8px 14px;text-align:center;white-space:nowrap}
+.flow-arrow{color:#00d4aa;font-size:16px;margin:0 2px}
+.n0{border-color:#d4a800;color:#d4a800}.n1{border-color:#58a6ff;color:#58a6ff}.n2{border-color:#00d4aa;color:#00d4aa}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🤖 RoboGen + MetaWorld 数据生成管线</h1>
+<p class="sub">xspace设计系统 · web训练模型 · 小芳部署上线 · 2026-07-13</p>
+
+<h2>一、系统架构 (xspace设计)</h2>
+<div class="flow-box">
+<div class="flow-node n0">RoboGen<br>任务生成器</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n1">MetaWorld<br>仿真环境</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n2">数据收集<br>demonstrations</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n2">Z-MAX<br>6模型训练</div>
+<div class="flow-arrow">→</div>
+<div class="flow-node n1">Orin/Mac<br>部署验证</div>
+</div>
+
+<h2>二、RoboGen 任务生成</h2>
+<table>
+<tr><th>组件</th><th>负责</th><th>说明</th></tr>
+<tr><td>任务描述生成</td><td>RoboGen (LLM)</td><td>自动生成多样化的操作任务指令</td></tr>
+<tr><td>场景生成</td><td>RoboGen + MetaWorld</td><td>随机物体位置/形状/颜色</td></tr>
+<tr><td>演示数据</td><td>MetaWorld SAC/SAC</td><td>专家策略生成最优轨迹</td></tr>
+<tr><td>数据格式转换</td><td>xspace 脚本</td><td>→ LeRobotDataset 格式</td></tr>
+</table>
+
+<h2>三、MetaWorld 任务清单</h2>
+<table>
+<tr><th>类别</th><th>任务</th><th>对应Z-MAX模型</th></tr>
+<tr><td>reach</td><td>触碰目标点</td><td>Sys1 ACT</td></tr>
+<tr><td>push</td><td>推动物体到目标</td><td>Sys1 ACT</td></tr>
+<tr><td>pick-place</td><td>抓取放置</td><td>Sys11 SmolVLA</td></tr>
+<tr><td>door-open</td><td>开门操作</td><td>Sys11 SmolVLA</td></tr>
+<tr><td>peg-insert</td><td>精密插拔</td><td>Sys21 VTLA</td></tr>
+<tr><td>assembly</td><td>多步组装</td><td>Sys22 GR00T</td></tr>
+</table>
+
+<h2>四、训练管线 (web负责)</h2>
+<div class="card">
+<h3>自动训练流程</h3>
+<pre><code># 1. RoboGen 生成数据 → MetaWorld 渲染 → 保存为 dataset
+python robogen/generate.py --env metaworld --tasks 100 --output data/
+
+# 2. 数据格式转换 (xspace脚本)
+python convert_robogen_to_lerobot.py --input data/ --output lerobot_data/
+
+# 3. 4090训练 (web统一管线)
+python unified_train.py --model vtla --dataset lerobot_data/
+python unified_train.py --model groot --dataset lerobot_data/</code></pre>
+</div>
+
+<h2>五、部署流程 (小芳负责)</h2>
+<div class="card">
+<pre><code># 1. 从ECS下载训练好的权重
+wget http://datadrive.world/models/vtla_trained.pt
+
+# 2. 部署到Orin (端侧推理)
+scp vtla_trained.pt nvidia@192.168.23.10:~/models/
+
+# 3. Mac旁路验证
+python mac_sim/validate.py --model vtla_trained.pt --env metaworld</code></pre>
+</div>
+
+<h2>六、分工总览</h2>
+<table>
+<tr><th>角色</th><th>负责</th><th>产出</th><th>状态</th></tr>
+<tr><td>xspace</td><td>RoboGen集成+MetaWorld环境+数据转换</td><td>robogen_config + convert脚本</td><td>⏳ 设计中</td></tr>
+<tr><td>web</td><td>6模型训练管线+4090执行</td><td>unified_train.py 全模型支持</td><td style="color:#00d4aa">✅ 就绪</td></tr>
+<tr><td>小芳</td><td>模型部署Orin/Mac+旁路验证</td><td>部署脚本 + 验证报告</td><td>⏳ 待模型</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · RoboGen管线 v1.0 · 2026-07-13</div>
+</div>
+</body>
+</html>
