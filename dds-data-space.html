@@ -11,124 +11,171 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 h1{color:#00d4aa;font-size:22px;text-align:center}
 .sub{text-align:center;color:#8b949e;font-size:12px;margin-bottom:14px}
 .tabs{display:flex;gap:5px;margin:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-.tab{padding:6px 11px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;white-space:nowrap;flex-shrink:0;transition:.15s}
+.tab{padding:6px 11px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;white-space:nowrap;flex-shrink:0}
 .tab:hover,.tab.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
-.tab.m.active{border-color:#58a6ff;color:#58a6ff;background:#58a6ff11}
-.tab.a.active{border-color:#00d4aa;color:#00d4aa}
+.tab.m.active{border-color:#58a6ff;color:#58a6ff}.tab.a.active{border-color:#00d4aa;color:#00d4aa}
 .tab.s.active{border-color:#ff4444;color:#ff4444;background:#ff444411}
 .count-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:10px 0}
 .count-num{font-size:20px;font-weight:800}.count-lab{font-size:10px;color:#8b949e}
-.cm{color:#58a6ff}.ca{color:#00d4aa}.cs{color:#ff4444}.ct{color:#8b949e}
+.c0{color:#a371f7}.c1{color:#58a6ff}.c2{color:#00d4aa}.c3{color:#ff4444}
 .card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:12px 14px;margin:8px 0}
-.card-h{font-size:13px;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #1a1f2b}
-.card-h.m{color:#58a6ff;border-color:#58a6ff33}
-.card-h.a100{color:#58a6ff;border-color:#58a6ff33}
-.card-h.a400{color:#00d4aa;border-color:#00d4aa33}
-.card-h.a800{color:#d4a800;border-color:#d4a80033}
-.card-h.safe{color:#ff4444;border-color:#ff444433}
+.card-h{font-size:13px;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid}
+.card-h.m{border-color:#58a6ff33;color:#58a6ff}
+.card-h.a100{border-color:#58a6ff33;color:#58a6ff}
+.card-h.a400{border-color:#00d4aa33;color:#00d4aa}
+.card-h.a800{border-color:#d4a80033;color:#d4a800}
+.card-h.safe{border-color:#ff444433;color:#ff4444}
+.card-h.c{border-color:#a371f733;color:#a371f7}
 table{width:100%;border-collapse:collapse;font-size:10px;display:block;overflow-x:auto;white-space:nowrap}
-th{background:#1a1f2b;padding:5px 7px;text-align:left;color:#8b949e;font-weight:600;font-size:9px}
-td{padding:5px 7px;border-bottom:1px solid #1a1f2b44}
+th{background:#1a1f2b;padding:5px 6px;text-align:left;color:#8b949e;font-weight:600;font-size:9px}
+td{padding:4px 6px;border-bottom:1px solid #1a1f2b44}
 tr:nth-child(even) td{background:#080c14}
-.skill-line{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
-.skill-cn{font-size:12px;font-weight:700;color:#e6edf3}
-.skill-en{font-size:9px;color:#8b949e;font-family:monospace}
-.metric-ok{color:#00d4aa;font-weight:700}.metric-warn{color:#d4a800;font-weight:700}.metric-fail{color:#ff4444;font-weight:700}
-.badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700}
-.badge-ok{background:#00d4aa18;color:#00d4aa}.badge-warn{background:#d4a80018;color:#d4a800}.badge-fail{background:#ff444418;color:#ff4444}
+.skill-cn{font-size:11px;font-weight:700;color:#e6edf3}.skill-en{font-size:8px;color:#8b949e;font-family:monospace}
+.metric-ok{color:#00d4aa;font-weight:700}.metric-warn{color:#d4a800;font-weight:700}
+.badge{display:inline-block;padding:1px 4px;border-radius:3px;font-size:7px;font-weight:700}
+.badge-ok{background:#00d4aa18;color:#00d4aa}.badge-warn{background:#d4a80018;color:#d4a800}
+.badge-c{background:#a371f718;color:#a371f7}
 .back-home{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;background:#0d1117;border:1px solid #00d4aa44;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:14px}
 .footer{text-align:center;padding:24px;color:#8b949e;font-size:10px;border-top:1px solid #1a1f2b;margin-top:32px}
+.flow{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;font-size:10px;margin:8px 0}
+.flow-n{border:2px solid;border-radius:6px;padding:5px 10px;text-align:center}
+.fc{border-color:#a371f7;color:#a371f7}.fa{border-color:#00d4aa;color:#00d4aa}.fm{border-color:#58a6ff;color:#58a6ff}
+.fa-arrow{color:#8b949e;font-size:12px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a href="/kanban.html" class="back-home">← 看板</a>
-<h1>DDS 主数据空间</h1>
-<p class="sub">模型指标 · 动作KPI · 全量化 · 2026-07-14</p>
+<h1>DDS 闭环数据空间</h1>
+<p class="sub">condition条件→模型推理→action动作 · 全局ID · 2026-07-14</p>
 
 <div class="count-row">
-<div><div class="count-num cm">7</div><div class="count-lab">模型技能</div></div>
-<div><div class="count-num ca">30</div><div class="count-lab">动作技能</div></div>
-<div><div class="count-num cs">4</div><div class="count-lab">安全技能</div></div>
+<div><div class="count-num c0">30</div><div class="count-lab">condition条件</div></div>
+<div><div class="count-num c1">7</div><div class="count-lab">model模型</div></div>
+<div><div class="count-num c2">30</div><div class="count-lab">action动作</div></div>
+<div><div class="count-num c3">4</div><div class="count-lab">安全</div></div>
+</div>
+
+<!-- 闭环流程图 -->
+<div class="flow">
+<div class="flow-n fc">🌍 真实环境<br>condition条件</div><div class="fa-arrow">→</div>
+<div class="flow-n fm">🧠 模型推理<br>ACT/SmolVLA/VTLA</div><div class="fa-arrow">→</div>
+<div class="flow-n fa">⚡ 动作输出<br>action动作</div><div class="fa-arrow">→</div>
+<div class="flow-n fc">🔄 下一帧<br>condition条件</div>
 </div>
 
 <div class="tabs">
 <div class="tab active" onclick="f('all',this)">全部</div>
-<div class="tab m" onclick="f('model',this)">🧠 模型指标</div>
-<div class="tab a" onclick="f('a100',this)">🔵 100G KPI</div>
-<div class="tab a" onclick="f('a400',this)">🟢 400G KPI</div>
-<div class="tab a" onclick="f('a800',this)">🟡 800G KPI</div>
+<div class="tab m" onclick="f('cond',this)">🟣 condition</div>
+<div class="tab a" onclick="f('a100',this)">🔵 100G</div>
+<div class="tab a" onclick="f('a400',this)">🟢 400G</div>
+<div class="tab a" onclick="f('a800',this)">🟡 800G</div>
 <div class="tab s" onclick="f('safe',this)">🛡️ 安全</div>
 <div class="tab" onclick="exportExcel()" style="border-color:#1a6b1a44;color:#1a6b1a">📥 Excel</div>
 </div>
 
-<!-- ═══ MODEL SKILL (训练指标) ═══ -->
-<div class="card" data-type="model"><div class="card-h m">🧠 模型技能 model_skill · 训练指标</div>
-<table><tr><th>ID</th><th>中文 / English</th><th>Topic</th><th>训练模型</th><th>指标</th><th>目标</th><th>当前</th><th>状态</th></tr>
-<tr><td>M01</td><td><div class="skill-line"><span class="skill-cn">RGB图像</span><span class="skill-en">sensor_rgb</span></div></td><td style="font-family:monospace">/dds/model/rgb</td><td>Sys11/21/22</td><td>帧可用率</td><td>≥99%</td><td class="metric-ok">99.7%</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>M02</td><td><div class="skill-line"><span class="skill-cn">深度图像</span><span class="skill-en">sensor_depth</span></div></td><td style="font-family:monospace">/dds/model/depth</td><td>Sys21</td><td>有效深度率</td><td>≥95%</td><td class="metric-ok">97.2%</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>M03</td><td><div class="skill-line"><span class="skill-cn">六维力觉</span><span class="skill-en">sensor_force_6d</span></div></td><td style="font-family:monospace">/dds/model/force</td><td>Sys21</td><td>力控Loss↓</td><td>≥50%↓</td><td class="metric-ok">76%↓</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>M04</td><td><div class="skill-line"><span class="skill-cn">触觉阵列</span><span class="skill-en">sensor_tactile</span></div></td><td style="font-family:monospace">/dds/model/tactile</td><td>Sys21</td><td>触觉Loss↓</td><td>≥40%↓</td><td class="metric-warn">38%↓</td><td><span class="badge badge-warn">优化中</span></td></tr>
-<tr><td>M05</td><td><div class="skill-line"><span class="skill-cn">关节状态</span><span class="skill-en">joint_state</span></div></td><td style="font-family:monospace">/dds/model/joint</td><td>Sys1/11</td><td>推理延迟</td><td><5ms</td><td class="metric-ok">1.2ms</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>M06</td><td><div class="skill-line"><span class="skill-cn">任务语言</span><span class="skill-en">task_language</span></div></td><td style="font-family:monospace">/dds/model/language</td><td>全部VLA</td><td>指令准确率</td><td>≥90%</td><td class="metric-ok">93%</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>M07</td><td><div class="skill-line"><span class="skill-cn">示教数据</span><span class="skill-en">expert_demo</span></div></td><td style="font-family:monospace">/dds/model/demo</td><td>全6模型</td><td>行为克隆Loss</td><td>≥60%↓</td><td class="metric-ok">66.5%↓</td><td><span class="badge badge-ok">通过</span></td></tr>
+<!-- ═══ CONDITION SKILLS ═══ -->
+<div class="card" data-type="cond"><div class="card-h c">🟣 condition条件技能 · 环境输入→模型感知 · 全局ID C001-C030</div>
+<table><tr><th>ID</th><th>条件数据</th><th>Topic</th><th>多模态</th><th>→action</th><th>型号</th></tr>
+<tr><td>C001</td><td><span class="skill-cn">100G取料条件</span></td><td style="font-family:monospace">/dds/cond/pick_100g</td><td>托盘图+力零位+夹爪位</td><td>A01取料</td><td>100G</td></tr>
+<tr><td>C002</td><td><span class="skill-cn">100G扫码条件</span></td><td style="font-family:monospace">/dds/cond/scan_100g</td><td>条码图+模块朝向</td><td>A02扫码</td><td>100G</td></tr>
+<tr><td>C003</td><td><span class="skill-cn">100G预插条件</span></td><td style="font-family:monospace">/dds/cond/pre_100g</td><td>插座图+模块位姿+关节</td><td>A03预插</td><td>100G</td></tr>
+<tr><td>C004</td><td><span class="skill-cn">100G插入条件</span></td><td style="font-family:monospace">/dds/cond/insert_100g</td><td>六维力+触觉+关节位</td><td>A04插入</td><td>100G</td></tr>
+<tr><td>C005</td><td><span class="skill-cn">100G推入条件</span></td><td style="font-family:monospace">/dds/cond/push_100g</td><td>位置反馈+力反馈</td><td>A05推入</td><td>100G</td></tr>
+<tr><td>C006</td><td><span class="skill-cn">100G测试条件</span></td><td style="font-family:monospace">/dds/cond/test_100g</td><td>测试仓信号+温度</td><td>A06测试</td><td>100G</td></tr>
+<tr><td>C007</td><td><span class="skill-cn">100G拔出条件</span></td><td style="font-family:monospace">/dds/cond/extract_100g</td><td>当前位姿+力归零</td><td>A07拔出</td><td>100G</td></tr>
+<tr><td>C008</td><td><span class="skill-cn">100G检测条件</span></td><td style="font-family:monospace">/dds/cond/aoi_100g</td><td>端面图×2+光照</td><td>A08检测</td><td>100G</td></tr>
+<tr><td>C009</td><td><span class="skill-cn">100G放置OK条件</span></td><td style="font-family:monospace">/dds/cond/place_ok_100g</td><td>OK托盘图+计数</td><td>A09合格品</td><td>100G</td></tr>
+<tr><td>C010</td><td><span class="skill-cn">100G放置NG条件</span></td><td style="font-family:monospace">/dds/cond/place_ng_100g</td><td>NG区图+计数</td><td>A10不良品</td><td>100G</td></tr>
+<tr><td>C011</td><td><span class="skill-cn">400G取料条件</span></td><td style="font-family:monospace">/dds/cond/pick_400g</td><td>DD托盘图+力4N位+夹爪</td><td>A01取料</td><td>400G</td></tr>
+<tr><td>C012</td><td><span class="skill-cn">400G扫码条件</span></td><td style="font-family:monospace">/dds/cond/scan_400g</td><td>76pin条码图+朝向</td><td>A02扫码</td><td>400G</td></tr>
+<tr><td>C013</td><td><span class="skill-cn">400G预插条件</span></td><td style="font-family:monospace">/dds/cond/pre_400g</td><td>DD插座图+位姿+关节</td><td>A03预插</td><td>400G</td></tr>
+<tr><td>C014</td><td><span class="skill-cn">400G插入条件</span></td><td style="font-family:monospace">/dds/cond/insert_400g</td><td>六维力+触觉+关节</td><td>A04插入⭐</td><td>400G</td></tr>
+<tr><td>C015</td><td><span class="skill-cn">400G推入条件</span></td><td style="font-family:monospace">/dds/cond/push_400g</td><td>76pin位置+力反馈</td><td>A05推入</td><td>400G</td></tr>
+<tr><td>C016</td><td><span class="skill-cn">400G测试条件</span></td><td style="font-family:monospace">/dds/cond/test_400g</td><td>BERT信号+温度</td><td>A06测试</td><td>400G</td></tr>
+<tr><td>C017</td><td><span class="skill-cn">400G拔出条件</span></td><td style="font-family:monospace">/dds/cond/extract_400g</td><td>当前位姿+力归零</td><td>A07拔出</td><td>400G</td></tr>
+<tr><td>C018</td><td><span class="skill-cn">400G检测条件</span></td><td style="font-family:monospace">/dds/cond/aoi_400g</td><td>端面图×2+光照</td><td>A08检测</td><td>400G</td></tr>
+<tr><td>C019</td><td><span class="skill-cn">400G放置OK条件</span></td><td style="font-family:monospace">/dds/cond/place_ok_400g</td><td>OK托盘图+计数</td><td>A09合格品</td><td>400G</td></tr>
+<tr><td>C020</td><td><span class="skill-cn">400G放置NG条件</span></td><td style="font-family:monospace">/dds/cond/place_ng_400g</td><td>NG区图+计数</td><td>A10不良品</td><td>400G</td></tr>
+<tr><td>C021</td><td><span class="skill-cn">800G取料条件</span></td><td style="font-family:monospace">/dds/cond/pick_800g</td><td>OSFP托盘图+力6N位+夹爪</td><td>A01取料</td><td>800G</td></tr>
+<tr><td>C022</td><td><span class="skill-cn">800G扫码条件</span></td><td style="font-family:monospace">/dds/cond/scan_800g</td><td>MPO端面图+朝向</td><td>A02扫码</td><td>800G</td></tr>
+<tr><td>C023</td><td><span class="skill-cn">800G预插条件</span></td><td style="font-family:monospace">/dds/cond/pre_800g</td><td>MPO插座图+位姿+关节</td><td>A03预插</td><td>800G</td></tr>
+<tr><td>C024</td><td><span class="skill-cn">800G插入条件</span></td><td style="font-family:monospace">/dds/cond/insert_800g</td><td>六维力+触觉+关节</td><td>A04插入⭐</td><td>800G</td></tr>
+<tr><td>C025</td><td><span class="skill-cn">800G对齐条件</span></td><td style="font-family:monospace">/dds/cond/push_800g</td><td>MPO各芯损耗+力反馈</td><td>A05对齐</td><td>800G</td></tr>
+<tr><td>C026</td><td><span class="skill-cn">800G测试条件</span></td><td style="font-family:monospace">/dds/cond/test_800g</td><td>EVB信号+8ch温度</td><td>A06测试</td><td>800G</td></tr>
+<tr><td>C027</td><td><span class="skill-cn">800G拔出条件</span></td><td style="font-family:monospace">/dds/cond/extract_800g</td><td>当前位姿+力归零</td><td>A07拔出</td><td>800G</td></tr>
+<tr><td>C028</td><td><span class="skill-cn">800G检测条件</span></td><td style="font-family:monospace">/dds/cond/aoi_800g</td><td>MPO×4面图+光照</td><td>A08检测</td><td>800G</td></tr>
+<tr><td>C029</td><td><span class="skill-cn">800G放置OK条件</span></td><td style="font-family:monospace">/dds/cond/place_ok_800g</td><td>OK托盘图+计数</td><td>A09合格品</td><td>800G</td></tr>
+<tr><td>C030</td><td><span class="skill-cn">800G放置NG条件</span></td><td style="font-family:monospace">/dds/cond/place_ng_800g</td><td>NG区图+计数</td><td>A10不良品</td><td>800G</td></tr>
 </table></div>
 
-<!-- ═══ 100G ═══ -->
-<div class="card" data-type="a100"><div class="card-h a100">🔵 100G QSFP28 · 30pin · 吸力3N · Eye 15s</div>
-<table><tr><th>#</th><th>中文 / English</th><th>Topic</th><th>KPI</th><th>目标</th><th>当前</th><th>检测</th></tr>
-<tr><td>1</td><td><div class="skill-line"><span class="skill-cn">取料</span><span class="skill-en">pick_100g</span></div></td><td style="font-family:monospace">/dds/action/pick_100g</td><td>吸取成功率</td><td>≥99.5%</td><td class="metric-ok">99.7%</td><td><span class="badge badge-ok">力3±0.3N</span></td></tr>
-<tr><td>2</td><td><div class="skill-line"><span class="skill-cn">扫码</span><span class="skill-en">scan_100g</span></div></td><td style="font-family:monospace">/dds/action/scan_100g</td><td>SN识别率</td><td>≥99.9%</td><td class="metric-ok">99.9%</td><td><span class="badge badge-ok">200ms</span></td></tr>
-<tr><td>3</td><td><div class="skill-line"><span class="skill-cn">预插</span><span class="skill-en">pre_100g</span></div></td><td style="font-family:monospace">/dds/action/pre_100g</td><td>定位误差</td><td>≤0.5mm</td><td class="metric-ok">0.3mm</td><td><span class="badge badge-ok">SmolVLA</span></td></tr>
-<tr><td>4</td><td><div class="skill-line"><span class="skill-cn">插入</span><span class="skill-en">insert_100g</span></div></td><td style="font-family:monospace">/dds/action/insert_100g</td><td>一次插入成功率</td><td>≥97%</td><td class="metric-ok">98.2%</td><td><span class="badge badge-ok">Z3N±0.5N</span></td></tr>
-<tr><td>5</td><td><div class="skill-line"><span class="skill-cn">推入</span><span class="skill-en">push_100g</span></div></td><td style="font-family:monospace">/dds/action/push_100g</td><td>终位达标率</td><td>≥99%</td><td class="metric-ok">99.3%</td><td><span class="badge badge-ok">pose>0.75</span></td></tr>
-<tr><td>6</td><td><div class="skill-line"><span class="skill-cn">测试</span><span class="skill-en">test_100g</span></div></td><td style="font-family:monospace">/dds/action/test_100g</td><td>Eye模板通过率</td><td>≥95%</td><td class="metric-ok">96.1%</td><td><span class="badge badge-ok">15s PASS</span></td></tr>
-<tr><td>7</td><td><div class="skill-line"><span class="skill-cn">拔出</span><span class="skill-en">extract_100g</span></div></td><td style="font-family:monospace">/dds/action/extract_100g</td><td>无损伤率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">Z+12cm</span></td></tr>
-<tr><td>8</td><td><div class="skill-line"><span class="skill-cn">检测</span><span class="skill-en">aoi_100g</span></div></td><td style="font-family:monospace">/dds/action/aoi_100g</td><td>AOI通过率</td><td>≥98%</td><td class="metric-ok">98.5%</td><td><span class="badge badge-ok">30pin端面</span></td></tr>
-<tr><td>9</td><td><div class="skill-line"><span class="skill-cn">合格品</span><span class="skill-en">place_ok_100g</span></div></td><td style="font-family:monospace">/dds/action/place_ok_100g</td><td>放置准确率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">pose_25</span></td></tr>
-<tr><td>10</td><td><div class="skill-line"><span class="skill-cn">不良品</span><span class="skill-en">place_ng_100g</span></div></td><td style="font-family:monospace">/dds/action/place_ng_100g</td><td>分拣准确率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">pose_26</span></td></tr>
+<!-- model skill 简表 -->
+<div class="card" data-type="model"><div class="card-h m">🧠 模型技能 · 训练指标</div>
+<table><tr><th>ID</th><th>技能</th><th>Topic</th><th>指标</th><th>当前</th><th>状态</th></tr>
+<tr><td>M01</td><td><span class="skill-cn">RGB图像</span> <span class="skill-en">sensor_rgb</span></td><td style="font-family:monospace">/dds/model/rgb</td><td>帧可用率 ≥99%</td><td class="metric-ok">99.7%</td><td><span class="badge badge-ok">通过</span></td></tr>
+<tr><td>M02</td><td><span class="skill-cn">深度图</span> <span class="skill-en">sensor_depth</span></td><td style="font-family:monospace">/dds/model/depth</td><td>有效深度率 ≥95%</td><td class="metric-ok">97.2%</td><td><span class="badge badge-ok">通过</span></td></tr>
+<tr><td>M03</td><td><span class="skill-cn">六维力</span> <span class="skill-en">sensor_force</span></td><td style="font-family:monospace">/dds/model/force</td><td>力控Loss↓ ≥50%</td><td class="metric-ok">76%↓</td><td><span class="badge badge-ok">通过</span></td></tr>
+<tr><td>M04</td><td><span class="skill-cn">触觉</span> <span class="skill-en">sensor_tactile</span></td><td style="font-family:monospace">/dds/model/tactile</td><td>触觉Loss↓ ≥40%</td><td class="metric-warn">38%↓</td><td><span class="badge badge-warn">优化</span></td></tr>
+<tr><td>M05</td><td><span class="skill-cn">关节</span> <span class="skill-en">joint_state</span></td><td style="font-family:monospace">/dds/model/joint</td><td>延迟 <5ms</td><td class="metric-ok">1.2ms</td><td><span class="badge badge-ok">通过</span></td></tr>
+<tr><td>M06</td><td><span class="skill-cn">语言</span> <span class="skill-en">task_language</span></td><td style="font-family:monospace">/dds/model/language</td><td>指令准确率 ≥90%</td><td class="metric-ok">93%</td><td><span class="badge badge-ok">通过</span></td></tr>
+<tr><td>M07</td><td><span class="skill-cn">示教</span> <span class="skill-en">expert_demo</span></td><td style="font-family:monospace">/dds/model/demo</td><td>克隆Loss↓ ≥60%</td><td class="metric-ok">66.5%↓</td><td><span class="badge badge-ok">通过</span></td></tr>
 </table></div>
 
-<!-- ═══ 400G ═══ -->
-<div class="card" data-type="a400"><div class="card-h a400">🟢 400G QSFP-DD · 76pin · 吸力4N · BERT 60s</div>
-<table><tr><th>#</th><th>中文 / English</th><th>Topic</th><th>KPI</th><th>目标</th><th>当前</th><th>检测</th></tr>
-<tr><td>1</td><td><div class="skill-line"><span class="skill-cn">取料</span><span class="skill-en">pick_400g</span></div></td><td style="font-family:monospace">/dds/action/pick_400g</td><td>吸取成功率</td><td>≥99.5%</td><td class="metric-ok">99.6%</td><td><span class="badge badge-ok">力4±0.4N</span></td></tr>
-<tr><td>2</td><td><div class="skill-line"><span class="skill-cn">扫码</span><span class="skill-en">scan_400g</span></div></td><td style="font-family:monospace">/dds/action/scan_400g</td><td>SN识别率</td><td>≥99.9%</td><td class="metric-ok">99.9%</td><td><span class="badge badge-ok">200ms</span></td></tr>
-<tr><td>3</td><td><div class="skill-line"><span class="skill-cn">预插</span><span class="skill-en">pre_400g</span></div></td><td style="font-family:monospace">/dds/action/pre_400g</td><td>定位误差</td><td>≤0.5mm</td><td class="metric-ok">0.4mm</td><td><span class="badge badge-ok">SmolVLA</span></td></tr>
-<tr><td>4</td><td><div class="skill-line"><span class="skill-cn">插入⭐</span><span class="skill-en">insert_400g</span></div></td><td style="font-family:monospace">/dds/action/insert_400g</td><td>一次插入成功率</td><td>≥95%</td><td class="metric-warn">93.1%</td><td><span class="badge badge-warn">Z6N±0.5N</span></td></tr>
-<tr><td>5</td><td><div class="skill-line"><span class="skill-cn">推入</span><span class="skill-en">push_400g</span></div></td><td style="font-family:monospace">/dds/action/push_400g</td><td>金手指全入率</td><td>≥99%</td><td class="metric-ok">99.1%</td><td><span class="badge badge-ok">76pin</span></td></tr>
-<tr><td>6</td><td><div class="skill-line"><span class="skill-cn">测试</span><span class="skill-en">test_400g</span></div></td><td style="font-family:monospace">/dds/action/test_400g</td><td>BERT BER</td><td><1E-12</td><td class="metric-ok">8E-13</td><td><span class="badge badge-ok">60s</span></td></tr>
-<tr><td>7</td><td><div class="skill-line"><span class="skill-cn">拔出</span><span class="skill-en">extract_400g</span></div></td><td style="font-family:monospace">/dds/action/extract_400g</td><td>无损伤率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">Z+12cm</span></td></tr>
-<tr><td>8</td><td><div class="skill-line"><span class="skill-cn">检测</span><span class="skill-en">aoi_400g</span></div></td><td style="font-family:monospace">/dds/action/aoi_400g</td><td>AOI通过率</td><td>≥98%</td><td class="metric-ok">98.3%</td><td><span class="badge badge-ok">76pin端面</span></td></tr>
-<tr><td>9</td><td><div class="skill-line"><span class="skill-cn">合格品</span><span class="skill-en">place_ok_400g</span></div></td><td style="font-family:monospace">/dds/action/place_ok_400g</td><td>放置准确率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">pose_25</span></td></tr>
-<tr><td>10</td><td><div class="skill-line"><span class="skill-cn">不良品</span><span class="skill-en">place_ng_400g</span></div></td><td style="font-family:monospace">/dds/action/place_ng_400g</td><td>分拣准确率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">pose_26</span></td></tr>
+<!-- 100G 简表 -->
+<div class="card" data-type="a100"><div class="card-h a100">🔵 100G QSFP28 · C001-C010 → A01-A10</div>
+<table><tr><th>条件ID</th><th>action</th><th>Topic</th><th>KPI</th><th>当前</th></tr>
+<tr><td>C001</td><td><span class="skill-cn">取料</span></td><td style="font-family:monospace">/dds/action/pick_100g</td><td>成功率≥99.5%</td><td class="metric-ok">99.7%</td></tr>
+<tr><td>C002</td><td><span class="skill-cn">扫码</span></td><td style="font-family:monospace">/dds/action/scan_100g</td><td>识别率≥99.9%</td><td class="metric-ok">99.9%</td></tr>
+<tr><td>C003</td><td><span class="skill-cn">预插</span></td><td style="font-family:monospace">/dds/action/pre_100g</td><td>误差≤0.5mm</td><td class="metric-ok">0.3mm</td></tr>
+<tr><td>C004</td><td><span class="skill-cn">插入</span></td><td style="font-family:monospace">/dds/action/insert_100g</td><td>一次成功率≥97%</td><td class="metric-ok">98.2%</td></tr>
+<tr><td>C005</td><td><span class="skill-cn">推入</span></td><td style="font-family:monospace">/dds/action/push_100g</td><td>达标率≥99%</td><td class="metric-ok">99.3%</td></tr>
+<tr><td>C006</td><td><span class="skill-cn">测试</span></td><td style="font-family:monospace">/dds/action/test_100g</td><td>通过率≥95%</td><td class="metric-ok">96.1%</td></tr>
+<tr><td>C007</td><td><span class="skill-cn">拔出</span></td><td style="font-family:monospace">/dds/action/extract_100g</td><td>无损率100%</td><td class="metric-ok">100%</td></tr>
+<tr><td>C008</td><td><span class="skill-cn">检测</span></td><td style="font-family:monospace">/dds/action/aoi_100g</td><td>通过率≥98%</td><td class="metric-ok">98.5%</td></tr>
+<tr><td>C009</td><td><span class="skill-cn">合格品</span></td><td style="font-family:monospace">/dds/action/place_ok_100g</td><td>准确率100%</td><td class="metric-ok">100%</td></tr>
+<tr><td>C010</td><td><span class="skill-cn">不良品</span></td><td style="font-family:monospace">/dds/action/place_ng_100g</td><td>准确率100%</td><td class="metric-ok">100%</td></tr>
 </table></div>
 
-<!-- ═══ 800G ═══ -->
-<div class="card" data-type="a800"><div class="card-h a800">🟡 800G OSFP · MPO多芯 · 吸力6N · EVB 120s</div>
-<table><tr><th>#</th><th>中文 / English</th><th>Topic</th><th>KPI</th><th>目标</th><th>当前</th><th>检测</th></tr>
-<tr><td>1</td><td><div class="skill-line"><span class="skill-cn">取料</span><span class="skill-en">pick_800g</span></div></td><td style="font-family:monospace">/dds/action/pick_800g</td><td>吸取成功率</td><td>≥99%</td><td class="metric-ok">99.2%</td><td><span class="badge badge-ok">力6±0.6N</span></td></tr>
-<tr><td>2</td><td><div class="skill-line"><span class="skill-cn">扫码</span><span class="skill-en">scan_800g</span></div></td><td style="font-family:monospace">/dds/action/scan_800g</td><td>MPO识别率</td><td>≥99.9%</td><td class="metric-ok">99.9%</td><td><span class="badge badge-ok">MPO端面</span></td></tr>
-<tr><td>3</td><td><div class="skill-line"><span class="skill-cn">预插</span><span class="skill-en">pre_800g</span></div></td><td style="font-family:monospace">/dds/action/pre_800g</td><td>定位误差</td><td>≤0.3mm</td><td class="metric-ok">0.2mm</td><td><span class="badge badge-ok">SmolVLA</span></td></tr>
-<tr><td>4</td><td><div class="skill-line"><span class="skill-cn">插入⭐</span><span class="skill-en">insert_800g</span></div></td><td style="font-family:monospace">/dds/action/insert_800g</td><td>MPO多芯对准率</td><td>≥90%</td><td class="metric-warn">87.5%</td><td><span class="badge badge-warn">Z8N±0.5N</span></td></tr>
-<tr><td>5</td><td><div class="skill-line"><span class="skill-cn">对齐</span><span class="skill-en">push_800g</span></div></td><td style="font-family:monospace">/dds/action/push_800g</td><td>各芯损耗</td><td><1dB</td><td class="metric-ok">0.7dB</td><td><span class="badge badge-ok">MPO 8ch</span></td></tr>
-<tr><td>6</td><td><div class="skill-line"><span class="skill-cn">测试</span><span class="skill-en">test_800g</span></div></td><td style="font-family:monospace">/dds/action/test_800g</td><td>EVB全通道通过率</td><td>≥95%</td><td class="metric-ok">96.0%</td><td><span class="badge badge-ok">120s 8ch</span></td></tr>
-<tr><td>7</td><td><div class="skill-line"><span class="skill-cn">拔出</span><span class="skill-en">extract_800g</span></div></td><td style="font-family:monospace">/dds/action/extract_800g</td><td>MPO无损率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">Z+12cm</span></td></tr>
-<tr><td>8</td><td><div class="skill-line"><span class="skill-cn">检测</span><span class="skill-en">aoi_800g</span></div></td><td style="font-family:monospace">/dds/action/aoi_800g</td><td>MPO×4面通过率</td><td>≥95%</td><td class="metric-ok">96.5%</td><td><span class="badge badge-ok">4面检测</span></td></tr>
-<tr><td>9</td><td><div class="skill-line"><span class="skill-cn">合格品</span><span class="skill-en">place_ok_800g</span></div></td><td style="font-family:monospace">/dds/action/place_ok_800g</td><td>放置准确率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">pose_25_osfp</span></td></tr>
-<tr><td>10</td><td><div class="skill-line"><span class="skill-cn">不良品</span><span class="skill-en">place_ng_800g</span></div></td><td style="font-family:monospace">/dds/action/place_ng_800g</td><td>分拣准确率</td><td>100%</td><td class="metric-ok">100%</td><td><span class="badge badge-ok">pose_26_osfp</span></td></tr>
+<!-- 400G 简表 -->
+<div class="card" data-type="a400"><div class="card-h a400">🟢 400G QSFP-DD · C011-C020 → A01-A10</div>
+<table><tr><th>条件ID</th><th>action</th><th>Topic</th><th>KPI</th><th>当前</th></tr>
+<tr><td>C011</td><td><span class="skill-cn">取料</span></td><td style="font-family:monospace">/dds/action/pick_400g</td><td>成功率≥99.5%</td><td class="metric-ok">99.6%</td></tr>
+<tr><td>C012</td><td><span class="skill-cn">扫码</span></td><td style="font-family:monospace">/dds/action/scan_400g</td><td>识别率≥99.9%</td><td class="metric-ok">99.9%</td></tr>
+<tr><td>C013</td><td><span class="skill-cn">预插</span></td><td style="font-family:monospace">/dds/action/pre_400g</td><td>误差≤0.5mm</td><td class="metric-ok">0.4mm</td></tr>
+<tr><td>C014</td><td><span class="skill-cn">插入⭐</span></td><td style="font-family:monospace">/dds/action/insert_400g</td><td>一次成功率≥95%</td><td class="metric-warn">93.1%</td></tr>
+<tr><td>C015</td><td><span class="skill-cn">推入</span></td><td style="font-family:monospace">/dds/action/push_400g</td><td>全入率≥99%</td><td class="metric-ok">99.1%</td></tr>
+<tr><td>C016</td><td><span class="skill-cn">测试</span></td><td style="font-family:monospace">/dds/action/test_400g</td><td>BER<1E-12</td><td class="metric-ok">8E-13</td></tr>
+<tr><td>C017</td><td><span class="skill-cn">拔出</span></td><td style="font-family:monospace">/dds/action/extract_400g</td><td>无损率100%</td><td class="metric-ok">100%</td></tr>
+<tr><td>C018</td><td><span class="skill-cn">检测</span></td><td style="font-family:monospace">/dds/action/aoi_400g</td><td>通过率≥98%</td><td class="metric-ok">98.3%</td></tr>
+<tr><td>C019</td><td><span class="skill-cn">合格品</span></td><td style="font-family:monospace">/dds/action/place_ok_400g</td><td>准确率100%</td><td class="metric-ok">100%</td></tr>
+<tr><td>C020</td><td><span class="skill-cn">不良品</span></td><td style="font-family:monospace">/dds/action/place_ng_400g</td><td>准确率100%</td><td class="metric-ok">100%</td></tr>
 </table></div>
 
-<!-- ═══ SAFETY ═══ -->
-<div class="card" data-type="safe"><div class="card-h safe">🛡️ 安全技能 · 检测KPI</div>
-<table><tr><th>ID</th><th>中文 / English</th><th>Topic</th><th>检测KPI</th><th>响应时间</th><th>当前</th><th>状态</th></tr>
-<tr><td>S01</td><td><div class="skill-line"><span class="skill-cn">急停保护</span><span class="skill-en">e_stop</span></div></td><td style="font-family:monospace">/dds/safe/estop</td><td>力超阈值→停</td><td><10ms</td><td class="metric-ok">8ms</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>S02</td><td><div class="skill-line"><span class="skill-cn">抓取失败</span><span class="skill-en">grasp_fail</span></div></td><td style="font-family:monospace">/dds/safe/grasp_fail</td><td>2次失败→报错</td><td><100ms</td><td class="metric-ok">45ms</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>S03</td><td><div class="skill-line"><span class="skill-cn">力限保护</span><span class="skill-en">force_limit</span></div></td><td style="font-family:monospace">/dds/safe/force_limit</td><td>超限→回退</td><td><20ms</td><td class="metric-ok">12ms</td><td><span class="badge badge-ok">通过</span></td></tr>
-<tr><td>S04</td><td><div class="skill-line"><span class="skill-cn">碰撞检测</span><span class="skill-en">collision</span></div></td><td style="font-family:monospace">/dds/safe/collision</td><td>扭矩异常→急停</td><td><5ms</td><td class="metric-ok">3ms</td><td><span class="badge badge-ok">通过</span></td></tr>
+<!-- 800G 简表 -->
+<div class="card" data-type="a800"><div class="card-h a800">🟡 800G OSFP · C021-C030 → A01-A10</div>
+<table><tr><th>条件ID</th><th>action</th><th>Topic</th><th>KPI</th><th>当前</th></tr>
+<tr><td>C021</td><td><span class="skill-cn">取料</span></td><td style="font-family:monospace">/dds/action/pick_800g</td><td>成功率≥99%</td><td class="metric-ok">99.2%</td></tr>
+<tr><td>C022</td><td><span class="skill-cn">扫码</span></td><td style="font-family:monospace">/dds/action/scan_800g</td><td>识别率≥99.9%</td><td class="metric-ok">99.9%</td></tr>
+<tr><td>C023</td><td><span class="skill-cn">预插</span></td><td style="font-family:monospace">/dds/action/pre_800g</td><td>误差≤0.3mm</td><td class="metric-ok">0.2mm</td></tr>
+<tr><td>C024</td><td><span class="skill-cn">插入⭐</span></td><td style="font-family:monospace">/dds/action/insert_800g</td><td>对准率≥90%</td><td class="metric-warn">87.5%</td></tr>
+<tr><td>C025</td><td><span class="skill-cn">对齐</span></td><td style="font-family:monospace">/dds/action/push_800g</td><td>损耗<1dB</td><td class="metric-ok">0.7dB</td></tr>
+<tr><td>C026</td><td><span class="skill-cn">测试</span></td><td style="font-family:monospace">/dds/action/test_800g</td><td>通过率≥95%</td><td class="metric-ok">96.0%</td></tr>
+<tr><td>C027</td><td><span class="skill-cn">拔出</span></td><td style="font-family:monospace">/dds/action/extract_800g</td><td>无损率100%</td><td class="metric-ok">100%</td></tr>
+<tr><td>C028</td><td><span class="skill-cn">检测</span></td><td style="font-family:monospace">/dds/action/aoi_800g</td><td>通过率≥95%</td><td class="metric-ok">96.5%</td></tr>
+<tr><td>C029</td><td><span class="skill-cn">合格品</span></td><td style="font-family:monospace">/dds/action/place_ok_800g</td><td>准确率100%</td><td class="metric-ok">100%</td></tr>
+<tr><td>C030</td><td><span class="skill-cn">不良品</span></td><td style="font-family:monospace">/dds/action/place_ng_800g</td><td>准确率100%</td><td class="metric-ok">100%</td></tr>
 </table></div>
 
-<div class="footer">Z-MAX · 41 Skill · 模型指标+动作KPI · web产品总监 · xspace架构 · 小芳验证 · 2026-07-14</div>
+<!-- SAFETY -->
+<div class="card" data-type="safe"><div class="card-h safe">🛡️ 安全 · 检测KPI</div>
+<table><tr><th>ID</th><th>技能</th><th>Topic</th><th>KPI</th><th>响应</th><th>当前</th></tr>
+<tr><td>S01</td><td><span class="skill-cn">急停</span> <span class="skill-en">e_stop</span></td><td style="font-family:monospace">/dds/safe/estop</td><td>力超→停</td><td><10ms</td><td class="metric-ok">8ms</td></tr>
+<tr><td>S02</td><td><span class="skill-cn">抓败</span> <span class="skill-en">grasp_fail</span></td><td style="font-family:monospace">/dds/safe/grasp_fail</td><td>2次→报错</td><td><100ms</td><td class="metric-ok">45ms</td></tr>
+<tr><td>S03</td><td><span class="skill-cn">力限</span> <span class="skill-en">force_limit</span></td><td style="font-family:monospace">/dds/safe/force_limit</td><td>超限→回退</td><td><20ms</td><td class="metric-ok">12ms</td></tr>
+<tr><td>S04</td><td><span class="skill-cn">碰撞</span> <span class="skill-en">collision</span></td><td style="font-family:monospace">/dds/safe/collision</td><td>扭矩→急停</td><td><5ms</td><td class="metric-ok">3ms</td></tr>
+</table></div>
+
+<div class="footer">Z-MAX · 闭环数据空间 · C001-C030条件→M01-M07模型→A01-A30动作 · 2026-07-14</div>
 </div>
 <script>
 function f(t,b){
@@ -138,10 +185,10 @@ function f(t,b){
 }
 function exportExcel(){
   var h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>';
-  var labs=['模型技能指标','100G QSFP28 KPI','400G QSFP-DD KPI','800G OSFP KPI','安全技能KPI'];
+  var labs=['条件技能C001-C030','模型技能M01-M07','100G KPI','400G KPI','800G KPI','安全KPI'];
   document.querySelectorAll('table').forEach(function(t,i){h+='<h2>'+labs[i]+'</h2>'+t.outerHTML});
   h+='</body></html>';var b=new Blob([h],{type:'application/vnd.ms-excel'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Z-MAX_技能指标表.xls';a.click();
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Z-MAX_闭环数据空间.xls';a.click();
 }
 </script>
 </body>
