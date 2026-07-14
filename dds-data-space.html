@@ -50,7 +50,7 @@ tr:nth-child(even) td{background:#080c14}
 <p class="sub">condition条件→模型推理→action动作 · 全局ID · 2026-07-14</p>
 
 <div class="count-row">
-<div><div class="count-num c0">34</div><div class="count-lab">condition条件</div></div>
+<div><div class="count-num c0">38</div><div class="count-lab">condition条件</div></div>
 <div><div class="count-num c1">7</div><div class="count-lab">model模型</div></div>
 <div><div class="count-num c2">30</div><div class="count-lab">action动作</div></div>
 <div><div class="count-num c3">4</div><div class="count-lab">安全</div></div>
@@ -77,7 +77,7 @@ tr:nth-child(even) td{background:#080c14}
 </div>
 
 <!-- ═══ CONDITION SKILLS ═══ -->
-<div class="card" data-type="cond"><div class="card-h c">🟣 condition条件技能 · 环境输入→模型感知 · C001-C034</div>
+<div class="card" data-type="cond"><div class="card-h c">🟣 condition条件技能 · 环境输入→模型感知 · C001-C038</div>
 <table><tr><th>ID</th><th>条件数据</th><th>Topic</th><th>多模态</th><th>→action</th><th>型号</th></tr>
 <tr><td>C001</td><td><span class="skill-cn">100G取料条件</span></td><td style="font-family:monospace">/dds/cond/pick_100g</td><td>托盘图+力零位+夹爪位</td><td>A01取料</td><td>100G</td></tr>
 <tr><td>C002</td><td><span class="skill-cn">100G扫码条件</span></td><td style="font-family:monospace">/dds/cond/scan_100g</td><td>条码图+模块朝向</td><td>A02扫码</td><td>100G</td></tr>
@@ -179,9 +179,13 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>C032</td><td><span class="skill-cn">抓败条件</span> <span class="skill-en">grasp_fail_cond</span></td><td style="font-family:monospace">/dds/cond/grasp_fail</td><td>连续2次吸取/夹持失败</td><td>力<3N触发, 报错+开爪</td><td class="metric-ok">检测45ms</td></tr>
 <tr><td>C033</td><td><span class="skill-cn">力限条件</span> <span class="skill-en">force_limit_cond</span></td><td style="font-family:monospace">/dds/cond/force_limit</td><td>各型号力超限</td><td>10N/12N/15N→回退5mm</td><td class="metric-ok">回退12ms</td></tr>
 <tr><td>C034</td><td><span class="skill-cn">碰撞条件</span> <span class="skill-en">collision_cond</span></td><td style="font-family:monospace">/dds/cond/collision</td><td>关节扭矩>正常值3σ</td><td>任一关节超限→急停+回退</td><td class="metric-ok">急停3ms</td></tr>
+<tr><td>C035</td><td><span class="skill-cn">电池电压条件</span> <span class="skill-en">battery_voltage_cond</span></td><td style="font-family:monospace">/dds/cond/battery_voltage</td><td>电池电压<22V(6S)</td><td>低压→报警+自动回充电桩</td><td class="metric-ok">检测10ms</td></tr>
+<tr><td>C036</td><td><span class="skill-cn">电池温度条件</span> <span class="skill-en">battery_temp_cond</span></td><td style="font-family:monospace">/dds/cond/battery_temp</td><td>电芯温度>60°C</td><td>超温→降功率50%+散热风扇全速</td><td class="metric-ok">检测5ms</td></tr>
+<tr><td>C037</td><td><span class="skill-cn">电池过流条件</span> <span class="skill-en">battery_overcurrent_cond</span></td><td style="font-family:monospace">/dds/cond/battery_overcurrent</td><td>放电电流>30A(持续3s)</td><td>过流→切断动力电源</td><td class="metric-ok">响应2ms</td></tr>
+<tr><td>C038</td><td><span class="skill-cn">电池SOC条件</span> <span class="skill-en">battery_soc_cond</span></td><td style="font-family:monospace">/dds/cond/battery_soc</td><td>SOC<15%</td><td>低电量→完成当前工序→自动回充</td><td class="metric-ok">检测100ms</td></tr>
 </table></div>
 
-<div class="footer">Z-MAX · 闭环数据空间 · C001-C034条件→M01-M07模型→A01-A30动作 · 2026-07-14</div>
+<div class="footer">Z-MAX · 闭环数据空间 · C001-C038条件→M01-M07模型→A01-A30动作 · 2026-07-14</div>
 </div>
 <script>
 function f(t,b){
