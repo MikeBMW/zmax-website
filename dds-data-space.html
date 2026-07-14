@@ -50,7 +50,7 @@ tr:nth-child(even) td{background:#080c14}
 <p class="sub">condition条件→模型推理→action动作 · 全局ID · 2026-07-14</p>
 
 <div class="count-row">
-<div><div class="count-num c0">30</div><div class="count-lab">condition条件</div></div>
+<div><div class="count-num c0">34</div><div class="count-lab">condition条件</div></div>
 <div><div class="count-num c1">7</div><div class="count-lab">model模型</div></div>
 <div><div class="count-num c2">30</div><div class="count-lab">action动作</div></div>
 <div><div class="count-num c3">4</div><div class="count-lab">安全</div></div>
@@ -58,8 +58,8 @@ tr:nth-child(even) td{background:#080c14}
 
 <!-- 闭环流程图 -->
 <div class="flow">
-<div class="flow-n fc">🌍 真实环境<br>视觉·触觉·state</div><div class="fa-arrow">→</div>
-<div class="flow-n fc">📊 多模态数据<br>M01-M07</div><div class="fa-arrow">→</div>
+<div class="flow-n fc">📊 condition条件<br>C001-C034</div><div class="fa-arrow">→</div>
+<div class="flow-n fc">🌍 真实环境<br>视觉·触觉·state<br><small>M01-M07</small></div><div class="fa-arrow">→</div>
 <div class="flow-n fm">🧠 模型推理<br>ACT/SmolVLA/VTLA</div><div class="fa-arrow">→</div>
 <div class="flow-n fc">🔮 潜空间特征<br>latent z</div><div class="fa-arrow">→</div>
 <div class="flow-n fa">⚡ 动作输出<br>action A01-A30</div><div class="fa-arrow">→</div>
@@ -77,7 +77,7 @@ tr:nth-child(even) td{background:#080c14}
 </div>
 
 <!-- ═══ CONDITION SKILLS ═══ -->
-<div class="card" data-type="cond"><div class="card-h c">🟣 condition条件技能 · 环境输入→模型感知 · 全局ID C001-C030</div>
+<div class="card" data-type="cond"><div class="card-h c">🟣 condition条件技能 · 环境输入→模型感知 · C001-C034</div>
 <table><tr><th>ID</th><th>条件数据</th><th>Topic</th><th>多模态</th><th>→action</th><th>型号</th></tr>
 <tr><td>C001</td><td><span class="skill-cn">100G取料条件</span></td><td style="font-family:monospace">/dds/cond/pick_100g</td><td>托盘图+力零位+夹爪位</td><td>A01取料</td><td>100G</td></tr>
 <tr><td>C002</td><td><span class="skill-cn">100G扫码条件</span></td><td style="font-family:monospace">/dds/cond/scan_100g</td><td>条码图+模块朝向</td><td>A02扫码</td><td>100G</td></tr>
@@ -109,6 +109,10 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>C028</td><td><span class="skill-cn">800G检测条件</span></td><td style="font-family:monospace">/dds/cond/aoi_800g</td><td>MPO×4面图+光照</td><td>A08检测</td><td>800G</td></tr>
 <tr><td>C029</td><td><span class="skill-cn">800G放置OK条件</span></td><td style="font-family:monospace">/dds/cond/place_ok_800g</td><td>OK托盘图+计数</td><td>A09合格品</td><td>800G</td></tr>
 <tr><td>C030</td><td><span class="skill-cn">800G放置NG条件</span></td><td style="font-family:monospace">/dds/cond/place_ng_800g</td><td>NG区图+计数</td><td>A10不良品</td><td>800G</td></tr>
+<tr><td>C031</td><td><span class="skill-cn">急停条件</span></td><td style="font-family:monospace">/dds/cond/estop</td><td>六维力>安全阈值</td><td>S01急停</td><td>ALL</td></tr>
+<tr><td>C032</td><td><span class="skill-cn">抓败条件</span></td><td style="font-family:monospace">/dds/cond/grasp_fail</td><td>2次吸取/夹持失败</td><td>S02抓败</td><td>ALL</td></tr>
+<tr><td>C033</td><td><span class="skill-cn">力限条件</span></td><td style="font-family:monospace">/dds/cond/force_limit</td><td>力>型号阈值</td><td>S03力限</td><td>100/400/800G</td></tr>
+<tr><td>C034</td><td><span class="skill-cn">碰撞条件</span></td><td style="font-family:monospace">/dds/cond/collision</td><td>关节扭矩>3σ</td><td>S04碰撞</td><td>ALL</td></tr>
 </table></div>
 
 <!-- model skill 简表 -->
@@ -169,15 +173,15 @@ tr:nth-child(even) td{background:#080c14}
 </table></div>
 
 <!-- SAFETY -->
-<div class="card" data-type="safe"><div class="card-h safe">🛡️ 安全 · 检测KPI</div>
-<table><tr><th>ID</th><th>技能</th><th>Topic</th><th>KPI</th><th>响应</th><th>当前</th></tr>
-<tr><td>S01</td><td><span class="skill-cn">急停</span> <span class="skill-en">e_stop</span></td><td style="font-family:monospace">/dds/safe/estop</td><td>力超→停</td><td><10ms</td><td class="metric-ok">8ms</td></tr>
-<tr><td>S02</td><td><span class="skill-cn">抓败</span> <span class="skill-en">grasp_fail</span></td><td style="font-family:monospace">/dds/safe/grasp_fail</td><td>2次→报错</td><td><100ms</td><td class="metric-ok">45ms</td></tr>
-<tr><td>S03</td><td><span class="skill-cn">力限</span> <span class="skill-en">force_limit</span></td><td style="font-family:monospace">/dds/safe/force_limit</td><td>超限→回退</td><td><20ms</td><td class="metric-ok">12ms</td></tr>
-<tr><td>S04</td><td><span class="skill-cn">碰撞</span> <span class="skill-en">collision</span></td><td style="font-family:monospace">/dds/safe/collision</td><td>扭矩→急停</td><td><5ms</td><td class="metric-ok">3ms</td></tr>
+<div class="card" data-type="safe"><div class="card-h safe">🛡️ 安全条件 safety_condition · C031-C034</div>
+<table><tr><th>条件ID</th><th>中文 / English</th><th>Topic</th><th>触发条件</th><th>响应</th><th>KPI</th></tr>
+<tr><td>C031</td><td><span class="skill-cn">急停条件</span> <span class="skill-en">estop_cond</span></td><td style="font-family:monospace">/dds/cond/estop</td><td>六维力>安全阈值</td><td>>10N(100G)/>12N(400G)/>15N(800G)</td><td class="metric-ok">急停8ms</td></tr>
+<tr><td>C032</td><td><span class="skill-cn">抓败条件</span> <span class="skill-en">grasp_fail_cond</span></td><td style="font-family:monospace">/dds/cond/grasp_fail</td><td>连续2次吸取/夹持失败</td><td>力<3N触发, 报错+开爪</td><td class="metric-ok">检测45ms</td></tr>
+<tr><td>C033</td><td><span class="skill-cn">力限条件</span> <span class="skill-en">force_limit_cond</span></td><td style="font-family:monospace">/dds/cond/force_limit</td><td>各型号力超限</td><td>10N/12N/15N→回退5mm</td><td class="metric-ok">回退12ms</td></tr>
+<tr><td>C034</td><td><span class="skill-cn">碰撞条件</span> <span class="skill-en">collision_cond</span></td><td style="font-family:monospace">/dds/cond/collision</td><td>关节扭矩>正常值3σ</td><td>任一关节超限→急停+回退</td><td class="metric-ok">急停3ms</td></tr>
 </table></div>
 
-<div class="footer">Z-MAX · 闭环数据空间 · C001-C030条件→M01-M07模型→A01-A30动作 · 2026-07-14</div>
+<div class="footer">Z-MAX · 闭环数据空间 · C001-C034条件→M01-M07模型→A01-A30动作 · 2026-07-14</div>
 </div>
 <script>
 function f(t,b){
