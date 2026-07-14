@@ -60,6 +60,7 @@ tr:nth-child(even) td{background:#080c14}
 <div class="tab a" onclick="f('a400',this)">🟢 400G</div>
 <div class="tab a" onclick="f('a800',this)">🟡 800G</div>
 <div class="tab s" onclick="f('safe',this)">🛡️ 安全</div>
+<div class="tab" onclick="exportExcel()" style="border-color:#1a6b1a44;color:#1a6b1a">📥 导出Excel</div>
 </div>
 
 <!-- MODEL SKILL -->
@@ -138,6 +139,14 @@ function f(type,btn){
     if(type==='all') c.style.display='';
     else c.style.display=c.dataset.type===type?'':'none';
   });
+}
+function exportExcel(){
+  var tables=document.querySelectorAll('table'), html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>';
+  var headers=['模型技能','100G QSFP28','400G QSFP-DD','800G OSFP','安全技能'];
+  tables.forEach(function(t,i){html+='<h2>'+headers[i]+'</h2>'+t.outerHTML});
+  html+='</body></html>';
+  var blob=new Blob([html],{type:'application/vnd.ms-excel'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Z-MAX_DDS_技能表.xls';a.click();
 }
 </script>
 </body>
