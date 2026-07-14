@@ -188,13 +188,38 @@ canvas.ondrop=function(e){e.preventDefault();var p=getPos(e);add(e.dataTransfer.
 function Lg(m){var l=document.getElementById('log');l.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;l.scrollTop=l.scrollHeight;console.log(m)}
 
 function run(){
-  if(N.length===0){Lg('⚠️ 拖拽节点到画布');return}
-  Lg('▶️ 执行 · '+N.length+'节点 · '+L.length+'连线');
-  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'custom',nodes:N.map(function(n){return n.name})})})
-    .then(function(r){return r.json()}).then(function(d){Lg('✅ 任务:'+d.id+' · '+d.status);if(d.steps)d.steps.forEach(function(s){Lg('  ↳ '+s)})}).catch(function(){Lg('❌ 后端离线 · SSH: python3 comfyui_backend.py')});
+  if(N.length===0){Lg('⚠️ 请从左侧拖拽节点到画布');return}
+  var nodeNames=N.map(function(n){return n.name}).join(', ');
+  Lg('▶️ 执行工作流');
+  Lg('  📋 节点: '+nodeNames);
+  Lg('  🔗 连线: '+L.length+'条');
+  Lg('  🚀 提交到4090...');
+  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom'})})
+    .then(function(r){return r.json()}).then(function(d){
+      Lg('  ✅ 任务创建: '+d.id);
+      if(d.steps)d.steps.forEach(function(s){Lg('    ↳ '+s)});
+      Lg('  ⏳ 等待推理完成...');
+      pollTask(d.id, 0);
+    }).catch(function(){Lg('  ❌ 后端连接失败 · 4090离线')});
 }
 
 function clearAll(){saveState();N=[];L=[];draw()}
+function pollTask(tid,count){
+  if(count>20){Lg('  ⚠️ 超时 · 请检查4090状态');return}
+  setTimeout(function(){
+    fetch('/api/comfy/task/'+tid).then(function(r){return r.json()}).then(function(d){
+      if(d.status==='done'){
+        Lg('  🎉 推理完成!');
+        Lg('  📊 '+d.result);
+      }else if(d.status==='failed'){
+        Lg('  ❌ 推理失败: '+d.error);
+      }else{
+        Lg('  ⏳ '+(d.status||'处理中')+'... ('+(count+1)+'s)');
+        pollTask(tid,count+1);
+      }
+    }).catch(function(){Lg('  ❌ 查询失败');});
+  },1500);
+}
 function addCond(){add('condition','新条件 C???',300+Math.random()*200,150+Math.random()*200)}
 function addModel(){add('model','新模型',300+Math.random()*200,150+Math.random()*200)}
 function addAction(){add('action','新动作 A??',300+Math.random()*200,150+Math.random()*200)}
