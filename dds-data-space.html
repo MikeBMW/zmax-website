@@ -2,145 +2,136 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DDS全局数据空间 · Z-MAX</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>DDS · Z-MAX</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
-.wrap{max-width:1200px;margin:0 auto;padding:40px 20px}
-h1{color:#00d4aa;font-size:26px;text-align:center}
-.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:16px}
-.tabs{display:flex;gap:6px;margin:16px 0;flex-wrap:wrap}
-.tab{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;transition:.2s;white-space:nowrap}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.6}
+.wrap{max-width:1200px;margin:0 auto;padding:24px 14px}
+h1{color:#00d4aa;font-size:22px;text-align:center}
+.sub{text-align:center;color:#8b949e;font-size:12px;margin-bottom:14px}
+.tabs{display:flex;gap:5px;margin:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.tab{padding:6px 11px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;white-space:nowrap;flex-shrink:0;transition:.15s}
 .tab:hover{border-color:#00d4aa44;color:#00d4aa}
 .tab.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
 .tab.m.active{border-color:#58a6ff;color:#58a6ff;background:#58a6ff11}
 .tab.a.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
-table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
-th{background:#00d4aa22;padding:7px 9px;text-align:left;color:#00d4aa;font-weight:700}
-td{padding:6px 9px;border-bottom:1px solid #1a1f2b}
+.tab.s.active{border-color:#ff4444;color:#ff4444;background:#ff444411}
+.count-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.count-num{font-size:20px;font-weight:800}.count-lab{font-size:10px;color:#8b949e}
+.cm{color:#58a6ff}.ca{color:#00d4aa}.cs{color:#ff4444}.ct{color:#8b949e}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:12px 14px;margin:8px 0}
+.card-h{font-size:13px;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #1a1f2b}
+.card-h.m{color:#58a6ff;border-color:#58a6ff33}
+.card-h.a100{color:#58a6ff;border-color:#58a6ff33}
+.card-h.a400{color:#00d4aa;border-color:#00d4aa33}
+.card-h.a800{color:#d4a800;border-color:#d4a80033}
+.card-h.safe{color:#ff4444;border-color:#ff444433}
+table{width:100%;border-collapse:collapse;font-size:10px;display:block;overflow-x:auto;white-space:nowrap}
+th{background:#1a1f2b;padding:5px 7px;text-align:left;color:#8b949e;font-weight:600;font-size:9px}
+td{padding:5px 7px;border-bottom:1px solid #1a1f2b44}
 tr:nth-child(even) td{background:#080c14}
-tr.s100{background:#58a6ff11}tr.s400{background:#00d4aa11}tr.s800{background:#d4a80011}
-.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
-.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
-.count{font-size:22px;font-weight:800}.c1{color:#58a6ff}.c2{color:#00d4aa}.c3{color:#d4a800}
-.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
-.skill-grid{grid-template-columns:1fr}
-table{display:block;overflow-x:auto;white-space:nowrap}
-.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
-h1{font-size:20px}
-.card{padding:10px 12px}
-td,th{padding:5px 7px;font-size:10px}
-@media(max-width:768px){.grid3{grid-template-columns:1fr}}
+.skill-line{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.skill-cn{font-size:12px;font-weight:700;color:#e6edf3}
+.skill-en{font-size:9px;color:#8b949e;font-family:monospace;letter-spacing:-0.3px}
+.tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:600;margin-right:2px}
+.tag-m{background:#58a6ff18;color:#58a6ff}.tag-a{background:#00d4aa18;color:#00d4aa}.tag-s{background:#ff444418;color:#ff4444}
+.back-home{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;background:#0d1117;border:1px solid #00d4aa44;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:14px}
+.footer{text-align:center;padding:24px;color:#8b949e;font-size:10px;border-top:1px solid #1a1f2b;margin-top:32px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<a href="/kanban.html" class="back-home">← 返回看板</a>
-<h1>🌐 DDS 全局数据空间</h1>
-<p class="sub">xspace架构 · 7 model + 34 action · 光模块真机工序 · 2026-07-14</p>
+<a href="/kanban.html" class="back-home">← 看板</a>
+<h1>DDS 主数据空间</h1>
+<p class="sub">xspace架构 · 41 Skill · 中英双显 · 2026-07-14</p>
 
-<div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:16px 0">
-<div style="text-align:center"><div class="count c1">7</div><div style="font-size:11px;color:#58a6ff">model_skill</div></div>
-<div style="text-align:center"><div class="count c2">30</div><div style="font-size:11px;color:#00d4aa">action_skill (工序)</div></div>
-<div style="text-align:center"><div class="count c3">4</div><div style="font-size:11px;color:#d4a800">安全工序</div></div>
-<div style="text-align:center"><div class="count">41</div><div style="font-size:11px;color:#8b949e">总计</div></div>
+<div class="count-row">
+<div><div class="count-num cm">7</div><div class="count-lab">模型技能</div></div>
+<div><div class="count-num ca">30</div><div class="count-lab">动作技能</div></div>
+<div><div class="count-num cs">4</div><div class="count-lab">安全技能</div></div>
+<div><div class="count-num ct">41</div><div class="count-lab">总计</div></div>
 </div>
 
 <div class="tabs">
-<div class="tab active" onclick="filter('all',this)">全部</div>
-<div class="tab m" onclick="filter('model',this)">🧠 model_skill</div>
-<div class="tab a" onclick="filter('s100',this)">🔵 100G QSFP28</div>
-<div class="tab a" onclick="filter('s400',this)">🟢 400G QSFP-DD</div>
-<div class="tab a" onclick="filter('s800',this)">🟡 800G OSFP</div>
-<div class="tab" onclick="filter('safe',this)">🛡️ 安全</div>
+<div class="tab active" onclick="f('all',this)">全部</div>
+<div class="tab m" onclick="f('model',this)">🧠 模型</div>
+<div class="tab a" onclick="f('a100',this)">🔵 100G</div>
+<div class="tab a" onclick="f('a400',this)">🟢 400G</div>
+<div class="tab a" onclick="f('a800',this)">🟡 800G</div>
+<div class="tab s" onclick="f('safe',this)">🛡️ 安全</div>
 </div>
 
-<!-- ═══ MODEL SKILL ═══ -->
-<div class="card" data-type="model" style="border-left:3px solid #58a6ff">
-<h3 style="color:#58a6ff;font-size:14px">🧠 model_skill (多模态训练)</h3>
-<table>
-<tr><th>ID</th><th>Topic</th><th>数据</th><th>来源</th><th>模型</th></tr>
-<tr><td>M01</td><td style="font-family:monospace">/dds/model/rgb</td><td>1920×1080@30fps</td><td>RealSense D435</td><td>Sys11/21/22</td></tr>
-<tr><td>M02</td><td style="font-family:monospace">/dds/model/depth</td><td>1280×720@30fps</td><td>RealSense D435</td><td>Sys21</td></tr>
-<tr><td>M03</td><td style="font-family:monospace">/dds/model/force</td><td>6轴力 [Fx..Tz]</td><td>六维力传感器</td><td>Sys21</td></tr>
-<tr><td>M04</td><td style="font-family:monospace">/dds/model/tactile</td><td>16通道触觉阵列</td><td>指尖触觉传感器</td><td>Sys21</td></tr>
-<tr><td>M05</td><td style="font-family:monospace">/dds/model/joint</td><td>7轴pos+vel+torque</td><td>机械臂编码器</td><td>Sys1/11</td></tr>
-<tr><td>M06</td><td style="font-family:monospace">/dds/model/language</td><td>任务指令文本</td><td>DeepSeek V4 Pro</td><td>全部VLA</td></tr>
-<tr><td>M07</td><td style="font-family:monospace">/dds/model/demo</td><td>LeRobotDataset</td><td>Genesis+示教</td><td>全6模型</td></tr>
-</table>
-</div>
+<!-- MODEL SKILL -->
+<div class="card" data-type="model"><div class="card-h m">🧠 模型技能 model_skill · 多模态训练数据</div>
+<table><tr><th>ID</th><th>中文 / English</th><th>Topic</th><th>规格</th><th>模型</th></tr>
+<tr><td>M01</td><td><div class="skill-line"><span class="skill-cn">RGB图像</span><span class="skill-en">sensor_rgb</span></div></td><td style="font-family:monospace">/dds/model/rgb</td><td>1920×1080·30fps</td><td>Sys11/21/22</td></tr>
+<tr><td>M02</td><td><div class="skill-line"><span class="skill-cn">深度图像</span><span class="skill-en">sensor_depth</span></div></td><td style="font-family:monospace">/dds/model/depth</td><td>1280×720·30fps</td><td>Sys21</td></tr>
+<tr><td>M03</td><td><div class="skill-line"><span class="skill-cn">六维力觉</span><span class="skill-en">sensor_force_6d</span></div></td><td style="font-family:monospace">/dds/model/force</td><td>[Fx..Tz]·1kHz</td><td>Sys21</td></tr>
+<tr><td>M04</td><td><div class="skill-line"><span class="skill-cn">触觉阵列</span><span class="skill-en">sensor_tactile</span></div></td><td style="font-family:monospace">/dds/model/tactile</td><td>16ch·1kHz</td><td>Sys21</td></tr>
+<tr><td>M05</td><td><div class="skill-line"><span class="skill-cn">关节状态</span><span class="skill-en">joint_state</span></div></td><td style="font-family:monospace">/dds/model/joint</td><td>7轴·pos+vel+torque</td><td>Sys1/11</td></tr>
+<tr><td>M06</td><td><div class="skill-line"><span class="skill-cn">任务语言</span><span class="skill-en">task_language</span></div></td><td style="font-family:monospace">/dds/model/language</td><td>DeepSeek V4</td><td>全部VLA</td></tr>
+<tr><td>M07</td><td><div class="skill-line"><span class="skill-cn">示教数据</span><span class="skill-en">expert_demo</span></div></td><td style="font-family:monospace">/dds/model/demo</td><td>LeRobotDataset</td><td>全6模型</td></tr>
+</table></div>
 
-<!-- ═══ 100G QSFP28 ═══ -->
-<div class="card" data-type="s100" style="border-left:3px solid #58a6ff">
-<h3 style="color:#58a6ff;font-size:14px">🔵 100G QSFP28 · 30pin金手指 · 吸力3N · Eye测试15s</h3>
-<table>
-<tr><th>步</th><th>action_skill</th><th>DDS Topic</th><th>工序</th><th>引擎</th><th>参数</th></tr>
-<tr class="s100"><td>1</td><td>pick_100g</td><td style="font-family:monospace">/dds/action/pick_100g</td><td>吸嘴取料</td><td>Sys1 ACT</td><td>吸力3N·QFP28托盘</td></tr>
-<tr class="s100"><td>2</td><td>scan_100g</td><td style="font-family:monospace">/dds/action/scan_100g</td><td>扫码SN</td><td>Orin视觉</td><td>30pin金手指面</td></tr>
-<tr class="s100"><td>3</td><td>pre_100g</td><td style="font-family:monospace">/dds/action/pre_100g</td><td>预插定位</td><td>Sys11 SmolVLA</td><td>XY ±0.5mm·30pin</td></tr>
-<tr class="s100"><td>4</td><td>insert_100g</td><td style="font-family:monospace">/dds/action/insert_100g</td><td>力控插入</td><td>Sys21 VTLA</td><td>Z3N·振幅4mm/2Hz</td></tr>
-<tr class="s100"><td>5</td><td>push_100g</td><td style="font-family:monospace">/dds/action/push_100g</td><td>二次推入</td><td>Sys21 VTLA</td><td>end>0.75</td></tr>
-<tr class="s100"><td>6</td><td>test_100g</td><td style="font-family:monospace">/dds/action/test_100g</td><td>Eye图测试</td><td>测试仓</td><td>15s·PASS/FAIL</td></tr>
-<tr class="s100"><td>7</td><td>extract_100g</td><td style="font-family:monospace">/dds/action/extract_100g</td><td>拔出</td><td>固定轨迹</td><td>Z+12cm</td></tr>
-<tr class="s100"><td>8</td><td>aoi_100g</td><td style="font-family:monospace">/dds/action/aoi_100g</td><td>端面AOI×2</td><td>4060:10082</td><td>30pin端面检测</td></tr>
-<tr class="s100"><td>9</td><td>place_ok_100g</td><td style="font-family:monospace">/dds/action/place_ok_100g</td><td>放OK托盘</td><td>机械臂</td><td>pose_25</td></tr>
-<tr class="s100"><td>10</td><td>place_ng_100g</td><td style="font-family:monospace">/dds/action/place_ng_100g</td><td>放NG区</td><td>机械臂</td><td>pose_26</td></tr>
-</table>
-</div>
+<!-- 100G QSFP28 -->
+<div class="card" data-type="a100"><div class="card-h a100">🔵 100G QSFP28 · 30pin金手指 · 吸力3N · Eye测试15s</div>
+<table><tr><th>步</th><th>中文 / English</th><th>Topic</th><th>工序</th><th>引擎</th></tr>
+<tr><td>1</td><td><div class="skill-line"><span class="skill-cn">取料·100G</span><span class="skill-en">pick_100g</span></div></td><td style="font-family:monospace">/dds/action/pick_100g</td><td>吸嘴取料</td><td>ACT</td></tr>
+<tr><td>2</td><td><div class="skill-line"><span class="skill-cn">扫码·100G</span><span class="skill-en">scan_100g</span></div></td><td style="font-family:monospace">/dds/action/scan_100g</td><td>SN识别</td><td>Orin</td></tr>
+<tr><td>3</td><td><div class="skill-line"><span class="skill-cn">预插·100G</span><span class="skill-en">pre_100g</span></div></td><td style="font-family:monospace">/dds/action/pre_100g</td><td>XY±0.5mm</td><td>SmolVLA</td></tr>
+<tr><td>4</td><td><div class="skill-line"><span class="skill-cn">插入·100G</span><span class="skill-en">insert_100g</span></div></td><td style="font-family:monospace">/dds/action/insert_100g</td><td>力控Z3N</td><td>VTLA</td></tr>
+<tr><td>5</td><td><div class="skill-line"><span class="skill-cn">推入·100G</span><span class="skill-en">push_100g</span></div></td><td style="font-family:monospace">/dds/action/push_100g</td><td>end>0.75</td><td>VTLA</td></tr>
+<tr><td>6</td><td><div class="skill-line"><span class="skill-cn">测试·100G</span><span class="skill-en">test_100g</span></div></td><td style="font-family:monospace">/dds/action/test_100g</td><td>Eye图15s</td><td>测试仓</td></tr>
+<tr><td>7</td><td><div class="skill-line"><span class="skill-cn">拔出·100G</span><span class="skill-en">extract_100g</span></div></td><td style="font-family:monospace">/dds/action/extract_100g</td><td>Z+12cm</td><td>固定</td></tr>
+<tr><td>8</td><td><div class="skill-line"><span class="skill-cn">检测·100G</span><span class="skill-en">aoi_100g</span></div></td><td style="font-family:monospace">/dds/action/aoi_100g</td><td>端面AOI×2</td><td>4060</td></tr>
+<tr><td>9</td><td><div class="skill-line"><span class="skill-cn">合格品·100G</span><span class="skill-en">place_ok_100g</span></div></td><td style="font-family:monospace">/dds/action/place_ok_100g</td><td>OK托盘</td><td>机械臂</td></tr>
+<tr><td>10</td><td><div class="skill-line"><span class="skill-cn">不良品·100G</span><span class="skill-en">place_ng_100g</span></div></td><td style="font-family:monospace">/dds/action/place_ng_100g</td><td>NG区</td><td>机械臂</td></tr>
+</table></div>
 
-<!-- ═══ 400G QSFP-DD ═══ -->
-<div class="card" data-type="s400" style="border-left:3px solid #00d4aa">
-<h3 style="color:#00d4aa;font-size:14px">🟢 400G QSFP-DD · 76pin金手指 · 吸力4N · BERT测试60s</h3>
-<table>
-<tr><th>步</th><th>action_skill</th><th>DDS Topic</th><th>工序</th><th>引擎</th><th>参数</th></tr>
-<tr class="s400"><td>1</td><td>pick_400g</td><td style="font-family:monospace">/dds/action/pick_400g</td><td>吸嘴取料</td><td>Sys1 ACT</td><td>吸力4N·DD托盘</td></tr>
-<tr class="s400"><td>2</td><td>scan_400g</td><td style="font-family:monospace">/dds/action/scan_400g</td><td>扫码SN</td><td>Orin视觉</td><td>76pin金手指面</td></tr>
-<tr class="s400"><td>3</td><td>pre_400g</td><td style="font-family:monospace">/dds/action/pre_400g</td><td>预插定位</td><td>Sys11 SmolVLA</td><td>XY ±0.5mm·76pin</td></tr>
-<tr class="s400"><td>4</td><td>insert_400g</td><td style="font-family:monospace">/dds/action/insert_400g</td><td>力控插入 ⭐</td><td>Sys21 VTLA</td><td>Z6N·6mm/3Hz+4mm/2Hz</td></tr>
-<tr class="s400"><td>5</td><td>push_400g</td><td style="font-family:monospace">/dds/action/push_400g</td><td>二次推入</td><td>Sys21 VTLA</td><td>end>0.75·76pin全入</td></tr>
-<tr class="s400"><td>6</td><td>test_400g</td><td style="font-family:monospace">/dds/action/test_400g</td><td>BERT误码测试</td><td>测试仓</td><td>60s·BER<1E-12</td></tr>
-<tr class="s400"><td>7</td><td>extract_400g</td><td style="font-family:monospace">/dds/action/extract_400g</td><td>拔出</td><td>固定轨迹</td><td>Z+12cm</td></tr>
-<tr class="s400"><td>8</td><td>aoi_400g</td><td style="font-family:monospace">/dds/action/aoi_400g</td><td>端面AOI×2</td><td>4060:10082</td><td>76pin端面检测</td></tr>
-<tr class="s400"><td>9</td><td>place_ok_400g</td><td style="font-family:monospace">/dds/action/place_ok_400g</td><td>放OK托盘</td><td>机械臂</td><td>pose_25</td></tr>
-<tr class="s400"><td>10</td><td>place_ng_400g</td><td style="font-family:monospace">/dds/action/place_ng_400g</td><td>放NG区</td><td>机械臂</td><td>pose_26</td></tr>
-</table>
-</div>
+<!-- 400G QSFP-DD -->
+<div class="card" data-type="a400"><div class="card-h a400">🟢 400G QSFP-DD · 76pin金手指 · 吸力4N · BERT 60s</div>
+<table><tr><th>步</th><th>中文 / English</th><th>Topic</th><th>工序</th><th>引擎</th></tr>
+<tr><td>1</td><td><div class="skill-line"><span class="skill-cn">取料·400G</span><span class="skill-en">pick_400g</span></div></td><td style="font-family:monospace">/dds/action/pick_400g</td><td>吸嘴取料</td><td>ACT</td></tr>
+<tr><td>2</td><td><div class="skill-line"><span class="skill-cn">扫码·400G</span><span class="skill-en">scan_400g</span></div></td><td style="font-family:monospace">/dds/action/scan_400g</td><td>SN识别</td><td>Orin</td></tr>
+<tr><td>3</td><td><div class="skill-line"><span class="skill-cn">预插·400G</span><span class="skill-en">pre_400g</span></div></td><td style="font-family:monospace">/dds/action/pre_400g</td><td>XY±0.5mm</td><td>SmolVLA</td></tr>
+<tr><td>4</td><td><div class="skill-line"><span class="skill-cn">插入·400G ⭐</span><span class="skill-en">insert_400g</span></div></td><td style="font-family:monospace">/dds/action/insert_400g</td><td>力控Z6N</td><td>VTLA</td></tr>
+<tr><td>5</td><td><div class="skill-line"><span class="skill-cn">推入·400G</span><span class="skill-en">push_400g</span></div></td><td style="font-family:monospace">/dds/action/push_400g</td><td>76pin全入</td><td>VTLA</td></tr>
+<tr><td>6</td><td><div class="skill-line"><span class="skill-cn">测试·400G</span><span class="skill-en">test_400g</span></div></td><td style="font-family:monospace">/dds/action/test_400g</td><td>BERT 60s</td><td>测试仓</td></tr>
+<tr><td>7</td><td><div class="skill-line"><span class="skill-cn">拔出·400G</span><span class="skill-en">extract_400g</span></div></td><td style="font-family:monospace">/dds/action/extract_400g</td><td>Z+12cm</td><td>固定</td></tr>
+<tr><td>8</td><td><div class="skill-line"><span class="skill-cn">检测·400G</span><span class="skill-en">aoi_400g</span></div></td><td style="font-family:monospace">/dds/action/aoi_400g</td><td>端面AOI×2</td><td>4060</td></tr>
+<tr><td>9</td><td><div class="skill-line"><span class="skill-cn">合格品·400G</span><span class="skill-en">place_ok_400g</span></div></td><td style="font-family:monospace">/dds/action/place_ok_400g</td><td>OK托盘</td><td>机械臂</td></tr>
+<tr><td>10</td><td><div class="skill-line"><span class="skill-cn">不良品·400G</span><span class="skill-en">place_ng_400g</span></div></td><td style="font-family:monospace">/dds/action/place_ng_400g</td><td>NG区</td><td>机械臂</td></tr>
+</table></div>
 
-<!-- ═══ 800G OSFP ═══ -->
-<div class="card" data-type="s800" style="border-left:3px solid #d4a800">
-<h3 style="color:#d4a800;font-size:14px">🟡 800G OSFP · MPO多芯 · 吸力6N · EVB全功能120s</h3>
-<table>
-<tr><th>步</th><th>action_skill</th><th>DDS Topic</th><th>工序</th><th>引擎</th><th>参数</th></tr>
-<tr class="s800"><td>1</td><td>pick_800g</td><td style="font-family:monospace">/dds/action/pick_800g</td><td>吸嘴取料</td><td>Sys1 ACT</td><td>吸力6N·OSFP托盘</td></tr>
-<tr class="s800"><td>2</td><td>scan_800g</td><td style="font-family:monospace">/dds/action/scan_800g</td><td>扫码SN</td><td>Orin视觉</td><td>MPO端面识别</td></tr>
-<tr class="s800"><td>3</td><td>pre_800g</td><td style="font-family:monospace">/dds/action/pre_800g</td><td>预插定位</td><td>Sys11 SmolVLA</td><td>XY ±0.3mm·MPO</td></tr>
-<tr class="s800"><td>4</td><td>insert_800g</td><td style="font-family:monospace">/dds/action/insert_800g</td><td>力控插入 ⭐</td><td>Sys21 VTLA</td><td>Z8N·6mm/3Hz+5mm/2Hz</td></tr>
-<tr class="s800"><td>5</td><td>push_800g</td><td style="font-family:monospace">/dds/action/push_800g</td><td>MPO多芯对齐</td><td>Sys21 VTLA</td><td>各芯损耗<1dB</td></tr>
-<tr class="s800"><td>6</td><td>test_800g</td><td style="font-family:monospace">/dds/action/test_800g</td><td>EVB全功能测试</td><td>测试仓</td><td>120s·8通道全测</td></tr>
-<tr class="s800"><td>7</td><td>extract_800g</td><td style="font-family:monospace">/dds/action/extract_800g</td><td>拔出</td><td>固定轨迹</td><td>Z+12cm·防MPO损伤</td></tr>
-<tr class="s800"><td>8</td><td>aoi_800g</td><td style="font-family:monospace">/dds/action/aoi_800g</td><td>端面AOI×4</td><td>4060:10082</td><td>MPO多芯·4面检测</td></tr>
-<tr class="s800"><td>9</td><td>place_ok_800g</td><td style="font-family:monospace">/dds/action/place_ok_800g</td><td>放OK托盘</td><td>机械臂</td><td>pose_25_osfp</td></tr>
-<tr class="s800"><td>10</td><td>place_ng_800g</td><td style="font-family:monospace">/dds/action/place_ng_800g</td><td>放NG区</td><td>机械臂</td><td>pose_26_osfp</td></tr>
-</table>
-</div>
+<!-- 800G OSFP -->
+<div class="card" data-type="a800"><div class="card-h a800">🟡 800G OSFP · MPO多芯 · 吸力6N · EVB 120s</div>
+<table><tr><th>步</th><th>中文 / English</th><th>Topic</th><th>工序</th><th>引擎</th></tr>
+<tr><td>1</td><td><div class="skill-line"><span class="skill-cn">取料·800G</span><span class="skill-en">pick_800g</span></div></td><td style="font-family:monospace">/dds/action/pick_800g</td><td>吸嘴取料</td><td>ACT</td></tr>
+<tr><td>2</td><td><div class="skill-line"><span class="skill-cn">扫码·800G</span><span class="skill-en">scan_800g</span></div></td><td style="font-family:monospace">/dds/action/scan_800g</td><td>MPO识别</td><td>Orin</td></tr>
+<tr><td>3</td><td><div class="skill-line"><span class="skill-cn">预插·800G</span><span class="skill-en">pre_800g</span></div></td><td style="font-family:monospace">/dds/action/pre_800g</td><td>XY±0.3mm</td><td>SmolVLA</td></tr>
+<tr><td>4</td><td><div class="skill-line"><span class="skill-cn">插入·800G ⭐</span><span class="skill-en">insert_800g</span></div></td><td style="font-family:monospace">/dds/action/insert_800g</td><td>力控Z8N</td><td>VTLA</td></tr>
+<tr><td>5</td><td><div class="skill-line"><span class="skill-cn">对齐·800G</span><span class="skill-en">push_800g</span></div></td><td style="font-family:monospace">/dds/action/push_800g</td><td>MPO多芯<1dB</td><td>VTLA</td></tr>
+<tr><td>6</td><td><div class="skill-line"><span class="skill-cn">测试·800G</span><span class="skill-en">test_800g</span></div></td><td style="font-family:monospace">/dds/action/test_800g</td><td>EVB 120s</td><td>测试仓</td></tr>
+<tr><td>7</td><td><div class="skill-line"><span class="skill-cn">拔出·800G</span><span class="skill-en">extract_800g</span></div></td><td style="font-family:monospace">/dds/action/extract_800g</td><td>Z+12cm</td><td>固定</td></tr>
+<tr><td>8</td><td><div class="skill-line"><span class="skill-cn">检测·800G</span><span class="skill-en">aoi_800g</span></div></td><td style="font-family:monospace">/dds/action/aoi_800g</td><td>MPO×4面</td><td>4060</td></tr>
+<tr><td>9</td><td><div class="skill-line"><span class="skill-cn">合格品·800G</span><span class="skill-en">place_ok_800g</span></div></td><td style="font-family:monospace">/dds/action/place_ok_800g</td><td>OK托盘</td><td>机械臂</td></tr>
+<tr><td>10</td><td><div class="skill-line"><span class="skill-cn">不良品·800G</span><span class="skill-en">place_ng_800g</span></div></td><td style="font-family:monospace">/dds/action/place_ng_800g</td><td>NG区</td><td>机械臂</td></tr>
+</table></div>
 
-<!-- ═══ 安全 ═══ -->
-<div class="card" data-type="safe" style="border-left:3px solid #ff4444">
-<h3 style="color:#ff4444;font-size:14px">🛡️ 安全工序 (4)</h3>
-<table>
-<tr><th>ID</th><th>action_skill</th><th>DDS Topic</th><th>触发条件</th><th>动作</th></tr>
-<tr><td>S01</td><td>e_stop</td><td style="font-family:monospace">/dds/safe/estop</td><td>力>安全阈值</td><td>立即停止+开爪</td></tr>
-<tr><td>S02</td><td>grasp_fail</td><td style="font-family:monospace">/dds/safe/grasp_fail</td><td>连续2次抓取失败</td><td>报错+人工介入</td></tr>
-<tr><td>S03</td><td>force_limit</td><td style="font-family:monospace">/dds/safe/force_limit</td><td>力>10N (100g) / >12N (400g) / >15N (800g)</td><td>回退+停线</td></tr>
-<tr><td>S04</td><td>collision</td><td style="font-family:monospace">/dds/safe/collision</td><td>关节扭矩异常</td><td>急停+回退5mm</td></tr>
-</table>
-</div>
+<!-- SAFETY -->
+<div class="card" data-type="safe"><div class="card-h safe">🛡️ 安全技能 safety_skill · 异常保护</div>
+<table><tr><th>ID</th><th>中文 / English</th><th>Topic</th><th>触发条件</th></tr>
+<tr><td>S01</td><td><div class="skill-line"><span class="skill-cn">急停保护</span><span class="skill-en">e_stop</span></div></td><td style="font-family:monospace">/dds/safe/estop</td><td>力超安全阈值</td></tr>
+<tr><td>S02</td><td><div class="skill-line"><span class="skill-cn">抓取失败</span><span class="skill-en">grasp_fail</span></div></td><td style="font-family:monospace">/dds/safe/grasp_fail</td><td>连续2次失败</td></tr>
+<tr><td>S03</td><td><div class="skill-line"><span class="skill-cn">力限保护</span><span class="skill-en">force_limit</span></div></td><td style="font-family:monospace">/dds/safe/force_limit</td><td>>10N/12N/15N</td></tr>
+<tr><td>S04</td><td><div class="skill-line"><span class="skill-cn">碰撞检测</span><span class="skill-en">collision</span></div></td><td style="font-family:monospace">/dds/safe/collision</td><td>关节扭矩异常</td></tr>
+</table></div>
 
-<div class="footer">Z-MAX · 静界科技 · DDS 全局数据空间 v3.0 · 41 Skill (7M+30A+4S) · 2026-07-14</div>
+<div class="footer">Z-MAX · 41 Skill · 中英双显 · 手机适配 · 2026-07-14</div>
 </div>
 <script>
-function filter(type,btn){
+function f(type,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.card').forEach(c=>{
