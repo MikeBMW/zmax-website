@@ -14,19 +14,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 #log{position:fixed;bottom:0;left:170px;right:0;height:140px;min-height:40px;background:#0d0d14;border-top:3px solid#00d4aa44;z-index:50;display:flex;flex-direction:column;overflow:hidden}
 #log-content{flex:1;overflow-y:auto;padding:4px 8px;font-size:10px;font-family:monospace;color:#8b949e;line-height:1.6;resize:vertical}
 #log-handle{display:none}
-@media(max-width:768px){
-  #bar{height:44px;padding:0 4px;gap:3px;overflow-x:auto}
-  #bar .btn{padding:4px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}
-  #side{position:fixed;top:44px;left:0;bottom:60px;width:0;padding:0;overflow:hidden;transition:width .3s;z-index:200;background:#0d0d14ee}
-  #side.open{width:200px;padding:6px;overflow-y:auto}
-  #cv{left:0!important}
-  #log{left:0!important;height:60px}
-  canvas{touch-action:manipulation}
-}
-#mMenu{display:none;position:fixed;left:4px;top:50px;z-index:150;background:#0d1117;color:#00d4aa;padding:8px 12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid#00d4aa44}
-@media(max-width:768px){#mMenu{display:flex!important}}
 </style></head><body>
-<div id="mMenu" onclick="var s=document.getElementById('side');s.classList.toggle('open');this.innerText=s.classList.contains('open')?'✕':'☰ 节点'">☰ 节点</div>
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
@@ -189,13 +177,18 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
   var dd='';
   if(n.name==='M01 RGB图像'){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
+  }else if(n.name.indexOf('SmolVLA')>=0||n.name.indexOf('VTLA')>=0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#58a6ff;font-weight:700;margin-bottom:4px">SmolVLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">骨干</td><td>SmolVLM-2 500M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">专家</td><td>VTLA-450M DiT</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>3×RGB(512²)+state(7)+lang</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>257ms(热)/800ms(冷)</td></tr></table></div>';
+  }else if(n.name.indexOf('A00')>=0||n.name.indexOf('Action')>=0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">Action 输出</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">shape</td><td>[1,50,6] 50步×6关节(rad)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J1肩</td><td>±1.57rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J2臂</td><td>-0.79~0.52rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J3肘</td><td>-1.22~2.62rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J4腕</td><td>±6.28rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J5屈</td><td>±2.09rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J6翻</td><td>±6.28rad</td></tr></table></div>';
   }
   cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:4px">'+n.name+'</div>'
     +'<div style="font-size:9px;color:#8b949e;margin:2px 0">⬅ '+incoming+' | '+outgoing+' ➡</div>'
     +dd+
     +(info?'<div style="font-size:9px;color:#00d4aa;margin:4px 0;background:#00d4aa11;padding:4px;border-radius:4px">'+info+'</div>':'')
     +'<div style="margin-top:6px"><button style="padding:3px 8px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px" onclick="L=L.filter(function(l){return l.f!=='+n.id+'&&l.t!=='+n.id+'});N=N.filter(function(x){return x!==n});draw();this.parentElement.parentElement.remove()">删除</button>'
-    +'<button style="padding:3px 8px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">关闭</button></div>';
+    +'<button style="padding:3px 8px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">关闭</button>'
+    +'<button style="padding:3px 8px;background:#d4a800;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="show3D(\''+n.name+'\',\''+n.t+'\')">🧊 3D</button></div>';
   document.body.appendChild(cfg);
   cfg.addEventListener('click',function(e){e.stopPropagation()});
   document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true});
@@ -252,6 +245,58 @@ function run(){
 }
 
 function clearAll(){saveState();N=[];L=[];draw()}
+function show3D(name,type){
+  var pop=document.createElement('div');
+  pop.style.cssText='position:fixed;left:5%;top:5%;width:90%;height:90%;background:#0a0a0f;border:2px solid'+colors[type]+';border-radius:12px;z-index:9999;display:flex;flex-direction:column';
+  pop.innerHTML='<div style="padding:10px 16px;display:flex;justify-content:space-between;border-bottom:1px solid#222"><span style="color:'+colors[type]+';font-weight:700">🧊 '+name+' 张量3D</span><button style="padding:4px 14px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer" onclick="this.parentElement.parentElement.remove()">关闭</button></div><canvas id="t3d" style="flex:1;width:100%;height:100%"></canvas>';
+  document.body.appendChild(pop);
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      var c=document.getElementById('t3d');if(!c)return;
+      c.width=c.parentElement.clientWidth-4;c.height=c.parentElement.clientHeight-50;
+      var ctx2=c.getContext('2d'),w=c.width,h=c.height;
+      if(name.indexOf('M01')>=0){
+        var pw=Math.min(w*.5,280),ph=Math.min(h*.4,280),gx=(w-pw)/2,gy=(h-ph)/2;
+        var chs=[{l:'R',c:'#ff4444',dx:0,dy:0},{l:'G',c:'#44ff44',dx:16,dy:-12},{l:'B',c:'#4488ff',dx:32,dy:-24}];
+        for(var ci=chs.length-1;ci>=0;ci--){var ch=chs[ci];
+          ctx2.fillStyle=ch.c+'cc';ctx2.strokeStyle=ch.c;ctx2.lineWidth=1.5;
+          ctx2.fillRect(gx+ch.dx,gy+ch.dy,pw,ph);ctx2.strokeRect(gx+ch.dx,gy+ch.dy,pw,ph);
+          var n=10,gs=pw/n;ctx2.strokeStyle=ch.c+'33';ctx2.lineWidth=.5;
+          for(var r=0;r<n;r++)for(var cg=0;cg<n;cg++)ctx2.strokeRect(gx+ch.dx+cg*gs,gy+ch.dy+r*gs,gs,gs);
+          ctx2.fillStyle='#fff';ctx2.font='bold 11px monospace';ctx2.textAlign='left';ctx2.fillText(ch.l,gx+ch.dx+pw+8,gy+ch.dy+ph/2+4);
+        }
+        ctx2.fillStyle='#fff';ctx2.font='12px sans-serif';ctx2.textAlign='center';ctx2.fillText('[1,3,512,512] RGB三通道',w/2,h-10);
+      }else if(name.indexOf('A00')>=0||name.indexOf('Action')>=0){
+        var mw=Math.min(w*.8,600),mh=Math.min(h*.6,300),mx=(w-mw)/2,my=(h-mh)/2,cw=mw/50,ch=mh/6;
+        var joints=['J1','J2','J3','J4','J5','J6'];
+        for(var r=0;r<6;r++){ctx2.fillStyle='#fff';ctx2.font='9px monospace';ctx2.textAlign='right';ctx2.fillText(joints[r],mx-8,my+r*ch+ch/2+3);
+          for(var cc=0;cc<50;cc++){var v=Math.sin((r+cc)*.3)*.5+.5,red=Math.round(v*255),blue=Math.round((1-v)*255);
+            ctx2.fillStyle='rgb('+red+',50,'+blue+')';ctx2.fillRect(mx+cc*cw,my+r*ch,cw-1,ch-1);
+          }}
+        ctx2.fillStyle='#fff';ctx2.font='9px monospace';ctx2.textAlign='center';ctx2.fillText('t=0',mx+cw/2,my-4);ctx2.fillText('t=49',mx+mw-cw/2,my-4);
+        ctx2.fillText('[1,50,6] Action热力图',w/2,h-10);
+      }else{
+        var lw=Math.min(w*.45,220),lh2=Math.min(h*.7,400),ox=(w-lw)/2+80,oy=(h-lh2)/2+150,ang=0;
+        function iso(x,y,z){var ca=Math.cos(ang),sa=Math.sin(ang);return{x:ox+x*ca*.866-z*ca*.866,y:oy-x*sa*.5-y+z*.4}}
+        var tensors=[{n:'图像',sh:'[1,3,512,512]',w:lw,h:14,d:8,c:'#8b5cf6'},{n:'切块',sh:'3072→512',w:lw*.7,h:10,d:4,c:'#a78bfa'},{n:'Patch',sh:'[1,256,512]',w:lw*.9,h:16,d:8,c:'#6366f1'},{n:'VLM',sh:'[1,256,512]',w:lw*.88,h:18,d:20,c:'#3b82f6'},{n:'Attn',sh:'[1,256,512]',w:lw*.86,h:14,d:18,c:'#0ea5e9'},{n:'Cross',sh:'[1,16,512]',w:lw*.7,h:14,d:12,c:'#14b8a6'},{n:'DiT',sh:'[1,64,50]',w:lw*.55,h:16,d:10,c:'#10b981'},{n:'Action',sh:'[1,50,6]',w:lw*.4,h:10,d:6,c:'#00d4aa'}];
+        function dr(){ctx2.clearRect(0,0,w,h);var yA=0;
+          for(var i=0;i<tensors.length;i++){var T=tensors[i],yo=yA,p=iso(0,yo,0),bw=T.w,bh=T.h,bd=T.d;
+            ctx2.fillStyle=T.c+'44';ctx2.beginPath();ctx2.moveTo(p.x,p.y);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw,p.y);ctx2.fill();
+            ctx2.fillStyle=T.c+'cc';ctx2.fillRect(p.x,p.y,bw,bh);
+            ctx2.fillStyle=T.c+'88';ctx2.beginPath();ctx2.moveTo(p.x,p.y+bh);ctx2.lineTo(p.x-bd*.866,p.y+bh+bd*.5);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x,p.y);ctx2.fill();
+            ctx2.strokeStyle='#00d4aa66';ctx2.lineWidth=1;ctx2.strokeRect(p.x,p.y,bw,bh);
+            ctx2.fillStyle='#fff';ctx2.font='bold 9px';ctx2.fillText(T.n,p.x+bw+4,p.y+bh/2+4);
+            ctx2.fillStyle='#8b949e';ctx2.font='9px monospace';ctx2.fillText(T.sh,p.x+bw+4,p.y+bh/2+16);yA+=T.h+8;
+          }
+          ctx2.fillStyle='#fff';ctx2.font='10px';ctx2.textAlign='center';ctx2.fillText('SmolVLA 3D',w/2,h-6);
+        }
+        dr();var dg=false,sx=0;c.onmousedown=function(e){dg=true;sx=e.clientX};
+        c.onmousemove=function(e){if(dg){ang+=(e.clientX-sx)*.008;sx=e.clientX;dr()}};
+        c.onmouseup=c.onmouseleave=function(){dg=false};
+      }
+    });
+  });
+}
 function pollTask(tid,count){
   if(count>20){Lg('  ⚠️ 超时 · 请检查4090状态');return}
   setTimeout(function(){
@@ -290,8 +335,6 @@ function preset(t){
 }
 
 fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){document.getElementById('st').innerHTML='🟢 在线·'+d.gpu}).catch(function(){document.getElementById('st').innerHTML='🔴 离线·SSH: python3 comfyui_backend.py'});
-preset('smolvla');
-if(window.innerWidth<768){zoom=1.5;px=-20;py=20;draw()}
 // 自动加载默认预设
 preset('smolvla');
 </script></body></html>
