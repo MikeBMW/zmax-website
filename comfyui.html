@@ -78,7 +78,25 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 1
 
 <div class="log" id="log">📋 工作流日志...</div>
 
+<h2>🟢 服务状态</h2>
+<div class="card" id="status-panel">
+<div class="row"><span class="label">ComfyUI后端 (4090:50053)</span><span class="value" id="s-comfy">检测中...</span></div>
+<div class="row"><span class="label">Sys2 VTLA (50052)</span><span class="value" id="s-sys2">--</span></div>
+<div class="row"><span class="label">Sys1 ACT (4060)</span><span class="value" id="s-sys1">需要xspace启动</span></div>
+<div class="row"><span class="label">RoboGen (4060)</span><span class="value" id="s-robo">需要xspace启动</span></div>
+</div>
+<div style="margin:8px 0">
+<button class="btn btn-green" onclick="startBackend()" id="btn-start" style="display:none">▶️ 启动后端</button>
+<button class="btn btn-blue" onclick="startSys2()" id="btn-sys2" style="display:none">🚀 启动Sys2服务</button>
+<div id="cmd-hint" style="font-size:10px;color:#8b949e;margin-top:6px"></div>
+</div>
+
 <script>
+// 检测 Sys2 是否在线
+fetch('/api/sys2-health')
+  .then(r=>r.json()).then(d=>{document.getElementById('s-sys2').innerHTML='<span class="status status-green"></span>在线 · '+d.latency_ms+'ms'})
+  .catch(()=>{document.getElementById('s-sys2').innerHTML='<span class="status status-red"></span>离线 · 需启动4090'});
+
 function select(n,el){
   document.querySelectorAll('.node').forEach(e=>e.classList.remove('active'));
   el.classList.add('active');
@@ -86,14 +104,62 @@ function select(n,el){
          2:{t:'🤖 RoboGen 数据生成',d:'基于LLM自动生成多样化训练任务。DeepSeek V4 Pro驱动。输出→Genesis仿真',r:'robogen-deepseek'},
          3:{t:'🌍 Genesis 物理仿真',d:'高保真物理引擎渲染。生成demonstration数据。输出→LeRobot训练',r:'genesis-world'},
          4:{t:'🏋️ LeRobot 模型训练',d:'6模型训练管线(VTLA/GR00T/ACT/SmolVLA/LeWorld)。输出→DDS分发',r:'lerobot-smolvla-lew'},
-         5:{t:'🌐 DDS 数据分发',d:'21节点全局数据空间。14技能数据发布/订阅。输出→Deploy',r:'DDS_Skill_ros2_ws'},
+         5:{t:'🌐 DDS 数据分发',d:'34条件+7模型+30动作。全局数据闭环。输出→Deploy',r:'DDS_Skill_ros2_ws'},
          6:{t:'🚀 部署上线',d:'模型→Orin真机+Mac旁路仿真。小芳负责验证测试',r:'mac/orin'}};
   var v=m[n];document.getElementById('detail').innerHTML='<h3>'+v.t+'</h3><p style="font-size:11px;color:#8b949e">'+v.d+'</p><p style="font-size:10px;color:#00d4aa">仓库: github.com/MikeBMW/'+v.r+'</p>';
 }
 function log(m){var d=document.getElementById('log');d.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;d.scrollTop=d.scrollHeight}
+
 function run(type){
-  var steps={insert:['Task定义','RoboGen生成','Genesis仿真','VTLA训练','DDS分发','Mac/Orin部署'],pickplace:['Task定义','Genesis仿真','ACT训练','Orin部署'],aoi:['Task定义','Genesis仿真','DDS分发','Orin部署']};
-  log('▶️ 启动工作流: '+type);(steps[type]||[]).forEach(function(s,i){setTimeout(function(){log('  ✅ '+s+' 完成')},(i+1)*800)});
+  log('▶️ 启动工作流: '+type);
+  var body=JSON.stringify({type:type,nodes:[]});
+  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:body})
+    .then(r=>r.json()).then(function(d){
+      log('  ✅ 任务创建: '+d.id);
+      d.steps.forEach(function(s){log('    ↳ '+s)});
+      log('  🏋️ 自动触发训练...');
+      return fetch('/api/comfy/train',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:type==='insert'?'vtla':'act'})});
+    }).then(r=>r.json()).then(function(j){
+      log('  ✅ 训练任务: '+j.id+' · 状态: '+j.status);
+    }).catch(function(e){
+      log('  ❌ 后端未连接 · 需启动4090: python3 comfyui_backend.py');
+    });
+}
+
+// 页面加载时检测后端
+function checkBackend(){
+  fetch('/api/comfy/status').then(r=>r.json()).then(function(d){
+    document.getElementById('s-comfy').innerHTML='<span class="status status-green"></span>在线 · '+d.gpu;
+    document.getElementById('s-sys2').innerHTML='<span class="status '+(d.vtla_online?'status-green':'status-red')+'"></span>'+(d.vtla_online?'在线':'离线');
+    document.getElementById('btn-start').style.display='none';
+    document.getElementById('btn-sys2').style.display=d.vtla_online?'none':'inline-block';
+    document.getElementById('cmd-hint').innerText='';
+    log('🟢 后端已连接 · GPU:'+d.gpu);
+  }).catch(function(){
+    document.getElementById('s-comfy').innerHTML='<span class="status status-red"></span>离线';
+    document.getElementById('btn-start').style.display='inline-block';
+    document.getElementById('cmd-hint').innerHTML='SSH到4090执行:<br><code>cd /root/lerobot-smolvla-lew && python3.12 comfyui_backend.py</code>';
+    log('❌ 后端离线 · 点击 ▶️启动后端 或手动SSH');
+  });
+}
+checkBackend();
+
+function startBackend(){
+  log('▶️ 请求启动后端...');
+  fetch('/api/comfy/status').then(r=>r.json()).then(function(d){
+    log('  ✅ 后端已在运行 · GPU:'+d.gpu);
+    checkBackend();
+  }).catch(function(){
+    document.getElementById('cmd-hint').innerHTML='⚠️ 后端离线无法远程启动。<br>请SSH到4090执行:<br><code>cd /root/lerobot-smolvla-lew && python3.12 comfyui_backend.py</code>';
+  });
+}
+
+function startSys2(){
+  fetch('/api/comfy/start-server',{method:'POST'}).then(r=>r.json()).then(function(d){
+    log('  ✅ Sys2启动中...'); checkBackend();
+  }).catch(function(){
+    log('  ❌ 后端离线,无法远程启动Sys2');
+  });
 }
 </script>
 
