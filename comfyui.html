@@ -195,17 +195,21 @@ function Lg(m){var l=document.getElementById('log');l.innerText+='\n'+new Date()
 function run(){
   if(N.length===0){Lg('⚠️ 请从左侧拖拽节点到画布');return}
   var nodeNames=N.map(function(n){return n.name}).join(', ');
+  Lg('══════════════════════════════');
   Lg('▶️ 执行工作流');
   Lg('  📋 节点: '+nodeNames);
   Lg('  🔗 连线: '+L.length+'条');
-  Lg('  🚀 提交到4090...');
+  Lg('  🚀 提交到4090后端...');
   fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom'})})
     .then(function(r){return r.json()}).then(function(d){
       Lg('  ✅ 任务创建: '+d.id);
+      Lg('  🖥️ 硬件: '+ (d.hardware||'4090云端'));
+      Lg('  🧠 模型: '+ (d.model||'SmolVLA'));
+      Lg('  📍 位置: '+ (d.location||'4090'));
       if(d.steps)d.steps.forEach(function(s){Lg('    ↳ '+s)});
       Lg('  ⏳ 等待推理完成...');
       pollTask(d.id, 0);
-    }).catch(function(){Lg('  ❌ 后端连接失败 · 4090离线')});
+    }).catch(function(){Lg('  ❌ 后端连接失败 · 4090离线');Lg('══════════════════════════════')});
 }
 
 function clearAll(){saveState();N=[];L=[];draw()}
@@ -216,6 +220,7 @@ function pollTask(tid,count){
       if(d.status==='done'){
         Lg('  🎉 推理完成!');
         Lg('  📊 '+d.result);
+        Lg('══════════════════════════════');
       }else if(d.status==='failed'){
         Lg('  ❌ 推理失败: '+d.error);
       }else{
