@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DDS Skill 主数据体系 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#00d4aa;font-size:16px;margin:28px 0 10px;padding-bottom:4px;border-bottom:2px solid #00d4aa33}
+h3{color:#e6edf3;font-size:13px;margin:14px 0 6px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
+th{background:#00d4aa22;padding:7px 10px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:6px 10px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.ms{color:#58a6ff}.as{color:#00d4aa}.qd{color:#d4a800}
+.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:768px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/kanban.html" class="back-home">← 返回看板</a>
+<h1>🗂️ DDS Skill 主数据体系</h1>
+<p class="sub">model_skill(多模态训练) + action_skill(光模块动作) · 全主数据 · 2026-07-14</p>
+
+<div class="grid2">
+
+<!-- ═══ MODEL SKILL ═══ -->
+<div>
+<h2 class="ms">🧠 model_skill · 模型技能</h2>
+<p style="font-size:11px;color:#8b949e;margin-bottom:10px">多模态数据 → 模型训练输入</p>
+
+<div class="card"><h3>M01 · sensor_rgb</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/rgb</td></tr>
+<tr><td>数据类型</td><td>uint8 (B,3,H,W)</td></tr>
+<tr><td>来源</td><td>RealSense D435 → Orin</td></tr>
+<tr><td>训练模型</td><td>Sys11/Sys21/Sys22</td></tr>
+<tr><td>质量Key</td><td>帧率≥25fps, 1920×1080</td></tr></table></div>
+
+<div class="card"><h3>M02 · sensor_depth</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/depth</td></tr>
+<tr><td>数据类型</td><td>float32 (B,1,H,W)</td></tr>
+<tr><td>来源</td><td>RealSense D435 深度流</td></tr>
+<tr><td>训练模型</td><td>Sys21 VTLA(3D感知)</td></tr>
+<tr><td>质量Key</td><td>0.1-10m有效范围</td></tr></table></div>
+
+<div class="card"><h3>M03 · sensor_force_6d</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/force</td></tr>
+<tr><td>数据类型</td><td>float32[6] (Fx,Fy,Fz,Tx,Ty,Tz)</td></tr>
+<tr><td>来源</td><td>六维力传感器</td></tr>
+<tr><td>训练模型</td><td>Sys21 VTLA(力控)</td></tr>
+<tr><td>质量Key</td><td>±0.1N精度, 1kHz</td></tr></table></div>
+
+<div class="card"><h3>M04 · sensor_tactile</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/tactile</td></tr>
+<tr><td>数据类型</td><td>float32[16] (指尖触觉阵列)</td></tr>
+<tr><td>来源</td><td>指尖触觉传感器</td></tr>
+<tr><td>训练模型</td><td>Sys21 VTLA(触觉编码器)</td></tr>
+<tr><td>质量Key</td><td>16通道·16bit·1kHz</td></tr></table></div>
+
+<div class="card"><h3>M05 · joint_state</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/joint</td></tr>
+<tr><td>数据类型</td><td>float32[7] + float32[7] + float32[7]</td></tr>
+<tr><td>来源</td><td>6轴机械臂编码器</td></tr>
+<tr><td>训练模型</td><td>Sys1/Sys11</td></tr>
+<tr><td>质量Key</td><td>±0.01°, 1kHz</td></tr></table></div>
+
+<div class="card"><h3>M06 · task_language</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/language</td></tr>
+<tr><td>数据类型</td><td>string (任务指令)</td></tr>
+<tr><td>来源</td><td>DeepSeek V4 Pro / 人工</td></tr>
+<tr><td>训练模型</td><td>全部VLA模型</td></tr>
+<tr><td>质量Key</td><td>长度≤256 tokens</td></tr></table></div>
+
+<div class="card"><h3>M07 · expert_demo</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/demo</td></tr>
+<tr><td>数据类型</td><td>LeRobotDataset shard</td></tr>
+<tr><td>来源</td><td>Genesis仿真 / 人工示教</td></tr>
+<tr><td>训练模型</td><td>全部6模型</td></tr>
+<tr><td>质量Key</td><td>帧数≥100, 动作范围合法</td></tr></table></div>
+
+<div class="card"><h3>M08 · sim_data</h3>
+<table><tr><td>DDS Topic</td><td>/dds/model/sim</td></tr>
+<tr><td>数据类型</td><td>Genesis仿真输出</td></tr>
+<tr><td>来源</td><td>Genesiw-World 物理引擎</td></tr>
+<tr><td>训练模型</td><td>全部6模型</td></tr>
+<tr><td>质量Key</td><td>物理参数有效, 无穿透</td></tr></table></div>
+</div>
+
+<!-- ═══ ACTION SKILL ═══ -->
+<div>
+<h2 class="as">⚡ action_skill · 动作技能</h2>
+<p style="font-size:11px;color:#8b949e;margin-bottom:10px">光模块工厂 · 围绕插拔动作</p>
+
+<div class="card"><h3>A01 · pick_module</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/pick</td></tr>
+<tr><td>工序</td><td>从料盘取光模块</td></tr>
+<tr><td>型号适配</td><td>800G OSFP / 400G QSFP-DD / 100G SFP</td></tr>
+<tr><td>引擎</td><td>Sys1 ACT (1.2ms)</td></tr>
+<tr><td>力控阈值</td><td>夹持力 3-8N</td></tr></table></div>
+
+<div class="card"><h3>A02 · scan_barcode</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/scan</td></tr>
+<tr><td>工序</td><td>扫码读取SN</td></tr>
+<tr><td>型号适配</td><td>所有型号</td></tr>
+<tr><td>引擎</td><td>Orin本地视觉</td></tr>
+<tr><td>校验</td><td>SN匹配MES系统</td></tr></table></div>
+
+<div class="card"><h3>A03 · pre_insert</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/pre_insert</td></tr>
+<tr><td>工序</td><td>定位到插口上方</td></tr>
+<tr><td>型号适配</td><td>800G(大)/400G(中)/100G(小) 不同预插位</td></tr>
+<tr><td>引擎</td><td>Sys11 SmolVLA (视觉引导)</td></tr>
+<tr><td>精度</td><td>XY ±0.5mm</td></tr></table></div>
+
+<div class="card"><h3>A04 · lissajous_insert ⭐</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/lissajous</td></tr>
+<tr><td>工序</td><td>利萨如力控搜索插入 (核心)</td></tr>
+<tr><td>型号适配</td><td>QSFP-DD/OSFP不同金手指宽度</td></tr>
+<tr><td>引擎</td><td>Sys21 VTLA (力控284ms)</td></tr>
+<tr><td>力控参数</td><td>Z 6N, 振幅6mm/3Hz+4mm/2Hz, 搜索±10mm</td></tr></table></div>
+
+<div class="card"><h3>A05 · second_insert</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/second_insert</td></tr>
+<tr><td>工序</td><td>二次插入确认 (end_pose[0]>0.75)</td></tr>
+<tr><td>引擎</td><td>Sys21 VTLA</td></tr>
+<tr><td>回退</td><td>失败→开爪重试→连续2次→报错</td></tr></table></div>
+
+<div class="card"><h3>A06 · extract_module</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/extract</td></tr>
+<tr><td>工序</td><td>Z+12cm 直线拔出</td></tr>
+<tr><td>型号适配</td><td>所有型号统一流程</td></tr>
+<tr><td>引擎</td><td>固定轨迹 → joint24 → joint14</td></tr></table></div>
+
+<div class="card"><h3>A07 · place_ok</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/place_ok</td></tr>
+<tr><td>工序</td><td>放回合格品托盘</td></tr>
+<tr><td>目标位姿</td><td>manual_pose_25</td></tr>
+</table></div>
+
+<div class="card"><h3>A08 · place_ng</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/place_ng</td></tr>
+<tr><td>工序</td><td>放到不合格品区</td></tr>
+<tr><td>目标位姿</td><td>manual_pose_26</td></tr>
+</table></div>
+
+<div class="card"><h3>A09 · aoi_inspect</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/aoi</td></tr>
+<tr><td>工序</td><td>6工位AOI检测</td></tr>
+<tr><td>引擎</td><td>4060:10082 capture_detect</td></tr>
+<tr><td>判断</td><td>any NG → 标记aoi_fail_flag</td></tr></table></div>
+
+<div class="card"><h3>A10 · test_wait</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/test</td></tr>
+<tr><td>工序</td><td>等待测试结果 (PASS/FAIL)</td></tr>
+<tr><td>超时</td><td>30s</td></tr></table></div>
+
+<div class="card"><h3>A11 · model_change</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/change</td></tr>
+<tr><td>工序</td><td>换型适配 (切换光模块型号)</td></tr>
+<tr><td>参数</td><td>新型号→更新预插位/力控参数/夹持力</td></tr></table></div>
+
+<div class="card"><h3>A12 · init_cycle</h3>
+<table><tr><td>DDS Topic</td><td>/dds/action/init</td></tr>
+<tr><td>工序</td><td>初始化循环 (计数器清零)</td></tr>
+<tr><td>计数器</td><td>pick_place/place/ng/grasp_fail/aoi_detect</td></tr></table></div>
+</div>
+
+</div><!-- grid2 -->
+
+<!-- 主数据汇总 -->
+<h2>📋 主数据汇总</h2>
+<table>
+<tr><th>类别</th><th>编号</th><th>主数据名称</th><th>DDS Topic</th><th>对应模型</th><th>质量检查</th></tr>
+<tr class="ms"><td>model</td><td>M01</td><td>RGB图像</td><td>/dds/model/rgb</td><td>Sys11/Sys21/Sys22</td><td>帧率/分辨率</td></tr>
+<tr class="ms"><td>model</td><td>M02</td><td>深度图</td><td>/dds/model/depth</td><td>Sys21</td><td>有效范围</td></tr>
+<tr class="ms"><td>model</td><td>M03</td><td>六维力</td><td>/dds/model/force</td><td>Sys21</td><td>精度/频率</td></tr>
+<tr class="ms"><td>model</td><td>M04</td><td>触觉阵列</td><td>/dds/model/tactile</td><td>Sys21</td><td>16通道有效</td></tr>
+<tr class="ms"><td>model</td><td>M05</td><td>关节状态</td><td>/dds/model/joint</td><td>Sys1/Sys11</td><td>角度范围</td></tr>
+<tr class="ms"><td>model</td><td>M06</td><td>任务语言</td><td>/dds/model/language</td><td>全部VLA</td><td>token长度</td></tr>
+<tr class="ms"><td>model</td><td>M07</td><td>专家演示</td><td>/dds/model/demo</td><td>全部6模型</td><td>帧数/合法性</td></tr>
+<tr class="ms"><td>model</td><td>M08</td><td>仿真数据</td><td>/dds/model/sim</td><td>全部6模型</td><td>物理有效性</td></tr>
+<tr class="as"><td>action</td><td>A01</td><td>取料</td><td>/dds/action/pick</td><td>Sys1 ACT</td><td>夹持力</td></tr>
+<tr class="as"><td>action</td><td>A02</td><td>扫码</td><td>/dds/action/scan</td><td>Orin视觉</td><td>SN匹配</td></tr>
+<tr class="as"><td>action</td><td>A03</td><td>预插</td><td>/dds/action/pre_insert</td><td>Sys11 SmolVLA</td><td>定位精度</td></tr>
+<tr class="as qd"><td>action</td><td>A04</td><td>力控插入 ⭐</td><td>/dds/action/lissajous</td><td>Sys21 VTLA</td><td>力控6N±0.5N</td></tr>
+<tr class="as"><td>action</td><td>A05</td><td>二次插入</td><td>/dds/action/second_insert</td><td>Sys21 VTLA</td><td>end_pose>0.75</td></tr>
+<tr class="as"><td>action</td><td>A06</td><td>拔出</td><td>/dds/action/extract</td><td>固定轨迹</td><td>Z位移12cm</td></tr>
+<tr class="as"><td>action</td><td>A07</td><td>放OK品</td><td>/dds/action/place_ok</td><td>机械臂</td><td>pose_25</td></tr>
+<tr class="as"><td>action</td><td>A08</td><td>放NG品</td><td>/dds/action/place_ng</td><td>机械臂</td><td>pose_26</td></tr>
+<tr class="as"><td>action</td><td>A09</td><td>AOI检测</td><td>/dds/action/aoi</td><td>4060:10082</td><td>code=200</td></tr>
+<tr class="as"><td>action</td><td>A10</td><td>等待测试</td><td>/dds/action/test</td><td>WaitContext</td><td>超时30s</td></tr>
+<tr class="as"><td>action</td><td>A11</td><td>换型适配</td><td>/dds/action/change</td><td>全引擎</td><td>参数合法</td></tr>
+<tr class="as"><td>action</td><td>A12</td><td>初始化</td><td>/dds/action/init</td><td>状态机</td><td>计数器清零</td></tr>
+<tr style="background:#00d4aa11"><td colspan="2"><b>合计</b></td><td><b>8 model + 12 action</b></td><td><b>20 Topics</b></td><td><b>全部模型覆盖</b></td><td><b>五层质控</b></td></tr>
+</table>
+
+<h2>DDS API</h2>
+<div class="card"><pre><code>from dds_skill import gds
+
+# model_skill (多模态训练数据)
+gds.publish("sensor_force_6d", [1.2, 0.3, 5.0, 0, 0, 0])  # M03
+gds.get("joint_pos_7d")                                      # M05
+
+# action_skill (光模块动作)
+gds.publish("pick_module", {"model":"QSFP-DD", "force":5.0})  # A01
+gds.publish("lissajous_insert", {"z_force":6.0, "amplitude":6.0})  # A04 ⭐
+gds.get("aoi_result")                                         # A09
+
+# 全部主数据 → Web看板
+gds.to_json("all")  # 20 Topics → data-quality.html 实时监控</code></pre></div>
+
+<div class="footer">Z-MAX · 静界科技 · DDS Skill 主数据体系 v2.0 · 8 model_skill + 12 action_skill · 2026-07-14</div>
+</div>
+</body>
+</html>

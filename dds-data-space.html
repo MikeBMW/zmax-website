@@ -7,130 +7,115 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
-.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
-h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
-.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
-h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
-table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:12px}
-th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
-td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
-tr:nth-child(even) td{background:#080c14}
-pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:11px;margin:10px 0}
-.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:20px}
+.tabs{display:flex;gap:6px;margin:16px 0;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;transition:.2s;white-space:nowrap}
+.tab:hover{border-color:#00d4aa44;color:#00d4aa}
+.tab.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
+.tab.model.active{border-color:#58a6ff;color:#58a6ff;background:#58a6ff11}
+.tab.action.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
+.skill-card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 16px;transition:.2s}
+.skill-card:hover{border-color:#00d4aa44}
+.skill-card.ms{border-left:3px solid #58a6ff}
+.skill-card.as{border-left:3px solid #00d4aa}
+.skill-card.core{border-left:3px solid #d4a800}
+.skill-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.skill-badge{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;white-space:nowrap}
+.ms .skill-badge{background:#58a6ff22;color:#58a6ff}.as .skill-badge{background:#00d4aa22;color:#00d4aa}.core .skill-badge{background:#d4a80022;color:#d4a800}
+.skill-name{font-size:13px;font-weight:700;color:#e6edf3}
+.skill-topic{font-size:10px;color:#8b949e;font-family:monospace;margin-bottom:6px}
+.skill-row{display:flex;flex-wrap:wrap;gap:4px;font-size:10px;color:#8b949e}
+.tag{padding:2px 6px;border-radius:3px;background:#1a1f2b;font-size:9px}
 .back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
+.count{font-size:24px;font-weight:800;color:#00d4aa}.count.m{color:#58a6ff}.count.a{color:#00d4aa}
 .footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
-.arch{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:16px 0;font-size:11px}
-.arch-box{border:2px solid;border-radius:8px;padding:8px 12px;text-align:center}
-.a0{border-color:#d4a800;color:#d4a800}.a1{border-color:#58a6ff;color:#58a6ff}.a2{border-color:#00d4aa;color:#00d4aa}.a3{border-color:#a371f7;color:#a371f7}.a4{border-color:#8b949e;color:#8b949e}
+@media(max-width:768px){.skill-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a href="/kanban.html" class="back-home">← 返回看板</a>
 <h1>🌐 DDS 全局数据空间</h1>
-<p class="sub">xspace架构 · web训练对接 · 小芳部署 · 2026-07-13</p>
+<p class="sub">xspace架构 · 20主数据 · 全Skill可视 · 2026-07-14</p>
 
-<h2>一、DDS 数据空间架构</h2>
-<div class="arch">
-<div class="arch-box a0">Skill 0<br>RealSense图像<br>/dds/realsense</div>
-<div class="arch-box a0">Skill 1<br>关节状态<br>/dds/joint_state</div>
-<div class="arch-box a1">Skill 2<br>ACT推理<br>/dds/act_action</div>
-<div class="arch-box a1">Skill 3<br>SmolVLA<br>/dds/smolvla</div>
-<div class="arch-box a2">Skill 4<br>VTLA力控<br>/dds/vtla_force</div>
-<div class="arch-box a2">Skill 5<br>GR00T<br>/dds/groot</div>
-<div class="arch-box a3">Skill 6<br>AOI检测<br>/dds/aoi</div>
-<div class="arch-box a4">Skill 7<br>训练权重<br>/dds/weights</div>
+<!-- 统计 -->
+<div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:16px">
+<div style="text-align:center"><div class="count m">8</div><div style="font-size:11px;color:#58a6ff">model_skill</div></div>
+<div style="text-align:center"><div class="count a">12</div><div style="font-size:11px;color:#00d4aa">action_skill</div></div>
+<div style="text-align:center"><div class="count">20</div><div style="font-size:11px;color:#8b949e">Topics</div></div>
 </div>
 
-<h2>二、Skill ↔ DDS Topic ↔ Z-MAX 模型 映射</h2>
-<table>
-<tr><th>Skill ID</th><th>DDS Topic</th><th>ROS2 Node</th><th>数据类型</th><th>Z-MAX模型</th><th>训练</th></tr>
-<tr><td>Skill 0</td><td>/dds/realsense</td><td>realsense_node</td><td>sensor_msgs/Image</td><td>Sys0 输入</td><td>—</td></tr>
-<tr><td>Skill 1</td><td>/dds/joint_state</td><td>joint_state_node</td><td>JointState (位置+力+扭矩)</td><td>Sys0 输入</td><td>—</td></tr>
-<tr><td>Skill 2</td><td>/dds/act_action</td><td>act_infer_node</td><td>ActionChunk (50×6)</td><td>Sys1 ACT</td><td>xspace</td></tr>
-<tr><td>Skill 3</td><td>/dds/smolvla</td><td>smolvla_node</td><td>VLAOutput (action+image)</td><td>Sys11 SmolVLA</td><td>xspace→web</td></tr>
-<tr><td>Skill 4</td><td>/dds/vtla_force</td><td>vtla_node</td><td>TactileForce (6轴力+置信度)</td><td>Sys21 VTLA</td><td>web</td></tr>
-<tr><td>Skill 5</td><td>/dds/groot</td><td>groot_node</td><td>Gr00tAction (eef+joint+gripper)</td><td>Sys22 GR00T</td><td>web</td></tr>
-<tr><td>Skill 6</td><td>/dds/aoi</td><td>aoi_node (4060:10082)</td><td>AoiResult (code+msg+detections)</td><td>Sys1 AOI</td><td>—</td></tr>
-<tr><td>Skill 7</td><td>/dds/weights</td><td>weight_sync_node</td><td>ModelWeights (path+hash)</td><td>全模型</td><td>web→ECS</td></tr>
-</table>
-
-<h2>三、DDS 全局数据流</h2>
-<div class="card">
-<pre><code>
-┌─────────────────────────────────────────────────────────┐
-│                   DDS Global Data Space                 │
-│  ros2_ws/src/zmq_bridge → 每个topic一个DDS Writer/Reader │
-├─────────────────────────────────────────────────────────┤
-│ /dds/realsense ──→ /dds/act_action ──→ /dds/vtla_force │
-│     图像采集            ACT推理              VTLA力控     │
-│                                                         │
-│ /dds/joint_state ──→ /dds/smolvla ──→ /dds/groot       │
-│     关节状态           SmolVLA推理          GR00T决策     │
-│                                                         │
-│ /dds/aoi ←── 4060:10082 ──→ /dds/weights ──→ ECS       │
-│     AOI检测                训练权重同步        线上部署    │
-└─────────────────────────────────────────────────────────┘</code></pre>
+<!-- Tab切换 -->
+<div class="tabs">
+<div class="tab active" onclick="filter('all',this)">全部 20</div>
+<div class="tab model" onclick="filter('model',this)">🧠 model_skill 8</div>
+<div class="tab action" onclick="filter('action',this)">⚡ action_skill 12</div>
+<div class="tab" onclick="filter('core',this)">⭐ 核心技能</div>
 </div>
 
-<h2>四、ROS2 Workspace 结构</h2>
-<div class="card">
-<pre><code>ros2_ws/
-├── src/
-│   ├── zmq_bridge/          ← DDS全局数据总线
-│   │   ├── dds_writer.cpp   (数据发布)
-│   │   ├── dds_reader.cpp   (数据订阅)
-│   │   └── skill_registry.yaml (Skill注册表)
-│   ├── realsense_node/      ← Skill 0
-│   ├── joint_state_node/    ← Skill 1
-│   ├── act_infer_node/      ← Skill 2 → Sys1
-│   ├── smolvla_node/        ← Skill 3 → Sys11
-│   ├── vtla_node/           ← Skill 4 → Sys21
-│   ├── groot_node/          ← Skill 5 → Sys22
-│   ├── aoi_node/            ← Skill 6 → 4060:10082
-│   └── weight_sync_node/    ← Skill 7 → ECS
-├── data/                    ← 全局数据存储
-│   ├── raw/                 (原始sensor数据)
-│   ├── processed/           (推理结果)
-│   └── datasets/            (训练数据集)
-└── models/                  ← 模型权重缓存</code></pre>
+<!-- Skill 卡片网格 -->
+<div class="skill-grid" id="skills">
+
+<!-- model_skill -->
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M01</span><span class="skill-name">sensor_rgb</span></div><div class="skill-topic">/dds/model/rgb</div><div class="skill-row"><span class="tag">RealSense</span><span class="tag">uint8(B×3×H×W)</span><span class="tag">Sys11/21/22</span><span class="tag">≥25fps</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M02</span><span class="skill-name">sensor_depth</span></div><div class="skill-topic">/dds/model/depth</div><div class="skill-row"><span class="tag">RealSense D435</span><span class="tag">float32</span><span class="tag">Sys21 VTLA</span><span class="tag">0.1-10m</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M03</span><span class="skill-name">sensor_force_6d</span></div><div class="skill-topic">/dds/model/force</div><div class="skill-row"><span class="tag">六维力</span><span class="tag">float32[6]</span><span class="tag">Sys21</span><span class="tag">±0.1N</span><span class="tag">1kHz</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M04</span><span class="skill-name">sensor_tactile</span></div><div class="skill-topic">/dds/model/tactile</div><div class="skill-row"><span class="tag">指尖触觉</span><span class="tag">float32[16]</span><span class="tag">Sys21</span><span class="tag">16通道</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M05</span><span class="skill-name">joint_state</span></div><div class="skill-topic">/dds/model/joint</div><div class="skill-row"><span class="tag">7轴</span><span class="tag">pos+vel+torque</span><span class="tag">Sys1/11</span><span class="tag">±0.01°</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M06</span><span class="skill-name">task_language</span></div><div class="skill-topic">/dds/model/language</div><div class="skill-row"><span class="tag">DeepSeek V4</span><span class="tag">string</span><span class="tag">全部VLA</span><span class="tag">≤256tok</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M07</span><span class="skill-name">expert_demo</span></div><div class="skill-topic">/dds/model/demo</div><div class="skill-row"><span class="tag">Genesis/示教</span><span class="tag">LeRobotDataset</span><span class="tag">全6模型</span><span class="tag">≥100帧</span></div></div>
+
+<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M08</span><span class="skill-name">sim_data</span></div><div class="skill-topic">/dds/model/sim</div><div class="skill-row"><span class="tag">Genesis-World</span><span class="tag">float32</span><span class="tag">全6模型</span><span class="tag">物效有效</span></div></div>
+
+<!-- action_skill -->
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A01</span><span class="skill-name">pick_module</span></div><div class="skill-topic">/dds/action/pick</div><div class="skill-row"><span class="tag">取料</span><span class="tag">Sys1 ACT</span><span class="tag">800G/400G/100G</span><span class="tag">3-8N</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A02</span><span class="skill-name">scan_barcode</span></div><div class="skill-topic">/dds/action/scan</div><div class="skill-row"><span class="tag">扫码</span><span class="tag">Orin视觉</span><span class="tag">SN→MES</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A03</span><span class="skill-name">pre_insert</span></div><div class="skill-topic">/dds/action/pre_insert</div><div class="skill-row"><span class="tag">预插</span><span class="tag">Sys11 SmolVLA</span><span class="tag">XY±0.5mm</span></div></div>
+
+<div class="skill-card as core" data-type="action" data-core="true"><div class="skill-head"><span class="skill-badge">A04 ⭐</span><span class="skill-name">lissajous_insert</span></div><div class="skill-topic">/dds/action/lissajous</div><div class="skill-row"><span class="tag">力控插入</span><span class="tag">Sys21 VTLA</span><span class="tag">Z6N</span><span class="tag">6mm/3Hz+4mm/2Hz</span><span class="tag">±10mm</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A05</span><span class="skill-name">second_insert</span></div><div class="skill-topic">/dds/action/second_insert</div><div class="skill-row"><span class="tag">二次插入</span><span class="tag">Sys21 VTLA</span><span class="tag">end_pose>0.75</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A06</span><span class="skill-name">extract_module</span></div><div class="skill-topic">/dds/action/extract</div><div class="skill-row"><span class="tag">拔出</span><span class="tag">Z+12cm</span><span class="tag">→joint24→joint14</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A07</span><span class="skill-name">place_ok</span></div><div class="skill-topic">/dds/action/place_ok</div><div class="skill-row"><span class="tag">放合格品</span><span class="tag">manual_pose_25</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A08</span><span class="skill-name">place_ng</span></div><div class="skill-topic">/dds/action/place_ng</div><div class="skill-row"><span class="tag">放NG品</span><span class="tag">manual_pose_26</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A09</span><span class="skill-name">aoi_inspect</span></div><div class="skill-topic">/dds/action/aoi</div><div class="skill-row"><span class="tag">AOI×6</span><span class="tag">4060:10082</span><span class="tag">code=200</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A10</span><span class="skill-name">test_wait</span></div><div class="skill-topic">/dds/action/test</div><div class="skill-row"><span class="tag">等待测试</span><span class="tag">PASS/FAIL</span><span class="tag">超时30s</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A11</span><span class="skill-name">model_change</span></div><div class="skill-topic">/dds/action/change</div><div class="skill-row"><span class="tag">换型适配</span><span class="tag">全引擎</span><span class="tag">参数更新</span></div></div>
+
+<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A12</span><span class="skill-name">init_cycle</span></div><div class="skill-topic">/dds/action/init</div><div class="skill-row"><span class="tag">初始化</span><span class="tag">计数器清零</span></div></div>
+
 </div>
 
-<h2>五、Web训练对接 (DDS → 训练)</h2>
-<div class="card">
-<h3>数据采集 → LeRobotDataset 转换</h3>
-<pre><code># xspace 全局数据节点 → rosbag → 训练数据
-ros2 bag record -o train_data /dds/realsense /dds/joint_state /dds/act_action /dds/vtla_force
+<script>
+function filter(type,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.skill-card').forEach(c=>{
+    if(type==='all') c.style.display='';
+    else if(type==='core') c.style.display=c.dataset.core==='true'?'':'none';
+    else c.style.display=c.dataset.type===type?'':'none';
+  });
+}
+</script>
 
-# web 训练端拉取 (从ECS)
-wget http://datadrive.world/data/train_data.tar.gz
-
-# 导入训练管线
-python unified_train.py --model vtla --dataset train_data/
-python unified_train.py --model groot --dataset train_data/</code></pre>
-</div>
-
-<div class="card">
-<h3>训练权重回传 (训练 → DDS)</h3>
-<pre><code># web → ECS
-scp model.pt root@39.102.211.79:/www/wwwroot/datadrive.world/models/
-
-# ECS → Orin (小芳部署)
-wget http://datadrive.world/models/vtla_trained.pt
-
-# DDS Skill 7 广播权重更新
-ros2 topic pub /dds/weights std_msgs/String "data: 'vtla_trained.pt'"</code></pre>
-</div>
-
-<h2>六、分工总览</h2>
-<table>
-<tr><th>角色</th><th>负责</th><th>产出</th></tr>
-<tr><td>xspace</td><td>DDS架构 + ros2_ws所有节点 + Skill注册表 + 全局数据管控</td><td>ros2_ws/ 完整工程</td></tr>
-<tr><td>web</td><td>DDS数据→训练对接 + LeRobot转换 + 模型训练 + 权重回传</td><td>unified_train.py + 数据桥接</td></tr>
-<tr><td>小芳</td><td>Orin/Mac部署 + 旁路仿真 + DDS节点部署验证</td><td>部署脚本 + 仿真报告</td></tr>
-</table>
-
-<div class="footer">Z-MAX · 静界科技 · DDS全局数据空间 v1.0 · 2026-07-13</div>
+<div class="footer">Z-MAX · 静界科技 · DDS 全局数据空间 v2.0 · 8 model + 12 action = 20 Skill · 2026-07-14</div>
 </div>
 </body>
 </html>
