@@ -3,167 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ComfyUI · Z-MAX 工作流</title>
+<title>ComfyUI Node Editor · Z-MAX</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
-.wrap{max-width:1060px;margin:0 auto;padding:40px 20px}
-h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
-.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
-h2{color:#00d4aa;font-size:16px;margin:24px 0 10px;padding-bottom:4px;border-bottom:2px solid #00d4aa33}
-.workflow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin:16px 0}
-.node{background:#0d1117;border:2px solid #1a1f2b;border-radius:10px;padding:12px 18px;text-align:center;cursor:pointer;transition:.2s;min-width:100px;font-size:11px}
-.node:hover{border-color:#00d4aa;transform:translateY(-2px)}
-.node.active{border-color:#00d4aa;box-shadow:0 0 10px #00d4aa33}
-.arrow{color:#00d4aa;font-size:20px;margin:0 2px;user-select:none}
-.n0{border-color:#d4a800}.n1{border-color:#58a6ff}.n2{border-color:#00d4aa}.n3{border-color:#a371f7}.n4{border-color:#ff4444}.n5{border-color:#8b949e}
-table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
-th{background:#00d4aa22;padding:8px 10px;text-align:left;color:#00d4aa;font-weight:700}
-td{padding:7px 10px;border-bottom:1px solid #1a1f2b}
-tr:nth-child(even) td{background:#080c14}
-pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 16px;overflow-x:auto;font-size:10px;margin:10px 0}
-.btn{display:inline-block;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;margin:4px}
-.btn-green{background:#00d4aa;color:#06080d}.btn-blue{background:#58a6ff;color:#fff}.btn-purple{background:#a371f7;color:#fff}
-.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
-.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
-.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
-.log{background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:10px 12px;min-height:40px;max-height:200px;overflow-y:auto;font-size:10px;color:#8b949e;margin:8px 0;font-family:monospace}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#c8d1d9;overflow:hidden;height:100vh}
+#toolbar{position:fixed;top:0;left:0;right:0;height:40px;background:#111;display:flex;align-items:center;padding:0 12px;gap:8px;z-index:100;border-bottom:1px solid #222}
+#toolbar .btn{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none}
+.btn-r{background:#ff4444;color:#fff}.btn-g{background:#00d4aa;color:#000}.btn-b{background:#58a6ff;color:#fff}
+#status{font-size:11px;color:#8b949e;margin-left:auto}
+#sidebar{position:fixed;top:40px;left:0;bottom:0;width:180px;background:#0d0d14;border-right:1px solid #222;padding:10px;overflow-y:auto;z-index:50}
+.side-node{padding:8px 10px;margin:4px 0;border-radius:6px;font-size:11px;cursor:grab;border:1px solid #333;background:#111;transition:.15s}
+.side-node:hover{border-color:#00d4aa}
+.side-node.nc{border-color:#a371f7;color:#a371f7}.side-node.nm{border-color:#58a6ff;color:#58a6ff}.side-node.na{border-color:#00d4aa;color:#00d4aa}
+#canvas{position:fixed;top:40px;left:180px;right:0;bottom:0;overflow:hidden}
+canvas{display:block}
+.log-panel{position:fixed;bottom:0;left:180px;right:0;height:80px;background:#0d0d14;border-top:1px solid#222;padding:6px 10px;overflow-y:auto;font-size:10px;font-family:monospace;color:#8b949e;z-index:50}
 </style>
 </head>
 <body>
-<div class="wrap">
-<a href="/kanban.html" class="back-home">← 返回看板</a>
-<h1>🎨 ComfyUI 数据任务工作流</h1>
-<p class="sub">节点连线编排 → RoboGen生成 → Genesis仿真 → LeRobot训练 → DDS部署 · 4090后端</p>
 
-<!-- 工作流画布 -->
-<div class="workflow">
-<div class="node n0" onclick="select(1,this)">📝 Task<br><small>任务定义</small></div>
-<div class="arrow">→</div>
-<div class="node n1" onclick="select(2,this)">🤖 RoboGen<br><small>数据生成</small></div>
-<div class="arrow">→</div>
-<div class="node n2" onclick="select(3,this)">🌍 Genesis<br><small>物理仿真</small></div>
-<div class="arrow">→</div>
-<div class="node n3" onclick="select(4,this)">🏋️ LeRobot<br><small>模型训练</small></div>
-<div class="arrow">→</div>
-<div class="node n4" onclick="select(5,this)">🌐 DDS<br><small>数据分发</small></div>
-<div class="arrow">→</div>
-<div class="node n5" onclick="select(6,this)">🚀 Deploy<br><small>Mac/Orin</small></div>
+<div id="toolbar">
+<span style="color:#00d4aa;font-weight:800;font-size:14px">ComfyUI · Z-MAX</span>
+<button class="btn btn-r" onclick="runWorkflow()">▶ 执行</button>
+<button class="btn btn-b" onclick="clearCanvas()">🗑 清空</button>
+<button class="btn btn-g" onclick="loadPreset('insert')">光模块插拔</button>
+<button class="btn btn-g" onclick="loadPreset('pickplace')">取放搬运</button>
+<button class="btn btn-g" onclick="loadPreset('aoi')">AOI检测</button>
+<span id="status">🔴 后端离线 · SSH启动: python3 comfyui_backend.py</span>
 </div>
 
-<!-- 节点详情 -->
-<div class="card" id="detail">
-<h3>📝 点击上方节点查看详情</h3>
-<p style="font-size:11px;color:#8b949e">ComfyUI风格 · 节点连线式数据任务编排 · 全程在 4090 执行</p>
+<div id="sidebar">
+<div style="font-size:11px;color:#8b949e;margin-bottom:6px">📦 条件节点</div>
+<div class="side-node nc" draggable="true" data-type="condition" data-name="C004 插入条件">🟣 力控条件</div>
+<div class="side-node nc" draggable="true" data-type="condition" data-name="C001 取料条件">🟣 取料条件</div>
+<div class="side-node nc" draggable="true" data-type="condition" data-name="C003 预插条件">🟣 视觉定位</div>
+<div style="font-size:11px;color:#8b949e;margin:10px 0 6px">🧠 模型节点</div>
+<div class="side-node nm" draggable="true" data-type="model" data-name="VTLA">🔵 VTLA 触觉VLA</div>
+<div class="side-node nm" draggable="true" data-type="model" data-name="ACT">🔵 ACT 动作分块</div>
+<div class="side-node nm" draggable="true" data-type="model" data-name="GR00T">🔵 GR00T N1.7</div>
+<div style="font-size:11px;color:#8b949e;margin:10px 0 6px">⚡ 动作节点</div>
+<div class="side-node na" draggable="true" data-type="action" data-name="A04 力控插入">🟢 力控插入</div>
+<div class="side-node na" draggable="true" data-type="action" data-name="A06 拔出">🟢 拔出模块</div>
+<div class="side-node na" draggable="true" data-type="action" data-name="A09 AOI检测">🟢 AOI检测</div>
 </div>
 
-<!-- 快速预设 -->
-<h2>📋 预设工作流模板</h2>
-<table>
-<tr><th>模板</th><th>节点链</th><th>说明</th><th>操作</th></tr>
-<tr><td>光模块插拔</td><td>Task→RoboGen→Genesis→LeRobot(VTLA)→DDS→Deploy</td><td>完整6节点闭环</td><td><button class="btn btn-green" onclick="run('insert')">▶️ 运行</button></td></tr>
-<tr><td>取放搬运</td><td>Task→Genesis→LeRobot(ACT)→Deploy</td><td>4节点快速验证</td><td><button class="btn btn-blue" onclick="run('pickplace')">▶️ 运行</button></td></tr>
-<tr><td>AOI检测</td><td>Task→Genesis→DDS→Deploy</td><td>视觉检测链路</td><td><button class="btn btn-purple" onclick="run('aoi')">▶️ 运行</button></td></tr>
-</table>
-
-<h2>🛠️ 工程集成入口</h2>
-<table>
-<tr><th>工程</th><th>GitHub</th><th>角色</th><th>操作</th></tr>
-<tr><td>RoboGen</td><td>MikeBMW/robogen-deepseek</td><td>数据生成 (xspace)</td><td><a href="https://github.com/MikeBMW/robogen-deepseek" target="_blank">GitHub</a></td></tr>
-<tr><td>Genesis</td><td>MikeBMW/genesis-world</td><td>物理引擎 (xspace)</td><td><a href="https://github.com/MikeBMW/genesis-world" target="_blank">GitHub</a></td></tr>
-<tr><td>LeRobot</td><td>MikeBMW/lerobot-smolvla-lew</td><td>训练框架 (web)</td><td><a href="https://github.com/MikeBMW/lerobot-smolvla-lew" target="_blank">GitHub</a></td></tr>
-<tr><td>DDS Skill</td><td>MikeBMW/DDS_Skill_ros2_ws</td><td>全局数据 (xspace)</td><td><a href="https://github.com/MikeBMW/DDS_Skill_ros2_ws" target="_blank">GitHub</a></td></tr>
-<tr><td>Z-MAX Web</td><td>MikeBMW/zmax-website</td><td>前端总控 (web)</td><td><a href="/">🏠 主页</a></td></tr>
-</table>
-
-<div class="log" id="log">📋 工作流日志...</div>
-
-<h2>🟢 服务状态</h2>
-<div class="card" id="status-panel">
-<div class="row"><span class="label">ComfyUI后端 (4090:50053)</span><span class="value" id="s-comfy">检测中...</span></div>
-<div class="row"><span class="label">Sys2 VTLA (50052)</span><span class="value" id="s-sys2">--</span></div>
-<div class="row"><span class="label">Sys1 ACT (4060)</span><span class="value" id="s-sys1">需要xspace启动</span></div>
-<div class="row"><span class="label">RoboGen (4060)</span><span class="value" id="s-robo">需要xspace启动</span></div>
-</div>
-<div style="margin:8px 0">
-<button class="btn btn-green" onclick="startBackend()" id="btn-start" style="display:none">▶️ 启动后端</button>
-<button class="btn btn-blue" onclick="startSys2()" id="btn-sys2" style="display:none">🚀 启动Sys2服务</button>
-<div id="cmd-hint" style="font-size:10px;color:#8b949e;margin-top:6px"></div>
-</div>
+<div id="canvas"><canvas id="c"></canvas></div>
+<div class="log-panel" id="log">📋 从左侧拖拽节点到画布，连线后点击 ▶执行</div>
 
 <script>
-// 检测 Sys2 是否在线
-fetch('/api/sys2-health')
-  .then(r=>r.json()).then(d=>{document.getElementById('s-sys2').innerHTML='<span class="status status-green"></span>在线 · '+d.latency_ms+'ms'})
-  .catch(()=>{document.getElementById('s-sys2').innerHTML='<span class="status status-red"></span>离线 · 需启动4090'});
+var nodes=[], connections=[], dragNode=null, offsetX=0, offsetY=0, panX=0, panY=0, isPanning=false;
+var canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
 
-function select(n,el){
-  document.querySelectorAll('.node').forEach(e=>e.classList.remove('active'));
-  el.classList.add('active');
-  var m={1:{t:'📝 任务定义',d:'配置任务类型/参数/数据集。DeepSeek V4 Pro生成任务描述。输出→RoboGen',r:'robogen-deepseek'},
-         2:{t:'🤖 RoboGen 数据生成',d:'基于LLM自动生成多样化训练任务。DeepSeek V4 Pro驱动。输出→Genesis仿真',r:'robogen-deepseek'},
-         3:{t:'🌍 Genesis 物理仿真',d:'高保真物理引擎渲染。生成demonstration数据。输出→LeRobot训练',r:'genesis-world'},
-         4:{t:'🏋️ LeRobot 模型训练',d:'6模型训练管线(VTLA/GR00T/ACT/SmolVLA/LeWorld)。输出→DDS分发',r:'lerobot-smolvla-lew'},
-         5:{t:'🌐 DDS 数据分发',d:'34条件+7模型+30动作。全局数据闭环。输出→Deploy',r:'DDS_Skill_ros2_ws'},
-         6:{t:'🚀 部署上线',d:'模型→Orin真机+Mac旁路仿真。小芳负责验证测试',r:'mac/orin'}};
-  var v=m[n];document.getElementById('detail').innerHTML='<h3>'+v.t+'</h3><p style="font-size:11px;color:#8b949e">'+v.d+'</p><p style="font-size:10px;color:#00d4aa">仓库: github.com/MikeBMW/'+v.r+'</p>';
-}
-function log(m){var d=document.getElementById('log');d.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;d.scrollTop=d.scrollHeight}
+function resize(){canvas.width=window.innerWidth-180;canvas.height=window.innerHeight-120;draw();}
+window.onresize=resize;resize();
 
-function run(type){
-  log('▶️ 启动工作流: '+type);
-  var body=JSON.stringify({type:type,nodes:[]});
-  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:body})
-    .then(r=>r.json()).then(function(d){
-      log('  ✅ 任务创建: '+d.id);
-      d.steps.forEach(function(s){log('    ↳ '+s)});
-      log('  🏋️ 自动触发训练...');
-      return fetch('/api/comfy/train',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:type==='insert'?'vtla':'act'})});
-    }).then(r=>r.json()).then(function(j){
-      log('  ✅ 训练任务: '+j.id+' · 状态: '+j.status);
-    }).catch(function(e){
-      log('  ❌ 后端未连接 · 需启动4090: python3 comfyui_backend.py');
-    });
+function addNode(type,name,x,y){
+  var id='n'+Date.now()+Math.random();
+  nodes.push({id:id,type:type,name:name,x:x||200+Math.random()*400,y:y||100+Math.random()*300,w:140,h:60});
+  draw();return id;
 }
 
-// 页面加载时检测后端
-function checkBackend(){
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Grid
+  ctx.strokeStyle='#111';ctx.lineWidth=1;
+  for(var i=0;i<canvas.width;i+=40)for(var j=0;j<canvas.height;j+=40){ctx.strokeRect(i+panX%40,j+panY%40,1,1)}
+  // Connections
+  connections.forEach(function(c){
+    var a=nodes.find(function(n){return n.id===c.from}),b=nodes.find(function(n){return n.id===c.to});
+    if(!a||!b)return;
+    ctx.beginPath();ctx.strokeStyle='#00d4aa88';ctx.lineWidth=2;
+    ctx.moveTo(a.x+a.w/2+panX,a.y+a.h+panY);ctx.lineTo(b.x+b.w/2+panX,b.y+panY);
+    ctx.stroke();ctx.fillStyle='#00d4aa';ctx.beginPath();ctx.arc(b.x+b.w/2+panX,b.y+panY,4,0,Math.PI*2);ctx.fill();
+  });
+  // Nodes
+  var colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa'};
+  var cn={condition:'条件',model:'模型',action:'动作'};
+  nodes.forEach(function(n){
+    var c=colors[n.type]||'#888';
+    ctx.fillStyle='#111';ctx.strokeStyle=c;ctx.lineWidth=2;
+    ctx.beginPath();ctx.roundRect(n.x+panX,n.y+panY,n.w,n.h,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.fillText(n.name,n.x+panX+8,n.y+panY+22);
+    ctx.fillStyle=c;ctx.font='9px monospace';ctx.fillText(cn[n.type]||'?',n.x+panX+8,n.y+panY+40);
+    // Port (bottom)
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+n.w/2+panX,n.y+n.h+panY,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(n.x+n.w/2+panX,n.y+n.h+panY,2,0,Math.PI*2);ctx.fill();
+    // Port (top)
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+n.w/2+panX,n.y+panY,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(n.x+n.w/2+panX,n.y+panY,2,0,Math.PI*2);ctx.fill();
+  });
+}
+
+canvas.onmousedown=function(e){
+  var mx=e.offsetX-panX, my=e.offsetY-panY;
+  // Check port clicks
+  for(var i=nodes.length-1;i>=0;i--){
+    var n=nodes[i];
+    var dx=mx-(n.x+n.w/2),dy1=my-n.y,dy2=my-(n.y+n.h);
+    if(Math.abs(dx)<8&&Math.abs(dy1)<8){ startConnect(n.id,'top');return; }
+    if(Math.abs(dx)<8&&Math.abs(dy2)<8){ startConnect(n.id,'bottom');return; }
+    if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+n.h){ dragNode=n;offsetX=mx-n.x;offsetY=my-n.y;return; }
+  }
+  isPanning=true;offsetX=e.offsetX-panX;offsetY=e.offsetY-panY;
+};
+
+var connectFrom=null,connectPort=null;
+function startConnect(id,port){connectFrom=id;connectPort=port;}
+
+canvas.onmouseup=function(e){
+  if(connectFrom){
+    var mx=e.offsetX-panX, my=e.offsetY-panY;
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i];
+      if(n.id===connectFrom)continue;
+      var dx=mx-(n.x+n.w/2),dy=my-n.y;
+      if(Math.abs(dx)<15&&Math.abs(dy)<15){
+        if(connectPort==='bottom') connections.push({from:connectFrom,to:n.id});
+        else connections.push({from:n.id,to:connectFrom});
+        break;
+      }
+    }
+    connectFrom=null;draw();
+  }
+  dragNode=null;isPanning=false;
+};
+
+canvas.onmousemove=function(e){
+  if(dragNode){dragNode.x=e.offsetX-panX-offsetX;dragNode.y=e.offsetY-panY-offsetY;draw();}
+  if(isPanning){panX=e.offsetX-offsetX;panY=e.offsetY-offsetY;draw();}
+  if(connectFrom){draw();ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);
+    var n=nodes.find(function(nn){return nn.id===connectFrom});
+    ctx.moveTo(n.x+n.w/2+panX,connectPort==='bottom'?n.y+n.h+panY:n.y+panY);
+    ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();ctx.setLineDash([])}
+};
+
+var sidebar=document.getElementById('sidebar');
+sidebar.ondragstart=function(e){e.dataTransfer.setData('text/plain',e.target.dataset.type+'|'+e.target.dataset.name)};
+canvas.ondragover=function(e){e.preventDefault()};
+canvas.ondrop=function(e){e.preventDefault();
+  var d=e.dataTransfer.getData('text/plain').split('|');
+  addNode(d[0],d[1],e.offsetX-panX-70,e.offsetY-panY-30);
+};
+
+function log(m){var l=document.getElementById('log');l.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;l.scrollTop=l.scrollHeight}
+
+function runWorkflow(){
+  if(nodes.length===0){log('⚠️ 请先拖拽节点到画布');return}
+  log('▶️ 执行工作流 · '+nodes.length+'节点 · '+connections.length+'连线');
   fetch('/api/comfy/status').then(r=>r.json()).then(function(d){
-    document.getElementById('s-comfy').innerHTML='<span class="status status-green"></span>在线 · '+d.gpu;
-    document.getElementById('s-sys2').innerHTML='<span class="status '+(d.vtla_online?'status-green':'status-red')+'"></span>'+(d.vtla_online?'在线':'离线');
-    document.getElementById('btn-start').style.display='none';
-    document.getElementById('btn-sys2').style.display=d.vtla_online?'none':'inline-block';
-    document.getElementById('cmd-hint').innerText='';
-    log('🟢 后端已连接 · GPU:'+d.gpu);
+    log('🟢 后端在线 · GPU:'+d.gpu);
+    var body=JSON.stringify({type:'custom',nodes:nodes.map(function(n){return n.name}),connections:connections});
+    fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:body})
+      .then(r=>r.json()).then(function(t){log('✅ 任务:'+t.id+' · '+t.steps.length+'步')})
+      .catch(function(){log('❌ 后端错误')});
   }).catch(function(){
-    document.getElementById('s-comfy').innerHTML='<span class="status status-red"></span>离线';
-    document.getElementById('btn-start').style.display='inline-block';
-    document.getElementById('cmd-hint').innerHTML='SSH到4090执行:<br><code>cd /root/lerobot-smolvla-lew && python3.12 comfyui_backend.py</code>';
-    log('❌ 后端离线 · 点击 ▶️启动后端 或手动SSH');
-  });
-}
-checkBackend();
-
-function startBackend(){
-  log('▶️ 请求启动后端...');
-  fetch('/api/comfy/status').then(r=>r.json()).then(function(d){
-    log('  ✅ 后端已在运行 · GPU:'+d.gpu);
-    checkBackend();
-  }).catch(function(){
-    document.getElementById('cmd-hint').innerHTML='⚠️ 后端离线无法远程启动。<br>请SSH到4090执行:<br><code>cd /root/lerobot-smolvla-lew && python3.12 comfyui_backend.py</code>';
+    log('❌ 后端离线 · SSH到4090: python3 comfyui_backend.py');
+    document.getElementById('status').innerHTML='🔴 离线';
   });
 }
 
-function startSys2(){
-  fetch('/api/comfy/start-server',{method:'POST'}).then(r=>r.json()).then(function(d){
-    log('  ✅ Sys2启动中...'); checkBackend();
-  }).catch(function(){
-    log('  ❌ 后端离线,无法远程启动Sys2');
-  });
+function clearCanvas(){nodes=[];connections=[];draw();log('🗑 清空')}
+
+function loadPreset(type){
+  clearCanvas();
+  var presets={
+    insert:[{type:'condition',name:'C004 力控条件',x:50,y:150},{type:'model',name:'VTLA',x:250,y:150},{type:'action',name:'A04 力控插入',x:450,y:150}],
+    pickplace:[{type:'condition',name:'C001 取料条件',x:50,y:150},{type:'model',name:'ACT',x:250,y:150},{type:'action',name:'A01 取料动作',x:450,y:150}],
+    aoi:[{type:'condition',name:'C008 检测条件',x:50,y:150},{type:'model',name:'VTLA',x:250,y:150},{type:'action',name:'A09 AOI检测',x:450,y:150}]
+  };
+  var p=presets[type]||presets.insert;
+  var ids=p.map(function(pp){return addNode(pp.type,pp.name,pp.x,pp.y)});
+  for(var i=0;i<ids.length-1;i++)connections.push({from:ids[i],to:ids[i+1]});
+  draw();log('📋 加载预设: '+type);
 }
+
+// Backend check
+fetch('/api/comfy/status').then(r=>r.json()).then(function(d){
+  document.getElementById('status').innerHTML='🟢 在线 · GPU:'+d.gpu+' · VTLA:'+(d.vtla_online?'在线':'离线');
+}).catch(function(){
+  document.getElementById('status').innerHTML='🔴 后端离线 · SSH: cd /root/lerobot-smolvla-lew && python3.12 comfyui_backend.py';
+});
 </script>
-
-<div class="footer">Z-MAX · 静界科技 · ComfyUI工作流 v1.0 · 4090后端 · 2026-07-13</div>
-</div>
 </body>
 </html>
