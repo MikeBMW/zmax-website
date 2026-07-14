@@ -18,6 +18,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
+<button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
 <button class="btn btn-g" onclick="preset('insert')">插拔</button>
 <button class="btn btn-g" onclick="preset('pick')">取放</button>
 <button class="btn btn-g" onclick="preset('aoi')">AOI</button>
@@ -164,7 +165,19 @@ canvas.onmousemove=function(e){
   if(pan){px=p.x-pdx;py=p.y-pdy;draw()}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
-canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){L=L.filter(function(l){return l.f!==n.id&&l.t!==n.id});N.splice(i,1);draw();return}}};
+canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
+  // 显示配置面板
+  var cfg=document.createElement('div');
+  cfg.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#111;border:2px solid'+colors[n.t]+';border-radius:8px;padding:10px;z-index:999;font-size:11px;min-width:200px';
+  cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:6px">⚙ 配置: '+n.name+'</div>'
+    +'<div style="font-size:10px;color:#8b949e;margin:4px 0">类型: '+{condition:'条件',model:'模型',action:'动作',system:'系统'}[n.t]+'</div>'
+    +'<div style="font-size:10px;color:#8b949e;margin:4px 0">ID: '+n.id+'</div>'
+    +'<div style="margin-top:8px"><button style="padding:4px 10px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px" onclick="L=L.filter(function(l){return l.f!==\''+n.id+'\'&&l.t!==\''+n.id+'\'});N=N.filter(function(x){return x!==n});draw();this.parentElement.parentElement.remove()">🗑 删除</button>'
+    +'<button style="padding:4px 10px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">✕ 关闭</button></div>';
+  document.body.appendChild(cfg);
+  document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true});
+  return;
+}}};
 canvas.tabIndex=0;canvas.focus();
 canvas.onkeydown=function(e){
   if(e.ctrlKey&&e.key==='z'){e.preventDefault();if(undoStack.length){var s=undoStack.pop();N=s.nodes;L=s.links;selected=null;draw();Lg('↩ 回退')}}
@@ -190,7 +203,8 @@ document.getElementById('side').ondragstart=function(e){e.dataTransfer.setData('
 canvas.ondragover=function(e){e.preventDefault()};
 canvas.ondrop=function(e){e.preventDefault();var p=getPos(e);add(e.dataTransfer.getData('t'),e.dataTransfer.getData('n'),p.x-px-75,p.y-py-25)};
 
-function Lg(m){var l=document.getElementById('log');l.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;l.scrollTop=l.scrollHeight;console.log(m)}
+function Lg(m){var l=document.getElementById('log');var wasAtBottom=l.scrollTop+l.clientHeight>=l.scrollHeight-10;l.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;if(wasAtBottom||!l.dataset.manualScroll)l.scrollTop=l.scrollHeight;console.log(m)}
+document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('log');l.addEventListener('scroll',function(){l.dataset.manualScroll=l.scrollTop+l.clientHeight<l.scrollHeight-10?'1':''})});
 
 function run(){
   if(N.length===0){Lg('⚠️ 请从左侧拖拽节点到画布');return}
@@ -200,9 +214,11 @@ function run(){
   Lg('  📋 节点: '+nodeNames);
   Lg('  🔗 连线: '+L.length+'条');
   Lg('  🚀 提交到4090后端...');
-  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom'})})
+  var tStart = Date.now();
+  fetch('/api/comfy/task',...)
     .then(function(r){return r.json()}).then(function(d){
-      Lg('  ✅ 任务创建: '+d.id);
+      var rtt = Date.now()-tStart;
+      Lg('  ✅ 任务创建: '+d.id+' (RTT:'+rtt+'ms)');
       Lg('  🖥️ 硬件: '+ (d.hardware||'4090云端'));
       Lg('  🧠 模型: '+ (d.model||'SmolVLA'));
       Lg('  📍 位置: '+ (d.location||'4090'));
@@ -220,6 +236,12 @@ function pollTask(tid,count){
       if(d.status==='done'){
         Lg('  🎉 推理完成!');
         Lg('  📊 '+d.result);
+        if(d.timing){
+          Lg('  ⏱️ 分段耗时:');
+          Lg('    📦 模型加载: '+d.timing.model_load);
+          Lg('    🧠 推理耗时: '+d.timing.inference);
+          Lg('    ⏱️ 后端总耗时: '+d.timing.total);
+        }
         Lg('══════════════════════════════');
       }else if(d.status==='failed'){
         Lg('  ❌ 推理失败: '+d.error);
@@ -236,7 +258,8 @@ function addAction(){add('action','新动作 A??',300+Math.random()*200,150+Math
 function toggle(id){var el=document.getElementById(id);el.style.display=el.style.display==='none'?'':'none'}
 function preset(t){
   N=[];L=[];
-  var p={insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
+  var p={smolvla:[{t:'model',n:'M01 RGB图像',x:80,y:200},{t:'model',n:'SmolVLA 推理引擎',x:280,y:200},{t:'action',n:'A00 Action输出',x:480,y:200}],
+          insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
           pick:[{t:'condition',n:'C001 取料·100G',x:80,y:200},{t:'model',n:'ACT · Sys1',x:280,y:200},{t:'action',n:'A01 取料·100G',x:480,y:200}],
           aoi:[{t:'condition',n:'C008 AOI·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A09 AOI',x:480,y:200}]};
   var ids=(p[t]||p.insert).map(function(pp){return add(pp.t,pp.n,pp.x,pp.y)});
@@ -245,5 +268,5 @@ function preset(t){
 
 fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){document.getElementById('st').innerHTML='🟢 在线·'+d.gpu}).catch(function(){document.getElementById('st').innerHTML='🔴 离线·SSH: python3 comfyui_backend.py'});
 // 自动加载默认预设
-preset('insert');
+preset('smolvla');
 </script></body></html>
