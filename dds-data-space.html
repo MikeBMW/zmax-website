@@ -7,115 +7,147 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
-.wrap{max-width:1100px;margin:0 auto;padding:40px 20px}
-h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px}
-.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:20px}
+.wrap{max-width:1200px;margin:0 auto;padding:40px 20px}
+h1{color:#00d4aa;font-size:26px;text-align:center}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:16px}
 .tabs{display:flex;gap:6px;margin:16px 0;flex-wrap:wrap}
-.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;transition:.2s;white-space:nowrap}
+.tab{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;border:1px solid #1a1f2b;background:#0d1117;color:#8b949e;transition:.2s;white-space:nowrap}
 .tab:hover{border-color:#00d4aa44;color:#00d4aa}
 .tab.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
-.tab.model.active{border-color:#58a6ff;color:#58a6ff;background:#58a6ff11}
-.tab.action.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
-.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:10px}
-.skill-card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 16px;transition:.2s}
-.skill-card:hover{border-color:#00d4aa44}
-.skill-card.ms{border-left:3px solid #58a6ff}
-.skill-card.as{border-left:3px solid #00d4aa}
-.skill-card.core{border-left:3px solid #d4a800}
-.skill-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.skill-badge{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;white-space:nowrap}
-.ms .skill-badge{background:#58a6ff22;color:#58a6ff}.as .skill-badge{background:#00d4aa22;color:#00d4aa}.core .skill-badge{background:#d4a80022;color:#d4a800}
-.skill-name{font-size:13px;font-weight:700;color:#e6edf3}
-.skill-topic{font-size:10px;color:#8b949e;font-family:monospace;margin-bottom:6px}
-.skill-row{display:flex;flex-wrap:wrap;gap:4px;font-size:10px;color:#8b949e}
-.tag{padding:2px 6px;border-radius:3px;background:#1a1f2b;font-size:9px}
+.tab.m.active{border-color:#58a6ff;color:#58a6ff;background:#58a6ff11}
+.tab.a.active{border-color:#00d4aa;color:#00d4aa;background:#00d4aa11}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px}
+th{background:#00d4aa22;padding:7px 9px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:6px 9px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+tr.s100{background:#58a6ff11}tr.s400{background:#00d4aa11}tr.s800{background:#d4a80011}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
 .back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
-.count{font-size:24px;font-weight:800;color:#00d4aa}.count.m{color:#58a6ff}.count.a{color:#00d4aa}
+.count{font-size:22px;font-weight:800}.c1{color:#58a6ff}.c2{color:#00d4aa}.c3{color:#d4a800}
 .footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
-@media(max-width:768px){.skill-grid{grid-template-columns:1fr}}
+.skill-grid{grid-template-columns:1fr}
+table{display:block;overflow-x:auto;white-space:nowrap}
+.tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+h1{font-size:20px}
+.card{padding:10px 12px}
+td,th{padding:5px 7px;font-size:10px}
+@media(max-width:768px){.grid3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a href="/kanban.html" class="back-home">← 返回看板</a>
 <h1>🌐 DDS 全局数据空间</h1>
-<p class="sub">xspace架构 · 20主数据 · 全Skill可视 · 2026-07-14</p>
+<p class="sub">xspace架构 · 7 model + 34 action · 光模块真机工序 · 2026-07-14</p>
 
-<!-- 统计 -->
-<div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:16px">
-<div style="text-align:center"><div class="count m">8</div><div style="font-size:11px;color:#58a6ff">model_skill</div></div>
-<div style="text-align:center"><div class="count a">12</div><div style="font-size:11px;color:#00d4aa">action_skill</div></div>
-<div style="text-align:center"><div class="count">20</div><div style="font-size:11px;color:#8b949e">Topics</div></div>
+<div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:16px 0">
+<div style="text-align:center"><div class="count c1">7</div><div style="font-size:11px;color:#58a6ff">model_skill</div></div>
+<div style="text-align:center"><div class="count c2">30</div><div style="font-size:11px;color:#00d4aa">action_skill (工序)</div></div>
+<div style="text-align:center"><div class="count c3">4</div><div style="font-size:11px;color:#d4a800">安全工序</div></div>
+<div style="text-align:center"><div class="count">41</div><div style="font-size:11px;color:#8b949e">总计</div></div>
 </div>
 
-<!-- Tab切换 -->
 <div class="tabs">
-<div class="tab active" onclick="filter('all',this)">全部 20</div>
-<div class="tab model" onclick="filter('model',this)">🧠 model_skill 8</div>
-<div class="tab action" onclick="filter('action',this)">⚡ action_skill 12</div>
-<div class="tab" onclick="filter('core',this)">⭐ 核心技能</div>
+<div class="tab active" onclick="filter('all',this)">全部</div>
+<div class="tab m" onclick="filter('model',this)">🧠 model_skill</div>
+<div class="tab a" onclick="filter('s100',this)">🔵 100G QSFP28</div>
+<div class="tab a" onclick="filter('s400',this)">🟢 400G QSFP-DD</div>
+<div class="tab a" onclick="filter('s800',this)">🟡 800G OSFP</div>
+<div class="tab" onclick="filter('safe',this)">🛡️ 安全</div>
 </div>
 
-<!-- Skill 卡片网格 -->
-<div class="skill-grid" id="skills">
-
-<!-- model_skill -->
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M01</span><span class="skill-name">sensor_rgb</span></div><div class="skill-topic">/dds/model/rgb</div><div class="skill-row"><span class="tag">RealSense</span><span class="tag">uint8(B×3×H×W)</span><span class="tag">Sys11/21/22</span><span class="tag">≥25fps</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M02</span><span class="skill-name">sensor_depth</span></div><div class="skill-topic">/dds/model/depth</div><div class="skill-row"><span class="tag">RealSense D435</span><span class="tag">float32</span><span class="tag">Sys21 VTLA</span><span class="tag">0.1-10m</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M03</span><span class="skill-name">sensor_force_6d</span></div><div class="skill-topic">/dds/model/force</div><div class="skill-row"><span class="tag">六维力</span><span class="tag">float32[6]</span><span class="tag">Sys21</span><span class="tag">±0.1N</span><span class="tag">1kHz</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M04</span><span class="skill-name">sensor_tactile</span></div><div class="skill-topic">/dds/model/tactile</div><div class="skill-row"><span class="tag">指尖触觉</span><span class="tag">float32[16]</span><span class="tag">Sys21</span><span class="tag">16通道</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M05</span><span class="skill-name">joint_state</span></div><div class="skill-topic">/dds/model/joint</div><div class="skill-row"><span class="tag">7轴</span><span class="tag">pos+vel+torque</span><span class="tag">Sys1/11</span><span class="tag">±0.01°</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M06</span><span class="skill-name">task_language</span></div><div class="skill-topic">/dds/model/language</div><div class="skill-row"><span class="tag">DeepSeek V4</span><span class="tag">string</span><span class="tag">全部VLA</span><span class="tag">≤256tok</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M07</span><span class="skill-name">expert_demo</span></div><div class="skill-topic">/dds/model/demo</div><div class="skill-row"><span class="tag">Genesis/示教</span><span class="tag">LeRobotDataset</span><span class="tag">全6模型</span><span class="tag">≥100帧</span></div></div>
-
-<div class="skill-card ms" data-type="model"><div class="skill-head"><span class="skill-badge">M08</span><span class="skill-name">sim_data</span></div><div class="skill-topic">/dds/model/sim</div><div class="skill-row"><span class="tag">Genesis-World</span><span class="tag">float32</span><span class="tag">全6模型</span><span class="tag">物效有效</span></div></div>
-
-<!-- action_skill -->
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A01</span><span class="skill-name">pick_module</span></div><div class="skill-topic">/dds/action/pick</div><div class="skill-row"><span class="tag">取料</span><span class="tag">Sys1 ACT</span><span class="tag">800G/400G/100G</span><span class="tag">3-8N</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A02</span><span class="skill-name">scan_barcode</span></div><div class="skill-topic">/dds/action/scan</div><div class="skill-row"><span class="tag">扫码</span><span class="tag">Orin视觉</span><span class="tag">SN→MES</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A03</span><span class="skill-name">pre_insert</span></div><div class="skill-topic">/dds/action/pre_insert</div><div class="skill-row"><span class="tag">预插</span><span class="tag">Sys11 SmolVLA</span><span class="tag">XY±0.5mm</span></div></div>
-
-<div class="skill-card as core" data-type="action" data-core="true"><div class="skill-head"><span class="skill-badge">A04 ⭐</span><span class="skill-name">lissajous_insert</span></div><div class="skill-topic">/dds/action/lissajous</div><div class="skill-row"><span class="tag">力控插入</span><span class="tag">Sys21 VTLA</span><span class="tag">Z6N</span><span class="tag">6mm/3Hz+4mm/2Hz</span><span class="tag">±10mm</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A05</span><span class="skill-name">second_insert</span></div><div class="skill-topic">/dds/action/second_insert</div><div class="skill-row"><span class="tag">二次插入</span><span class="tag">Sys21 VTLA</span><span class="tag">end_pose>0.75</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A06</span><span class="skill-name">extract_module</span></div><div class="skill-topic">/dds/action/extract</div><div class="skill-row"><span class="tag">拔出</span><span class="tag">Z+12cm</span><span class="tag">→joint24→joint14</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A07</span><span class="skill-name">place_ok</span></div><div class="skill-topic">/dds/action/place_ok</div><div class="skill-row"><span class="tag">放合格品</span><span class="tag">manual_pose_25</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A08</span><span class="skill-name">place_ng</span></div><div class="skill-topic">/dds/action/place_ng</div><div class="skill-row"><span class="tag">放NG品</span><span class="tag">manual_pose_26</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A09</span><span class="skill-name">aoi_inspect</span></div><div class="skill-topic">/dds/action/aoi</div><div class="skill-row"><span class="tag">AOI×6</span><span class="tag">4060:10082</span><span class="tag">code=200</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A10</span><span class="skill-name">test_wait</span></div><div class="skill-topic">/dds/action/test</div><div class="skill-row"><span class="tag">等待测试</span><span class="tag">PASS/FAIL</span><span class="tag">超时30s</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A11</span><span class="skill-name">model_change</span></div><div class="skill-topic">/dds/action/change</div><div class="skill-row"><span class="tag">换型适配</span><span class="tag">全引擎</span><span class="tag">参数更新</span></div></div>
-
-<div class="skill-card as" data-type="action"><div class="skill-head"><span class="skill-badge">A12</span><span class="skill-name">init_cycle</span></div><div class="skill-topic">/dds/action/init</div><div class="skill-row"><span class="tag">初始化</span><span class="tag">计数器清零</span></div></div>
-
+<!-- ═══ MODEL SKILL ═══ -->
+<div class="card" data-type="model" style="border-left:3px solid #58a6ff">
+<h3 style="color:#58a6ff;font-size:14px">🧠 model_skill (多模态训练)</h3>
+<table>
+<tr><th>ID</th><th>Topic</th><th>数据</th><th>来源</th><th>模型</th></tr>
+<tr><td>M01</td><td style="font-family:monospace">/dds/model/rgb</td><td>1920×1080@30fps</td><td>RealSense D435</td><td>Sys11/21/22</td></tr>
+<tr><td>M02</td><td style="font-family:monospace">/dds/model/depth</td><td>1280×720@30fps</td><td>RealSense D435</td><td>Sys21</td></tr>
+<tr><td>M03</td><td style="font-family:monospace">/dds/model/force</td><td>6轴力 [Fx..Tz]</td><td>六维力传感器</td><td>Sys21</td></tr>
+<tr><td>M04</td><td style="font-family:monospace">/dds/model/tactile</td><td>16通道触觉阵列</td><td>指尖触觉传感器</td><td>Sys21</td></tr>
+<tr><td>M05</td><td style="font-family:monospace">/dds/model/joint</td><td>7轴pos+vel+torque</td><td>机械臂编码器</td><td>Sys1/11</td></tr>
+<tr><td>M06</td><td style="font-family:monospace">/dds/model/language</td><td>任务指令文本</td><td>DeepSeek V4 Pro</td><td>全部VLA</td></tr>
+<tr><td>M07</td><td style="font-family:monospace">/dds/model/demo</td><td>LeRobotDataset</td><td>Genesis+示教</td><td>全6模型</td></tr>
+</table>
 </div>
 
+<!-- ═══ 100G QSFP28 ═══ -->
+<div class="card" data-type="s100" style="border-left:3px solid #58a6ff">
+<h3 style="color:#58a6ff;font-size:14px">🔵 100G QSFP28 · 30pin金手指 · 吸力3N · Eye测试15s</h3>
+<table>
+<tr><th>步</th><th>action_skill</th><th>DDS Topic</th><th>工序</th><th>引擎</th><th>参数</th></tr>
+<tr class="s100"><td>1</td><td>pick_100g</td><td style="font-family:monospace">/dds/action/pick_100g</td><td>吸嘴取料</td><td>Sys1 ACT</td><td>吸力3N·QFP28托盘</td></tr>
+<tr class="s100"><td>2</td><td>scan_100g</td><td style="font-family:monospace">/dds/action/scan_100g</td><td>扫码SN</td><td>Orin视觉</td><td>30pin金手指面</td></tr>
+<tr class="s100"><td>3</td><td>pre_100g</td><td style="font-family:monospace">/dds/action/pre_100g</td><td>预插定位</td><td>Sys11 SmolVLA</td><td>XY ±0.5mm·30pin</td></tr>
+<tr class="s100"><td>4</td><td>insert_100g</td><td style="font-family:monospace">/dds/action/insert_100g</td><td>力控插入</td><td>Sys21 VTLA</td><td>Z3N·振幅4mm/2Hz</td></tr>
+<tr class="s100"><td>5</td><td>push_100g</td><td style="font-family:monospace">/dds/action/push_100g</td><td>二次推入</td><td>Sys21 VTLA</td><td>end>0.75</td></tr>
+<tr class="s100"><td>6</td><td>test_100g</td><td style="font-family:monospace">/dds/action/test_100g</td><td>Eye图测试</td><td>测试仓</td><td>15s·PASS/FAIL</td></tr>
+<tr class="s100"><td>7</td><td>extract_100g</td><td style="font-family:monospace">/dds/action/extract_100g</td><td>拔出</td><td>固定轨迹</td><td>Z+12cm</td></tr>
+<tr class="s100"><td>8</td><td>aoi_100g</td><td style="font-family:monospace">/dds/action/aoi_100g</td><td>端面AOI×2</td><td>4060:10082</td><td>30pin端面检测</td></tr>
+<tr class="s100"><td>9</td><td>place_ok_100g</td><td style="font-family:monospace">/dds/action/place_ok_100g</td><td>放OK托盘</td><td>机械臂</td><td>pose_25</td></tr>
+<tr class="s100"><td>10</td><td>place_ng_100g</td><td style="font-family:monospace">/dds/action/place_ng_100g</td><td>放NG区</td><td>机械臂</td><td>pose_26</td></tr>
+</table>
+</div>
+
+<!-- ═══ 400G QSFP-DD ═══ -->
+<div class="card" data-type="s400" style="border-left:3px solid #00d4aa">
+<h3 style="color:#00d4aa;font-size:14px">🟢 400G QSFP-DD · 76pin金手指 · 吸力4N · BERT测试60s</h3>
+<table>
+<tr><th>步</th><th>action_skill</th><th>DDS Topic</th><th>工序</th><th>引擎</th><th>参数</th></tr>
+<tr class="s400"><td>1</td><td>pick_400g</td><td style="font-family:monospace">/dds/action/pick_400g</td><td>吸嘴取料</td><td>Sys1 ACT</td><td>吸力4N·DD托盘</td></tr>
+<tr class="s400"><td>2</td><td>scan_400g</td><td style="font-family:monospace">/dds/action/scan_400g</td><td>扫码SN</td><td>Orin视觉</td><td>76pin金手指面</td></tr>
+<tr class="s400"><td>3</td><td>pre_400g</td><td style="font-family:monospace">/dds/action/pre_400g</td><td>预插定位</td><td>Sys11 SmolVLA</td><td>XY ±0.5mm·76pin</td></tr>
+<tr class="s400"><td>4</td><td>insert_400g</td><td style="font-family:monospace">/dds/action/insert_400g</td><td>力控插入 ⭐</td><td>Sys21 VTLA</td><td>Z6N·6mm/3Hz+4mm/2Hz</td></tr>
+<tr class="s400"><td>5</td><td>push_400g</td><td style="font-family:monospace">/dds/action/push_400g</td><td>二次推入</td><td>Sys21 VTLA</td><td>end>0.75·76pin全入</td></tr>
+<tr class="s400"><td>6</td><td>test_400g</td><td style="font-family:monospace">/dds/action/test_400g</td><td>BERT误码测试</td><td>测试仓</td><td>60s·BER<1E-12</td></tr>
+<tr class="s400"><td>7</td><td>extract_400g</td><td style="font-family:monospace">/dds/action/extract_400g</td><td>拔出</td><td>固定轨迹</td><td>Z+12cm</td></tr>
+<tr class="s400"><td>8</td><td>aoi_400g</td><td style="font-family:monospace">/dds/action/aoi_400g</td><td>端面AOI×2</td><td>4060:10082</td><td>76pin端面检测</td></tr>
+<tr class="s400"><td>9</td><td>place_ok_400g</td><td style="font-family:monospace">/dds/action/place_ok_400g</td><td>放OK托盘</td><td>机械臂</td><td>pose_25</td></tr>
+<tr class="s400"><td>10</td><td>place_ng_400g</td><td style="font-family:monospace">/dds/action/place_ng_400g</td><td>放NG区</td><td>机械臂</td><td>pose_26</td></tr>
+</table>
+</div>
+
+<!-- ═══ 800G OSFP ═══ -->
+<div class="card" data-type="s800" style="border-left:3px solid #d4a800">
+<h3 style="color:#d4a800;font-size:14px">🟡 800G OSFP · MPO多芯 · 吸力6N · EVB全功能120s</h3>
+<table>
+<tr><th>步</th><th>action_skill</th><th>DDS Topic</th><th>工序</th><th>引擎</th><th>参数</th></tr>
+<tr class="s800"><td>1</td><td>pick_800g</td><td style="font-family:monospace">/dds/action/pick_800g</td><td>吸嘴取料</td><td>Sys1 ACT</td><td>吸力6N·OSFP托盘</td></tr>
+<tr class="s800"><td>2</td><td>scan_800g</td><td style="font-family:monospace">/dds/action/scan_800g</td><td>扫码SN</td><td>Orin视觉</td><td>MPO端面识别</td></tr>
+<tr class="s800"><td>3</td><td>pre_800g</td><td style="font-family:monospace">/dds/action/pre_800g</td><td>预插定位</td><td>Sys11 SmolVLA</td><td>XY ±0.3mm·MPO</td></tr>
+<tr class="s800"><td>4</td><td>insert_800g</td><td style="font-family:monospace">/dds/action/insert_800g</td><td>力控插入 ⭐</td><td>Sys21 VTLA</td><td>Z8N·6mm/3Hz+5mm/2Hz</td></tr>
+<tr class="s800"><td>5</td><td>push_800g</td><td style="font-family:monospace">/dds/action/push_800g</td><td>MPO多芯对齐</td><td>Sys21 VTLA</td><td>各芯损耗<1dB</td></tr>
+<tr class="s800"><td>6</td><td>test_800g</td><td style="font-family:monospace">/dds/action/test_800g</td><td>EVB全功能测试</td><td>测试仓</td><td>120s·8通道全测</td></tr>
+<tr class="s800"><td>7</td><td>extract_800g</td><td style="font-family:monospace">/dds/action/extract_800g</td><td>拔出</td><td>固定轨迹</td><td>Z+12cm·防MPO损伤</td></tr>
+<tr class="s800"><td>8</td><td>aoi_800g</td><td style="font-family:monospace">/dds/action/aoi_800g</td><td>端面AOI×4</td><td>4060:10082</td><td>MPO多芯·4面检测</td></tr>
+<tr class="s800"><td>9</td><td>place_ok_800g</td><td style="font-family:monospace">/dds/action/place_ok_800g</td><td>放OK托盘</td><td>机械臂</td><td>pose_25_osfp</td></tr>
+<tr class="s800"><td>10</td><td>place_ng_800g</td><td style="font-family:monospace">/dds/action/place_ng_800g</td><td>放NG区</td><td>机械臂</td><td>pose_26_osfp</td></tr>
+</table>
+</div>
+
+<!-- ═══ 安全 ═══ -->
+<div class="card" data-type="safe" style="border-left:3px solid #ff4444">
+<h3 style="color:#ff4444;font-size:14px">🛡️ 安全工序 (4)</h3>
+<table>
+<tr><th>ID</th><th>action_skill</th><th>DDS Topic</th><th>触发条件</th><th>动作</th></tr>
+<tr><td>S01</td><td>e_stop</td><td style="font-family:monospace">/dds/safe/estop</td><td>力>安全阈值</td><td>立即停止+开爪</td></tr>
+<tr><td>S02</td><td>grasp_fail</td><td style="font-family:monospace">/dds/safe/grasp_fail</td><td>连续2次抓取失败</td><td>报错+人工介入</td></tr>
+<tr><td>S03</td><td>force_limit</td><td style="font-family:monospace">/dds/safe/force_limit</td><td>力>10N (100g) / >12N (400g) / >15N (800g)</td><td>回退+停线</td></tr>
+<tr><td>S04</td><td>collision</td><td style="font-family:monospace">/dds/safe/collision</td><td>关节扭矩异常</td><td>急停+回退5mm</td></tr>
+</table>
+</div>
+
+<div class="footer">Z-MAX · 静界科技 · DDS 全局数据空间 v3.0 · 41 Skill (7M+30A+4S) · 2026-07-14</div>
+</div>
 <script>
 function filter(type,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  document.querySelectorAll('.skill-card').forEach(c=>{
+  document.querySelectorAll('.card').forEach(c=>{
     if(type==='all') c.style.display='';
-    else if(type==='core') c.style.display=c.dataset.core==='true'?'':'none';
     else c.style.display=c.dataset.type===type?'':'none';
   });
 }
 </script>
-
-<div class="footer">Z-MAX · 静界科技 · DDS 全局数据空间 v2.0 · 8 model + 12 action = 20 Skill · 2026-07-14</div>
-</div>
 </body>
 </html>
