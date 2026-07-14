@@ -9,7 +9,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 #side{position:fixed;top:38px;left:0;bottom:0;width:170px;background:#0d0d14;border-right:1px solid#222;padding:8px;overflow-y:auto;z-index:50}
 .sn{padding:7px 9px;margin:3px 0;border-radius:5px;font-size:10px;cursor:grab;border:1px solid#333;background:#111;transition:.15s;user-select:none}
 .sn:hover{border-color:#00d4aa}
-.sn.c{border-left:3px solid#a371f7}.sn.m{border-left:3px solid#58a6ff}.sn.a{border-left:3px solid#00d4aa}
+.sn.c{border-left:3px solid#a371f7}.sn.m{border-left:3px solid#58a6ff}.sn.a{border-left:3px solid#00d4aa}.sn.s{border-left:3px solid#d4a800}
 #cv{position:fixed;top:38px;left:170px;right:0;bottom:0;overflow:hidden;cursor:default}
 #log{position:fixed;bottom:0;left:170px;right:0;height:60px;background:#0d0d14;border-top:1px solid#222;padding:4px 8px;overflow-y:auto;font-size:9px;font-family:monospace;color:#8b949e;z-index:50;line-height:1.5}
 </style></head><body>
@@ -66,6 +66,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="VTLA 推理引擎">VTLA · Sys21</div>
 <div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T · Sys22</div>
 </div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('sys')">🟡 System 系统 (8) ▾</div>
+<div id="sys">
+<div class="sn" draggable="true" data-t="system" data-n="Sys1 · ACT" style="border-left:3px solid #d4a800">Sys1 · ACT</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys10 · 底座" style="border-left:3px solid #d4a800">Sys10 · 底座</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys11 · SmolVLA" style="border-left:3px solid #d4a800">Sys11 · SmolVLA</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys12 · LeWorld" style="border-left:3px solid #d4a800">Sys12 · LeWorld</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys2 · 训练" style="border-left:3px solid #d4a800">Sys2 · 训练</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys20 · VTLA底座" style="border-left:3px solid #d4a800">Sys20 · VTLA底座</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys21 · VTLA" style="border-left:3px solid #d4a800">Sys21 · VTLA</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys22 · GR00T" style="border-left:3px solid #d4a800">Sys22 · GR00T</div>
+</div>
 <div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('a30')">🟢 Action 动作 (30) ▾</div>
 <div id="a30">
 <div class="sn a" draggable="true" data-t="action" data-n="A04 力控插入">A04 力控插入</div>
@@ -81,7 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="log">拖拽左侧节点到画布 · 连接左右端口 · 点击 ▶执行</div>
 <script>
 var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,pan=false,pdx=0,pdy=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1;
-var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa'};
+var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800'};
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
@@ -114,7 +125,7 @@ function draw(){
     ctx.beginPath();ctx.roundRect(n.x+px,n.y+py,n.w,dh,6);ctx.fill();ctx.stroke();
     ctx.shadowBlur=0;
     ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);
-    ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText({condition:'条件',model:'模型',action:'动作'}[n.t],n.x+px+22,n.y+py+34);
+    ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText({condition:'条件',model:'模型',action:'动作',system:'系统'}[n.t],n.x+px+22,n.y+py+34);
     // Input port (left)
     ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+px,n.y+dh/2+py,5,0,Math.PI*2);ctx.fill();
     // Output port (right)
@@ -189,9 +200,9 @@ function addAction(){add('action','新动作 A??',300+Math.random()*200,150+Math
 function toggle(id){var el=document.getElementById(id);el.style.display=el.style.display==='none'?'':'none'}
 function preset(t){
   N=[];L=[];
-  var p={insert:[{t:'condition',n:'力控插入 C004',x:80,y:200},{t:'model',n:'VTLA',x:280,y:200},{t:'action',n:'力控插入 A04',x:480,y:200}],
-          pick:[{t:'condition',n:'取料 C001',x:80,y:200},{t:'model',n:'ACT',x:280,y:200},{t:'action',n:'取料动作 A01',x:480,y:200}],
-          aoi:[{t:'condition',n:'AOI检测 C008',x:80,y:200},{t:'model',n:'VTLA',x:280,y:200},{t:'action',n:'AOI A09',x:480,y:200}]};
+  var p={insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
+          pick:[{t:'condition',n:'C001 取料·100G',x:80,y:200},{t:'model',n:'ACT · Sys1',x:280,y:200},{t:'action',n:'A01 取料·100G',x:480,y:200}],
+          aoi:[{t:'condition',n:'C008 AOI·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A09 AOI',x:480,y:200}]};
   var ids=(p[t]||p.insert).map(function(pp){return add(pp.t,pp.n,pp.x,pp.y)});
   for(var i=0;i<ids.length-1;i++)L.push({f:ids[i],t:ids[i+1]});draw()
 }
