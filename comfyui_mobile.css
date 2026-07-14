@@ -1,0 +1,11 @@
+@media(max-width:768px){
+  #bar{height:44px;padding:0 4px;gap:3px;overflow-x:auto}
+  #bar .btn{padding:4px 8px;font-size:9px;white-space:nowrap;flex-shrink:0}
+  #side{position:fixed;top:44px;left:0;bottom:60px;width:0;padding:0;overflow:hidden;transition:width .3s;z-index:200;background:#0d0d14ee}
+  #side.open{width:200px;padding:6px;overflow-y:auto}
+  #cv{left:0!important}
+  #log{left:0!important;height:60px}
+  canvas{touch-action:manipulation}
+}
+#mMenu{display:none;position:fixed;left:4px;top:50px;z-index:150;background:#0d1117;color:#00d4aa;padding:8px 12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid#00d4aa44}
+@media(max-width:768px){#mMenu{display:flex!important}}
