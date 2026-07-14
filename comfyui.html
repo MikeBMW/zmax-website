@@ -20,6 +20,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
+<button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
+<input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)">
 <button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
 <button class="btn btn-g" onclick="preset('insert')">插拔</button>
 <button class="btn btn-g" onclick="preset('pick')">取放</button>
@@ -338,6 +340,24 @@ fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){d
 // 自动加载默认预设
 // 独立窗口模式
 if(window.opener||window.name.indexOf('ZMAX')>=0){var b=document.querySelector('[onclick*=window.open]');if(b)b.style.display='none'}
+function loadWorkflow(input){
+  var file=input.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var dag=JSON.parse(e.target.result);
+      if(!dag.nodes||!dag.links){Lg('❌ 无效的工作流文件');return}
+      saveState();N=[];L=[];
+      dag.nodes.forEach(function(n){N.push({id:n.id,t:n.type,name:n.name,x:n.x||100,y:n.y||100,w:150})});
+      L=dag.links;
+      draw();
+      Lg('📂 已打开: '+file.name+' · '+N.length+'节点/'+L.length+'连线');
+      input.value='';
+    }catch(ex){Lg('❌ 文件解析失败: '+ex.message)}
+  };
+  reader.readAsText(file);
+}
 function saveWorkflow(){
   if(N.length===0){Lg('⚠️ 无节点可保存');return}
   var now=new Date();
