@@ -171,12 +171,21 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
   // 显示配置面板
   var cfg=document.createElement('div');
   cfg.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#111;border:2px solid'+colors[n.t]+';border-radius:8px;padding:10px;z-index:999;font-size:11px;min-width:200px';
-  cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:6px">⚙ 配置: '+n.name+'</div>'
-    +'<div style="font-size:10px;color:#8b949e;margin:4px 0">类型: '+{condition:'条件',model:'模型',action:'动作',system:'系统'}[n.t]+'</div>'
-    +'<div style="font-size:10px;color:#8b949e;margin:4px 0">ID: '+n.id+'</div>'
-    +'<div style="margin-top:8px"><button style="padding:4px 10px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px" onclick="L=L.filter(function(l){return l.f!==\''+n.id+'\'&&l.t!==\''+n.id+'\'});N=N.filter(function(x){return x!==n});draw();this.parentElement.parentElement.remove()">🗑 删除</button>'
-    +'<button style="padding:4px 10px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">✕ 关闭</button></div>';
+  var incoming=L.filter(function(l){return l.t===n.id}).map(function(l){var src=N.find(function(x){return x.id===l.f});return src?src.name:'?'}).join(', ')||'(无)';
+  var outgoing=L.filter(function(l){return l.f===n.id}).map(function(l){var dst=N.find(function(x){return x.id===l.t});return dst?dst.name:'?'}).join(', ')||'(无)';
+  var info={'M01 RGB图像':'RealSense D405 | 1920x1080@30fps | 当前:随机噪声(仿真) | DDS: /dds/model/rgb','SmolVLA 推理引擎':'SmolVLM-500M+VTLA | 推理257ms | VRAM1.0GB | 输入:3相机+state+语言 | DDS: /dds/model/*','A00 Action输出':'Action [1,50,6] | 位姿+关节+力控 | DDS: /dds/action/output'}[n.name]||'';
+  var dd='';
+  if(n.name==='M01 RGB图像'){
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
+  }
+  cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:4px">'+n.name+'</div>'
+    +'<div style="font-size:9px;color:#8b949e;margin:2px 0">⬅ '+incoming+' | '+outgoing+' ➡</div>'
+    +dd+
+    +(info?'<div style="font-size:9px;color:#00d4aa;margin:4px 0;background:#00d4aa11;padding:4px;border-radius:4px">'+info+'</div>':'')
+    +'<div style="margin-top:6px"><button style="padding:3px 8px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px" onclick="L=L.filter(function(l){return l.f!=='+n.id+'&&l.t!=='+n.id+'});N=N.filter(function(x){return x!==n});draw();this.parentElement.parentElement.remove()">删除</button>'
+    +'<button style="padding:3px 8px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">关闭</button></div>';
   document.body.appendChild(cfg);
+  cfg.addEventListener('click',function(e){e.stopPropagation()});
   document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true});
   return;
 }}};

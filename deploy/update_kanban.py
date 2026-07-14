@@ -70,11 +70,14 @@ def update_kanban_html():
     with open(LOCAL_KANBAN, 'r') as f:
         html = f.read()
 
-    # 注入更新时间戳（刷新缓存用）
+    # 注入更新时间戳（刷新缓存用）—— 每次替换整行避免累积
     ts = now.strftime("%Y-%m-%d %H:%M CST")
-    html = html.replace(
-        'id="update-time">',
-        f'id="update-time">🔄 {ts} | '
+    import re
+    html = re.sub(
+        r'id="update-time">.*?</span>',
+        f'id="update-time">🔄 {ts}</span>',
+        html,
+        flags=re.DOTALL
     )
 
     # 添加仓库状态注释
