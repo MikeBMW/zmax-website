@@ -49,7 +49,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn c" draggable="true" data-t="condition" data-n="C037 电池过流">C037 电池过流</div>
 <div class="sn c" draggable="true" data-t="condition" data-n="C038 电池SOC">C038 电池SOC</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('m7')">🔵 Model 模型 (7) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('m7')">🔵 场景数据 (7) ▾</div>
 <div id="m7">
 <div class="sn m" draggable="true" data-t="model" data-n="M01 RGB图像">M01 RGB图像</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M02 深度图像">M02 深度图像</div>
@@ -58,6 +58,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="M05 关节状态">M05 关节状态</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
+</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('eng')">🧠 推理引擎 (4) ▾</div>
+<div id="eng">
+<div class="sn m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT · Sys1</div>
+<div class="sn m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA · Sys11</div>
+<div class="sn m" draggable="true" data-t="model" data-n="VTLA 推理引擎">VTLA · Sys21</div>
+<div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T · Sys22</div>
 </div>
 <div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('a30')">🟢 Action 动作 (30) ▾</div>
 <div id="a30">
@@ -73,16 +80,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="cv"><canvas id="c"></canvas></div>
 <div id="log">拖拽左侧节点到画布 · 连接左右端口 · 点击 ▶执行</div>
 <script>
-var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,pan=false,pdx=0,pdy=0,fromNode=null;
+var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,pan=false,pdx=0,pdy=0,fromNode=null,selected=null,copied=null,undoStack=[];
 var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa'};
-
-function rz(){canvas.width=window.innerWidth-170;canvas.height=window.innerHeight-98;draw()}
+// 高清渲染
+var dpr=window.devicePixelRatio||1;
+function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
+function rz(){canvas.width=(window.innerWidth-170)*dpr;canvas.height=(window.innerHeight-98)*dpr;canvas.style.width=(window.innerWidth-170)+'px';canvas.style.height=(window.innerHeight-98)+'px';ctx.scale(dpr,dpr);draw()}
 window.onresize=rz;rz();
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
   N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:150});
-  draw();return id;
+  saveState();draw();return id;
 }
 
 function draw(){
@@ -99,7 +108,9 @@ function draw(){
   });
   N.forEach(function(n){
     var c=colors[n.t];ctx.fillStyle='#111';ctx.strokeStyle=c;ctx.lineWidth=1.5;
+    if(n===selected)ctx.shadowColor=c;ctx.shadowBlur=8;
     ctx.beginPath();ctx.roundRect(n.x+px,n.y+py,n.w,dh,6);ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;
     ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);
     ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText({condition:'条件',model:'模型',action:'动作'}[n.t],n.x+px+22,n.y+py+34);
     // Input port (left)
@@ -116,11 +127,11 @@ canvas.onmousedown=function(e){
     // Output port (right side)
     if(Math.abs(mx-(n.x+n.w))<8&&Math.abs(my-(n.y+dh/2))<8){fromNode=n.id;draw();return}
     // Input port (left side)
-    if(Math.abs(mx-n.x)<8&&Math.abs(my-(n.y+dh/2))<8){target=n.id;if(fromNode&&fromNode!==target){L.push({f:fromNode,t:target});fromNode=null;draw();return}return}
+    if(Math.abs(mx-n.x)<8&&Math.abs(my-(n.y+dh/2))<8){target=n.id;if(fromNode&&fromNode!==target){saveState();L.push({f:fromNode,t:target});fromNode=null;draw();return}return}
     // Node body
-    if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){drag=n;dx=mx-n.x;dy=my-n.y;return}
+    if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){selected=n;drag=n;dx=mx-n.x;dy=my-n.y;draw();return}
   }
-  fromNode=null;pan=true;pdx=e.offsetX-px;pdy=e.offsetY-py;draw()
+  selected=null;fromNode=null;pan=true;pdx=e.offsetX-px;pdy=e.offsetY-py;draw()
 };
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
@@ -129,6 +140,27 @@ canvas.onmousemove=function(e){
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();ctx.setLineDash([])}
 };
 canvas.ondblclick=function(e){var mx=e.offsetX-px,my=e.offsetY-py;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){L=L.filter(function(l){return l.f!==n.id&&l.t!==n.id});N.splice(i,1);draw();return}}};
+canvas.tabIndex=0;canvas.focus();
+canvas.onkeydown=function(e){
+  if(e.ctrlKey&&e.key==='z'){e.preventDefault();if(undoStack.length){var s=undoStack.pop();N=s.nodes;L=s.links;selected=null;draw();Lg('↩ 回退')}}
+  if(e.ctrlKey&&e.key==='c'&&selected){e.preventDefault();copied={t:selected.t,name:selected.name};Lg('📋 复制: '+selected.name)}
+  if(e.ctrlKey&&e.key==='v'&&copied){e.preventDefault();saveState();add(copied.t,copied.name,200+Math.random()*200,150+Math.random()*200);Lg('📌 粘贴: '+copied.name)}
+  if((e.key==='Delete'||e.key==='Backspace')&&selected){saveState();L=L.filter(function(l){return l.f!==selected.id&&l.t!==selected.id});N=N.filter(function(n){return n!==selected});selected=null;draw();Lg('🗑 已删除')}
+};
+
+canvas.oncontextmenu=function(e){
+  e.preventDefault();
+  var menu=document.createElement('div');
+  menu.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#111;border:1px solid#333;border-radius:6px;padding:4px;z-index:999;font-size:11px';
+  if(copied){
+    var paste=document.createElement('div');paste.innerText='📌 粘贴 '+copied.name;paste.style.cssText='padding:6px 14px;cursor:pointer;color:#00d4aa;border-radius:4px';
+    paste.onclick=function(){saveState();add(copied.t,copied.name,e.offsetX-px-75,e.offsetY-py-25);Lg('📌 粘贴');menu.remove()};
+    menu.appendChild(paste);
+  }
+  if(selected){var del=document.createElement('div');del.innerText='🗑 删除';del.style.cssText='padding:6px 14px;cursor:pointer;color:#ff4444;border-radius:4px';del.onclick=function(){saveState();L=L.filter(function(l){return l.f!==selected.id&&l.t!==selected.id});N=N.filter(function(n){return n!==selected});selected=null;draw();menu.remove()};menu.appendChild(del)}
+  document.body.appendChild(menu);
+  document.addEventListener('click',function rm(){menu.remove();document.removeEventListener('click',rm)},{once:true});
+};
 document.getElementById('side').ondragstart=function(e){e.dataTransfer.setData('t',e.target.dataset.t);e.dataTransfer.setData('n',e.target.dataset.n)};
 canvas.ondragover=function(e){e.preventDefault()};
 canvas.ondrop=function(e){e.preventDefault();add(e.dataTransfer.getData('t'),e.dataTransfer.getData('n'),e.offsetX-px-75,e.offsetY-py-25)};
@@ -142,7 +174,7 @@ function run(){
     .then(function(r){return r.json()}).then(function(d){Lg('✅ 任务:'+d.id+' · '+d.status);if(d.steps)d.steps.forEach(function(s){Lg('  ↳ '+s)})}).catch(function(){Lg('❌ 后端离线 · SSH: python3 comfyui_backend.py')});
 }
 
-function clearAll(){N=[];L=[];draw()}
+function clearAll(){saveState();N=[];L=[];draw()}
 function addCond(){add('condition','新条件 C???',300+Math.random()*200,150+Math.random()*200)}
 function addModel(){add('model','新模型',300+Math.random()*200,150+Math.random()*200)}
 function addAction(){add('action','新动作 A??',300+Math.random()*200,150+Math.random()*200)}
@@ -157,4 +189,6 @@ function preset(t){
 }
 
 fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){document.getElementById('st').innerHTML='🟢 在线·'+d.gpu}).catch(function(){document.getElementById('st').innerHTML='🔴 离线·SSH: python3 comfyui_backend.py'});
+// 自动加载默认预设
+preset('insert');
 </script></body></html>
