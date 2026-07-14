@@ -217,7 +217,7 @@ function run(){
   Lg('  🔗 连线: '+L.length+'条');
   Lg('  🚀 提交到4090后端...');
   var tStart = Date.now();
-  fetch('/api/comfy/task',...)
+  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom'})})
     .then(function(r){return r.json()}).then(function(d){
       var rtt = Date.now()-tStart;
       Lg('  ✅ 任务创建: '+d.id+' (RTT:'+rtt+'ms)');
