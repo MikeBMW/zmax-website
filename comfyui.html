@@ -247,64 +247,103 @@ function run(){
 }
 
 function clearAll(){saveState();N=[];L=[];draw()}
+function render3D(c,name,type,color2){
+  requestAnimationFrame(function(){
+    var ctx2=c.getContext('2d'),w=c.width,h=c.height;
+    if(name.indexOf('M01')>=0){
+      var pw=Math.min(w*.5,280),ph=Math.min(h*.4,280),gx=(w-pw)/2,gy=(h-ph)/2;
+      var chs=[{l:'R',c:'#ff4444',dx:0,dy:0},{l:'G',c:'#44ff44',dx:16,dy:-12},{l:'B',c:'#4488ff',dx:32,dy:-24}];
+      for(var ci=chs.length-1;ci>=0;ci--){var ch=chs[ci];
+        ctx2.fillStyle=ch.c+'cc';ctx2.strokeStyle=ch.c;ctx2.lineWidth=1.5;
+        ctx2.fillRect(gx+ch.dx,gy+ch.dy,pw,ph);ctx2.strokeRect(gx+ch.dx,gy+ch.dy,pw,ph);
+        var n=10,gs=pw/n;ctx2.strokeStyle=ch.c+'33';ctx2.lineWidth=.5;
+        for(var r=0;r<n;r++)for(var cg=0;cg<n;cg++)ctx2.strokeRect(gx+ch.dx+cg*gs,gy+ch.dy+r*gs,gs,gs);
+        ctx2.fillStyle='#fff';ctx2.font='bold 11px monospace';ctx2.textAlign='left';ctx2.fillText(ch.l,gx+ch.dx+pw+8,gy+ch.dy+ph/2+4);
+      }
+      ctx2.fillStyle='#fff';ctx2.font='12px sans-serif';ctx2.textAlign='center';ctx2.fillText('[1,3,512,512] RGB三通道',w/2,h-10);
+    }else if(name.indexOf('A00')>=0||name.indexOf('Action')>=0){
+      var mw=Math.min(w*.8,600),mh=Math.min(h*.6,300),mx=(w-mw)/2,my=(h-mh)/2,cw=mw/50,ch=mh/6;
+      var joints=['J1','J2','J3','J4','J5','J6'];
+      for(var r=0;r<6;r++){ctx2.fillStyle='#fff';ctx2.font='9px monospace';ctx2.textAlign='right';ctx2.fillText(joints[r],mx-8,my+r*ch+ch/2+3);
+        for(var cc=0;cc<50;cc++){var v=Math.sin((r+cc)*.3)*.5+.5,red=Math.round(v*255),blue=Math.round((1-v)*255);
+          ctx2.fillStyle='rgb('+red+',50,'+blue+')';ctx2.fillRect(mx+cc*cw,my+r*ch,cw-1,ch-1);
+        }}
+      ctx2.fillStyle='#fff';ctx2.font='9px monospace';ctx2.textAlign='center';ctx2.fillText('t=0',mx+cw/2,my-4);ctx2.fillText('t=49',mx+mw-cw/2,my-4);
+      ctx2.fillText('[1,50,6] Action热力图',w/2,h-10);
+    }else{
+      if(!c._ang)c._ang=0;if(!c._py)c._py=60;if(!c._px)c._px=-30;
+      var lw=Math.min(w*.45,220),ox=(w-lw)/2+80+c._px,oy=80+c._py;
+      function iso(x,y,z){var ca=Math.cos(c._ang),sa=Math.sin(c._ang);return{x:ox+x*ca*.866-z*ca*.866,y:oy-x*sa*.5-y+z*.4}}
+      var tensors=[{n:'图像',sh:'[1,3,512,512]',w:lw,h:14,d:8,c:'#8b5cf6'},{n:'切块',sh:'3072→512',w:lw*.7,h:10,d:4,c:'#a78bfa'},{n:'Patch',sh:'[1,256,512]',w:lw*.9,h:16,d:8,c:'#6366f1'},{n:'VLM',sh:'[1,256,512]',w:lw*.88,h:18,d:20,c:'#3b82f6'},{n:'Attn',sh:'[1,256,512]',w:lw*.86,h:14,d:18,c:'#0ea5e9'},{n:'Cross',sh:'[1,16,512]',w:lw*.7,h:14,d:12,c:'#14b8a6'},{n:'DiT',sh:'[1,64,50]',w:lw*.55,h:16,d:10,c:'#10b981'},{n:'Action',sh:'[1,50,6]',w:lw*.4,h:10,d:6,c:'#00d4aa'}];
+      ctx2.clearRect(0,0,w,h);var yA=0;
+      for(var i=0;i<tensors.length;i++){var T=tensors[i],yo=yA,p=iso(0,yo,0),bw=T.w,bh=T.h,bd=T.d;
+        ctx2.fillStyle=T.c+'44';ctx2.beginPath();ctx2.moveTo(p.x,p.y);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw,p.y);ctx2.fill();
+        ctx2.fillStyle=T.c+'cc';ctx2.fillRect(p.x,p.y,bw,bh);
+        ctx2.fillStyle=T.c+'88';ctx2.beginPath();ctx2.moveTo(p.x,p.y+bh);ctx2.lineTo(p.x-bd*.866,p.y+bh+bd*.5);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x,p.y);ctx2.fill();
+        ctx2.strokeStyle='#00d4aa66';ctx2.lineWidth=1;ctx2.strokeRect(p.x,p.y,bw,bh);
+        ctx2.fillStyle='#fff';ctx2.font='bold 9px';ctx2.fillText(T.n,p.x+bw+4,p.y+bh/2+4);
+        ctx2.fillStyle='#8b949e';ctx2.font='9px monospace';ctx2.fillText(T.sh,p.x+bw+4,p.y+bh/2+16);yA+=T.h+8;
+      }
+      ctx2.fillStyle='#fff';ctx2.font='10px';ctx2.textAlign='center';ctx2.fillText('SmolVLA 3D · 拖动旋转平移',w/2,h-6);
+      // Bind rotation/pan once per canvas
+      if(!c._bound){
+        c._bound=true;
+        var dgX=false,sxX=0,syX=0;
+        c.addEventListener('mousedown',function(e){if(e.target.tagName==='CANVAS'){dgX=true;sxX=e.clientX;syX=e.clientY;e.stopPropagation();e.preventDefault()}});
+        document.addEventListener('mousemove',function(e){if(dgX){c._ang+=(e.clientX-sxX)*.008;c._px+=(e.clientX-sxX);c._py+=(e.clientY-syX);sxX=e.clientX;syX=e.clientY;render3D(c,name,type,color2)}});
+        document.addEventListener('mouseup',function(){dgX=false});
+      }
+    }
+  });
+}
 function show3D(name,type){
+  if(!window._zIdx)window._zIdx=10000;
   var pop=document.createElement('div');
-  pop.style.cssText='position:fixed;left:'+(200+Math.random()*200)+'px;top:'+(80+Math.random()*150)+'px;width:520px;height:420px;background:#0a0a0f;border:2px solid'+colors[type]+';border-radius:12px;z-index:9999;display:flex;flex-direction:column;resize:both;overflow:hidden;min-width:300px;min-height:250px;box-shadow:0 8px 32px rgba(0,0,0,.6)';
-  pop.innerHTML='<div id="hdr" style="padding:6px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid#222;cursor:move;user-select:none;background:#111;border-radius:10px 10px 0 0"><span style="color:'+colors[type]+';font-weight:700;font-size:12px">🧊 '+name+' 张量3D</span><button style="padding:2px 10px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px" onclick="this.parentElement.parentElement.remove()">✕</button></div><canvas id="t3d_'+name.replace(/[^a-zA-Z0-9]/g,'')+'" style="flex:1;width:100%;height:100%"></canvas>';
+  pop.style.cssText='position:fixed;left:'+(200+Math.random()*200)+'px;top:'+(80+Math.random()*150)+'px;width:360px;height:300px;background:#0a0a0f;border:6px solid'+colors[type]+';border-radius:12px;z-index:'+(window._zIdx++)+';display:flex;flex-direction:column;overflow:hidden;min-width:200px;min-height:180px;box-shadow:0 8px 32px rgba(0,0,0,.6)';
+  pop.innerHTML='<div id="hdr" style="padding:6px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid#222;cursor:move;user-select:none;background:#111;min-height:28px"><span style="color:'+colors[type]+';font-weight:700;font-size:12px">🧊 '+name+' 张量3D</span><button style="padding:2px 10px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px" onclick="this.parentElement.parentElement.remove()">✕</button></div><canvas id="t3d_'+name.replace(/[^a-zA-Z0-9]/g,'')+'" style="flex:1;width:100%;height:100%"></canvas>';
   document.body.appendChild(pop);
-  // Drag
-  var hdr=pop.querySelector('#hdr'),drg=false,dx2=0,dy2=0;
-  hdr.onmousedown=function(e){drg=true;dx2=e.clientX-pop.offsetLeft;dy2=e.clientY-pop.offsetTop;e.preventDefault()};
-  document.onmousemove=function(e){if(drg){pop.style.left=(e.clientX-dx2)+'px';pop.style.top=(e.clientY-dy2)+'px'}};
-  document.onmouseup=function(){drg=false};
+  // Bring to front on click
+  pop.addEventListener('mousedown',function(){pop.style.zIndex=window._zIdx++});
+  // Window drag + canvas content drag should be mutually exclusive
+  var hdr=pop.querySelector('#hdr'),drg=false,dx2=0,dy2=0,resizeEdge=null,rsx=0,rsy=0,rsw=0,rsh=0,rslx=0,rsly=0;
+  var contentDrag=false;
+  function onDown(e){
+    // Check if near edge for resize (<12px from border)
+    var ex=e.clientX-pop.offsetLeft, ey=e.clientY-pop.offsetTop;
+    if(ex<12){resizeEdge='left'}
+    else if(ex>pop.offsetWidth-12){resizeEdge='right'}
+    else if(ey<12){resizeEdge='top'}
+    else if(ey>pop.offsetHeight-12){resizeEdge='bottom'}
+    else{resizeEdge=null}
+    if(resizeEdge){
+      rsx=e.clientX;rsy=e.clientY;rsw=pop.offsetWidth;rsh=pop.offsetHeight;rslx=pop.offsetLeft;rsly=pop.offsetTop;e.preventDefault();e.stopPropagation();
+    }else if(e.target===hdr||hdr.contains(e.target)){
+      drg=true;dx2=e.clientX-pop.offsetLeft;dy2=e.clientY-pop.offsetTop;
+    }
+  }
+  function onMove(e){
+    if(contentDrag)return;
+    if(resizeEdge){
+      var dw=e.clientX-rsx, dh=e.clientY-rsy;
+      if(resizeEdge==='right')pop.style.width=Math.max(200,rsw+dw)+'px';
+      if(resizeEdge==='bottom')pop.style.height=Math.max(180,rsh+dh)+'px';
+      if(resizeEdge==='left'){pop.style.width=Math.max(200,rsw-dw)+'px';pop.style.left=(rslx+dw)+'px'}
+      if(resizeEdge==='top'){pop.style.height=Math.max(180,rsh-dh)+'px';pop.style.top=(rsly+dh)+'px'}
+      var c2=pop.querySelector('canvas');if(c2){c2.width=pop.clientWidth-12;c2.height=pop.clientHeight-34;render3D(c2,name,type,colors[type])}
+    }else if(drg){
+      pop.style.left=Math.max(-pop.offsetWidth+60, Math.min(window.innerWidth-60, e.clientX-dx2))+'px';
+      pop.style.top=Math.max(0, Math.min(window.innerHeight-30, e.clientY-dy2))+'px';
+    }
+  }
+  function onUp(){drg=false;resizeEdge=null}
+  hdr.addEventListener('mousedown',onDown);
+  pop.addEventListener('mousedown',onDown);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
   // Render
   var cid='t3d_'+name.replace(/[^a-zA-Z0-9]/g,'');
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      var c=document.getElementById(cid);if(!c)return;
-      c.width=c.parentElement.clientWidth-4;c.height=c.parentElement.clientHeight-50;
-      var ctx2=c.getContext('2d'),w=c.width,h=c.height;
-      if(name.indexOf('M01')>=0){
-        var pw=Math.min(w*.5,280),ph=Math.min(h*.4,280),gx=(w-pw)/2,gy=(h-ph)/2;
-        var chs=[{l:'R',c:'#ff4444',dx:0,dy:0},{l:'G',c:'#44ff44',dx:16,dy:-12},{l:'B',c:'#4488ff',dx:32,dy:-24}];
-        for(var ci=chs.length-1;ci>=0;ci--){var ch=chs[ci];
-          ctx2.fillStyle=ch.c+'cc';ctx2.strokeStyle=ch.c;ctx2.lineWidth=1.5;
-          ctx2.fillRect(gx+ch.dx,gy+ch.dy,pw,ph);ctx2.strokeRect(gx+ch.dx,gy+ch.dy,pw,ph);
-          var n=10,gs=pw/n;ctx2.strokeStyle=ch.c+'33';ctx2.lineWidth=.5;
-          for(var r=0;r<n;r++)for(var cg=0;cg<n;cg++)ctx2.strokeRect(gx+ch.dx+cg*gs,gy+ch.dy+r*gs,gs,gs);
-          ctx2.fillStyle='#fff';ctx2.font='bold 11px monospace';ctx2.textAlign='left';ctx2.fillText(ch.l,gx+ch.dx+pw+8,gy+ch.dy+ph/2+4);
-        }
-        ctx2.fillStyle='#fff';ctx2.font='12px sans-serif';ctx2.textAlign='center';ctx2.fillText('[1,3,512,512] RGB三通道',w/2,h-10);
-      }else if(name.indexOf('A00')>=0||name.indexOf('Action')>=0){
-        var mw=Math.min(w*.8,600),mh=Math.min(h*.6,300),mx=(w-mw)/2,my=(h-mh)/2,cw=mw/50,ch=mh/6;
-        var joints=['J1','J2','J3','J4','J5','J6'];
-        for(var r=0;r<6;r++){ctx2.fillStyle='#fff';ctx2.font='9px monospace';ctx2.textAlign='right';ctx2.fillText(joints[r],mx-8,my+r*ch+ch/2+3);
-          for(var cc=0;cc<50;cc++){var v=Math.sin((r+cc)*.3)*.5+.5,red=Math.round(v*255),blue=Math.round((1-v)*255);
-            ctx2.fillStyle='rgb('+red+',50,'+blue+')';ctx2.fillRect(mx+cc*cw,my+r*ch,cw-1,ch-1);
-          }}
-        ctx2.fillStyle='#fff';ctx2.font='9px monospace';ctx2.textAlign='center';ctx2.fillText('t=0',mx+cw/2,my-4);ctx2.fillText('t=49',mx+mw-cw/2,my-4);
-        ctx2.fillText('[1,50,6] Action热力图',w/2,h-10);
-      }else{
-        var lw=Math.min(w*.45,220),lh2=Math.min(h*.7,400),ox=(w-lw)/2+80,oy=(h-lh2)/2+150,ang=0;
-        function iso(x,y,z){var ca=Math.cos(ang),sa=Math.sin(ang);return{x:ox+x*ca*.866-z*ca*.866,y:oy-x*sa*.5-y+z*.4}}
-        var tensors=[{n:'图像',sh:'[1,3,512,512]',w:lw,h:14,d:8,c:'#8b5cf6'},{n:'切块',sh:'3072→512',w:lw*.7,h:10,d:4,c:'#a78bfa'},{n:'Patch',sh:'[1,256,512]',w:lw*.9,h:16,d:8,c:'#6366f1'},{n:'VLM',sh:'[1,256,512]',w:lw*.88,h:18,d:20,c:'#3b82f6'},{n:'Attn',sh:'[1,256,512]',w:lw*.86,h:14,d:18,c:'#0ea5e9'},{n:'Cross',sh:'[1,16,512]',w:lw*.7,h:14,d:12,c:'#14b8a6'},{n:'DiT',sh:'[1,64,50]',w:lw*.55,h:16,d:10,c:'#10b981'},{n:'Action',sh:'[1,50,6]',w:lw*.4,h:10,d:6,c:'#00d4aa'}];
-        function dr(){ctx2.clearRect(0,0,w,h);var yA=0;
-          for(var i=0;i<tensors.length;i++){var T=tensors[i],yo=yA,p=iso(0,yo,0),bw=T.w,bh=T.h,bd=T.d;
-            ctx2.fillStyle=T.c+'44';ctx2.beginPath();ctx2.moveTo(p.x,p.y);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw,p.y);ctx2.fill();
-            ctx2.fillStyle=T.c+'cc';ctx2.fillRect(p.x,p.y,bw,bh);
-            ctx2.fillStyle=T.c+'88';ctx2.beginPath();ctx2.moveTo(p.x,p.y+bh);ctx2.lineTo(p.x-bd*.866,p.y+bh+bd*.5);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x,p.y);ctx2.fill();
-            ctx2.strokeStyle='#00d4aa66';ctx2.lineWidth=1;ctx2.strokeRect(p.x,p.y,bw,bh);
-            ctx2.fillStyle='#fff';ctx2.font='bold 9px';ctx2.fillText(T.n,p.x+bw+4,p.y+bh/2+4);
-            ctx2.fillStyle='#8b949e';ctx2.font='9px monospace';ctx2.fillText(T.sh,p.x+bw+4,p.y+bh/2+16);yA+=T.h+8;
-          }
-          ctx2.fillStyle='#fff';ctx2.font='10px';ctx2.textAlign='center';ctx2.fillText('SmolVLA 3D',w/2,h-6);
-        }
-        dr();var dg=false,sx=0;c.onmousedown=function(e){dg=true;sx=e.clientX};
-        c.onmousemove=function(e){if(dg){ang+=(e.clientX-sx)*.008;sx=e.clientX;dr()}};
-        c.onmouseup=c.onmouseleave=function(){dg=false};
-      }
-    });
-  });
+  var c2=pop.querySelector('canvas');
+  setTimeout(function(){if(c2){c2.width=pop.clientWidth-12;c2.height=pop.clientHeight-34;render3D(c2,name,type,colors[type])}},100);
 }
 function pollTask(tid,count){
   if(count>20){Lg('  ⚠️ 超时 · 请检查4090状态');return}
@@ -358,7 +397,10 @@ function loadWorkflow(input){
       saveState();N=[];L=[];
       dag.nodes.forEach(function(n){N.push({id:n.id,t:n.type,name:n.name,x:n.x||100,y:n.y||100,w:150})});
       L=dag.links;
+      if(dag.canvas){px=dag.canvas.px||0;py=dag.canvas.py||0;zoom=dag.canvas.zoom||1}
       draw();
+      // Restore 3D windows if saved
+      if(dag._3dWindows) dag._3dWindows.forEach(function(w3){show3D(w3.name,w3.name.indexOf('RGB')>=0?'model':(w3.name.indexOf('Action')>=0?'action':'model'))});
       Lg('📂 已打开: '+file.name+' · '+N.length+'节点/'+L.length+'连线');
       input.value='';
     }catch(ex){Lg('❌ 文件解析失败: '+ex.message)}
@@ -383,7 +425,20 @@ function saveWorkflow(){
   else if(N.some(function(n){return n.name.indexOf('400G')>=0}))machine='Z400';
   else if(N.some(function(n){return n.name.indexOf('100G')>=0}))machine='Z100';
   var fname=ds+'_'+sys+'_'+machine+'.json';
-  var dag={timestamp:now.toISOString(),filename:fname,system:sys,machine:machine,nodes:N.map(function(n){return{id:n.id,type:n.t,name:n.name,x:n.x,y:n.y}}),links:L};
+  var dag={timestamp:now.toISOString(),filename:fname,system:sys,machine:machine,
+    canvas:{px:px,py:py,zoom:zoom},
+    nodes:N.map(function(n){return{id:n.id,type:n.t,name:n.name,x:n.x,y:n.y}}),
+    links:L
+  };
+  // Also save open 3D window state
+  var wins=document.querySelectorAll('[id^="hdr"]');
+  if(wins.length>0){
+    dag._3dWindows=[];
+    wins.forEach(function(h){
+      var p2=h.parentElement,cv=p2.querySelector('canvas');
+      dag._3dWindows.push({name:cv?cv.id.replace('t3d_',''):'?',left:p2.style.left,top:p2.style.top,width:p2.style.width,height:p2.style.height,ang:cv?cv._ang:0,px2:cv?cv._px:0,py2:cv?cv._py:0});
+    });
+  }
   var blob=new Blob([JSON.stringify(dag,null,2)],{type:'application/json'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();
   Lg('💾 已保存: '+fname+' · '+N.length+'节点/'+L.length+'连线');
