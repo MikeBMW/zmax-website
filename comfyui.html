@@ -26,19 +26,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <span id="st">检测中...</span>
 </div>
 <div id="side">
-<div style="font-size:10px;color:#8b949e;margin-bottom:4px">🟣 Condition条件</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="力控插入条件 C004">力控插入 C004</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="取料条件 C001">取料 C001</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="预插视觉 C003">预插视觉 C003</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="AOI检测 C008">AOI检测 C008</div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px">🔵 Model模型</div>
-<div class="sn m" draggable="true" data-t="model" data-n="VTLA">VTLA 触觉VLA</div>
-<div class="sn m" draggable="true" data-t="model" data-n="ACT">ACT 动作分块</div>
-<div class="sn m" draggable="true" data-t="model" data-n="GR00T">GR00T N1.7</div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px">🟢 Action动作</div>
-<div class="sn a" draggable="true" data-t="action" data-n="力控插入 A04">力控插入 A04</div>
-<div class="sn a" draggable="true" data-t="action" data-n="拔出模块 A06">拔出 A06</div>
-<div class="sn a" draggable="true" data-t="action" data-n="AOI检测 A09">AOI A09</div>
+<div style="font-size:10px;color:#8b949e;margin:4px 0;cursor:pointer" onclick="toggle('c38')">🟣 Condition 条件 (38) ▾</div>
+<div id="c38">
+<div class="sn c" draggable="true" data-t="condition" data-n="C001 100G取料">C001 取料·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C002 100G扫码">C002 扫码·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C003 100G预插">C003 预插·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C004 100G插入">C004 插入·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C005 100G推入">C005 推入·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C006 100G测试">C006 测试·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C007 100G拔出">C007 拔出·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C008 100G AOI">C008 AOI·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C009 100G OK">C009 OK·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C010 100G NG">C010 NG·100G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C014 400G插入">C014 插入·400G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C024 800G插入">C024 插入·800G</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C031 急停">C031 急停</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C032 抓败">C032 抓败</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C033 力限">C033 力限</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C034 碰撞">C034 碰撞</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C035 电池电压">C035 电池电压</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C036 电池温度">C036 电池温度</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C037 电池过流">C037 电池过流</div>
+<div class="sn c" draggable="true" data-t="condition" data-n="C038 电池SOC">C038 电池SOC</div>
+</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('m7')">🔵 Model 模型 (7) ▾</div>
+<div id="m7">
+<div class="sn m" draggable="true" data-t="model" data-n="M01 RGB图像">M01 RGB图像</div>
+<div class="sn m" draggable="true" data-t="model" data-n="M02 深度图像">M02 深度图像</div>
+<div class="sn m" draggable="true" data-t="model" data-n="M03 六维力觉">M03 六维力觉</div>
+<div class="sn m" draggable="true" data-t="model" data-n="M04 触觉阵列">M04 触觉阵列</div>
+<div class="sn m" draggable="true" data-t="model" data-n="M05 关节状态">M05 关节状态</div>
+<div class="sn m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
+<div class="sn m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
+</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('a30')">🟢 Action 动作 (30) ▾</div>
+<div id="a30">
+<div class="sn a" draggable="true" data-t="action" data-n="A04 力控插入">A04 力控插入</div>
+<div class="sn a" draggable="true" data-t="action" data-n="A06 拔出模块">A06 拔出</div>
+<div class="sn a" draggable="true" data-t="action" data-n="A09 AOI检测">A09 AOI</div>
+<div class="sn a" draggable="true" data-t="action" data-n="A01 取料·100G">A01 取料·100G</div>
+<div class="sn a" draggable="true" data-t="action" data-n="A02 扫码·100G">A02 扫码·100G</div>
+<div class="sn a" draggable="true" data-t="action" data-n="A05 推入">A05 推入</div>
+<div class="sn a" draggable="true" data-t="action" data-n="A10 NG分拣">A10 NG分拣</div>
+</div>
 </div>
 <div id="cv"><canvas id="c"></canvas></div>
 <div id="log">拖拽左侧节点到画布 · 连接左右端口 · 点击 ▶执行</div>
@@ -116,6 +146,7 @@ function clearAll(){N=[];L=[];draw()}
 function addCond(){add('condition','新条件 C???',300+Math.random()*200,150+Math.random()*200)}
 function addModel(){add('model','新模型',300+Math.random()*200,150+Math.random()*200)}
 function addAction(){add('action','新动作 A??',300+Math.random()*200,150+Math.random()*200)}
+function toggle(id){var el=document.getElementById(id);el.style.display=el.style.display==='none'?'':'none'}
 function preset(t){
   N=[];L=[];
   var p={insert:[{t:'condition',n:'力控插入 C004',x:80,y:200},{t:'model',n:'VTLA',x:280,y:200},{t:'action',n:'力控插入 A04',x:480,y:200}],
