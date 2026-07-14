@@ -104,7 +104,6 @@ var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,pan=false,pdx=0,pdy=0,fromNode=null,
 var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800'};
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
-if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
 function rz(){var lh=document.getElementById('log').offsetHeight;canvas.width=(window.innerWidth-170)*dpr;canvas.height=(window.innerHeight-38-lh)*dpr;canvas.style.width=(window.innerWidth-170)+'px';canvas.style.height=(window.innerHeight-38-lh)+'px';ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
 window.onresize=rz;rz();
