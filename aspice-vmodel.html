@@ -46,8 +46,8 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 
 <aside>
 <h3>📐 ASPICE V-Model</h3>
-<div class="item sel" onclick="nav('overview')">📋 总览</div>
-<div class="item" onclick="nav('vmodel')">🔀 V字流程图</div>
+<div class="item" onclick="nav('overview')">📋 总览</div>
+<div class="item sel" onclick="nav('vmodel')">🔀 V字流程图</div>
 <div class="item" onclick="nav('raci')">📊 RACI矩阵</div>
 <div class="item" onclick="nav('wbs')">🏗️ WBS分解</div>
 <div class="item" onclick="nav('phases')">📝 阶段详情</div>
@@ -63,7 +63,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 
 <div id="main">
 
-<div id="overview">
+<div id="overview" style="display:none">
 <h1>🚗 ASPICE V-Model 开发流程</h1>
 <h2>Automotive SPICE · 光模块智能装配系统 · 智蜂创元 × 它石智航</h2>
 
@@ -101,7 +101,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 </div>
 </div>
 
-<div id="vmodel" style="display:none">
+<div id="vmodel">
 <h3>🔀 V字开发流程</h3>
 <svg viewBox="0 0 1100 650" width="1100" height="650">
   <rect fill="#1a1a2e" width="1100" height="650" rx="12"/>
