@@ -72,6 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="VLA-Touch">VLA-Touch</div>
 <div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T</div>
 <div class="sn m" draggable="true" data-t="model" data-n="LeWM 推理引擎">LeWM</div>
+<div class="sn m" draggable="true" data-t="model" data-n="W&B">📊 W&B</div>
 </div>
 <div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('sys')">🟡 System 系统 (8) ▾</div>
 <div id="sys">
@@ -178,6 +179,7 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
   var outgoing=L.filter(function(l){return l.f===n.id}).map(function(l){var dst=N.find(function(x){return x.id===l.t});return dst?dst.name:'?'}).join(', ')||'(无)';
   var info={'M01 RGB图像':'DDS: /dds/model/rgb','SmolVLA 推理引擎':'DDS: /dds/model/smolvla','A00 Action输出':'DDS: /dds/action/output'}[n.name]||'';
   var dd='';
+  if(n.name.indexOf('W&B')>=0){dd='<div style="font-size:12px;padding:8px;background:#0d1117;border-radius:6px;text-align:center"><a href="https://wandb.ai/niyingxiang/zmax-smolvla" target="_blank" style="color:#facd3b;font-size:14px;text-decoration:none;font-weight:700">🔗 打开训练面板</a><br><span style="font-size:9px;color:#8b949e">niyingxiang/zmax-smolvla · 已登录</span></div>';}
   if(n.name==='M01 RGB图像'){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
   }else if(n.name==='M04 触觉阵列'){
