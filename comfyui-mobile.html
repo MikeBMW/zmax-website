@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Z-MAX · 手机控制</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'PingFang SC',sans-serif;background:#0a0a0f;color:#c8d1d9;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#top{background:#111;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid#222}
+#top .logo{color:#00d4aa;font-size:18px;font-weight:800}
+#top .status{font-size:12px;color:#8b949e}
+#main{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch}
+.card{background:#111;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid#222}
+.card h3{font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px 0}
+.node{background:#1a1a2e;border:2px solid#333;border-radius:10px;padding:10px 14px;text-align:center;min-width:70px;font-size:11px}
+.node.sel{border-color:#00d4aa;background:#00d4aa11}
+.node .icon{font-size:20px;display:block;margin-bottom:2px}
+.node .label{font-size:9px;color:#8b949e}
+.arrow{color:#00d4aa;font-size:18px}
+.btn-row{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;padding:14px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer}
+.btn-go{background:#00d4aa;color:#000}
+.btn-stop{background:#ff4444;color:#fff}
+.btn-model{background:#1a1a3e;border:1px solid#333;color:#fff;flex:1;padding:10px 8px;border-radius:8px;font-size:11px;text-align:center}
+.btn-model.sel{border-color:#58a6ff;background:#58a6ff22}
+#log{margin-top:10px;background:#0d0d14;border-radius:10px;padding:10px;font-family:monospace;font-size:10px;color:#8b949e;max-height:200px;overflow-y:auto;line-height:1.6}
+#bottom{background:#111;display:flex;border-top:1px solid#222;padding:6px}
+#bottom button{flex:1;padding:12px;border:none;background:transparent;color:#8b949e;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px}
+#bottom button.active{color:#00d4aa}
+#bottom .nav-icon{font-size:20px}
+</style></head><body>
+
+<div id="top"><span class="logo">🎨 Z-MAX</span><span class="status" id="st">🟡 连接中...</span></div>
+
+<div id="main">
+  <div class="card">
+    <h3>🧠 推理引擎</h3>
+    <div class="btn-row" id="modelBtns">
+      <button class="btn-model sel" onclick="selectModel('smolvla',this)">SmolVLA<br><small>450M</small></button>
+      <button class="btn-model" onclick="selectModel('act',this)">ACT<br><small>50M</small></button>
+      <button class="btn-model" onclick="selectModel('vlatouch',this)">VLA-Touch<br><small>470M</small></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 数据流</h3>
+    <div class="flow">
+      <div class="node"><span class="icon">📷</span><span class="label" id="inName">RGB图像</span></div>
+      <span class="arrow">→</span>
+      <div class="node sel"><span class="icon">🧠</span><span class="label" id="mName">SmolVLA</span></div>
+      <span class="arrow">→</span>
+      <div class="node"><span class="icon">🎯</span><span class="label">Action</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📋 模型参数</h3>
+    <table style="width:100%;font-size:11px;border-collapse:collapse" id="params">
+      <tr><td style="color:#8b949e;padding:3px 0">架构</td><td id="pArch">SmolVLM-2 + VTLA</td></tr>
+      <tr><td style="color:#8b949e;padding:3px 0">参数量</td><td id="pParams">450M</td></tr>
+      <tr><td style="color:#8b949e;padding:3px 0">输出</td><td>Action [1,50,6]</td></tr>
+      <tr><td style="color:#8b949e;padding:3px 0">路径</td><td id="pPath">/root/models/smolvla_base</td></tr>
+    </table>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-go" onclick="runInfer()" id="btnRun">▶ 执行推理</button>
+    <button class="btn btn-stop" onclick="stopInfer()" id="btnStop" style="display:none">⏹ 停止</button>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <h3>📊 推理结果</h3>
+    <div id="result" style="font-size:11px"></div>
+  </div>
+
+  <div id="log">📋 就绪 · 选择模型后点击执行</div>
+</div>
+
+<div id="bottom">
+  <button class="active" onclick="tab('home')"><span class="nav-icon">🏠</span>控制</button>
+  <button onclick="window.open('https://wandb.ai/xspace','_blank')"><span class="nav-icon">📊</span>W&B</button>
+  <button onclick="window.open('/comfyui.html','_blank')"><span class="nav-icon">🎨</span>编辑器</button>
+  <button onclick="tab('about')"><span class="nav-icon">ℹ️</span>关于</button>
+</div>
+
+<script>
+var curModel='smolvla';
+var models={
+  smolvla:{name:'SmolVLA',arch:'SmolVLM-2 + VTLA',params:'450M',path:'/root/models/smolvla_base',dds:'/dds/model/smolvla'},
+  act:{name:'ACT',arch:'CVAE Encoder-Decoder',params:'~50M',path:'/root/models/act_policy',dds:'/dds/model/act'},
+  vlatouch:{name:'VLA-Touch',arch:'DiT + Tactile Fusion',params:'~470M',path:'/root/models/vla_touch',dds:'/dds/model/vla_touch'},
+};
+var pollTimer=null;
+
+function selectModel(m,el){
+  curModel=m;
+  document.querySelectorAll('.btn-model').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  var d=models[m];
+  document.getElementById('mName').textContent=d.name;
+  document.getElementById('pArch').textContent=d.arch;
+  document.getElementById('pParams').textContent=d.params;
+  document.getElementById('pPath').textContent=d.path;
+}
+
+function Lg(m){
+  var l=document.getElementById('log');l.innerHTML+='\n'+new Date().toLocaleTimeString()+' '+m;l.scrollTop=l.scrollHeight;
+}
+
+function runInfer(){
+  var nodes=['M01 RGB图像',models[curModel].name+' 推理引擎','A00 Action输出'];
+  document.getElementById('btnRun').style.display='none';
+  document.getElementById('btnStop').style.display='block';
+  Lg('══════════════════');
+  Lg('▶️ 执行: '+models[curModel].name);
+  var t0=Date.now();
+  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:nodes})})
+    .then(r=>r.json()).then(d=>{
+      Lg('✅ 任务: '+d.id+' ('+(Date.now()-t0)+'ms)');
+      Lg('🖥️ '+ (d.hardware||'4090'));
+      pollTask(d.id,0);
+    }).catch(function(){Lg('❌ 后端离线');resetBtn()});
+}
+
+function pollTask(id,c){
+  document.getElementById('btnStop').style.display='block';
+  if(c>30){Lg('⚠️ 超时');resetBtn();return}
+  fetch('/api/comfy/task/'+id).then(r=>r.json()).then(d=>{
+    if(d.status==='done'){
+      Lg('🎉 完成! '+d.result);
+      document.getElementById('resultCard').style.display='block';
+      document.getElementById('result').innerHTML='<span style="color:#00d4aa;font-weight:700">✅ 推理成功</span><br>'+d.result;
+      resetBtn();
+    }else if(d.status==='failed'){
+      Lg('❌ 失败');
+      resetBtn();
+    }else{
+      if(c%5===0)Lg('⏳ running... ('+c+'s)');
+      pollTimer=setTimeout(function(){pollTask(id,c+1)},1000);
+    }
+  }).catch(function(){Lg('❌ 网络错误');resetBtn()});
+}
+
+function stopInfer(){if(pollTimer)clearTimeout(pollTimer);Lg('⏹ 已停止');resetBtn()}
+function resetBtn(){document.getElementById('btnRun').style.display='block';document.getElementById('btnStop').style.display='none'}
+
+function tab(t){document.querySelectorAll('#bottom button').forEach(b=>b.classList.remove('active'));event.target.closest('button').classList.add('active')}
+
+fetch('/api/comfy/status').then(r=>r.json()).then(d=>document.getElementById('st').textContent='🟢 '+d.gpu).catch(function(){document.getElementById('st').textContent='🔴 离线'});
+</script></body></html>
