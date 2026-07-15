@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ASPICE V-Model · 光模块智能装配</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bz:#1a1a2e;--sg:#0a0a0f;--ac:#00d4aa;--sb:#f0a500;--ts:#58a6ff;--gd:#8b949e}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--sg);color:#c8d1d9;display:flex;height:100vh;overflow:hidden}
+aside{width:280px;background:var(--bz);border-right:1px solid#222;overflow-y:auto;padding:14px;flex-shrink:0}
+aside h3{color:var(--ac);font-size:12px;margin:12px 0 6px;text-transform:uppercase;letter-spacing:1px}
+aside .item{padding:5px 8px;font-size:10px;color:var(--gd);border-radius:4px;cursor:pointer;margin:2px 0;display:flex;justify-content:space-between}
+aside .item:hover,.item.sel{background:var(--ac);color:#000}
+#main{flex:1;overflow:auto;padding:24px 32px}
+h1{font-size:24px;color:var(--ac);margin-bottom:2px}
+h2{font-size:13px;color:var(--gd);font-weight:400;margin-bottom:20px}
+.org-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.org-card{flex:1;min-width:200px;background:var(--bz);border-radius:12px;padding:14px;border:1px solid#222}
+.org-card h4{font-size:13px;margin-bottom:4px}
+.org-card .sub{font-size:10px;color:var(--gd);margin-bottom:8px}
+.org-card input{width:100%;padding:6px 8px;background:#0d1117;border:1px solid#333;border-radius:6px;color:#fff;font-size:10px;margin-top:4px}
+.org-card input:focus{border-color:var(--ac);outline:none}
+.sb{border-left:3px solid var(--sb)}
+.ts{border-left:3px solid var(--ts)}
+svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
+.tabs{display:flex;gap:4px;margin-bottom:16px}
+.tab{padding:7px 18px;background:var(--bz);border:1px solid#222;border-radius:8px;color:var(--gd);cursor:pointer;font-size:11px}
+.tab.active{background:var(--ac);border-color:var(--ac);color:#000;font-weight:700}
+.raci-wrap{margin-top:12px}
+.raci-wrap table{width:100%;font-size:10px;border-collapse:collapse}
+.raci-wrap th{background:#111;padding:6px 8px;text-align:left;border-bottom:2px solid#333;color:var(--gd);font-size:9px;text-transform:uppercase}
+.raci-wrap td{padding:5px 8px;border-bottom:1px solid#1a1a2e;font-size:10px}
+.raci-wrap .R{background:#00d4aa22;color:var(--ac);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
+.raci-wrap .A{background:#f0a50022;color:var(--sb);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
+.raci-wrap .C{background:#58a6ff22;color:var(--ts);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
+.raci-wrap .I{background:#8b949e22;color:var(--gd);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
+.wbs-level{padding-left:0}
+.wbs-level.id-l2{padding-left:16px}
+.wbs-level.id-l3{padding-left:32px}
+.btn{display:inline-block;padding:8px 20px;background:var(--ac);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin:4px}
+.btn-out{background:transparent;border:1px solid var(--ac);color:var(--ac)}
+.phase-card{background:var(--bz);border-radius:12px;padding:14px;margin:8px 0;border:1px solid#222}
+.phase-card h4{font-size:13px;margin-bottom:6px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;margin:2px}
+.tag-sb{background:var(--sb);color:#000}
+.tag-ts{background:var(--ts);color:#fff}
+.tag-both{background:linear-gradient(90deg,var(--sb),var(--ts));color:#fff}
+@media(max-width:768px){aside{display:none}#main{padding:10px 14px}}
+</style></head><body>
+
+<aside>
+<h3>📐 ASPICE V-Model</h3>
+<div class="item sel" onclick="nav('overview')">📋 总览</div>
+<div class="item" onclick="nav('vmodel')">🔀 V字流程图</div>
+<div class="item" onclick="nav('raci')">📊 RACI矩阵</div>
+<div class="item" onclick="nav('wbs')">🏗️ WBS分解</div>
+<div class="item" onclick="nav('phases')">📝 阶段详情</div>
+<h3>📦 DDS主数据</h3>
+<div class="item">条件C001-C038 <span style="color:var(--ac)">38</span></div>
+<div class="item">模型M01-M07 <span style="color:var(--ts)">7</span></div>
+<div class="item">引擎 <span style="color:var(--sb)">5</span></div>
+<div class="item">动作A00-A30 <span style="color:var(--ac)">31</span></div>
+<div class="item">系统节点 <span style="color:var(--gd)">8</span></div>
+<h3>📄 导出</h3>
+<div class="item" onclick="toWord()" style="cursor:pointer">📥 导出Word文档</div>
+</aside>
+
+<div id="main">
+
+<div id="overview">
+<h1>🚗 ASPICE V-Model 开发流程</h1>
+<h2>Automotive SPICE · 光模块智能装配系统 · 智蜂创元 × 它石智航</h2>
+
+<div class="org-bar">
+<div class="org-card sb">
+  <h4 style="color:var(--sb)">🐝 智蜂创元 (智蜂)</h4>
+  <div class="sub">系统设计 · 硬件集成 · 系统验证</div>
+  <input placeholder="系统负责人姓名" id="sb-sys" value="待指定">
+  <input placeholder="硬件负责人姓名" id="sb-hw" value="待指定">
+  <input placeholder="集成测试负责人" id="sb-int" value="待指定">
+</div>
+<div class="org-card ts">
+  <h4 style="color:var(--ts)">💎 它石智航 (它石)</h4>
+  <div class="sub">白盒模型 · 根因分析 · 软件方案</div>
+  <input placeholder="算法负责人姓名" id="ts-algo" value="待指定">
+  <input placeholder="软件负责人姓名" id="ts-sw" value="待指定">
+  <input placeholder="质量负责人姓名" id="ts-qa" value="待指定">
+</div>
+</div>
+
+<div class="phase-card">
+<h4>📋 ASPICE 过程域覆盖</h4>
+<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:6px">
+<tr><td style="padding:4px;color:var(--gd)">SYS.2</td><td>系统需求分析</td><td><span class="tag tag-both">智蜂+它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SYS.3</td><td>系统架构设计</td><td><span class="tag tag-sb">智蜂</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SWE.1</td><td>软件需求分析</td><td><span class="tag tag-ts">它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SWE.2</td><td>软件架构设计</td><td><span class="tag tag-ts">它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SWE.3</td><td>软件详细设计</td><td><span class="tag tag-ts">它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SWE.4</td><td>软件单元验证</td><td><span class="tag tag-ts">它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SWE.5</td><td>软件集成测试</td><td><span class="tag tag-both">智蜂+它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SWE.6</td><td>软件合格性测试</td><td><span class="tag tag-ts">它石</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SYS.4</td><td>系统集成测试</td><td><span class="tag tag-sb">智蜂</span></td></tr>
+<tr><td style="padding:4px;color:var(--gd)">SYS.5</td><td>系统合格性测试</td><td><span class="tag tag-both">智蜂+它石</span></td></tr>
+</table>
+</div>
+</div>
+
+<div id="vmodel" style="display:none">
+<h3>🔀 V字开发流程</h3>
+<svg viewBox="0 0 1100 650" width="1100" height="650">
+  <rect fill="#1a1a2e" width="1100" height="650" rx="12"/>
+
+  <!-- V lines -->
+  <polyline points="40,80 200,80 550,570" fill="none" stroke="#f0a50044" stroke-width="2" stroke-dasharray="6,3"/>
+  <polyline points="1060,80 900,80 550,570" fill="none" stroke="#58a6ff44" stroke-width="2" stroke-dasharray="6,3"/>
+  <line x1="380" y1="570" x2="720" y2="570" stroke="#00d4aa" stroke-width="3"/>
+
+  <!-- Title axis -->
+  <text x="275" y="30" fill="#f0a500" font-size="10" font-weight="700">▼ 系统设计 (智蜂创元主导)</text>
+  <text x="825" y="30" fill="#58a6ff" font-size="10" font-weight="700">▲ 验证与测试 (它石智航主导)</text>
+
+  <!-- LEFT: Design phases -->
+  <!-- SYS.2 -->
+  <g><rect x="5" y="55" width="210" height="62" rx="8" fill="#f0a50015" stroke="#f0a500"/><text x="110" y="76" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.2 系统需求分析</text><text x="110" y="92" text-anchor="middle" fill="#8b949e" font-size="9">光模块插拔·力控·节拍</text><text x="110" y="106" text-anchor="middle" fill="#f0a500" font-size="8">🐝 智蜂 · A</text></g>
+
+  <!-- SYS.3 -->
+  <g><rect x="5" y="135" width="210" height="62" rx="8" fill="#f0a50015" stroke="#f0a500"/><text x="110" y="156" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.3 系统架构设计</text><text x="110" y="172" text-anchor="middle" fill="#8b949e" font-size="9">DDS全局空间·三层解耦</text><text x="110" y="186" text-anchor="middle" fill="#f0a500" font-size="8">🐝 智蜂 · A</text></g>
+
+  <!-- SWE.1 -->
+  <g><rect x="5" y="215" width="210" height="62" rx="8" fill="#58a6ff15" stroke="#58a6ff"/><text x="110" y="236" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.1 软件需求分析</text><text x="110" y="252" text-anchor="middle" fill="#8b949e" font-size="9">模型推理·训练管线</text><text x="110" y="266" text-anchor="middle" fill="#58a6ff" font-size="8">💎 它石 · A</text></g>
+
+  <!-- SWE.2 -->
+  <g><rect x="5" y="295" width="210" height="62" rx="8" fill="#58a6ff15" stroke="#58a6ff"/><text x="110" y="316" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.2 软件架构设计</text><text x="110" y="332" text-anchor="middle" fill="#8b949e" font-size="9">5引擎选型·VLA架构</text><text x="110" y="346" text-anchor="middle" fill="#58a6ff" font-size="8">💎 它石 · A</text></g>
+
+  <!-- SWE.3 -->
+  <g><rect x="5" y="375" width="210" height="62" rx="8" fill="#58a6ff15" stroke="#58a6ff"/><text x="110" y="396" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.3 软件详细设计</text><text x="110" y="412" text-anchor="middle" fill="#8b949e" font-size="9">模型编码·W&B集成</text><text x="110" y="426" text-anchor="middle" fill="#58a6ff" font-size="8">💎 它石 · A</text></g>
+
+  <!-- Hardware -->
+  <g><rect x="5" y="455" width="210" height="62" rx="8" fill="#f0a50015" stroke="#f0a500"/><text x="110" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件设计与集成</text><text x="110" y="492" text-anchor="middle" fill="#8b949e" font-size="9">UR5·D405·Z6N·Orin</text><text x="110" y="506" text-anchor="middle" fill="#f0a500" font-size="8">🐝 智蜂 · A</text></g>
+
+  <!-- RIGHT: Validation phases -->
+  <!-- SWE.4 -->
+  <g><rect x="885" y="55" width="210" height="62" rx="8" fill="#58a6ff15" stroke="#58a6ff"/><text x="990" y="76" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.4 软件单元验证</text><text x="990" y="92" text-anchor="middle" fill="#8b949e" font-size="9">单模型测试·dtype</text><text x="990" y="106" text-anchor="middle" fill="#58a6ff" font-size="8">💎 它石 · A</text></g>
+
+  <!-- SWE.5 -->
+  <g><rect x="885" y="135" width="210" height="62" rx="8" fill="#00d4aa15" stroke="#00d4aa"/><text x="990" y="156" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SWE.5 软件集成测试</text><text x="990" y="172" text-anchor="middle" fill="#8b949e" font-size="9">模型联调·端到端</text><text x="990" y="186" text-anchor="middle" fill="#00d4aa" font-size="8">🐝+💎 · 联合</text></g>
+
+  <!-- SWE.6 -->
+  <g><rect x="885" y="215" width="210" height="62" rx="8" fill="#58a6ff15" stroke="#58a6ff"/><text x="990" y="236" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.6 软件合格性测试</text><text x="990" y="252" text-anchor="middle" fill="#8b949e" font-size="9">Sim→Real迁移·精度</text><text x="990" y="266" text-anchor="middle" fill="#58a6ff" font-size="8">💎 它石 · A</text></g>
+
+  <!-- SYS.4 -->
+  <g><rect x="885" y="295" width="210" height="62" rx="8" fill="#f0a50015" stroke="#f0a500"/><text x="990" y="316" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.4 系统集成测试</text><text x="990" y="332" text-anchor="middle" fill="#8b949e" font-size="9">全链路·Orin-4090</text><text x="990" y="346" text-anchor="middle" fill="#f0a500" font-size="8">🐝 智蜂 · A</text></g>
+
+  <!-- SYS.5 -->
+  <g><rect x="885" y="375" width="210" height="62" rx="8" fill="#00d4aa15" stroke="#00d4aa" stroke-width="2"/><text x="990" y="396" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SYS.5 系统合格性测试</text><text x="990" y="412" text-anchor="middle" fill="#8b949e" font-size="9">验收·插拔率>99.5%</text><text x="990" y="426" text-anchor="middle" fill="#00d4aa" font-size="8">🐝+💎 · 联合</text></g>
+
+  <!-- Hardware test -->
+  <g><rect x="885" y="455" width="210" height="62" rx="8" fill="#f0a50015" stroke="#f0a500"/><text x="990" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件验收测试</text><text x="990" y="492" text-anchor="middle" fill="#8b949e" font-size="9">标定·通信·安全</text><text x="990" y="506" text-anchor="middle" fill="#f0a500" font-size="8">🐝 智蜂 · A</text></g>
+
+  <!-- Bottom center: Implementation -->
+  <g><rect x="370" y="540" width="360" height="55" rx="10" fill="#00d4aa"/><text x="550" y="562" text-anchor="middle" fill="#000" font-size="14" font-weight="800">DDS 全链路执行</text><text x="550" y="582" text-anchor="middle" fill="#000" font-size="9">C0xx→M0x→Engine→A0x · 数据闭环</text></g>
+
+  <!-- Cross-linking verification lines -->
+  <line x1="110" y1="86" x2="990" y2="486" stroke="#00d4aa08" stroke-dasharray="4,6"/>
+  <line x1="110" y1="166" x2="990" y2="406" stroke="#00d4aa08" stroke-dasharray="4,6"/>
+  <line x1="110" y1="246" x2="990" y2="246" stroke="#00d4aa08" stroke-dasharray="4,6"/>
+  <line x1="110" y1="326" x2="990" y2="166" stroke="#00d4aa08" stroke-dasharray="4,6"/>
+  <line x1="110" y1="406" x2="990" y2="86" stroke="#00d4aa08" stroke-dasharray="4,6"/>
+  <line x1="110" y1="486" x2="990" y2="486" stroke="#f0a50022" stroke-dasharray="4,6"/>
+</svg>
+</div>
+
+<div id="raci" style="display:none">
+<h3>📊 RACI 责任矩阵</h3>
+<div class="raci-wrap">
+<table>
+<tr><th style="width:30%">工作包 (WBS)</th><th style="width:18%">🐝 智蜂(系统)</th><th style="width:18%">🐝 智蜂(硬件)</th><th style="width:18%">💎 它石(算法)</th><th style="width:18%">💎 它石(软件)</th></tr>
+<tr><td>SYS.2 系统需求分析</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td><td><span class="I">I</span></td></tr>
+<tr><td>SYS.3 系统架构设计</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td><td><span class="I">I</span></td></tr>
+<tr><td>SWE.1 软件需求分析</td><td><span class="C">C</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
+<tr><td>SWE.2 软件架构设计</td><td><span class="I">I</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
+<tr><td>SWE.3 软件详细设计</td><td><span class="I">I</span></td><td></td><td><span class="C">C</span></td><td><span class="R">R</span><span class="A">A</span></td></tr>
+<tr><td>SWE.4 软件单元验证</td><td><span class="I">I</span></td><td></td><td><span class="C">C</span></td><td><span class="R">R</span><span class="A">A</span></td></tr>
+<tr><td>SWE.5 软件集成测试</td><td><span class="C">C</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
+<tr><td>SWE.6 软件合格性测试</td><td><span class="C">C</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
+<tr><td>SYS.4 系统集成测试</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td></tr>
+<tr><td>SYS.5 系统合格性测试</td><td><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="R">R</span></td><td><span class="C">C</span></td></tr>
+<tr><td style="color:var(--ac)">DLV.1 DDS全链路执行</td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td></tr>
+</table>
+</div>
+<div style="margin-top:12px;font-size:9px;color:var(--gd);display:flex;gap:16px"><span><span class="R">R</span> 执行</span><span><span class="A">A</span> 审批</span><span><span class="C">C</span> 咨询</span><span><span class="I">I</span> 知会</span></div>
+</div>
+
+<div id="wbs" style="display:none">
+<h3>🏗️ WBS 工作分解结构</h3>
+<div class="phase-card">
+<h4>1.0 光模块智能装配系统</h4>
+<div class="wbs-level id-l2"><strong>1.1 系统层 (智蜂创元)</strong></div>
+<div class="wbs-level id-l3">1.1.1 系统需求分析 (SYS.2)</div>
+<div class="wbs-level id-l3">1.1.2 系统架构设计 (SYS.3)</div>
+<div class="wbs-level id-l3">1.1.3 硬件设计与集成</div>
+<div class="wbs-level id-l3">1.1.4 系统集成测试 (SYS.4)</div>
+<div class="wbs-level id-l3">1.1.5 系统合格性测试 (SYS.5)</div>
+<div class="wbs-level id-l2" style="margin-top:8px"><strong>1.2 软件层 (它石智航)</strong></div>
+<div class="wbs-level id-l3">1.2.1 软件需求分析 (SWE.1)</div>
+<div class="wbs-level id-l3">1.2.2 软件架构设计 (SWE.2)</div>
+<div class="wbs-level id-l3">1.2.3 模型方案设计 (SmolVLA/VLA-Touch/GR00T/ACT/LeWM)</div>
+<div class="wbs-level id-l3">1.2.4 软件详细设计 (SWE.3)</div>
+<div class="wbs-level id-l3">1.2.5 软件单元验证 (SWE.4)</div>
+<div class="wbs-level id-l3">1.2.6 软件集成测试 (SWE.5)</div>
+<div class="wbs-level id-l3">1.2.7 软件合格性测试 (SWE.6)</div>
+<div class="wbs-level id-l2" style="margin-top:8px"><strong>1.3 联合层 (智蜂+它石)</strong></div>
+<div class="wbs-level id-l3">1.3.1 DDS全链路执行</div>
+<div class="wbs-level id-l3">1.3.2 Sim→Real迁移验证</div>
+<div class="wbs-level id-l3">1.3.3 W&B训练监控</div>
+<div class="wbs-level id-l3">1.3.4 最终验收</div>
+</div>
+</div>
+
+<div id="phases" style="display:none">
+<h3>📝 阶段详情</h3>
+<div class="phase-card"><h4><span class="tag tag-sb">SYS.2</span> 系统需求分析</h4><p style="font-size:10px;color:var(--gd)">光模块100G/400G/800G自动插拔·力控精度±0.5N·节拍<3s·DDS条件C001-C038</p><div style="margin-top:4px">🐝 智蜂: R+A · 💎 它石: C+I</div></div>
+<div class="phase-card"><h4><span class="tag tag-sb">SYS.3</span> 系统架构设计</h4><p style="font-size:10px;color:var(--gd)">DDS全局数据空间·38条件+7模型+5引擎+31动作+8系统·condition→model→engine→action</p><div style="margin-top:4px">🐝 智蜂: R+A · 💎 它石: C+I</div></div>
+<div class="phase-card"><h4><span class="tag tag-ts">SWE.1-SWE.3</span> 软件需求·架构·详细设计</h4><p style="font-size:10px;color:var(--gd)">5引擎选型·VLA架构·SmolVLA/VLA-Touch/GR00T/ACT/LeWM·4090训练·W&B监控</p><div style="margin-top:4px">💎 它石: R+A · 🐝 智蜂: I</div></div>
+<div class="phase-card"><h4><span class="tag tag-ts">SWE.4-SWE.6</span> 软件验证·集成·合格性测试</h4><p style="font-size:10px;color:var(--gd)">模型推理验证·SmolVLA 252ms·dtype修复·Sim→Real·W&B数据记录</p><div style="margin-top:4px">💎 它石: R+A · 🐝 智蜂: C+I</div></div>
+<div class="phase-card"><h4><span class="tag tag-sb">SYS.4-SYS.5</span> 系统集成·合格性测试</h4><p style="font-size:10px;color:var(--gd)">Orin-4090全链路·D405+Z6N力触觉·UR5运动·插拔成功率>99.5%</p><div style="margin-top:4px">🐝 智蜂: R+A · 💎 它石: C</div></div>
+</div>
+
+</div>
+
+<script>
+function nav(t){
+  document.querySelectorAll('aside .item').forEach(el=>el.classList.remove('sel'));
+  event.target.classList.add('sel');
+  document.getElementById('overview').style.display=t==='overview'?'block':'none';
+  document.getElementById('vmodel').style.display=t==='vmodel'?'block':'none';
+  document.getElementById('raci').style.display=t==='raci'?'block':'none';
+  document.getElementById('wbs').style.display=t==='wbs'?'block':'none';
+  document.getElementById('phases').style.display=t==='phases'?'block':'none';
+}
+function toWord(){
+  var h='<html><head><meta charset="UTF-8"><style>body{font-family:SimSun;font-size:12pt}h1{font-size:18pt}h2{font-size:14pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid#000;padding:4pt}.R{background:#d4f5d4}.A{background:#ffe0b2}.C{background:#d0e8ff}.I{background:#e0e0e0}</style></head><body>';
+  h+=document.getElementById('overview').innerHTML;
+  h+=document.getElementById('vmodel').innerHTML;
+  h+=document.getElementById('raci').innerHTML;
+  h+=document.getElementById('wbs').innerHTML;
+  h+=document.getElementById('phases').innerHTML;
+  h+='</body></html>';
+  var b=new Blob([h],{type:'application/msword'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='Z-MAX_ASPICE_V-Model_'+new Date().toISOString().slice(0,10)+'.doc';
+  a.click();
+}
+</script></body></html>
