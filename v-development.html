@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>V-Development · DDS闭环</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'PingFang SC',sans-serif;background:#0a0a0f;color:#c8d1d9;display:flex;height:100vh;overflow:hidden}
+aside{width:240px;background:#0d0d14;border-right:1px solid#222;overflow-y:auto;padding:12px;flex-shrink:0}
+aside h3{color:#00d4aa;font-size:12px;margin:12px 0 6px}
+aside .item{padding:4px 8px;font-size:10px;color:#8b949e;border-radius:4px;cursor:pointer;margin:2px 0}
+aside .item:hover{background:#00d4aa11;color:#fff}
+aside .count{float:right;color:#00d4aa;font-size:9px}
+#main{flex:1;overflow:auto;padding:20px 30px}
+h1{font-size:22px;color:#00d4aa;margin-bottom:4px}
+h2{font-size:13px;color:#8b949e;font-weight:400;margin-bottom:16px}
+.phase{background:#111;border:1px solid#222;border-radius:12px;padding:14px;margin:8px 0}
+.phase h4{font-size:13px;margin-bottom:6px}
+.phase .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700;margin:2px}
+.b-design{background:#a371f722;color:#a371f7}
+.b-model{background:#58a6ff22;color:#58a6ff}
+.b-hw{background:#d4a80022;color:#d4a800}
+.b-test{background:#00d4aa22;color:#00d4aa}
+.b-ceo{background:#ff6b6b22;color:#ff6b6b}
+.dds-link{display:inline-block;padding:1px 6px;background:#00d4aa11;color:#00d4aa;border-radius:4px;font-size:9px;margin:1px 2px}
+.flow-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+svg{max-width:100%}
+.tabs{display:flex;gap:4px;margin-bottom:16px}
+.tab{padding:6px 16px;background:#111;border:1px solid#222;border-radius:8px;color:#8b949e;cursor:pointer;font-size:12px}
+.tab.active{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
+@media(max-width:768px){aside{display:none}#main{padding:10px 12px}}
+</style></head><body>
+
+<aside>
+<h3>📊 DDS 数据空间</h3>
+<div class="item">条件 <span class="count">38</span></div>
+<div style="padding-left:12px">
+  <div class="item">100G C001-C010</div>
+  <div class="item">400G C011-C020</div>
+  <div class="item">800G C021-C030</div>
+  <div class="item">安全 C031-C034</div>
+  <div class="item">电池 C035-C038</div>
+</div>
+<div class="item">模型 <span class="count">7</span></div>
+<div style="padding-left:12px">
+  <div class="item">M01 RGB图像</div>
+  <div class="item">M02 深度图</div>
+  <div class="item">M03 点云</div>
+  <div class="item">M04 触觉阵列</div>
+  <div class="item">M05 关节状态</div>
+  <div class="item">M06 任务语言</div>
+  <div class="item">M07 示教数据</div>
+</div>
+<div class="item">引擎 <span class="count">5</span></div>
+<div style="padding-left:12px">
+  <div class="item">SmolVLA 450M ✅</div>
+  <div class="item">VLA-Touch 470M ⏳</div>
+  <div class="item">GR00T N1.7 ⏳</div>
+  <div class="item">ACT 50M ⏳</div>
+  <div class="item">LeWM 200M ⏳</div>
+</div>
+<div class="item">动作 <span class="count">31</span></div>
+<div class="item">系统 <span class="count">8</span></div>
+</aside>
+
+<div id="main">
+<div class="tabs">
+  <div class="tab active" onclick="tab('flow')">🔀 V流程</div>
+  <div class="tab" onclick="tab('phases')">📋 阶段表</div>
+  <div class="tab" onclick="tab('dds')">🔗 DDS映射</div>
+</div>
+
+<div id="flow">
+<h1>🚗 V字形开发流程</h1>
+<h2>基于DDS全局数据空间 · condition→model→engine→action闭环</h2>
+
+<svg viewBox="0 0 1000 580" width="1000" height="580">
+  <rect fill="#0d1117" width="1000" height="580" rx="12"/>
+  <line x1="50" y1="60" x2="500" y2="540" stroke="#00d4aa22" stroke-width="2" stroke-dasharray="6,4"/>
+  <line x1="950" y1="60" x2="500" y2="540" stroke="#00d4aa22" stroke-width="2" stroke-dasharray="6,4"/>
+  <line x1="380" y1="540" x2="620" y2="540" stroke="#00d4aa" stroke-width="3"/>
+
+  <!-- Left: Design -->
+  <g><rect x="5" y="40" width="200" height="52" rx="8" fill="#a371f722" stroke="#a371f7"/><text x="105" y="60" text-anchor="middle" fill="#a371f7" font-size="11" font-weight="700">① 需求定义</text><text x="105" y="76" text-anchor="middle" fill="#8b949e" font-size="8">光模块插拔·力控±0.5N·<3s</text><text x="105" y="88" text-anchor="middle" fill="#a371f7" font-size="7">👑 静界</text></g>
+  <g><rect x="5" y="110" width="200" height="52" rx="8" fill="#a371f722" stroke="#a371f7"/><text x="105" y="130" text-anchor="middle" fill="#a371f7" font-size="11" font-weight="700">② 系统架构</text><text x="105" y="146" text-anchor="middle" fill="#8b949e" font-size="8">DDS 38+7+5+31+8</text><text x="105" y="158" text-anchor="middle" fill="#a371f7" font-size="7">🔧 xspace</text></g>
+  <g><rect x="5" y="180" width="200" height="52" rx="8" fill="#58a6ff22" stroke="#58a6ff"/><text x="105" y="200" text-anchor="middle" fill="#58a6ff" font-size="11" font-weight="700">③ 模型方案</text><text x="105" y="216" text-anchor="middle" fill="#8b949e" font-size="8">5引擎·VLA架构·4090</text><text x="105" y="228" text-anchor="middle" fill="#58a6ff" font-size="7">🌐 web</text></g>
+  <g><rect x="5" y="250" width="200" height="52" rx="8" fill="#d4a80022" stroke="#d4a800"/><text x="105" y="270" text-anchor="middle" fill="#d4a800" font-size="11" font-weight="700">④ 感知与控制</text><text x="105" y="286" text-anchor="middle" fill="#8b949e" font-size="8">D405·Z6N·UR5·</text><text x="105" y="298" text-anchor="middle" fill="#d4a800" font-size="7">🔧 xspace · 🦾 小芳</text></g>
+  <g><rect x="5" y="320" width="200" height="52" rx="8" fill="#d4a80022" stroke="#d4a800"/><text x="105" y="340" text-anchor="middle" fill="#d4a800" font-size="11" font-weight="700">⑤ 硬件集成</text><text x="105" y="356" text-anchor="middle" fill="#8b949e" font-size="8">UR5·夹爪·Orin</text><text x="105" y="368" text-anchor="middle" fill="#d4a800" font-size="7">🦾 小芳</text></g>
+
+  <!-- Right: Validation -->
+  <g><rect x="795" y="40" width="200" height="52" rx="8" fill="#00d4aa22" stroke="#00d4aa" stroke-width="2"/><text x="895" y="60" text-anchor="middle" fill="#00d4aa" font-size="11" font-weight="700">⑪ 整机验收</text><text x="895" y="76" text-anchor="middle" fill="#8b949e" font-size="8">插拔率>99.5%·力控±0.5N</text><text x="895" y="88" text-anchor="middle" fill="#00d4aa" font-size="7">👑 静界</text></g>
+  <g><rect x="795" y="110" width="200" height="52" rx="8" fill="#58a6ff22" stroke="#58a6ff"/><text x="895" y="130" text-anchor="middle" fill="#58a6ff" font-size="11" font-weight="700">⑩ 模型验证</text><text x="895" y="146" text-anchor="middle" fill="#8b949e" font-size="8">Sim→Real·W&B</text><text x="895" y="158" text-anchor="middle" fill="#58a6ff" font-size="7">🌐 web</text></g>
+  <g><rect x="795" y="180" width="200" height="52" rx="8" fill="#a371f722" stroke="#a371f7"/><text x="895" y="200" text-anchor="middle" fill="#a371f7" font-size="11" font-weight="700">⑨ 子系统联调</text><text x="895" y="216" text-anchor="middle" fill="#8b949e" font-size="8">Orin←4090·全网链路</text><text x="895" y="228" text-anchor="middle" fill="#a371f7" font-size="7">🔧 xspace</text></g>
+  <g><rect x="795" y="250" width="200" height="52" rx="8" fill="#d4a80022" stroke="#d4a800"/><text x="895" y="270" text-anchor="middle" fill="#d4a800" font-size="11" font-weight="700">⑧ 传感器校准</text><text x="895" y="286" text-anchor="middle" fill="#8b949e" font-size="8">D405·力触觉·UR5</text><text x="895" y="298" text-anchor="middle" fill="#d4a800" font-size="7">🦾 小芳</text></g>
+  <g><rect x="795" y="320" width="200" height="52" rx="8" fill="#d4a80022" stroke="#d4a800"/><text x="895" y="340" text-anchor="middle" fill="#d4a800" font-size="11" font-weight="700">⑦ 硬件测试</text><text x="895" y="356" text-anchor="middle" fill="#8b949e" font-size="8">标定·通信·安全</text><text x="895" y="368" text-anchor="middle" fill="#d4a800" font-size="7">🦾 小芳</text></g>
+
+  <!-- Bottom -->
+  <g><rect x="370" y="510" width="260" height="50" rx="10" fill="#00d4aa" opacity="0.9"/><text x="500" y="532" text-anchor="middle" fill="#000" font-size="13" font-weight="800">⑥ DDS 全链路</text><text x="500" y="550" text-anchor="middle" fill="#000" font-size="9">C0xx→M0x→Engine→A0x</text></g>
+
+  <text x="105" y="22" text-anchor="middle" fill="#8b949e" font-size="9">▼ 系统设计</text>
+  <text x="895" y="22" text-anchor="middle" fill="#8b949e" font-size="9">▲ 验证集成</text>
+
+  <!-- DDS connections -->
+  <line x1="105" y1="72" x2="895" y2="392" stroke="#00d4aa11" stroke-dasharray="3,6"/>
+  <line x1="105" y1="142" x2="895" y2="322" stroke="#00d4aa11" stroke-dasharray="3,6"/>
+  <line x1="105" y1="212" x2="895" y2="142" stroke="#00d4aa11" stroke-dasharray="3,6"/>
+  <line x1="105" y1="282" x2="895" y2="282" stroke="#00d4aa11" stroke-dasharray="3,6"/>
+  <line x1="105" y1="352" x2="895" y2="352" stroke="#00d4aa11" stroke-dasharray="3,6"/>
+</svg>
+</div>
+
+<div id="phases" style="display:none">
+<h3>📋 阶段详情</h3>
+<div class="phase"><h4><span class="badge b-design">① 需求</span> → <span class="badge b-ceo">👑 静界</span></h4>
+  <div class="flow-row">
+    <span class="dds-link">C001-C038 38条件</span>
+    <span class="dds-link">A01-A30 动作需求</span>
+  </div>
+  <p style="font-size:10px;color:#8b949e;margin-top:4px">光模块100G/400G/800G三类产品全自动插拔产线</p>
+</div>
+<div class="phase"><h4><span class="badge b-design">② 架构</span> → <span class="badge b-design">🔧 xspace</span></h4>
+  <div class="flow-row">
+    <span class="dds-link">DDS闭环设计</span>
+    <span class="dds-link">38C+7M+5E+31A+8S</span>
+    <span class="dds-link">三层解耦</span>
+  </div>
+</div>
+<div class="phase"><h4><span class="badge b-model">③ 模型</span> → <span class="badge b-model">🌐 web</span></h4>
+  <div class="flow-row">
+    <span class="dds-link">SmolVLA 450M ✅</span>
+    <span class="dds-link">VLA-Touch 470M ⏳</span>
+    <span class="dds-link">GR00T N1.7 6.9GB ⏳</span>
+    <span class="dds-link">ACT 50M ⏳</span>
+    <span class="dds-link">LeWM 200M ⏳</span>
+    <span class="dds-link">M01-M07 7输入</span>
+  </div>
+</div>
+<div class="phase"><h4><span class="badge b-hw">④ 感知控制</span> → <span class="badge b-design">🔧 xspace</span> <span class="badge b-hw">🦾 小芳</span></h4>
+  <div class="flow-row">
+    <span class="dds-link">RealSense D405</span>
+    <span class="dds-link">Z6N 力触觉</span>
+    <span class="dds-link">UR5 6轴+夹爪</span>
+  </div>
+</div>
+<div class="phase"><h4><span class="badge b-hw">⑤ 硬件</span> → <span class="badge b-hw">🦾 小芳</span></h4>
+  <div class="flow-row">
+    <span class="dds-link">UR5集成</span>
+    <span class="dds-link">Orin Nano</span>
+    <span class="dds-link">Sys1-Sys22 8节点</span>
+  </div>
+</div>
+<div class="phase"><h4><span class="badge b-test">⑥ DDS执行</span> → <span class="badge b-ceo">全员</span></h4>
+  <div class="flow-row">
+    <span class="dds-link">C0xx→M0x→Engine→A0x</span>
+    <span class="dds-link">看板实时追踪</span>
+  </div>
+</div>
+</div>
+
+<div id="dds" style="display:none">
+<h3>🔗 DDS → V-Model 映射</h3>
+<table style="width:100%;font-size:11px;border-collapse:collapse">
+<tr style="background:#111"><td style="padding:6px;border-bottom:1px solid#222;color:#a371f7">条件 C001-C038</td><td style="padding:6px;border-bottom:1px solid#222">① 需求定义 → ⑦ 验收测试</td></tr>
+<tr><td style="padding:6px;border-bottom:1px solid#222;color:#58a6ff">模型 M01-M07</td><td style="padding:6px;border-bottom:1px solid#222">② 架构设计 → ⑧ 传感器校准</td></tr>
+<tr style="background:#111"><td style="padding:6px;border-bottom:1px solid#222;color:#facd3b">引擎 5个</td><td style="padding:6px;border-bottom:1px solid#222">③ 模型方案 → ⑩ 模型验证</td></tr>
+<tr><td style="padding:6px;border-bottom:1px solid#222;color:#00d4aa">动作 A00-A30</td><td style="padding:6px;border-bottom:1px solid#222">④ 控制设计 → ⑪ 整机验收</td></tr>
+<tr style="background:#111"><td style="padding:6px;border-bottom:1px solid#222;color:#d4a800">系统 8个</td><td style="padding:6px;border-bottom:1px solid#222">⑤ 硬件集成 → ⑦ 硬件测试</td></tr>
+</table>
+</div>
+
+</div>
+<script>
+function tab(t){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('flow').style.display=t==='flow'?'block':'none';
+  document.getElementById('phases').style.display=t==='phases'?'block':'none';
+  document.getElementById('dds').style.display=t==='dds'?'block':'none';
+}
+</script></body></html>
