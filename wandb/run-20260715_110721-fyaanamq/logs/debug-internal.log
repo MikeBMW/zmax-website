@@ -1,0 +1,11 @@
+{"time":"2026-07-15T11:07:21.242275121Z","level":"INFO","msg":"wandb-core"}
+{"time":"2026-07-15T11:07:21.242511515Z","level":"INFO","msg":"stream: starting","core version":"0.28.0"}
+{"time":"2026-07-15T11:07:22.181128254Z","level":"INFO","msg":"stream: created new stream","id":"fyaanamq"}
+{"time":"2026-07-15T11:07:22.181177255Z","level":"INFO","msg":"handler: started"}
+{"time":"2026-07-15T11:07:22.181758247Z","level":"INFO","msg":"stream: started"}
+{"time":"2026-07-15T11:07:22.181848569Z","level":"INFO","msg":"writer: started","stream_id":"fyaanamq"}
+{"time":"2026-07-15T11:07:22.181876388Z","level":"INFO","msg":"sender: started"}
+{"time":"2026-07-15T11:07:23.108856474Z","level":"INFO","msg":"filestream: sending request","total_files":1}
+{"time":"2026-07-15T11:07:23.675392439Z","level":"ERROR","msg":"runfiles: CreateRunFiles returned error: POST https://api.wandb.ai/graphql giving up after 1 attempt(s): context canceled"}
+{"time":"2026-07-15T11:07:23.675424861Z","level":"ERROR+4","msg":"filestream: fatal error: filestream: error making HTTP request: POST https://api.wandb.ai/files/xspace/zmax-act/fyaanamq/file_stream giving up after 1 attempt(s): context canceled. got response: <nil>"}
+{"time":"2026-07-15T11:07:23.675845599Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}

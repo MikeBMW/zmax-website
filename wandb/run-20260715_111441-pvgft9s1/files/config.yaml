@@ -1,0 +1,27 @@
+_wandb:
+    value:
+        cli_version: 0.28.0
+        e:
+            xfrsh6rkootgvbj8af1na3rsj0zb0gjq:
+                email: niyingxiang@126.com
+                executable: /root/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12
+                git:
+                    commit: 39e269d6ae6c0151caf07fc79e9d4ec1926a195b
+                    remote: https://github.com/MikeBMW/zmax-website.git
+                host: 10-23-24-0
+                os: Linux-5.15.0-113-generic-x86_64-with-glibc2.35
+                program: <python with no main file>
+                python: CPython 3.12.13
+                root: /root/zmax-website
+                startedAt: "2026-07-15T11:14:41.722106Z"
+                writerId: xfrsh6rkootgvbj8af1na3rsj0zb0gjq
+        m: []
+        python_version: 3.12.13
+        t:
+            "3":
+                - 2
+                - 13
+            "4": 3.12.13
+            "5": 0.28.0
+            "12": 0.28.0
+            "13": linux-x86_64
