@@ -28,7 +28,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 .raci-wrap td{padding:5px 8px;border-bottom:1px solid#1a1a2e;font-size:10px}
 .raci-wrap .R{background:#00d4aa22;color:var(--ac);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
 .raci-wrap .A{background:#f0a50022;color:var(--sb);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
-.raci-wrap .C{background:#58a6ff22;color:var(--ts);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
+.raci-wrap .S{background:#b388ff22;color:#b388ff;text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
 .raci-wrap .I{background:#8b949e22;color:var(--gd);text-align:center;font-weight:700;border-radius:4px;margin:0 2px;padding:2px 6px;display:inline-block;font-size:9px}
 .wbs-level{padding-left:0}
 .wbs-level.id-l2{padding-left:16px}
@@ -48,7 +48,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <h3>📐 ASPICE V-Model</h3>
 <div class="item" onclick="nav('overview')">📋 总览</div>
 <div class="item sel" onclick="nav('vmodel')">🔀 V字流程图</div>
-<div class="item" onclick="nav('raci')">📊 RACI矩阵</div>
+<div class="item" onclick="nav('raci')">📊 RASI矩阵</div>
 <div class="item" onclick="nav('wbs')">🏗️ WBS分解</div>
 <div class="item" onclick="nav('phases')">📝 阶段详情</div>
 <h3>📦 DDS主数据</h3>
@@ -167,24 +167,24 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 </div>
 
 <div id="raci" style="display:none">
-<h3>📊 RACI 责任矩阵</h3>
+<h3>📊 RASI 责任矩阵</h3>
 <div class="raci-wrap">
 <table>
 <tr><th style="width:30%">工作包 (WBS)</th><th style="width:18%">🐝 智蜂(系统)</th><th style="width:18%">🐝 智蜂(硬件)</th><th style="width:18%">💎 它石(算法)</th><th style="width:18%">💎 它石(软件)</th></tr>
-<tr><td>SYS.2 系统需求分析</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td><td><span class="I">I</span></td></tr>
-<tr><td>SYS.3 系统架构设计</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td><td><span class="I">I</span></td></tr>
-<tr><td>SWE.1 软件需求分析</td><td><span class="C">C</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
-<tr><td>SWE.2 软件架构设计</td><td><span class="I">I</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
-<tr><td>SWE.3 软件详细设计</td><td><span class="I">I</span></td><td></td><td><span class="C">C</span></td><td><span class="R">R</span><span class="A">A</span></td></tr>
-<tr><td>SWE.4 软件单元验证</td><td><span class="I">I</span></td><td></td><td><span class="C">C</span></td><td><span class="R">R</span><span class="A">A</span></td></tr>
-<tr><td>SWE.5 软件集成测试</td><td><span class="C">C</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
-<tr><td>SWE.6 软件合格性测试</td><td><span class="C">C</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td></tr>
-<tr><td>SYS.4 系统集成测试</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td><td><span class="C">C</span></td></tr>
-<tr><td>SYS.5 系统合格性测试</td><td><span class="A">A</span></td><td><span class="C">C</span></td><td><span class="R">R</span></td><td><span class="C">C</span></td></tr>
+<tr><td>SYS.2 系统需求分析</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="I">I</span></td></tr>
+<tr><td>SYS.3 系统架构设计</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="I">I</span></td></tr>
+<tr><td>SWE.1 软件需求分析</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
+<tr><td>SWE.2 软件架构设计</td><td><span class="I">I</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
+<tr><td>SWE.3 软件详细设计</td><td><span class="I">I</span></td><td></td><td><span class="S">S</span></td><td><span class="R">R</span><span class="A">A</span></td></tr>
+<tr><td>SWE.4 软件单元验证</td><td><span class="I">I</span></td><td></td><td><span class="S">S</span></td><td><span class="R">R</span><span class="A">A</span></td></tr>
+<tr><td>SWE.5 软件集成测试</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
+<tr><td>SWE.6 软件合格性测试</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
+<tr><td>SYS.4 系统集成测试</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td></tr>
+<tr><td>SYS.5 系统合格性测试</td><td><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="R">R</span></td><td><span class="S">S</span></td></tr>
 <tr><td style="color:var(--ac)">DLV.1 DDS全链路执行</td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td></tr>
 </table>
 </div>
-<div style="margin-top:12px;font-size:9px;color:var(--gd);display:flex;gap:16px"><span><span class="R">R</span> 执行</span><span><span class="A">A</span> 审批</span><span><span class="C">C</span> 咨询</span><span><span class="I">I</span> 知会</span></div>
+<div style="margin-top:12px;font-size:9px;color:var(--gd);display:flex;gap:16px"><span><span class="R">R</span> 执行</span><span><span class="A">A</span> 审批</span><span><span class="S">S</span> 咨询</span><span><span class="I">I</span> 知会</span></div>
 </div>
 
 <div id="wbs" style="display:none">
