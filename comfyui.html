@@ -65,12 +65,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('eng')">🧠 推理引擎 (4) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('eng')">🧠 推理引擎 (5) ▾</div>
 <div id="eng">
-<div class="sn m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT · Sys1</div>
-<div class="sn m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA · Sys11</div>
+<div class="sn m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT</div>
+<div class="sn m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA</div>
 <div class="sn m" draggable="true" data-t="model" data-n="VLA-Touch">VLA-Touch</div>
-<div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T · Sys22</div>
+<div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T</div>
+<div class="sn m" draggable="true" data-t="model" data-n="LeWM 推理引擎">LeWM</div>
 </div>
 <div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('sys')">🟡 System 系统 (8) ▾</div>
 <div id="sys">
@@ -179,16 +180,24 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
   var dd='';
   if(n.name==='M01 RGB图像'){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
+  }else if(n.name==='M04 触觉阵列'){
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L121" selected>随机噪声 torch.randn(1,6,200) @ L121</option><option value="lissajous_real">Lissajous力控 6N×200点 实采</option><option value="sim">仿真力觉</option></select></div>';
+  }else if(n.name.indexOf('C0')===0||n.name.indexOf('C1')===0||n.name.indexOf('C2')===0||n.name.indexOf('C3')===0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#a371f7;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">示教预录轨迹 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">数据源:</div><select onchange="Lg(this.value)" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>ur5_demo 预录示教 (Orin Nano)</option><option>实时力控轨迹 (Lissajous)</option><option>手动拖拽轨迹</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">轨迹长度: 50-200步 · 6关节+夹爪</div></div>';
   }else if(n.name.indexOf('SmolVLA')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#58a6ff;font-weight:700;margin-bottom:4px">SmolVLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">骨干</td><td>SmolVLM-2 500M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">专家</td><td>VTLA-450M DiT</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>3×RGB(512²)+state(7)+lang</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>257ms(热)/800ms(冷)</td></tr></table></div>';
-  }else if(n.name.indexOf('VTLA')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ff6b6b;font-weight:700;margin-bottom:4px">VTLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>DiT Denoiser (4层)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">噪声步</td><td>64步 → action</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>噪声+cond [1,64,50]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~180ms (4090)</td></tr></table></div>';
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#58a6ff;font-weight:700;margin-bottom:4px">SmolVLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">骨干</td><td>SmolVLM-2 500M (16层VLM)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">专家</td><td>VTLA-450M DiT</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>3×RGB(512²)+state(7)+lang</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/smolvla_base</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>257ms(热)/800ms(冷)</td></tr></table></div>';
+  }else if(n.name.indexOf('VLA-Touch')>=0||n.name.indexOf('VTLA')>=0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ff6b6b;font-weight:700;margin-bottom:4px">VLA-Touch 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>DiT + Tactile Fusion (7层)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>RGB(512²)+力触觉(6,200)+state(7)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/vla_touch</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~180ms (4090)</td></tr></table></div>';
   }else if(n.name.indexOf('GR00T')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ffa500;font-weight:700;margin-bottom:4px">GR00T N1.7 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>MoE Transformer</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>6.9GB</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>多模态+语言+观测</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,7]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>1137ms (4090)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">VRAM</td><td>6.4GB</td></tr></table></div>';
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ffa500;font-weight:700;margin-bottom:4px">GR00T N1.7 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>MoE Transformer</td></tr><tr><td style="color:#8b949e;padding:1px 4px">规模</td><td>6.9GB</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>多模态+语言+观测</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,7]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/gr00t_n1d7</td></tr><tr><td style="color:#8b949e;padding:1px 4px">VRAM</td><td>6.4GB</td></tr></table></div>';
   }else if(n.name.indexOf('ACT')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#6a5acd;font-weight:700;margin-bottom:4px">ACT 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>CVAE Encoder-Decoder</td></tr><tr><td style="color:#8b949e;padding:1px 4px">潜空间</td><td>32维</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>图像+关节+风格</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~50ms</td></tr></table></div>';
-  }else if(n.name.indexOf('A00')>=0||n.name.indexOf('Action')>=0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#6a5acd;font-weight:700;margin-bottom:4px">ACT 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>CVAE Encoder-Decoder</td></tr><tr><td style="color:#8b949e;padding:1px 4px">潜空间</td><td>32维</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>图像+关节+风格</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/act_policy</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~50ms</td></tr></table></div>';
+  }else if(n.name.indexOf('LeWM')>=0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#e8a800;font-weight:700;margin-bottom:4px">LeWM 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>World Model (ViT+GRU)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~200M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>RGB+State+Action历史</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>NextRGB+NextState+Reward</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/le_wm</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~120ms</td></tr></table></div>';
+  }else if(n.name.indexOf('A00')>=0){
     dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">Action 输出</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">shape</td><td>[1,50,6] 50步×6关节(rad)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J1肩</td><td>±1.57rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J2臂</td><td>-0.79~0.52rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J3肘</td><td>-1.22~2.62rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J4腕</td><td>±6.28rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J5屈</td><td>±2.09rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J6翻</td><td>±6.28rad</td></tr></table></div>';
+  }else if(n.name.indexOf('A0')===0||n.name.indexOf('A1')===0||n.name.indexOf('A2')===0||n.name.indexOf('A3')===0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">state动作序列 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">输出格式:</div><select onchange="Lg(this.value)" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>Action Chunk [1,50,7] (6关节+夹爪)</option><option>单步Action [1,7] 实时控制</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">步长50 · 7维 · 频率10Hz · DDS:/dds/action/'+n.name.split(' ')[0]+'</div></div>';
   }
   if(!dd)dd='';
   cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:4px">'+n.name+'</div>'
@@ -199,7 +208,7 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
     +'<button style="padding:3px 8px;background:#d4a800;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="show3D(\''+n.name+'\',\''+n.t+'\')">🧊 3D</button></div>';
   document.body.appendChild(cfg);
   cfg.addEventListener('click',function(e){e.stopPropagation()});
-  document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true});
+  setTimeout(function(){document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true})},100);
   return;
 }}};
 canvas.tabIndex=0;canvas.focus();
@@ -256,53 +265,6 @@ function clearAll(){saveState();N=[];L=[];draw()}
 function render3D(c,name,type,color2){
   requestAnimationFrame(function(){
     var ctx2=c.getContext('2d'),w=c.width,h=c.height;
-    if(!c._ang)c._ang=0;if(!c._py)c._py=60;if(!c._px)c._px=-30;
-    var lw=Math.min(w*.45,220),ox=(w-lw)/2+80+c._px,oy=80+c._py;
-    function iso(x,y,z){var ca=Math.cos(c._ang),sa=Math.sin(c._ang);return{x:ox+x*ca*.866-z*ca*.866,y:oy-x*sa*.5-y+z*.4}}
-    var tensors;
-    if(name.indexOf('VLA-Touch')>=0||name.indexOf('VLA')>=0){
-    }else if(name.indexOf('GR00T')>=0){
-      tensors=[{n:'多模态',sh:'[B,T,3,224,224]',w:lw,h:14,d:8,c:'#ffa500'},{n:'V-T Enc',sh:'[B,T,1024]',w:lw*.88,h:16,d:14,c:'#ff8c00'},{n:'CrossAttn',sh:'[B,T,32,1024]',w:lw*.82,h:14,d:18,c:'#ff7000'},{n:'DiT',sh:'[B,T,2048]',w:lw*.75,h:14,d:20,c:'#ff5500'},{n:'Action',sh:'[1,50,7]',w:lw*.6,h:10,d:6,c:'#ff3000'}];
-    }else if(name.indexOf('ACT')>=0){
-      tensors=[{n:'encode',sh:'[1,512]',w:lw,h:14,d:8,c:'#6a5acd'},{n:'CVAE μ',sh:'[1,32]',w:lw*.8,h:12,d:10,c:'#7b68ee'},{n:'CVAE σ',sh:'[1,32]',w:lw*.8,h:12,d:10,c:'#836fff'},{n:'decode',sh:'[1,50,6]',w:lw*.7,h:14,d:12,c:'#9b72ff'},{n:'Action',sh:'[1,50,6]',w:lw*.6,h:10,d:6,c:'#b380ff'}];
-    }else if(name.indexOf('LeWM')>=0){
-      tensors=[{n:'RGB',sh:'[1,3,256,256]',w:lw,h:14,d:8,c:'#e8a800'},{n:'State',sh:'[1,7]',w:lw*.7,h:10,d:4,c:'#d4a000'},{n:'ViT Enc',sh:'[1,64,512]',w:lw*.88,h:16,d:14,c:'#c09000'},{n:'GRU',sh:'[1,512]',w:lw*.75,h:14,d:12,c:'#a87800'},{n:'Decoder',sh:'[1,3,256,256]',w:lw*.7,h:12,d:10,c:'#906000'},{n:'Reward',sh:'[1,1]',w:lw*.5,h:8,d:4,c:'#784800'}];
-    }else{
-      tensors=[{n:'图像',sh:'[1,3,512,512]',w:lw,h:14,d:8,c:'#8b5cf6'},{n:'切块',sh:'3072→512',w:lw*.7,h:10,d:4,c:'#a78bfa'},{n:'Patch',sh:'[1,256,512]',w:lw*.9,h:16,d:8,c:'#6366f1'},{n:'VLM',sh:'[1,256,512]',w:lw*.88,h:18,d:20,c:'#3b82f6'},{n:'Attn',sh:'[1,256,512]',w:lw*.86,h:14,d:18,c:'#0ea5e9'},{n:'Cross',sh:'[1,16,512]',w:lw*.7,h:14,d:12,c:'#14b8a6'},{n:'DiT',sh:'[1,64,50]',w:lw*.55,h:16,d:10,c:'#10b981'},{n:'Action',sh:'[1,50,6]',w:lw*.4,h:10,d:6,c:'#00d4aa'}];
-    }
-    ctx2.clearRect(0,0,w,h);var yA=0;
-    for(var i=0;i<tensors.length;i++){var T=tensors[i],yo=yA,p=iso(0,yo,0),bw=T.w,bh=T.h,bd=T.d;
-      ctx2.fillStyle=T.c+'44';ctx2.beginPath();ctx2.moveTo(p.x,p.y);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x+bw,p.y);ctx2.fill();
-      ctx2.fillStyle=T.c+'cc';ctx2.fillRect(p.x,p.y,bw,bh);
-      ctx2.fillStyle=T.c+'88';ctx2.beginPath();ctx2.moveTo(p.x,p.y+bh);ctx2.lineTo(p.x-bd*.866,p.y+bh+bd*.5);ctx2.lineTo(p.x-bd*.866,p.y+bd*.5);ctx2.lineTo(p.x,p.y);ctx2.fill();
-      ctx2.strokeStyle='#00d4aa66';ctx2.lineWidth=1;ctx2.strokeRect(p.x,p.y,bw,bh);
-      ctx2.fillStyle='#fff';ctx2.font='bold 9px';ctx2.fillText(T.n,p.x+bw+4,p.y+bh/2+4);
-      ctx2.fillStyle='#8b949e';ctx2.font='9px monospace';ctx2.fillText(T.sh,p.x+bw+4,p.y+bh/2+16);yA+=T.h+8;
-    }
-    var papers={VLA:'VLA-Touch: Enhancing Vision-Language-Action Models with Dual-Level Tactile Feedback',GR00T:'GR00T N1: Generalist Robot 00T Model',ACT:'ACT: Action Chunking with Transformers',LeWM:'LeWM: LeRobot World Model for Visual Prediction'};
-    var pname=papers[name.match(/VLA|GR00T|ACT|LeWM/)]||'SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics';
-    pname+=' · '+tensors.length+'层';
-    ctx2.fillStyle='#fff';ctx2.font='8px sans-serif';ctx2.textAlign='center';ctx2.fillText(pname,w/2,h-6);
-    if(!c._bound){c._bound=true;
-      var dgX=false,sxX=0,syX=0;
-      c.addEventListener('mousedown',function(e){if(e.target.tagName==='CANVAS'){dgX=true;sxX=e.clientX;syX=e.clientY;e.stopPropagation();e.preventDefault()}});
-      document.addEventListener('mousemove',function(e){if(dgX){c._ang+=(e.clientX-sxX)*.008;c._px+=(e.clientX-sxX);c._py+=(e.clientY-syX);sxX=e.clientX;syX=e.clientY;render3D(c,name,type,color2)}});
-      document.addEventListener('mouseup',function(){dgX=false});
-    }
-  });
-}
-function show3D(name,type){
-  if(!window._zIdx)window._zIdx=10000;
-  var pop=document.createElement('div');
-  pop.style.cssText='position:fixed;left:'+(200+Math.random()*200)+'px;top:'+(80+Math.random()*150)+'px;width:360px;height:300px;background:#0a0a0f;border:6px solid'+colors[type]+';border-radius:12px;z-index:'+(window._zIdx++)+';display:flex;flex-direction:column;overflow:hidden;min-width:200px;min-height:180px;box-shadow:0 8px 32px rgba(0,0,0,.6)';
-  pop.innerHTML='<div style="padding:6px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid#222;cursor:move;user-select:none;background:#111;min-height:28px" onmousedown="var p=this.parentElement,drg=true,dx=e.clientX-p.offsetLeft,dy=e.clientY-p.offsetTop;document.onmousemove=function(e){if(drg){p.style.left=(e.clientX-dx)+"px";p.style.top=Math.max(0,Math.min(window.innerHeight-30,e.clientY-dy))+"px"}};document.onmouseup=function(){drg=false}"><span style="color:'+colors[type]+';font-weight:700;font-size:12px">🧊 '+name+'</span><button style="padding:2px 10px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px" onclick="this.parentElement.parentElement.remove()">✕</button></div><canvas style="flex:1;width:100%;height:100%"></canvas>';
-  document.body.appendChild(pop);
-  pop.addEventListener('mousedown',function(){pop.style.zIndex=window._zIdx++});
-  setTimeout(function(){var c2=pop.querySelector('canvas');if(c2){c2.width=pop.clientWidth-12;c2.height=pop.clientHeight-34;render3D(c2,name,type,colors[type])}},100);
-}
-function render3D(c,name,type,color2){
-  requestAnimationFrame(function(){
-    var ctx2=c.getContext('2d'),w=c.width,h=c.height;
     if(name.indexOf('M01')>=0){
       var pw=Math.min(w*.5,280),ph=Math.min(h*.4,280),gx=(w-pw)/2,gy=(h-ph)/2;
       var chs=[{l:'R',c:'#ff4444',dx:0,dy:0},{l:'G',c:'#44ff44',dx:16,dy:-12},{l:'B',c:'#4488ff',dx:32,dy:-24}];
@@ -347,7 +309,14 @@ function render3D(c,name,type,color2){
         ctx2.fillStyle='#fff';ctx2.font='bold 9px';ctx2.fillText(T.n,p.x+bw+4,p.y+bh/2+4);
         ctx2.fillStyle='#8b949e';ctx2.font='9px monospace';ctx2.fillText(T.sh,p.x+bw+4,p.y+bh/2+16);yA+=T.h+8;
       }
-      ctx2.fillStyle='#fff';ctx2.font='10px';ctx2.textAlign='center';ctx2.fillText('SmolVLA 3D · 拖动旋转平移',w/2,h-6);
+      var pname;
+      if(name.indexOf('VLA-Touch')>=0)pname='VLA-Touch: Enhancing Vision-Language-Action Models with Dual-Level Tactile Feedback';
+      else if(name.indexOf('GR00T')>=0)pname='GR00T N1: An Open Foundation Model for Generalist Humanoid Robots';
+      else if(name.indexOf('ACT')>=0)pname='Action Chunking with Transformers';
+      else if(name.indexOf('LeWM')>=0)pname='LeWM: Learning World Models for Robotic Control';
+      else pname='SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics';
+      pname+=' · '+tensors.length+'层';
+      ctx2.fillStyle='#fff';ctx2.font='8px sans-serif';ctx2.textAlign='center';ctx2.fillText(pname,w/2,h-6);
       // Bind rotation/pan once per canvas
       if(!c._bound){
         c._bound=true;
@@ -437,7 +406,7 @@ function addAction(){add('action','新动作 A??',300+Math.random()*200,150+Math
 function toggle(id){var el=document.getElementById(id);el.style.display=el.style.display==='none'?'':'none'}
 function preset(t){
   N=[];L=[];
-  var p={smolvla:[{t:'model',n:'M01 RGB图像',x:60,y:60},{t:'model',n:'SmolVLA 推理引擎',x:240,y:60},{t:'action',n:'A00 Action输出',x:420,y:60}],
+  var p={smolvla:[{t:'model',n:'M01 RGB图像',x:30,y:60},{t:'model',n:'SmolVLA 推理引擎',x:220,y:60},{t:'action',n:'A00 Action输出',x:410,y:60}],
           insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
           pick:[{t:'condition',n:'C001 取料·100G',x:80,y:200},{t:'model',n:'ACT · Sys1',x:280,y:200},{t:'action',n:'A01 取料·100G',x:480,y:200}],
           aoi:[{t:'condition',n:'C008 AOI·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A09 AOI',x:480,y:200}]};
@@ -445,7 +414,7 @@ function preset(t){
   for(var i=0;i<ids.length-1;i++)L.push({f:ids[i],t:ids[i+1]});draw()
 }
 
-preset('smolvla');setTimeout(function(){preset('smolvla')},300);fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){document.getElementById('st').innerHTML='🟢 在线·'+d.gpu}).catch(function(){document.getElementById('st').innerHTML='🔴 离线·SSH: python3 comfyui_backend.py'});
+//fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){document.getElementById('st').innerHTML='🟢 在线·'+d.gpu}).catch(function(){document.getElementById('st').innerHTML='🔴 离线·SSH: python3 comfyui_backend.py'});
 // 自动加载默认预设
 // 独立窗口模式
 if(window.opener||window.name.indexOf('ZMAX')>=0){var b=document.querySelector('[onclick*=window.open]');if(b)b.style.display='none'}
@@ -506,5 +475,6 @@ function saveWorkflow(){
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();
   Lg('💾 已保存: '+fname+' · '+N.length+'节点/'+L.length+'连线');
 }
-preset('smolvla');
+
+setTimeout(function(){rz();preset("smolvla");},300);
 </script></body></html>
