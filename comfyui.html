@@ -18,6 +18,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
+<button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
 <button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
@@ -247,6 +248,24 @@ canvas.ondrop=function(e){e.preventDefault();var p=getPos(e);add(e.dataTransfer.
 function Lg(m){var l=document.getElementById('log-content');var wasAtBottom=l.scrollTop+l.clientHeight>=l.scrollHeight-10;l.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;if(wasAtBottom||!l.dataset.manualScroll)l.scrollTop=l.scrollHeight;console.log(m)}
 document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('log-content');l.addEventListener('scroll',function(){l.dataset.manualScroll=l.scrollTop+l.clientHeight<l.scrollHeight-10?'1':''})});
 
+function step(){
+  saveState();
+  var nodes=N.map(function(n){return n.name});
+  Lg('══ 🔍 单步调试 ══');
+  Lg('📋 节点: '+nodes.join(', '));
+  fetch('/api/comfy/debug',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:nodes})})
+    .then(function(r){return r.json()}).then(function(d){
+      Lg('╔══════════════════════╗');
+      Lg('║ 💻 '+d.step);
+      Lg('║ 📝 '+d.location);
+      Lg('║ 🔢 变量: '+JSON.stringify(d.variables,null,2));
+      Lg('║ 📐 张量形状: '+d.shapes);
+      Lg('║ 📦 模型路径: '+d.model_path);
+      Lg('║ ⚙️  参数量: '+d.params);
+      if(d.traceback) Lg('║ ⚠️ 堆栈: '+d.traceback);
+      Lg('╚══════════════════════╝');
+    }).catch(function(){Lg('❌ 调试接口未就绪, 请检查4090后端')});
+}
 function run(){
   if(N.length===0){Lg('⚠️ 请从左侧拖拽节点到画布');return}
   var nodeNames=N.map(function(n){return n.name}).join(', ');
