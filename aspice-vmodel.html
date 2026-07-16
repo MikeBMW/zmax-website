@@ -103,7 +103,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
   <g><rect x="875" y="495" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="985" y="516" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件验收测试</text><text x="985" y="532" text-anchor="middle" fill="#8b949e" font-size="8">标定·通信·安全·力学</text><text x="985" y="547" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
   <!-- Bottom center -->
-  <g><rect x="360" y="548" width="380" height="58" rx="10" fill="#00d4aa"/><text x="550" y="572" text-anchor="middle" fill="#000" font-size="15" font-weight="800">数据模型全链路闭环</text><text x="550" y="594" text-anchor="middle" fill="#000" font-size="9"></text></g>
+  <g><rect x="360" y="548" width="380" height="58" rx="10" fill="#00d4aa"/><text x="550" y="572" text-anchor="middle" fill="#000" font-size="15" font-weight="800">数据模型全链路闭环</text><text x="550" y="594" text-anchor="middle" fill="#000" font-size="9">条件→模型→引擎→动作·L4产品全流程</text></g>
 
   <!-- Cross-link verification lines -->
   <line x1="115" y1="87" x2="985" y2="487" stroke="#00d4aa08" stroke-dasharray="4,8"/>
@@ -221,14 +221,14 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 </div>
 
 <div class="phase-card"><h4>⚡ 2. 效率节拍 <span class="tag tag-sb">SYS.2</span></h4>
-<table class="data"><tr><td style="color:var(--gd)">上下料节拍</td><td style="font-weight:700">≤ 30s（取料/扫码/插入/测试/拔出/AOI/分拣）</td></tr>
+<table class="data"><tr><td style="color:var(--gd)">单工序节拍</td><td style="font-weight:700">≤ 30s（取料/扫码/插入/测试/拔出/AOI/分拣）</td></tr>
 <tr><td style="color:var(--gd)">料盘规格</td><td>20只/盘，可堆叠，人工周转间隔以此估算</td></tr>
 <tr><td style="color:var(--gd)">看管模式</td><td>1台机器人异步看管2台测试PC，等待测试结果期间执行另一台操作</td></tr>
 <tr><td style="color:var(--gd)">连续运行</td><td>≥ 24H（定期维保除外）</td></tr></table>
 </div>
 
 <div class="phase-card"><h4>🔧 3. 整机性能 <span class="tag tag-sb">SYS.2</span></h4>
-<table class="data"><tr><td style="color:var(--gd)">绝对定位精度</td><td style="font-weight:700">≤ ±0.2mm</td></tr>
+<table class="data"><tr><td style="color:var(--gd)">绝对定位精度</td><td style="font-weight:700">≤ ±0.5mm</td></tr>
 <tr><td style="color:var(--gd)">重复定位精度</td><td style="font-weight:700">≤ ±0.02mm</td></tr>
 <tr><td style="color:var(--gd)">末端最大负载</td><td style="font-weight:700">≥ 5kg</td></tr>
 <tr><td style="color:var(--gd)">力觉反馈精度</td><td style="font-weight:700">≤ 0.1N（六维力觉/关节力矩+指尖视触觉）</td></tr></table>
@@ -245,6 +245,12 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 function exportWord(){
   var h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="UTF-8"><style>body{font-family:SimSun;font-size:11pt}h1{font-size:16pt;color:#00d4aa}h3{font-size:13pt}table{border-collapse:collapse;width:100%;margin:8pt 0}td,th{border:1px solid #999;padding:4pt;font-size:9pt}.R{background:#d4f5d4;font-weight:bold}.A{background:#ffe0b2;font-weight:bold}.S{background:#e8d0ff;font-weight:bold}.I{background:#e0e0e0}svg{width:100%;height:auto}</style></head><body>';
   h+=document.querySelector('.container').innerHTML;
+<div style="text-align:center;margin:20px 0;padding:12px;background:var(--bz);border-radius:12px">
+<a href="/index.html" style="color:var(--gd);text-decoration:none;margin:0 12px;font-size:11px">🏠 主页</a>
+<a href="/aspice-vmodel.html" style="color:var(--ac);text-decoration:none;margin:0 12px;font-size:11px;font-weight:700">🐝💎 智蜂×它石</a>
+<a href="/vmodel-tshan.html" style="color:var(--tshan);text-decoration:none;margin:0 12px;font-size:11px;font-weight:700">🐝⛰️ 智蜂×他山</a>
+<a href="/comfyui.html" style="color:var(--gd);text-decoration:none;margin:0 12px;font-size:11px">🎨 ComfyUI</a>
+</div>
   h+='</body></html>';
   var b=new Blob([h],{type:'application/msword'});
   var a=document.createElement('a');a.href=URL.createObjectURL(b);
@@ -253,4 +259,10 @@ function exportWord(){
 }
 </script>
 <div style="text-align:center;margin:24px 0"><button class="btn" onclick="exportWord()">📥 导出 Word</button><button class="btn" onclick="window.print()" style="background:#58a6ff;margin-left:8px">📄 导出 PDF</button></div>
+<div style="text-align:center;margin:20px 0;padding:12px;background:var(--bz);border-radius:12px">
+<a href="/index.html" style="color:var(--gd);text-decoration:none;margin:0 12px;font-size:11px">🏠 主页</a>
+<a href="/aspice-vmodel.html" style="color:var(--ac);text-decoration:none;margin:0 12px;font-size:11px;font-weight:700">🐝💎 智蜂×它石</a>
+<a href="/vmodel-tshan.html" style="color:var(--tshan);text-decoration:none;margin:0 12px;font-size:11px;font-weight:700">🐝⛰️ 智蜂×他山</a>
+<a href="/comfyui.html" style="color:var(--gd);text-decoration:none;margin:0 12px;font-size:11px">🎨 ComfyUI</a>
+</div>
 </body></html>
