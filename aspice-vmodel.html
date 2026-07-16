@@ -118,8 +118,9 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <h3>📋 ASPICE 3.1 过程域覆盖</h3>
 <table class="data">
 <tr><th style="width:12%">过程域</th><th style="width:25%">名称</th><th>描述</th><th style="width:15%">责任方</th></tr>
+<tr><td>SYS.1</td><td>项目启动与计划</td><td>项目章程、资源分配、里程碑定义、风险评估、ASPICE等级目标制定</td><td><span class="tag tag-both">🐝+💎</span></td></tr>
 <tr><td>SYS.2</td><td>系统需求分析</td><td>光模块100G/400G/800G三类产品的自动插拔装配需求，力控精度±0.5N，插拔节拍<3s，DDS条件C001-C038为需求基线</td><td><span class="tag tag-sb">🐝 智蜂</span></td></tr>
-<tr><td>SYS.3</td><td>系统架构设计</td><td>DDS全局数据空间顶层架构：38条件→7模型→5引擎→31动作，三层解耦设计，condition→model→engine→action闭环</td><td><span class="tag tag-sb">🐝 智蜂</span></td></tr>
+<tr><td>SYS.3</td><td>系统架构设计</td><td>数据全局空间顶层架构：条件→模型→引擎→动作，三层解耦设计</td><td><span class="tag tag-sb">🐝 智蜂</span></td></tr>
 <tr><td>SWE.1</td><td>软件需求分析</td><td>5引擎模型需求定义：SmolVLA(450M)/VLA-Touch(470M)/GR00T(6.9GB)/ACT(50M)/LeWM(200M)，推理延迟<300ms，VRAM≤2GB</td><td><span class="tag tag-ts">💎 它石</span></td></tr>
 <tr><td>SWE.2</td><td>软件架构设计</td><td>VLA架构方案：SmolVLM-2视觉骨干+VTLA DiT动作专家，力触觉双模态融合，W&B训练监控集成</td><td><span class="tag tag-ts">💎 它石</span></td></tr>
 <tr><td>SWE.3</td><td>软件详细设计</td><td>模型编码实现：SmolVLA推理管线，dtype float32兼容，ComfyUI节点编辑器，DDS数据映射，DAG工作流保存/加载</td><td><span class="tag tag-ts">💎 它石</span></td></tr>
@@ -141,6 +142,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <div class="raci-wrap">
 <table>
 <tr><th style="width:25%">工作包 (WBS)</th><th style="width:18%">🐝 智蜂(系统)</th><th style="width:18%">🐝 智蜂(硬件)</th><th style="width:18%">💎 它石(算法)</th><th style="width:18%">💎 它石(软件)</th></tr>
+<tr><td>SYS.1 项目启动与计划</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="I">I</span></td></tr>
 <tr><td>SYS.2 系统需求分析</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="I">I</span></td></tr>
 <tr><td>SYS.3 系统架构设计</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="I">I</span></td></tr>
 <tr><td>SWE.1 软件需求分析</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
@@ -151,7 +153,8 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <tr><td>SWE.6 软件合格性测试</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
 <tr><td>SYS.4 系统集成测试</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td></tr>
 <tr><td>SYS.5 系统合格性测试</td><td><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="R">R</span></td><td><span class="S">S</span></td></tr>
-<tr style="background:#00d4aa08"><td style="color:var(--ac)">DLV.1 数据模型全链路闭环运行</td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td></tr>
+<tr style="background:#00d4aa08"><td>SUP.1 质量保证</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="R">R</span></td></tr>
+<tr style="background:#00d4aa08"><td>MAN.3 项目管理</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="I">I</span></td><td><span class="I">I</span></td><td><span class="I">I</span></td></tr>
 </table>
 </div>
 
@@ -160,8 +163,8 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <div class="phase-card">
 <div class="wbs-level l1">1.0 光模块智能装配系统</div>
 <div class="wbs-level l1">1.1 系统层 <span class="tag tag-sb">🐝 智蜂</span></div>
-<div class="wbs-level l3">1.1.1 系统需求分析 (SYS.2) — DDS条件C001-C038基线</div>
-<div class="wbs-level l3">1.1.2 系统架构设计 (SYS.3) — DDS全局空间·三层解耦</div>
+<div class="wbs-level l3">1.1.1 系统需求分析 (SYS.2) — 条件C001-C038基线</div>
+<div class="wbs-level l3">1.1.2 系统架构设计 (SYS.3) — 数据全局空间·三层解耦</div>
 <div class="wbs-level l3">1.1.3 硬件平台搭建 — UR5+D405+Z6N+Orin Nano</div>
 <div class="wbs-level l3">1.1.4 系统集成测试 (SYS.4) — 全链路联调</div>
 <div class="wbs-level l3">1.1.5 系统合格性测试 (SYS.5) — 整机验收</div>
@@ -181,7 +184,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <div class="wbs-level l3">1.3.1 数据模型全链路闭环运行 — C0xx→M0x→Engine→A0x</div>
 <div class="wbs-level l3">1.3.2 ComfyUI主数据编辑窗口 — http://datadrive.world/comfyui.html</div>
 <div class="wbs-level l3">1.3.3 W&B训练监控 — xspace/zmax-smolvla等5项目</div>
-<div class="wbs-level l3">1.3.4 DDS全局数据空间 — http://datadrive.world/dds-data-space.html</div>
+<div class="wbs-level l3">1.3.4 全局数据空间主数据节点 — http://datadrive.world/dds-data-space.html</div>
 </div>
 
 <!-- 交付物 -->
