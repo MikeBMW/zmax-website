@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ASPICE V-Model · 光模块智能装配</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Z700 V-Model · 光模块智能装配</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bz:#1a1a2e;--sg:#0a0a0f;--ac:#00d4aa;--sb:#f0a500;--ts:#58a6ff;--gd:#8b949e;--sp:#b388ff}
@@ -41,7 +41,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 @media(max-width:768px){.container{padding:10px 12px}h1{font-size:18px}}
 </style></head><body><div class="container">
 
-<h1>🚗 ASPICE V-Model 开发流程</h1>
+<h1>🚗 Z700 V-Model 开发流程</h1>
 <h2>Automotive SPICE 3.1 · 光模块智能装配系统 · 智蜂创元 × 它石智航 · 2026-07-16</h2>
 
 <!-- 公司介绍 -->
@@ -72,9 +72,11 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 
   <!-- Axis labels -->
   <text x="275" y="30" fill="#f0a500" font-size="11" font-weight="700">▼ 系统设计 (智蜂创元)</text>
+  <g><rect x="5" y="10" width="220" height="56" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="32" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.1 项目启动</text><text x="115" y="46" text-anchor="middle" fill="#8b949e" font-size="8">项目计划·资源分配·里程碑</text><text x="115" y="60" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
+  <g><rect x="875" y="10" width="220" height="56" rx="8" fill="#00d4aa15" stroke="#00d4aa" stroke-width="2"/><text x="985" y="32" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SYS.5 系统验收</text><text x="985" y="46" text-anchor="middle" fill="#8b949e" font-size="8">整机验收·客户交付·结项</text><text x="985" y="60" text-anchor="middle" fill="#00d4aa" font-size="7">🐝 智蜂 · R</text></g>
   <g><rect x="5" y="10" width="220" height="50" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="32" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.1 项目启动</text><text x="115" y="48" text-anchor="middle" fill="#8b949e" font-size="8">项目计划·资源分配·里程碑</text></g>
   <g><rect x="875" y="10" width="220" height="50" rx="8" fill="#00d4aa15" stroke="#00d4aa" stroke-width="2"/><text x="985" y="32" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SYS.5 系统验收</text><text x="985" y="48" text-anchor="middle" fill="#8b949e" font-size="8">整机验收·客户交付·结项</text></g>
-  <text x="825" y="30" fill="#58a6ff" font-size="11" font-weight="700">▲ 验证与测试 (它石智航)</text>
+  <text x="730" y="30" fill="#58a6ff" font-size="11" font-weight="700">▲ 验证与测试 (它石智航)</text>
 
   <!-- LEFT: Design -->
   <g><rect x="5" y="55" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="76" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.2 系统需求分析</text><text x="115" y="92" text-anchor="middle" fill="#8b949e" font-size="8">光模块插拔·力控</text><text x="115" y="107" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
@@ -103,7 +105,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
   <g><rect x="875" y="455" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="985" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件验收测试</text><text x="985" y="492" text-anchor="middle" fill="#8b949e" font-size="8">标定·通信·安全·力学</text><text x="985" y="507" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
   <!-- Bottom center -->
-  <g><rect x="360" y="548" width="380" height="58" rx="10" fill="#00d4aa"/><text x="550" y="572" text-anchor="middle" fill="#000" font-size="15" font-weight="800">DDS 全链路执行</text><text x="550" y="594" text-anchor="middle" fill="#000" font-size="9">C0xx→M0x→Engine→A0x · condition→model→engine→action闭环</text></g>
+  <g><rect x="360" y="548" width="380" height="58" rx="10" fill="#00d4aa"/><text x="550" y="572" text-anchor="middle" fill="#000" font-size="15" font-weight="800">DDS 全链路执行</text><text x="550" y="594" text-anchor="middle" fill="#000" font-size="9"></text></g>
 
   <!-- Cross-link verification lines -->
   <line x1="115" y1="87" x2="985" y2="487" stroke="#00d4aa08" stroke-dasharray="4,8"/>
@@ -151,7 +153,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <tr><td>SWE.6 软件合格性测试</td><td><span class="S">S</span></td><td><span class="I">I</span></td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td></tr>
 <tr><td>SYS.4 系统集成测试</td><td><span class="R">R</span><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td><td><span class="S">S</span></td></tr>
 <tr><td>SYS.5 系统合格性测试</td><td><span class="A">A</span></td><td><span class="S">S</span></td><td><span class="R">R</span></td><td><span class="S">S</span></td></tr>
-<tr style="background:#00d4aa08"><td style="color:var(--ac)">DLV.1 DDS全链路执行</td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td></tr>
+<tr style="background:#00d4aa08"><td style="color:var(--ac)">DLV.1 数据模型全链路闭环</td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td><td><span class="R">R</span></td></tr>
 </table>
 </div>
 
@@ -178,7 +180,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <div class="wbs-level l3">1.2.9 软件合格性测试 (SWE.6) — Sim→Real验证</div>
 
 <div class="wbs-level l1" style="margin-top:14px">1.3 联合层 <span class="tag tag-both">🐝+💎</span></div>
-<div class="wbs-level l3">1.3.1 DDS全链路执行 — C0xx→M0x→Engine→A0x</div>
+<div class="wbs-level l3">1.3.1 数据模型全链路闭环 — C0xx→M0x→Engine→A0x</div>
 <div class="wbs-level l3">1.3.2 ComfyUI主数据编辑窗口 — http://datadrive.world/comfyui.html</div>
 <div class="wbs-level l3">1.3.3 W&B训练监控 — xspace/zmax-smolvla等5项目</div>
 <div class="wbs-level l3">1.3.4 DDS全局数据空间 — http://datadrive.world/dds-data-space.html</div>
@@ -188,7 +190,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <h3>📦 项目交付物</h3>
 <table class="data">
 <tr><th>交付物</th><th>链接</th><th>状态</th></tr>
-<tr><td>ASPICE V-Model</td><td><a href="http://datadrive.world/aspice-vmodel.html" style="color:var(--ac)">aspice-vmodel.html</a></td><td>✅</td></tr>
+<tr><td>Z700 V-Model</td><td><a href="http://datadrive.world/aspice-vmodel.html" style="color:var(--ac)">aspice-vmodel.html</a></td><td>✅</td></tr>
 <tr><td>主数据编辑器</td><td><a href="http://datadrive.world/comfyui.html" style="color:var(--ac)">comfyui.html</a></td><td>✅</td></tr>
 <tr><td>手机控制端</td><td><a href="http://datadrive.world/comfyui-mobile.html" style="color:var(--ac)">comfyui-mobile.html</a></td><td>✅</td></tr>
 <tr><td>DDS全局数据空间</td><td><a href="http://datadrive.world/dds-data-space.html" style="color:var(--ac)">dds-data-space.html</a></td><td>✅</td></tr>
