@@ -7,7 +7,7 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;backgr
 h1{font-size:24px;color:var(--ac);margin-bottom:2px}
 h2{font-size:13px;color:var(--gd);font-weight:400;margin-bottom:20px}
 h3{margin:28px 0 12px;color:var(--ac);font-size:16px}
-.org-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.org-bar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
 .org-card{flex:1;min-width:200px;background:var(--bz);border-radius:12px;padding:14px;border:1px solid#222}
 .org-card h4{font-size:13px;margin-bottom:4px}
 .org-card .sub{font-size:10px;color:var(--gd);margin-bottom:8px}
@@ -62,43 +62,45 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 
 <!-- V字流程图 -->
 <h3>🔀 V字开发流程图</h3>
-<svg viewBox="0 0 1100 660" width="100%" style="max-width:1100px">
-  <rect fill="#1a1a2e" width="1100" height="660" rx="12"/>
+<svg viewBox="0 0 1100 740" width="100%" style="max-width:1100px">
+  <rect fill="#1a1a2e" width="1100" height="740" rx="12"/>
 
   <!-- V lines -->
-  <polyline points="40,90 200,90 550,580" fill="none" stroke="#f0a50044" stroke-width="2" stroke-dasharray="6,3"/>
-  <polyline points="1060,90 900,90 550,580" fill="none" stroke="#58a6ff44" stroke-width="2" stroke-dasharray="6,3"/>
+  <polyline points="40,30 200,30 550,580" fill="none" stroke="#f0a50044" stroke-width="2" stroke-dasharray="6,3"/>
+  <polyline points="1060,30 900,30 550,580" fill="none" stroke="#58a6ff44" stroke-width="2" stroke-dasharray="6,3"/>
   <line x1="370" y1="580" x2="730" y2="580" stroke="#00d4aa" stroke-width="4"/>
 
   <!-- Axis labels -->
   <text x="275" y="30" fill="#f0a500" font-size="11" font-weight="700">▼ 系统设计 (智蜂创元)</text>
+  <g><rect x="5" y="10" width="220" height="50" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="32" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.1 项目启动</text><text x="115" y="48" text-anchor="middle" fill="#8b949e" font-size="8">项目计划·资源分配·里程碑</text></g>
+  <g><rect x="875" y="10" width="220" height="50" rx="8" fill="#00d4aa15" stroke="#00d4aa" stroke-width="2"/><text x="985" y="32" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SYS.5 系统验收</text><text x="985" y="48" text-anchor="middle" fill="#8b949e" font-size="8">整机验收·客户交付·结项</text></g>
   <text x="825" y="30" fill="#58a6ff" font-size="11" font-weight="700">▲ 验证与测试 (它石智航)</text>
 
   <!-- LEFT: Design -->
-  <g><rect x="5" y="55" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="76" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.2 系统需求分析</text><text x="115" y="92" text-anchor="middle" fill="#8b949e" font-size="8">光模块插拔·力控</text><text x="115" y="107" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · Accountable</text></g>
+  <g><rect x="5" y="55" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="76" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.2 系统需求分析</text><text x="115" y="92" text-anchor="middle" fill="#8b949e" font-size="8">光模块插拔·力控</text><text x="115" y="107" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
-  <g><rect x="5" y="135" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="156" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.3 系统架构设计</text><text x="115" y="172" text-anchor="middle" fill="#8b949e" font-size="8">DDS全局空间·DDS全节点</text><text x="115" y="187" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · Accountable</text></g>
+  <g><rect x="5" y="135" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="156" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.3 系统架构设计</text><text x="115" y="172" text-anchor="middle" fill="#8b949e" font-size="8">数据全局空间 主数据节点</text><text x="115" y="187" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
-  <g><rect x="5" y="215" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="115" y="236" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.1 软件需求分析</text><text x="115" y="252" text-anchor="middle" fill="#8b949e" font-size="8">模型需求定义·推理规格</text><text x="115" y="267" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · Accountable</text></g>
+  <g><rect x="5" y="215" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="115" y="236" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.1 软件需求分析</text><text x="115" y="252" text-anchor="middle" fill="#8b949e" font-size="8">模型需求定义·推理规格</text><text x="115" y="267" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · R</text></g>
 
-  <g><rect x="5" y="295" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="115" y="316" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.2 软件架构设计</text><text x="115" y="332" text-anchor="middle" fill="#8b949e" font-size="8">VLA架构·SmolVLA/VLA-Touch</text><text x="115" y="347" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · Accountable</text></g>
+  <g><rect x="5" y="295" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="115" y="316" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.2 软件架构设计</text><text x="115" y="332" text-anchor="middle" fill="#8b949e" font-size="8">VLA架构·SmolVLA/VLA-Touch</text><text x="115" y="347" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · R</text></g>
 
-  <g><rect x="5" y="375" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="115" y="396" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.3 软件详细设计</text><text x="115" y="412" text-anchor="middle" fill="#8b949e" font-size="8">模型编码·GR00T等模型</text><text x="115" y="427" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · Accountable</text></g>
+  <g><rect x="5" y="375" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="115" y="396" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.3 软件详细设计</text><text x="115" y="412" text-anchor="middle" fill="#8b949e" font-size="8">模型编码·GR00T等模型</text><text x="115" y="427" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · R</text></g>
 
-  <g><rect x="5" y="455" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件设计与集成</text><text x="115" y="492" text-anchor="middle" fill="#8b949e" font-size="8">UR5·D405·Z6N·Orin Nano</text><text x="115" y="507" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · Accountable</text></g>
+  <g><rect x="5" y="455" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="115" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件设计与集成</text><text x="115" y="492" text-anchor="middle" fill="#8b949e" font-size="8">UR5·D405·Z6N·Orin Nano</text><text x="115" y="507" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
   <!-- RIGHT: Validation -->
-  <g><rect x="875" y="55" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="985" y="76" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.4 软件单元验证</text><text x="985" y="92" text-anchor="middle" fill="#8b949e" font-size="8">单模型测试·类型兼容</text><text x="985" y="107" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · Accountable</text></g>
+  <g><rect x="875" y="55" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="985" y="76" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.4 软件单元验证</text><text x="985" y="92" text-anchor="middle" fill="#8b949e" font-size="8">单模型测试·类型兼容</text><text x="985" y="107" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · R</text></g>
 
   <g><rect x="875" y="135" width="220" height="64" rx="8" fill="#00d4aa12" stroke="#00d4aa" stroke-width="1.5"/><text x="985" y="156" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SWE.5 软件集成测试</text><text x="985" y="172" text-anchor="middle" fill="#8b949e" font-size="8">模型联调·端到端推理</text><text x="985" y="187" text-anchor="middle" fill="#00d4aa" font-size="7">🐝+💎 联合</text></g>
 
-  <g><rect x="875" y="215" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="985" y="236" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.6 软件合格性测试</text><text x="985" y="252" text-anchor="middle" fill="#8b949e" font-size="8">Sim→Real迁移·W&B验证</text><text x="985" y="267" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · Accountable</text></g>
+  <g><rect x="875" y="215" width="220" height="64" rx="8" fill="#58a6ff12" stroke="#58a6ff" stroke-width="1.5"/><text x="985" y="236" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">SWE.6 软件合格性测试</text><text x="985" y="252" text-anchor="middle" fill="#8b949e" font-size="8">Sim→Real迁移·W&B验证</text><text x="985" y="267" text-anchor="middle" fill="#58a6ff" font-size="7">💎 它石 · R</text></g>
 
-  <g><rect x="875" y="295" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="985" y="316" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.4 系统集成测试</text><text x="985" y="332" text-anchor="middle" fill="#8b949e" font-size="8">全链路·Orin-</text><text x="985" y="347" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · Accountable</text></g>
+  <g><rect x="875" y="295" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="985" y="316" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">SYS.4 系统集成测试</text><text x="985" y="332" text-anchor="middle" fill="#8b949e" font-size="8">全链路·Orin-</text><text x="985" y="347" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
   <g><rect x="875" y="375" width="220" height="64" rx="8" fill="#00d4aa12" stroke="#00d4aa" stroke-width="2.5"/><text x="985" y="396" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">SYS.5 系统合格性测试</text><text x="985" y="412" text-anchor="middle" fill="#8b949e" font-size="8">验收·插拔率>99.5%</text><text x="985" y="427" text-anchor="middle" fill="#00d4aa" font-size="7">🐝+💎 联合</text></g>
 
-  <g><rect x="875" y="455" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="985" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件验收测试</text><text x="985" y="492" text-anchor="middle" fill="#8b949e" font-size="8">标定·通信·安全·力学</text><text x="985" y="507" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · Accountable</text></g>
+  <g><rect x="875" y="455" width="220" height="64" rx="8" fill="#f0a50012" stroke="#f0a500" stroke-width="1.5"/><text x="985" y="476" text-anchor="middle" fill="#f0a500" font-size="12" font-weight="700">硬件验收测试</text><text x="985" y="492" text-anchor="middle" fill="#8b949e" font-size="8">标定·通信·安全·力学</text><text x="985" y="507" text-anchor="middle" fill="#f0a500" font-size="7">🐝 智蜂 · R</text></g>
 
   <!-- Bottom center -->
   <g><rect x="360" y="548" width="380" height="58" rx="10" fill="#00d4aa"/><text x="550" y="572" text-anchor="middle" fill="#000" font-size="15" font-weight="800">DDS 全链路执行</text><text x="550" y="594" text-anchor="middle" fill="#000" font-size="9">C0xx→M0x→Engine→A0x · condition→model→engine→action闭环</text></g>
@@ -132,7 +134,7 @@ svg{max-width:100%;background:var(--bz);border-radius:12px;margin:12px 0}
 <h3>📊 RASI 责任矩阵</h3>
 <div class="legend">
   <span style="background:#00d4aa22;color:var(--ac)">R = Responsible 执行者</span>
-  <span style="background:#f0a50022;color:var(--sb)">A = Accountable 审批者</span>
+  <span style="background:#f0a50022;color:var(--sb)">A = R 审批者</span>
   <span style="background:#b388ff22;color:var(--sp)">S = Supportive 支持者</span>
   <span style="background:#8b949e22;color:var(--gd)">I = Informed 知会者</span>
 </div>
