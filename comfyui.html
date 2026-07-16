@@ -248,6 +248,11 @@ canvas.ondrop=function(e){e.preventDefault();var p=getPos(e);add(e.dataTransfer.
 function Lg(m){var l=document.getElementById('log-content');var wasAtBottom=l.scrollTop+l.clientHeight>=l.scrollHeight-10;l.innerText+='\n'+new Date().toLocaleTimeString()+' '+m;if(wasAtBottom||!l.dataset.manualScroll)l.scrollTop=l.scrollHeight;console.log(m)}
 document.addEventListener('DOMContentLoaded',function(){var l=document.getElementById('log-content');l.addEventListener('scroll',function(){l.dataset.manualScroll=l.scrollTop+l.clientHeight<l.scrollHeight-10?'1':''})});
 
+function trainHJEPA(){
+  Lg("🧬 H-JEPA训练启动");
+  fetch("/api/comfy/train/hjepa",{method:"POST"}).then(function(r){return r.json()}).then(function(d){Lg("✅ 训练: "+d.status)}).catch(function(){Lg("❌ 训练接口未就绪")});
+}
+
 function step(){
   saveState();
   var nodes=N.map(function(n){return n.name});
