@@ -1,5 +1,3 @@
-function showFeedbackLoops(){var p=document.createElement("div");p.style.cssText="position:fixed;left:5%;top:5%;width:90%;height:90%;background:#0a0a0f;border:2px solid#ff6b6b;border-radius:12px;z-index:99999;overflow-y:auto;padding:20px";p.innerHTML='<h2 style="color:#ff6b6b;margin-bottom:8px">🔄 5层分布式反馈回路</h2><div style="font-family:monospace;font-size:11px;line-height:1.6;color:#c8d1d9;white-space:pre-wrap">⏱ 时间 t → t+1 预测-反馈循环:┌─────────────────────────────────────────────┐│ 回路① 语义反馈:                    ││ JEPA₃ Enc → z₃(t) → JEPA₃ Pred → ẑ₃(t+1)││  ↑                              ││  └── 误差 L_jepa₃ 反向传播 ──────┘       ││ 回路② 物体反馈 (接收回路①的先验):     ││ JEPA₂ Enc ← z₃'(先验) → z₂(t) → Pred → ẑ₂││  ↑                              ││  └── 误差 L_jepa₂ 反向传播 ──────┘       ││ 回路③ 空间反馈 (接收回路②的先验):     ││ JEPA₁ Enc ← z₂'(先验) → z₁(t) → Pred → ẑ₁││  ↑                              ││  └── 误差 L_jepa₁ 反向传播 ──────┘       ││ 回路④ 跨模态反馈:                  ││ VLM ↔ GNN ↔ Force → Cross-Modal Fusion  ││ 视觉纠正图结构, 图结构约束力空间,      ││ 力反馈修正视觉                      ││ 回路⑤ 动作反馈 (全局):              ││ Action → 环境 → s(t+1) → z(t+1) → 更新  │└─────────────────────────────────────────────┘</div><br><button onclick="this.parentElement.remove()" style="padding:8px 20px;background:#ff6b6b;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">✕ 关闭</button>';document.body.appendChild(p)}
-
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script><title>ComfyUI · Z-MAX</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -81,7 +79,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="sys">
 <div class="sn" draggable="true" data-t="system" data-n="Sys1 · 底座" style="border-left:3px solid #d4a800">Sys1 · 底座</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys1 Hybrid" style="border-left:3px solid #ff6b6b">🔀 Sys1 · Hybrid</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys1 Hybrid" style="border-left:3px solid #ff6b6b">Sys1 · Hybrid</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys10 · ACT" style="border-left:3px solid #d4a800">Sys10 · ACT</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys11 · SmolVLA" style="border-left:3px solid #d4a800">Sys11 · SmolVLA</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys12 · LeWorld" style="border-left:3px solid #d4a800">Sys12 · LeWorld</div>
@@ -511,9 +508,5 @@ function saveWorkflow(){
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();
   Lg('💾 已保存: '+fname+' · '+N.length+'节点/'+L.length+'连线');
 }
-
-setTimeout(function(){rz();preset("smolvla");},300);
-setTimeout(function(){rz();preset("smolvla");},300);
-function showFeedbackLoops(){var p=document.createElement("div");p.style.cssText="position:fixed;left:5%;top:5%;width:90%;height:90%;background:#0a0a0f;border:2px solid#ff6b6b;border-radius:12px;z-index:99999;overflow-y:auto;padding:20px";p.innerHTML='<h2 style="color:#ff6b6b;margin-bottom:8px">🔄 5层分布式反馈回路</h2><div style="font-family:monospace;font-size:11px;line-height:1.6;color:#c8d1d9;white-space:pre-wrap">⏱ 时间 t → t+1 预测-反馈循环:┌─────────────────────────────────────────────┐│ 回路① 语义反馈:                    ││ JEPA₃ Enc → z₃(t) → JEPA₃ Pred → ẑ₃(t+1)││  ↑                              ││  └── 误差 L_jepa₃ 反向传播 ──────┘       ││ 回路② 物体反馈 (接收回路①的先验):     ││ JEPA₂ Enc ← z₃'(先验) → z₂(t) → Pred → ẑ₂││  ↑                              ││  └── 误差 L_jepa₂ 反向传播 ──────┘       ││ 回路③ 空间反馈 (接收回路②的先验):     ││ JEPA₁ Enc ← z₂'(先验) → z₁(t) → Pred → ẑ₁││  ↑                              ││  └── 误差 L_jepa₁ 反向传播 ──────┘       ││ 回路④ 跨模态反馈:                  ││ VLM ↔ GNN ↔ Force → Cross-Modal Fusion  ││ 视觉纠正图结构, 图结构约束力空间,      ││ 力反馈修正视觉                      ││ 回路⑤ 动作反馈 (全局):              ││ Action → 环境 → s(t+1) → z(t+1) → 更新  │└─────────────────────────────────────────────┘</div><br><button onclick="this.parentElement.remove()" style="padding:8px 20px;background:#ff6b6b;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px">✕ 关闭</button>';document.body.appendChild(p)}
-
+setTimeout(function(){rz();preset("smolvla");},800);
 </script></body></html>
