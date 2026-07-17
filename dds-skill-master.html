@@ -48,21 +48,21 @@ tr:nth-child(even) td{background:#080c14}
 <table><tr><td>DDS Topic</td><td>/dds/model/depth</td></tr>
 <tr><td>数据类型</td><td>float32 (B,1,H,W)</td></tr>
 <tr><td>来源</td><td>RealSense D435 深度流</td></tr>
-<tr><td>训练模型</td><td>Sys21 VTLA(3D感知)</td></tr>
+<tr><td>训练模型</td><td>Sys21 VLA-T(3D感知)</td></tr>
 <tr><td>质量Key</td><td>0.1-10m有效范围</td></tr></table></div>
 
 <div class="card"><h3>M03 · sensor_force_6d</h3>
 <table><tr><td>DDS Topic</td><td>/dds/model/force</td></tr>
 <tr><td>数据类型</td><td>float32[6] (Fx,Fy,Fz,Tx,Ty,Tz)</td></tr>
 <tr><td>来源</td><td>六维力传感器</td></tr>
-<tr><td>训练模型</td><td>Sys21 VTLA(力控)</td></tr>
+<tr><td>训练模型</td><td>Sys21 VLA-T(力控)</td></tr>
 <tr><td>质量Key</td><td>±0.1N精度, 1kHz</td></tr></table></div>
 
 <div class="card"><h3>M04 · sensor_tactile</h3>
 <table><tr><td>DDS Topic</td><td>/dds/model/tactile</td></tr>
 <tr><td>数据类型</td><td>float32[16] (指尖触觉阵列)</td></tr>
 <tr><td>来源</td><td>指尖触觉传感器</td></tr>
-<tr><td>训练模型</td><td>Sys21 VTLA(触觉编码器)</td></tr>
+<tr><td>训练模型</td><td>Sys21 VLA-T(触觉编码器)</td></tr>
 <tr><td>质量Key</td><td>16通道·16bit·1kHz</td></tr></table></div>
 
 <div class="card"><h3>M05 · joint_state</h3>
@@ -124,13 +124,13 @@ tr:nth-child(even) td{background:#080c14}
 <table><tr><td>DDS Topic</td><td>/dds/action/lissajous</td></tr>
 <tr><td>工序</td><td>利萨如力控搜索插入 (核心)</td></tr>
 <tr><td>型号适配</td><td>QSFP-DD/OSFP不同金手指宽度</td></tr>
-<tr><td>引擎</td><td>Sys21 VTLA (力控284ms)</td></tr>
+<tr><td>引擎</td><td>Sys21 VLA-T (力控284ms)</td></tr>
 <tr><td>力控参数</td><td>Z 6N, 振幅6mm/3Hz+4mm/2Hz, 搜索±10mm</td></tr></table></div>
 
 <div class="card"><h3>A05 · second_insert</h3>
 <table><tr><td>DDS Topic</td><td>/dds/action/second_insert</td></tr>
 <tr><td>工序</td><td>二次插入确认 (end_pose[0]>0.75)</td></tr>
-<tr><td>引擎</td><td>Sys21 VTLA</td></tr>
+<tr><td>引擎</td><td>Sys21 VLA-T</td></tr>
 <tr><td>回退</td><td>失败→开爪重试→连续2次→报错</td></tr></table></div>
 
 <div class="card"><h3>A06 · extract_module</h3>
@@ -190,8 +190,8 @@ tr:nth-child(even) td{background:#080c14}
 <tr class="as"><td>action</td><td>A01</td><td>取料</td><td>/dds/action/pick</td><td>Sys1 ACT</td><td>夹持力</td></tr>
 <tr class="as"><td>action</td><td>A02</td><td>扫码</td><td>/dds/action/scan</td><td>Orin视觉</td><td>SN匹配</td></tr>
 <tr class="as"><td>action</td><td>A03</td><td>预插</td><td>/dds/action/pre_insert</td><td>Sys11 SmolVLA</td><td>定位精度</td></tr>
-<tr class="as qd"><td>action</td><td>A04</td><td>力控插入 ⭐</td><td>/dds/action/lissajous</td><td>Sys21 VTLA</td><td>力控6N±0.5N</td></tr>
-<tr class="as"><td>action</td><td>A05</td><td>二次插入</td><td>/dds/action/second_insert</td><td>Sys21 VTLA</td><td>end_pose>0.75</td></tr>
+<tr class="as qd"><td>action</td><td>A04</td><td>力控插入 ⭐</td><td>/dds/action/lissajous</td><td>Sys21 VLA-T</td><td>力控6N±0.5N</td></tr>
+<tr class="as"><td>action</td><td>A05</td><td>二次插入</td><td>/dds/action/second_insert</td><td>Sys21 VLA-T</td><td>end_pose>0.75</td></tr>
 <tr class="as"><td>action</td><td>A06</td><td>拔出</td><td>/dds/action/extract</td><td>固定轨迹</td><td>Z位移12cm</td></tr>
 <tr class="as"><td>action</td><td>A07</td><td>放OK品</td><td>/dds/action/place_ok</td><td>机械臂</td><td>pose_25</td></tr>
 <tr class="as"><td>action</td><td>A08</td><td>放NG品</td><td>/dds/action/place_ng</td><td>机械臂</td><td>pose_26</td></tr>

@@ -42,7 +42,7 @@ code{font-size:11px}
 <div class="flow-arrow">→</div>
 <div class="flow-node n2">ECS 中转<br>数据汇总<br>39.102.211.79</div>
 <div class="flow-arrow">→</div>
-<div class="flow-node n2">4090 web<br>VTLA+GR00T训练<br>10.23.24.0</div>
+<div class="flow-node n2">4090 web<br>VLA-T+GR00T训练<br>10.23.24.0</div>
 </div>
 
 <h2>二、6模型训练体系</h2>
@@ -52,7 +52,7 @@ code{font-size:11px}
 <tr><td>Sys11</td><td>SmolVLA 视觉语言动作</td><td>450M</td><td>4060/4090</td><td>xspace→web</td><td>⏳ 待开始</td></tr>
 <tr><td>Sys12</td><td>LeWorldModel 世界模型</td><td>5.5M</td><td>4060</td><td>xspace</td><td>⏳ 待开始</td></tr>
 <tr><td>Sys11+12</td><td>SmolVLA+LeWorld 混合</td><td>~456M</td><td>4060→4090</td><td>xspace→web</td><td>⏳ 待联合</td></tr>
-<tr><td>Sys21</td><td>VTLA 触觉VLA</td><td>450M</td><td>4090</td><td>web</td><td style="color:#00d4aa">✅ 11轮完成</td></tr>
+<tr><td>Sys21</td><td>VLA-T 触觉VLA</td><td>450M</td><td>4090</td><td>web</td><td style="color:#00d4aa">✅ 11轮完成</td></tr>
 <tr><td>Sys22</td><td>GR00T N1.7 通用模型</td><td>7B</td><td>4090</td><td>web</td><td>⏳ 待MetaWorld</td></tr>
 </table>
 
@@ -72,7 +72,7 @@ code{font-size:11px}
 <h2>四、训练命令参考</h2>
 <div class="card">
 <h3>4090 统一训练管线</h3>
-<pre><code># VTLA 训练 (多轮)
+<pre><code># VLA-T 训练 (多轮)
 python unified_train.py --model vtla --rounds 5
 
 # GR00T 微调 (需要MetaWorld数据集)  

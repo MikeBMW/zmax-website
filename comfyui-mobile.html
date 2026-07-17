@@ -53,7 +53,7 @@ body{font-family:-apple-system,'PingFang SC',sans-serif;background:#0a0a0f;color
   <div class="card">
     <h3>📋 模型参数</h3>
     <table style="width:100%;font-size:11px;border-collapse:collapse" id="params">
-      <tr><td style="color:#8b949e;padding:3px 0">架构</td><td id="pArch">SmolVLM-2 + VTLA</td></tr>
+      <tr><td style="color:#8b949e;padding:3px 0">架构</td><td id="pArch">SmolVLM-2 + VLA-T</td></tr>
       <tr><td style="color:#8b949e;padding:3px 0">参数量</td><td id="pParams">450M</td></tr>
       <tr><td style="color:#8b949e;padding:3px 0">输出</td><td>Action [1,50,6]</td></tr>
       <tr><td style="color:#8b949e;padding:3px 0">路径</td><td id="pPath">/root/models/smolvla_base</td></tr>
@@ -83,7 +83,7 @@ body{font-family:-apple-system,'PingFang SC',sans-serif;background:#0a0a0f;color
 <script>
 var curModel='smolvla';
 var models={
-  smolvla:{name:'SmolVLA',arch:'SmolVLM-2 + VTLA',params:'450M',path:'/root/models/smolvla_base',dds:'/dds/model/smolvla'},
+  smolvla:{name:'SmolVLA',arch:'SmolVLM-2 + VLA-T',params:'450M',path:'/root/models/smolvla_base',dds:'/dds/model/smolvla'},
   act:{name:'ACT',arch:'CVAE Encoder-Decoder',params:'~50M',path:'/root/models/act_policy',dds:'/dds/model/act'},
   vlatouch:{name:'VLA-Touch',arch:'DiT + Tactile Fusion',params:'~470M',path:'/root/models/vla_touch',dds:'/dds/model/vla_touch'},
 };

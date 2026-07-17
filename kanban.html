@@ -136,7 +136,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <div class="arch-arrow">→</div>
   <div class="arch-box"><div class="arch-label">Sys12</div><div class="arch-name">LeWorld</div><div class="arch-owner">xspace</div></div>
   <div class="arch-arrow">⇄</div>
-  <div class="arch-box" style="border-color:#00d4aa"><div class="arch-label">Sys2</div><div class="arch-name">VTLA+GR00T</div><div class="arch-owner">web·4090</div></div>
+  <div class="arch-box" style="border-color:#00d4aa"><div class="arch-label">Sys2</div><div class="arch-name">VLA-T+GR00T</div><div class="arch-owner">web·4090</div></div>
   <div class="arch-arrow">→</div>
   <div class="arch-box"><div class="arch-label">Edge</div><div class="arch-name">Mac/Orin</div><div class="arch-owner">小芳</div></div>
 </div>
@@ -170,7 +170,7 @@ const TASKS = [
   {id:"X02",owner:"xspace",status:"done",tag:"Sys1",title:"✅ Sys1 ACT 模板底座",desc:"52M·1.2ms·800FPS。4060运行ACT，兼容Sys11/12",repo:"main",start:"7/12",end:"7/12"},
   {id:"X03",owner:"xspace",status:"done",tag:"GUI",title:"✅ GUI工程更新 (8项全部交付)",desc:"引擎切换+4090灯+延迟仪表+硬件总线+Robot抽象+帮助菜单+方案文档+专利入口。GUI完备",repo:"main",start:"7/12",end:"7/12"},
   {id:"X04",owner:"xspace",status:"done",tag:"Sys11",title:"✅ Sys1↔Sys2 API接口",desc:"代码完成:set_engine切换+gRPC懒加载+断连回退ACT。4090服务已运行10.23.24.0:50052",repo:"main",start:"7/12",end:"7/12"},
-  {id:"X14",owner:"xspace",status:"done",tag:"Integ",title:"✅ Sys1↔Sys2联调验证",desc:"三项本地验证通过:health✅ VTLA 280ms✅。配置更新端口50052+端点/predict。已合并推送",repo:"main",start:"7/12",end:"7/12"},
+  {id:"X14",owner:"xspace",status:"done",tag:"Integ",title:"✅ Sys1↔Sys2联调验证",desc:"三项本地验证通过:health✅ VLA-T 280ms✅。配置更新端口50052+端点/predict。已合并推送",repo:"main",start:"7/12",end:"7/12"},
   {id:"X05",owner:"xspace",status:"done",tag:"Sys12",title:"✅ LeWorldModel 集成",desc:"415行ARPredictor+AdaLN。5.5M/1.9ms/0.03GB。4060本地独立运行",repo:"main",start:"7/12",end:"7/12"},
   {id:"X06",owner:"xspace",status:"done",tag:"Review",title:"✅ 审批web分支 (非标)",desc:"代码已手动合并进main。因4090网络限制未走GitHub PR流程",repo:"main",start:"7/12",end:"7/12"},
   {id:"X07",owner:"xspace",status:"done",tag:"Deploy",title:"✅ 4060 WSL环境部署",desc:"Sys1+SmolVLA+LeWorld完整环境已部署运行",repo:"main",start:"7/12",end:"7/12"},
@@ -180,21 +180,21 @@ const TASKS = [
   {id:"X09",owner:"xspace",status:"done",tag:"GUI",title:"✅ GUI UX优化",desc:"五引擎颜色标签+下拉切换+4090灯+延迟显示+暗色主题统一+专利嵌入面板6项权利要求",repo:"main",start:"7/12",end:"7/12"},
   {id:"X10",owner:"xspace",status:"done",tag:"Patent",title:"✅ 专利补充GUI+文档",desc:"帮助菜单→专利嵌入式面板弹出6项权利要求。§九本地-云端统一推理完成",repo:"main",start:"7/12",end:"7/12"},
   {id:"X11",owner:"xspace",status:"done",tag:"Docs",title:"✅ 整体解决方案+产品介绍",desc:"docs文档已推送。web前端据此展示",repo:"main",start:"7/12",end:"7/12"},
-  {id:"X15",owner:"xspace",status:"done",tag:"Docs",title:"✅ 解决方案PPTX+GUI对齐",desc:"4621fc47。PPTX5份V1.0.5✅ GUI命名统一Sys-0/1/2✅ Web仿真页VTLA 280ms✅",repo:"main",start:"7/12",end:"7/12"},
+  {id:"X15",owner:"xspace",status:"done",tag:"Docs",title:"✅ 解决方案PPTX+GUI对齐",desc:"4621fc47。PPTX5份V1.0.5✅ GUI命名统一Sys-0/1/2✅ Web仿真页VLA-T 280ms✅",repo:"main",start:"7/12",end:"7/12"},
   {id:"X16",owner:"xspace",status:"done",tag:"Docs",title:"✅ 全员归档完成",desc:"xspace GUI main✅ web zmax-website+web分支✅ 小芳 mac分支✅。三仓全推,记忆技能文档完备",repo:"all",start:"7/12",end:"7/12"},
   {id:"X17",owner:"xspace",status:"progress",tag:"Orin",title:"DDS Skill ros2_ws + RoboGen [进行中]",desc:"建立DDS_Skill_ros2_ws仓库+xspace ros2_ws推送+RoboGen DeepSeek改造",repo:"main",start:"7/13",end:"7/14"},
   {id:"X18",owner:"xspace",status:"todo",tag:"GUI",title:"GUI数据闭环面板",desc:"追加数据采集/训练监控/模型部署按钮。对应Web remote-control.html",repo:"main",start:"7/13",end:"7/14"},
   // web
-  {id:"W01",owner:"web",status:"done",tag:"Sys2",title:"✅ VTLA推理引擎",desc:"~450M触觉VLA。验证:编译OK",repo:"web",start:"7/10",end:"7/12"},
+  {id:"W01",owner:"web",status:"done",tag:"Sys2",title:"✅ VLA-T推理引擎",desc:"~450M触觉VLA。验证:编译OK",repo:"web",start:"7/10",end:"7/12"},
   {id:"W02",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T N1.7引擎",desc:"~7B封装16种具身。权重已下载6.5GB+SmolVLA 873MB",repo:"web",start:"7/10",end:"7/12"},
   {id:"W03",owner:"web",status:"done",tag:"Sys2",title:"✅ gRPC+HTTP服务",desc:"port 50052/8080。验证:编译OK",repo:"web",start:"7/11",end:"7/12"},
   {id:"W06",owner:"web",status:"done",tag:"Sys2",title:"✅ GR00T训练环境",desc:"GR00T N1.7+SimplerEnv已装。跳过flash-attn",repo:"gr00t",start:"7/12",end:"7/12"},
-  {id:"W07",owner:"web",status:"done",tag:"Train",title:"✅ 4090 VTLA微调",desc:"300步/46s。Loss 27182→2624(90.3%↓)。VRAM 1.61GB。已保存outputs/smolvla_pusht_full/",repo:"web",start:"7/12",end:"7/12"},
+  {id:"W07",owner:"web",status:"done",tag:"Train",title:"✅ 4090 VLA-T微调",desc:"300步/46s。Loss 27182→2624(90.3%↓)。VRAM 1.61GB。已保存outputs/smolvla_pusht_full/",repo:"web",start:"7/12",end:"7/12"},
   {id:"W08",owner:"web",status:"done",tag:"Train",title:"✅ GR00T仿真验证",desc:"✅ 模型2s加载/6.4GB/1137ms推理。DiT 1.09B。Cosmos+token+观察格式全通。验证报告已出",repo:"gr00t",start:"7/12",end:"7/12"},
-  {id:"W09",owner:"web",status:"done",tag:"Integ",title:"✅ Sys1↔Sys2联调",desc:"4090 Sys2 VTLA服务运行中 10.23.24.0:50052。284ms推理。xspace已联调通过",repo:"main",start:"7/12",end:"7/12"},
+  {id:"W09",owner:"web",status:"done",tag:"Integ",title:"✅ Sys1↔Sys2联调",desc:"4090 Sys2 VLA-T服务运行中 10.23.24.0:50052。284ms推理。xspace已联调通过",repo:"main",start:"7/12",end:"7/12"},
   {id:"W10",owner:"web",status:"done",tag:"Web",title:"✅ 光模块工厂调研页",desc:"6区产线表单:工位配置+模块规格+测试仓+品质。已部署",repo:"zmax",start:"7/12",end:"7/12"},
   {id:"W05",owner:"web",status:"done",tag:"Sys2",title:"✅ 模型权重下载",desc:"SmolVLA 873MB+GR00T 6.5GB+SmolVLM2 7.4GB。hf-mirror下载完成",repo:"gr00t",start:"7/12",end:"7/12"},
-  {id:"W12",owner:"web",status:"done",tag:"Sim",title:"✅ 4090仿真验证VTLA",desc:"推理✅ 450M/3s加载/0.93GB。predict_action_chunk正常。报告已出",repo:"web",start:"7/12",end:"7/12"},
+  {id:"W12",owner:"web",status:"done",tag:"Sim",title:"✅ 4090仿真验证VLA-T",desc:"推理✅ 450M/3s加载/0.93GB。predict_action_chunk正常。报告已出",repo:"web",start:"7/12",end:"7/12"},
   {id:"W13",owner:"web",status:"done",tag:"Sim",title:"✅ GR00T仿真验证",desc:"同W08。环境100%就绪。GR00T N1.7-3B在4090验证通过，动作输出正常",repo:"gr00t",start:"7/12",end:"7/12"},
   {id:"W14",owner:"web",status:"done",tag:"PM",title:"✅ 任务看板v2",desc:"时间线+健康色+自动部署+角色更新。已完成",repo:"zmax",start:"7/12",end:"7/12"},
   {id:"W15",owner:"web",status:"done",tag:"PM",title:"✅ 模型算力+性能指标",desc:"7级算力分层+全链路指标+测试框架。已完成: performance.html",repo:"all",start:"7/12",end:"7/12"},

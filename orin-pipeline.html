@@ -37,7 +37,7 @@ tr:nth-child(even) td{background:#080c14}
 <div class="node">初始化</div><div class="arrow">→</div>
 <div class="node sys1">取料<br><small>Sys1 ACT</small></div><div class="arrow">→</div>
 <div class="node orin">扫码<br><small>Orin</small></div><div class="arrow">→</div>
-<div class="node sys2">插入×2<br><small>Sys2 VTLA</small></div><div class="arrow">→</div>
+<div class="node sys2">插入×2<br><small>Sys2 VLA-T</small></div><div class="arrow">→</div>
 <div class="node orin">测试</div><div class="arrow">→</div>
 <div class="node orin">拔出</div><div class="arrow">→</div>
 <div class="node orin">AOI×6</div><div class="arrow">→</div>
@@ -49,7 +49,7 @@ tr:nth-child(even) td{background:#080c14}
 <tr><th>产线节点</th><th>Z-MAX引擎</th><th>硬件</th><th>延迟</th></tr>
 <tr><td>取料</td><td>Sys1 ACT (192.168.23.26)</td><td>4060 WSL</td><td>1.2ms</td></tr>
 <tr><td>扫码</td><td>Orin 本地视觉</td><td>Orin Nano</td><td>—</td></tr>
-<tr><td>尝试插入×2</td><td>Sys2 VTLA (10.23.24.0:50052)</td><td>4090</td><td>284ms</td></tr>
+<tr><td>尝试插入×2</td><td>Sys2 VLA-T (10.23.24.0:50052)</td><td>4090</td><td>284ms</td></tr>
 <tr><td>测试</td><td>WaitContextValue</td><td>Orin</td><td>—</td></tr>
 <tr><td>拔出</td><td>机械臂程序</td><td>机械臂</td><td>—</td></tr>
 <tr><td>AOI×6</td><td>6工位视觉检测</td><td>Orin</td><td>—</td></tr>
@@ -94,7 +94,7 @@ tr:nth-child(even) td{background:#080c14}
 <table>
 <tr><th>链路</th><th>地址</th><th>引擎</th><th>全链路测试</th></tr>
 <tr><td>抓取位姿识别</td><td>192.168.23.26</td><td>Sys1 ACT</td><td>F05 ACT 42ms ✅</td></tr>
-<tr><td>力控插拔</td><td>10.23.24.0:50052</td><td>Sys2 VTLA</td><td>W09 联调 284ms ✅</td></tr>
+<tr><td>力控插拔</td><td>10.23.24.0:50052</td><td>Sys2 VLA-T</td><td>W09 联调 284ms ✅</td></tr>
 <tr><td>端侧备份</td><td>Orin 本地</td><td>SmolVLA量化</td><td>F03 240ms ✅</td></tr>
 </table>
 

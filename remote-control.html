@@ -51,17 +51,17 @@ select{padding:10px 12px;border-radius:8px;background:#06080d;border:1px solid #
 <option value="act">ACT · Sys1 · 1.2ms · 800FPS</option>
 <option value="smolvla">SmolVLA · Sys11 · 50ms</option>
 <option value="lew">LeWorldModel · Sys12 · 1.9ms</option>
-<option value="vtla" selected>VTLA · Sys2 · 284ms · 4090</option>
+<option value="vtla" selected>VLA-T · Sys2 · 284ms · 4090</option>
 <option value="groot">GR00T · Sys2 · 1137ms · 4090</option>
 </select>
-<div id="engine-status" class="card"><h3>当前引擎: VTLA</h3><div class="row"><span class="label">位置</span><span class="value">4090 (10.23.24.0:50052)</span></div><div class="row"><span class="label">状态</span><span class="value"><span class="status status-green"></span>已连接</span></div><div class="row"><span class="label">延迟</span><span class="value">284ms</span></div></div>
+<div id="engine-status" class="card"><h3>当前引擎: VLA-T</h3><div class="row"><span class="label">位置</span><span class="value">4090 (10.23.24.0:50052)</span></div><div class="row"><span class="label">状态</span><span class="value"><span class="status status-green"></span>已连接</span></div><div class="row"><span class="label">延迟</span><span class="value">284ms</span></div></div>
 
 <!-- ═══ 2. 4090 状态 ═══ -->
 <h2>🖥️ 4090 状态</h2>
 <div class="card" id="gpu-status">
 <div class="row"><span class="label">GPU</span><span class="value">RTX 4090 · 25.3GB</span></div>
 <div class="row"><span class="label">Sys2服务</span><span class="value"><span class="status status-green"></span>50052在线</span></div>
-<div class="row"><span class="label">VTLA模型</span><span class="value">450M · 已加载</span></div>
+<div class="row"><span class="label">VLA-T模型</span><span class="value">450M · 已加载</span></div>
 <div class="row"><span class="label">GR00T模型</span><span class="value">7B · 就绪</span></div>
 <div class="row"><span class="label">VRAM使用</span><span class="value">6.4GB / 25.3GB</span></div>
 </div>
@@ -70,7 +70,7 @@ select{padding:10px 12px;border-radius:8px;background:#06080d;border:1px solid #
 <h2>🏋️ 训练控制</h2>
 <div class="card">
 <select id="train-model">
-<option value="vtla">VTLA (Sys21) · 450M</option>
+<option value="vtla">VLA-T (Sys21) · 450M</option>
 <option value="groot">GR00T (Sys22) · 7B</option>
 </select>
 <button class="btn btn-green" onclick="startTrain()">▶️ 开始训练</button>
@@ -103,7 +103,7 @@ select{padding:10px 12px;border-radius:8px;background:#06080d;border:1px solid #
 <script>
 function log(el,msg){var d=document.getElementById(el);d.innerText+='\n'+new Date().toLocaleTimeString()+' '+msg;d.scrollTop=d.scrollHeight}
 function changeEngine(){var v=document.getElementById('engine-select').value;
-  var m={act:{name:'ACT',loc:'4060',lat:'1.2ms'},smolvla:{name:'SmolVLA',loc:'4060',lat:'50ms'},lew:{name:'LeWorld',loc:'4060',lat:'1.9ms'},vtla:{name:'VTLA',loc:'4090',lat:'284ms'},groot:{name:'GR00T',loc:'4090',lat:'1137ms'}};
+  var m={act:{name:'ACT',loc:'4060',lat:'1.2ms'},smolvla:{name:'SmolVLA',loc:'4060',lat:'50ms'},lew:{name:'LeWorld',loc:'4060',lat:'1.9ms'},vtla:{name:'VLA-T',loc:'4090',lat:'284ms'},groot:{name:'GR00T',loc:'4090',lat:'1137ms'}};
   var e=m[v];document.getElementById('engine-status').innerHTML='<h3>当前引擎: '+e.name+'</h3><div class="row"><span class="label">位置</span><span class="value">'+e.loc+'</span></div><div class="row"><span class="label">延迟</span><span class="value">'+e.lat+'</span></div>';
   log('train-log','🔄 切换引擎: '+e.name)}
 function startTrain(){var m=document.getElementById('train-model').value;log('train-log','▶️ 启动训练: '+m.toUpperCase());log('train-log','⏳ 训练中...')}

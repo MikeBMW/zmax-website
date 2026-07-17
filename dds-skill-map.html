@@ -36,8 +36,8 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 1
 <pre><code>节点: realsense_rgb / realsense_depth / force_sensor / tactile_array
 Topic: sensor_rgb / sensor_depth / sensor_force_6d / sensor_tactile
 API:  gds.publish("sensor_force_6d", [fx,fy,fz,tx,ty,tz])
-Web:  → VTLA训练输入 / 数据质量L0校验
-模型: Sys21 VTLA 触觉编码器</code></pre></div>
+Web:  → VLA-T训练输入 / 数据质量L0校验
+模型: Sys21 VLA-T 触觉编码器</code></pre></div>
 
 <!-- Skill 1 -->
 <div class="card"><h3 class="s0">Skill 1 · 关节状态</h3>
@@ -64,12 +64,12 @@ Web:  → 系统接口页引擎切换 / L2校验
 模型: Sys11 SmolVLA 450M (xspace→web)</code></pre></div>
 
 <!-- Skill 4 -->
-<div class="card"><h3 class="s2">Skill 4 · VTLA力控</h3>
+<div class="card"><h3 class="s2">Skill 4 · VLA-T力控</h3>
 <pre><code>节点: infer_sys21_vtla / lissajous_search
 Topic: infer_sys21_vtla / vtla_force_feedback
 API:  gds.get("infer_sys21_vtla") → (6轴力+置信度)
 Web:  → Orin管线Lissajous参数 / L3归一化
-模型: Sys21 VTLA 450M (web 4090)</code></pre></div>
+模型: Sys21 VLA-T ~470M (web 4090)</code></pre></div>
 
 <!-- Skill 5 -->
 <div class="card"><h3 class="s2">Skill 5 · GR00T决策</h3>

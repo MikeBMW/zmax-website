@@ -48,10 +48,10 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>2</td><td>Sys1 ACT 推理</td><td><10ms</td><td>1.2ms, 800FPS</td><td class="pass">✅</td></tr>
 <tr><td>3</td><td>Sys11 SmolVLA</td><td><50ms</td><td>就绪</td><td class="pass">✅</td></tr>
 <tr><td>4</td><td>Sys12 LeWorld</td><td><30ms</td><td>1.9ms</td><td class="pass">✅</td></tr>
-<tr><td>5</td><td>Sys2 VTLA推理</td><td><100ms</td><td>284ms</td><td class="warn">⚠️</td></tr>
+<tr><td>5</td><td>Sys2 VLA-T推理</td><td><100ms</td><td>284ms</td><td class="warn">⚠️</td></tr>
 <tr><td>6</td><td>Sys2 gRPC服务</td><td>在线</td><td>50052在线, 联调通过</td><td class="pass">✅</td></tr>
-<tr><td>7</td><td>Sys2 VTLA训练</td><td>Loss下降</td><td>300步, 90.3%↓</td><td class="pass">✅</td></tr>
-<tr><td>8</td><td>GUI 引擎切换</td><td>5引擎</td><td>ACT/VTLA/GR00T/SmolVLA/LEW</td><td class="pass">✅</td></tr>
+<tr><td>7</td><td>Sys2 VLA-T训练</td><td>Loss下降</td><td>300步, 90.3%↓</td><td class="pass">✅</td></tr>
+<tr><td>8</td><td>GUI 引擎切换</td><td>5引擎</td><td>ACT/VLA-T/GR00T/SmolVLA/LEW</td><td class="pass">✅</td></tr>
 <tr><td>9</td><td>GUI 4090状态</td><td>实时</td><td>绿/橙+延迟ms</td><td class="pass">✅</td></tr>
 <tr><td>10</td><td>Edge Mac端侧</td><td>部署</td><td>300ms MPS</td><td class="pass">✅</td></tr>
 <tr><td>11</td><td>Edge Orin端侧</td><td>部署</td><td>240ms, J6 7.1°</td><td class="pass">✅</td></tr>
@@ -69,7 +69,7 @@ tr:nth-child(even) td{background:#080c14}
 <table>
 <tr><th>项目</th><th>原因</th><th>优先级</th></tr>
 <tr><td>GR00T微调+验证</td><td>Cosmos-Reason2-2B需HF申请访问权限</td><td class="warn">中</td></tr>
-<tr><td>VTLA延迟优化(284→<100ms)</td><td>需TensorRT或模型量化</td><td class="warn">中</td></tr>
+<tr><td>VLA-T延迟优化(284→<100ms)</td><td>需TensorRT或模型量化</td><td class="warn">中</td></tr>
 <tr><td>硬件可靠性7×24</td><td>1小时测试待执行</td><td class="pass">低</td></tr>
 </table>
 
@@ -84,7 +84,7 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>文档</td><td>Sys0框架设计</td><td>docs/Z-MAX-Sys0-框架设计.md</td></tr>
 <tr><td>文档</td><td>解决方案+产品介绍</td><td>docs/</td></tr>
 <tr><td>文档</td><td>模型算力指标</td><td>performance.html</td></tr>
-<tr><td>报告</td><td>VTLA验证报告</td><td>outputs/vtla_validation_report.md</td></tr>
+<tr><td>报告</td><td>VLA-T验证报告</td><td>outputs/vtla_validation_report.md</td></tr>
 <tr><td>报告</td><td>F02-F07测试报告</td><td>docs/test-reports/</td></tr>
 <tr><td>证书</td><td>QC-001质量证书</td><td>小芳签发</td></tr>
 </table>

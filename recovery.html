@@ -93,7 +93,7 @@ policy = Gr00tPolicy(
     device="cuda:0", strict=False)
 # 观察格式: video{exterior_image_1_left,wrist_image_left}+state{eef_9d,joint_position,gripper_position}+language{annotation.language.language_instruction}</code></pre>
 
-<h2>五、VTLA 训练</h2>
+<h2>五、VLA-T 训练</h2>
 <pre><code>cd /root/lerobot-smolvla-lew
 export HF_ENDPOINT=https://hf-mirror.com
 export HF_HUB_DISABLE_XET=1
@@ -112,8 +112,8 @@ export HF_HUB_DISABLE_XET=1
 <div class="card">
 <table style="font-size:12px">
 <tr><th>文件</th><th>内容</th></tr>
-<tr><td>patches/0001-feat-web-Sys2-*.patch</td><td>Sys2 VTLA+GR00T引擎+gRPC服务(初始)</td></tr>
-<tr><td>patches/0002-Sys2-VTLA-make_att_2d_masks-*.patch</td><td>训练mask修复+生产服务+GUI嵌入</td></tr>
+<tr><td>patches/0001-feat-web-Sys2-*.patch</td><td>Sys2 VLA-T+GR00T引擎+gRPC服务(初始)</td></tr>
+<tr><td>patches/0002-Sys2-VLA-T-make_att_2d_masks-*.patch</td><td>训练mask修复+生产服务+GUI嵌入</td></tr>
 <tr><td>patches/isaac-gr00t-4090-fixes.patch</td><td>dataclass kw_only+pyproject环境限制</td></tr>
 </table>
 </div>

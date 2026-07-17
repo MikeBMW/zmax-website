@@ -40,7 +40,7 @@ code{font-size:11px}
 <div class="arch-box sys0"><h3>Sys0</h3><p>Orin Nano<br>ROS2·SR5-C<br>6轴·8传感器</p></div>
 <div class="arch-box sys1"><h3>Sys1</h3><p>4060 WSL<br>ACT 1.2ms<br>192.168.23.26</p></div>
 <div class="arch-box sys12"><h3>Sys12</h3><p>4060 WSL<br>LeWorld 1.9ms<br>世界模型</p></div>
-<div class="arch-box sys2"><h3>Sys2</h3><p>4090<br>VTLA 284ms<br>10.23.24.0:50052</p></div>
+<div class="arch-box sys2"><h3>Sys2</h3><p>4090<br>VLA-T 284ms<br>10.23.24.0:50052</p></div>
 </div>
 <div class="arrow-row">
 Sys0(Orin) ──gRPC──→ Sys1(4060) ──HTTP──→ Sys2(4090) ──返回→ Sys0
@@ -60,7 +60,7 @@ set_engine('groot')    # Sys2 远程 · 7B · 1137ms · gRPC→10.23.24.0:50052<
 <tr><td>ACT</td><td>Sys1 (4060)</td><td>本地</td><td>内存</td><td>1.2ms</td><td>—</td></tr>
 <tr><td>SmolVLA</td><td>Sys11 (4060)</td><td>本地</td><td>内存</td><td>50ms</td><td>—</td></tr>
 <tr><td>LeWorld</td><td>Sys12 (4060)</td><td>本地</td><td>内存</td><td>1.9ms</td><td>0.03GB</td></tr>
-<tr><td>VTLA</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>284ms</td><td>0.93GB</td></tr>
+<tr><td>VLA-T</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>284ms</td><td>0.93GB</td></tr>
 <tr><td>GR00T</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>1137ms</td><td>6.4GB</td></tr>
 </table>
 
@@ -80,7 +80,7 @@ set_engine('groot')    # Sys2 远程 · 7B · 1137ms · gRPC→10.23.24.0:50052<
 
 <h2>五、gRPC 断连回退</h2>
 <pre><code># xspace implement · 三引擎自动降级
-VTLA unreachable → 自动回退 ACT (零动作安全输出)
+VLA-T unreachable → 自动回退 ACT (零动作安全输出)
 GR00T unreachable → 自动回退 ACT
 # 连接恢复 → 自动切回远程引擎</code></pre>
 
@@ -88,7 +88,7 @@ GR00T unreachable → 自动回退 ACT
 <pre><code>cd /root/lerobot-smolvla-lew
 ~/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 sys2_prod_server.py
 # 服务端代码:
-#   - modeling_zmax_sys2.py   VTLA+GR00T推理引擎
+#   - modeling_zmax_sys2.py   VLA-T+GR00T推理引擎
 #   - sys2_prod_server.py     HTTP JSON-RPC服务
 #   - configuration_zmax_sys2.py  模型配置</code></pre>
 
@@ -104,14 +104,14 @@ result = client.infer("vtla", observation)
 
 <h2>八、Orin → Sys1 → Sys2 全链路</h2>
 <pre><code>Orin(抓取位姿)──→ Sys1 ACT(1.2ms)──→ 抓取放置
-                                    └──→ Sys2 VTLA(284ms)──→ 力控插拔
+                                    └──→ Sys2 VLA-T(284ms)──→ 力控插拔
 Orin(AOI×6)  ←── 测试结果 ←── 拔出 ←── </code></pre>
 
 <h2>九、数据闭环方案</h2>
 <div class="card" style="border-color:#d4a80044">
 <pre><code>┌─────────────┐     ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
 │  Orin Nano  │────→│  Mac (小芳)  │────→│  4060(xspace)│────→│  4090 (web)  │
-│ 192.168.23.10│     │  订阅rosbag  │     │ Sys11/Sys12  │     │ VTLA+GR00T   │
+│ 192.168.23.10│     │  订阅rosbag  │     │ Sys11/Sys12  │     │ VLA-T+GR00T   │
 │ RealSense   │     │  ACT仿真推理 │     │  整体推理    │     │   持续训练    │
 └─────────────┘     └─────────────┘     └──────────────┘     └──────────────┘
 

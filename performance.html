@@ -40,13 +40,13 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>Sys1</td><td>ACT</td><td>4060 8GB</td><td>52M</td><td>FP32</td><td class="num"><0.5GB</td><td class="num"><10ms</td><td class="num">>100Hz</td></tr>
 <tr><td>Sys11</td><td>SmolVLA</td><td>4060 8GB</td><td>450M</td><td>BF16</td><td class="num"><1.5GB</td><td class="num"><50ms</td><td class="num">>20Hz</td></tr>
 <tr><td>Sys12</td><td>LeWorld</td><td>4060 8GB</td><td>200M</td><td>FP32</td><td class="num"><1GB</td><td class="num"><30ms</td><td class="num">>30Hz</td></tr>
-<tr><td>Sys2</td><td>VTLA</td><td>4090 24GB</td><td>450M+</td><td>BF16</td><td class="num"><3GB</td><td class="num"><100ms</td><td class="num">>10Hz</td></tr>
+<tr><td>Sys2</td><td>VLA-T</td><td>4090 24GB</td><td>~470M</td><td>BF16</td><td class="num"><3GB</td><td class="num"><100ms</td><td class="num">>10Hz</td></tr>
 <tr><td>Sys2</td><td>GR00T</td><td>4090 24GB</td><td>~7B</td><td>BF16</td><td class="num"><18GB</td><td class="num"><500ms</td><td class="num">>2Hz</td></tr>
 <tr><td>Edge</td><td>SmolVLA-INT8</td><td>Mac M1</td><td>450M</td><td>INT8</td><td class="num"><2GB</td><td class="num"><30ms</td><td class="num">>30Hz</td></tr>
 <tr><td>Edge</td><td>SmolVLA-INT8</td><td>Orin Nano</td><td>450M</td><td>INT8</td><td class="num"><1.5GB</td><td class="num"><15ms</td><td class="num">>60Hz</td></tr>
 </table>
 
-<h2>二、Sys2 · VTLA (触觉VLA) — 4090</h2>
+<h2>二、Sys2 · VLA-T (VLA-Touch) — 4090</h2>
 <table>
 <tr><th>指标</th><th>目标值</th><th>测试方法</th></tr>
 <tr><td>触觉融合推理</td><td class="num"><100ms</td><td>视觉+触觉+语言三模态</td></tr>
@@ -72,14 +72,14 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>Sys1→Sys2 通信</td><td class="num"><5ms</td><td>4060→4090 gRPC</td></tr>
 <tr><td>Sys2→Edge 指令</td><td class="num"><10ms</td><td>4090→Mac/Orin TCP</td></tr>
 <tr><td>全链路(ACT)</td><td class="num"><30ms</td><td>相机→Sys1→Edge→动作</td></tr>
-<tr><td>全链路(VTLA)</td><td class="num"><150ms</td><td>相机→Sys2→Edge→动作</td></tr>
+<tr><td>全链路(VLA-T)</td><td class="num"><150ms</td><td>相机→Sys2→Edge→动作</td></tr>
 <tr><td>全链路(GR00T)</td><td class="num"><600ms</td><td>相机→Sys2→Edge→动作</td></tr>
 <tr><td>系统可用性</td><td class="num">>99.9%</td><td>7×24小时</td></tr>
 </table>
 
 <h2>五、测试用例框架</h2>
 <h3>功能测试</h3>
-<ul class="checklist"><li>模型加载/卸载</li><li>单帧推理正确性</li><li>批量推理吞吐量</li><li>模型热切换(ACT↔VTLA↔GR00T)</li></ul>
+<ul class="checklist"><li>模型加载/卸载</li><li>单帧推理正确性</li><li>批量推理吞吐量</li><li>模型热切换(ACT↔VLA-T↔GR00T)</li></ul>
 <h3>性能测试</h3>
 <ul class="checklist"><li>各模型延迟/P99</li><li>GPU显存峰值/均值</li><li>CPU利用率</li><li>通信延迟(gRPC/TCP)</li></ul>
 <h3>鲁棒性测试</h3>

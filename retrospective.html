@@ -42,7 +42,7 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>插拔精度</td><td>±0.02mm</td><td>±0.02mm</td><td class="green">✅</td></tr>
 <tr><td>力控带宽</td><td>>10kHz</td><td>>10kHz</td><td class="green">✅</td></tr>
 <tr><td>推理延迟(ACT)</td><td><10ms</td><td>1.2ms / 800FPS</td><td class="green">✅</td></tr>
-<tr><td>推理延迟(VTLA)</td><td><100ms</td><td>284ms</td><td class="yellow">⚠️</td></tr>
+<tr><td>推理延迟(VLA-T)</td><td><100ms</td><td>284ms</td><td class="yellow">⚠️</td></tr>
 <tr><td>端侧推理(Orin)</td><td><15ms</td><td>240ms(未量化)</td><td class="yellow">⚠️</td></tr>
 <tr><td>GR00T推理</td><td><500ms</td><td>未完成</td><td class="red">🚫</td></tr>
 </table>
@@ -62,8 +62,8 @@ tr:nth-child(even) td{background:#080c14}
 <tr><th>层级</th><th>交付物</th><th>负责人</th><th>规格</th></tr>
 <tr><td>Sys0</td><td>硬件框架设计(8章)</td><td>xspace</td><td>Orin→ROS2→SR5-C, L1-L5安全</td></tr>
 <tr><td>Sys1</td><td>ACT模板 + SmolVLA + LeWorld</td><td>xspace</td><td>52M/1.2ms + 450M/50ms + 5.5M/1.9ms</td></tr>
-<tr><td>Sys2</td><td>VTLA引擎 + GR00T引擎 + gRPC服务</td><td>web</td><td>450M/284ms + 7B权重就绪 + 50052在线</td></tr>
-<tr><td>Sys2</td><td>VTLA训练验证</td><td>web</td><td>300步/46s, Loss↓90.3%, VRAM 1.61GB</td></tr>
+<tr><td>Sys2</td><td>VLA-T引擎 + GR00T引擎 + gRPC服务</td><td>web</td><td>450M/284ms + 7B权重就绪 + 50052在线</td></tr>
+<tr><td>Sys2</td><td>VLA-T训练验证</td><td>web</td><td>300步/46s, Loss↓90.3%, VRAM 1.61GB</td></tr>
 <tr><td>GUI</td><td>LeRobot Studio (8模块)</td><td>xspace</td><td>引擎切换+4090灯+仪表+总线+Robot+菜单+专利</td></tr>
 <tr><td>Edge</td><td>Mac + Orin端侧部署</td><td>小芳</td><td>Mac 300ms + Orin 240ms + 6轴读写</td></tr>
 <tr><td>前端</td><td>datadrive.world 网站</td><td>web</td><td>7页面+看板+算力指标+工厂调研</td></tr>
@@ -74,7 +74,7 @@ tr:nth-child(even) td{background:#080c14}
 <table>
 <tr><th>项目</th><th>影响</th><th>优先级</th></tr>
 <tr><td>GR00T微调+验证</td><td>缺失L4复杂决策能力,不影响核心场景</td><td class="yellow">中</td></tr>
-<tr><td>VTLA推理延迟优化(284→<100ms)</td><td>需模型量化或TensorRT</td><td class="yellow">中</td></tr>
+<tr><td>VLA-T推理延迟优化(284→<100ms)</td><td>需模型量化或TensorRT</td><td class="yellow">中</td></tr>
 <tr><td>端侧模型量化(Orin 240→<15ms)</td><td>INT8量化待执行</td><td class="yellow">中</td></tr>
 <tr><td>硬件7×24可靠性</td><td>1小时测试待执行</td><td class="green">低</td></tr>
 <tr><td>产品PPTX</td><td>xspace统稿中</td><td class="green">低</td></tr>
@@ -86,7 +86,7 @@ tr:nth-child(even) td{background:#080c14}
 <p>2. 任务看板实时同步, 甘特图+健康灯可视化, 进度透明</p>
 <p>3. Python 3.12兼容性问题通过逐层修复+最终使用原生环境解决</p>
 <p>4. HF网络不通时快速切换hf-mirror镜像+禁用Xet协议</p>
-<p>5. Sys2服务从零到上线(50052), 支持VTLA真实推理284ms</p></div>
+<p>5. Sys2服务从零到上线(50052), 支持VLA-T真实推理284ms</p></div>
 <div class="card"><h3>⚠️ 需改进</h3>
 <p>1. GitHub推送阻塞: 4090出站网络限制, 改用HTTPS+token+ECS中转</p>
 <p>2. GR00T兼容性: Isaac-GR00T与Py3.12/torch版本耦合紧, 需完整uv sync</p>
