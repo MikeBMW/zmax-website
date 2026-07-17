@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>H-JEPA zFlow · Z-MAX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080c14;color:#c8d1d9;font-family:system-ui;padding:24px;max-width:900px;margin:0 auto}
+h1{color:#ff6b6b;text-align:center;margin-bottom:8px;font-size:22px}
+h2{color:#00d4aa;font-size:16px;margin:28px 0 12px}
+.sub{text-align:center;color:#8b949e;font-size:12px;margin-bottom:24px}
+svg{display:block;margin:0 auto;max-width:100%}
+.box{opacity:0;animation:fadeIn .5s forwards}
+@keyframes fadeIn{to{opacity:1}}
+.loop{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
+.card{background:#131726;border:1px solid #1e2740;border-radius:8px;padding:16px;margin:12px 0}
+.card h3{color:#58a6ff;font-size:14px;margin-bottom:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.tag{background:#1e2740;padding:2px 8px;border-radius:4px;font-size:11px;color:#8b949e}
+.tag.g{color:#00d4aa}
+.tag.r{color:#ff6b6b}
+.tag.b{color:#58a6ff}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+td,th{padding:6px 8px;border:1px solid #1e2740;text-align:center}
+th{background:#1a1f33;color:#58a6ff}
+</style></head>
+<body>
+
+<h1>🔄 H-JEPA zFlow v3.1</h1>
+<div class="sub">分布式反馈混合模型 · SmolVLA + LeWM · 3.0M参数</div>
+
+<svg viewBox="0 0 800 560" width="800" height="560">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3"><circle r="3" fill="#58a6ff"/></marker>
+    <marker id="r" markerWidth="6" markerHeight="6" refX="3" refY="3"><circle r="3" fill="#ff6b6b"/></marker>
+    <marker id="g" markerWidth="6" markerHeight="6" refX="3" refY="3"><circle r="3" fill="#00d4aa"/></marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="800" height="560" fill="#0a0d18" rx="12"/>
+
+  <!-- 输入 -->
+  <rect x="330" y="20" width="140" height="36" rx="8" fill="#1a1f33" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="400" y="43" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">RGB(128²) + State(7)</text>
+  <line x1="400" y1="56" x2="400" y2="90" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- VLA Encoder -->
+  <rect x="310" y="90" width="180" height="28" rx="6" fill="#1e2740" stroke="#8b949e" stroke-width="1"/>
+  <text x="400" y="109" text-anchor="middle" fill="#8b949e" font-size="11">VLA Encoder (Conv×3)</text>
+
+  <!-- 三条分支箭头 -->
+  <line x1="310" y1="118" x2="120" y2="170" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="400" y1="118" x2="400" y2="170" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="490" y1="118" x2="680" y2="170" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- Layer 1: z₁ 空间 -->
+  <g class="box" style="animation-delay:0s">
+    <rect x="20" y="170" width="200" height="90" rx="8" fill="#1a0a0a" stroke="#ff6b6b" stroke-width="1.5"/>
+    <text x="120" y="192" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">z₁ · 空间 (256D)</text>
+    <line x1="40" y1="200" x2="200" y2="200" stroke="#ff6b6b" stroke-width="0.5" opacity="0.3"/>
+    <text x="60" y="218" fill="#c8d1d9" font-size="9">JEPA₁ Enc → z₁</text>
+    <text x="60" y="234" fill="#c8d1d9" font-size="9">JEPA₁ Pred → ẑ₁(t+1)</text>
+    <text x="60" y="250" fill="#ff6b6b" font-size="9">L_jepa₁ 反向传播 ⬆</text>
+    <text x="180" y="250" fill="#ff6b6b" font-size="9" text-anchor="end">回路③</text>
+  </g>
+
+  <!-- Layer 2: z₂ 物体 -->
+  <g class="box" style="animation-delay:0.15s">
+    <rect x="300" y="170" width="200" height="90" rx="8" fill="#1a0f0a" stroke="#ff6b6b" stroke-width="1.5"/>
+    <text x="400" y="192" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">z₂ · 物体 (256D)</text>
+    <line x1="320" y1="200" x2="480" y2="200" stroke="#ff6b6b" stroke-width="0.5" opacity="0.3"/>
+    <text x="340" y="218" fill="#c8d1d9" font-size="9">JEPA₂ Enc → z₂</text>
+    <text x="340" y="234" fill="#c8d1d9" font-size="9">← z₃' 级联先验</text>
+    <text x="340" y="250" fill="#ff6b6b" font-size="9">L_jepa₂ 反向传播 ⬆</text>
+    <text x="460" y="250" fill="#ff6b6b" font-size="9" text-anchor="end">回路②</text>
+  </g>
+
+  <!-- Layer 3: z₃ 语义 -->
+  <g class="box" style="animation-delay:0.3s">
+    <rect x="580" y="170" width="200" height="90" rx="8" fill="#1a0a1a" stroke="#ff6b6b" stroke-width="1.5"/>
+    <text x="680" y="192" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">z₃ · 语义 (128D)</text>
+    <line x1="600" y1="200" x2="760" y2="200" stroke="#ff6b6b" stroke-width="0.5" opacity="0.3"/>
+    <text x="620" y="218" fill="#c8d1d9" font-size="9">JEPA₃ Enc → z₃</text>
+    <text x="620" y="234" fill="#c8d1d9" font-size="9">独立 · 无上级先验</text>
+    <text x="620" y="250" fill="#ff6b6b" font-size="9">L_jepa₃ 反向传播 ⬆</text>
+    <text x="740" y="250" fill="#ff6b6b" font-size="9" text-anchor="end">回路①</text>
+  </g>
+
+  <!-- 级联反馈连线 -->
+  <!-- z3→z2 -->
+  <path d="M580 225 Q560 225 540 215" stroke="#00d4aa" stroke-width="1.5" fill="none" marker-end="url(#g)" class="loop"/>
+  <text x="560" y="215" fill="#00d4aa" font-size="8" text-anchor="middle">z₃'→先验</text>
+  <!-- z2→z1 -->
+  <path d="M300 225 Q280 225 260 215" stroke="#00d4aa" stroke-width="1.5" fill="none" marker-end="url(#g)" class="loop"/>
+  <text x="280" y="215" fill="#00d4aa" font-size="8" text-anchor="middle">z₂'→先验</text>
+
+  <!-- 融合箭头 -->
+  <line x1="120" y1="260" x2="400" y2="300" stroke="#58a6ff" stroke-width="1"/>
+  <line x1="400" y1="260" x2="400" y2="300" stroke="#58a6ff" stroke-width="1"/>
+  <line x1="680" y1="260" x2="400" y2="300" stroke="#58a6ff" stroke-width="1"/>
+
+  <!-- Fusion -->
+  <rect x="300" y="300" width="200" height="36" rx="8" fill="#1a1f33" stroke="#00d4aa" stroke-width="1.5"/>
+  <text x="400" y="323" text-anchor="middle" fill="#00d4aa" font-size="12" font-weight="700">z₁⊕z₂⊕z₃ → Fusion(512D)</text>
+
+  <line x1="400" y1="336" x2="400" y2="380" stroke="#00d4aa" stroke-width="2" marker-end="url(#g)"/>
+
+  <!-- DiT -->
+  <rect x="300" y="380" width="200" height="30" rx="6" fill="#1e2740" stroke="#58a6ff" stroke-width="1"/>
+  <text x="400" y="400" text-anchor="middle" fill="#58a6ff" font-size="11">DiT Action Head</text>
+
+  <line x1="400" y1="410" x2="400" y2="450" stroke="#58a6ff" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- Output -->
+  <rect x="310" y="450" width="180" height="32" rx="8" fill="#0a1a1a" stroke="#00d4aa" stroke-width="1.5"/>
+  <text x="400" y="471" text-anchor="middle" fill="#00d4aa" font-size="13" font-weight="700">Action [14, 7]</text>
+
+  <!-- 交叉模态反馈 -->
+  <g class="box" style="animation-delay:0.5s">
+    <rect x="20" y="440" width="200" height="60" rx="6" fill="#1a0a1a" stroke="#a371f7" stroke-width="1" opacity="0.7"/>
+    <text x="120" y="458" text-anchor="middle" fill="#a371f7" font-size="9">回路④ 跨模态反馈</text>
+    <text x="120" y="472" text-anchor="middle" fill="#8b949e" font-size="8">VLM ↔ GNN ↔ Force → Fusion</text>
+    <text x="120" y="486" text-anchor="middle" fill="#8b949e" font-size="8">视觉↔图结构↔力空间</text>
+  </g>
+
+  <!-- 全局动作反馈 -->
+  <g class="box" style="animation-delay:0.6s">
+    <rect x="600" y="440" width="180" height="60" rx="6" fill="#1a0a1a" stroke="#a371f7" stroke-width="1" opacity="0.7"/>
+    <text x="690" y="458" text-anchor="middle" fill="#a371f7" font-size="9">回路⑤ 动作反馈</text>
+    <text x="690" y="472" text-anchor="middle" fill="#8b949e" font-size="8">Action → 环境 → s(t+1)</text>
+    <text x="690" y="486" text-anchor="middle" fill="#8b949e" font-size="8">→ z(t+1) → 更新预测</text>
+  </g>
+
+  <!-- 门控标注 -->
+  <g class="loop">
+    <rect x="610" y="90" width="160" height="36" rx="6" fill="#1a0f0a" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="690" y="105" text-anchor="middle" fill="#ff6b6b" font-size="10">门控 gate×0.1ˡ</text>
+    <text x="690" y="119" text-anchor="middle" fill="#8b949e" font-size="8">训练:激活 | 推理:归零</text>
+  </g>
+</svg>
+
+<!-- 数据面板 -->
+<h2>📊 训练结果</h2>
+<div class="card">
+  <table>
+    <tr><th>指标</th><th>初始</th><th>最终</th><th>状态</th></tr>
+    <tr><td>Loss</td><td>0.027</td><td>0.000</td><td>✅</td></tr>
+    <tr><td>Energy</td><td>-0.04</td><td>-24.02</td><td>✅</td></tr>
+    <tr><td>Epochs</td><td colspan="2">300</td><td>✅</td></tr>
+    <tr><td>数据</td><td colspan="2">Orin 300帧</td><td>✅</td></tr>
+    <tr><td>参数量</td><td colspan="2">3.0M</td><td>✅</td></tr>
+    <tr><td>权重</td><td colspan="2">11MB</td><td>✅</td></tr>
+  </table>
+</div>
+
+<h2>📦 文件结构</h2>
+<div class="card">
+  <div class="row">
+    <span class="tag g">z_config.py</span>
+    <span class="tag g">jepa_encoder.py</span>
+    <span class="tag g">jepa_predictor.py</span>
+    <span class="tag r">h_jepa_zflow.py</span>
+    <span class="tag b">train_h_jepa.py</span>
+  </div>
+  <div style="margin-top:8px;font-size:11px;color:#8b949e">
+    GitHub: <span style="color:#58a6ff">MikeBMW/lerobot-smolvla-lew</span> · 分支: <span class="tag r">web</span> · 权重: <span class="tag g">models/hjepa_zflow.pt</span>
+  </div>
+</div>
+
+<h2>⚙️ 推理模式</h2>
+<div class="card">
+  <div style="display:flex;gap:16px;font-size:12px">
+    <div style="flex:1;background:#0a1a0a;padding:12px;border-radius:6px;border:1px solid#00d4aa">
+      <div style="color:#00d4aa;font-weight:700;margin-bottom:4px">🔧 训练模式</div>
+      <div style="color:#8b949e;font-size:10px">世界模型反馈 · 三层门控激活<br>JEPA能量损失 + 动作重建<br>5层反馈回路全部在线</div>
+    </div>
+    <div style="flex:1;background:#1a0a0a;padding:12px;border-radius:6px;border:1px solid#ff6b6b">
+      <div style="color:#ff6b6b;font-weight:700;margin-bottom:4px">⚡ 推理模式</div>
+      <div style="color:#8b949e;font-size:10px">门控全部归零<br>世界模型剥离<br>零额外开销 · 纯VLA+DiT</div>
+    </div>
+  </div>
+</div>
+
+</body></html>
