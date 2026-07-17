@@ -132,13 +132,12 @@ td{padding:10px 16px;font-size:14px;border-bottom:1px solid #21262d;color:#c8d1d
 <div class="card"><h3>⚡ 决策</h3><p>DiT-B FlowMatching 生成50步平滑动作序列 · 因果世界模型事前安全校验</p></div>
 <div class="card"><h3>🤖 执行</h3><p>双臂协同(左取料+右插拔) · 力控闭环实时调节 · 触觉反馈异常自动释放</p></div>
 
-<h2>三、五层系统架构</h2>
+<h2>三、三层系统架构</h2>
 <table>
-<tr><th>层级</th><th>产品等级</th><th>引擎</th><th>自主程度</th><th>部署</th></tr>
-<tr><td><strong>Sys 10 ACT</strong></td><td>L3 增强</td><td>ACT</td><td>条件自主</td><td>Orin AGX</td></tr>
-<tr><td><strong>Sys 11 VLA-T</strong></td><td>L4 旗舰</td><td>VLA-T</td><td>高度自主</td><td>Orin AGX</td></tr>
-<tr><td><strong>Sys 12 LeWM</strong></td><td>L4+ 旗舰</td><td>LeWM 世界模型</td><td>预测自主</td><td>Orin+RK</td></tr>
-<tr><td><strong>Sys 1</strong></td><td>云端</td><td>Sys 1 云端训练</td><td>协同自主</td><td>WSL/Cloud</td></tr>
+<tr><th>层级</th><th>位置</th><th>引擎</th><th>角色</th><th>硬件</th></tr>
+<tr><td><strong>Sys 0</strong></td><td>端侧执行</td><td>ACT · SmolVLA · LeWM</td><td>实时推理+力控闭环</td><td>Orin Nano/AGX</td></tr>
+<tr><td><strong>Sys 1</strong></td><td>边缘训练</td><td>SmolVLA · VLA-T · LeWM</td><td>模型微调+数据预处理</td><td>4060 8GB</td></tr>
+<tr><td><strong>Sys 2</strong></td><td>云端大脑</td><td>VLA-T · GR00T · H-JEPA</td><td>大模型训练+复杂决策</td><td>4090 24GB</td></tr>
 </table>
 
 <h2>四、关键工程挑战与对策</h2>
@@ -158,7 +157,7 @@ td{padding:10px 16px;font-size:14px;border-bottom:1px solid #21262d;color:#c8d1d
 <div class="card"><h3>安全层</h3><p>L2光幕联动 · L3视触觉反馈 · L4五层主动保护</p></div>
 
 <h2>六、未来演进</h2>
-<div class="card"><p><strong style="color:#00d4aa">Sys 1 云端协同</strong> — 仿真数据反馈闭环：小芳(Mac)→Sys 1→动作下发</p></div>
+<div class="card"><p><strong style="color:#00d4aa">Sys 2 云端协同</strong> — 仿真数据反馈闭环：小芳(Mac)→Sys 2→动作下发</p></div>
 <div class="card"><p><strong style="color:#00d4aa">多智能体协同</strong> — 多台Z700共享环境模型、协调任务</p></div>
 <div class="card"><p><strong style="color:#00d4aa">全栈自主可控</strong> — 芯片→总线→OS→模型→应用</p></div>
 
