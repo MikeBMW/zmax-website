@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Z-MAX 系统文档 · v3.1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080c14;color:#c8d1d9;font-family:system-ui;padding:24px;max-width:900px;margin:0 auto}
+h1{color:#ff6b6b;text-align:center;font-size:24px;margin-bottom:4px}
+h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;border-bottom:1px solid#1e2740;padding-bottom:6px}
+h3{color:#58a6ff;font-size:14px;margin:16px 0 8px}
+.sub{text-align:center;color:#8b949e;font-size:12px;margin-bottom:24px}
+.card{background:#131726;border:1px solid#1e2740;border-radius:8px;padding:16px;margin:12px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+td,th{padding:6px 10px;border:1px solid#1e2740;text-align:left}
+th{background:#1a1f33;color:#58a6ff;width:160px}
+.badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+.badge.g{background:#0a2a0a;color:#00d4aa}
+.badge.r{background:#2a0a0a;color:#ff6b6b}
+.badge.b{background:#0a0a2a;color:#58a6ff}
+.badge.y{background:#2a2a0a;color:#ffa500}
+a{color:#58a6ff;text-decoration:none}
+a:hover{text-decoration:underline}
+</style></head>
+<body>
+
+<h1>📋 Z-MAX 系统文档</h1>
+<div class="sub">v3.1 · H-JEPA zFlow 分布式反馈混合模型 · 全链路闭环</div>
+
+<h2>🏗️ 系统架构</h2>
+<div class="card">
+  <div class="row">
+    <span class="badge r">Orin</span>→
+    <span class="badge b">4060</span>→
+    <span class="badge r">4090训练</span>→
+    <span class="badge g">ECS</span>→
+    <span class="badge y">验证</span>→
+    <span class="badge r">Orin部署</span>
+  </div>
+</div>
+
+<h2>🧠 模型架构</h2>
+<div class="card">
+  <table>
+    <tr><th>名称</th><td>H-JEPA zFlow v3.1</td></tr>
+    <tr><th>类型</th><td>SmolVLA + LeWM 分布式交叉反馈混合模型</td></tr>
+    <tr><th>参数量</th><td>3.0M</td></tr>
+    <tr><th>权重</th><td>11MB</td></tr>
+    <tr><th>输入</th><td>RGB(128²) + State(7)</td></tr>
+    <tr><th>输出</th><td>Action [14, 7]</td></tr>
+    <tr><th>架构图</th><td><a href="/hybrid-arch.html">hybrid-arch.html</a> · <a href="/hjepa-arch.html">hjepa-arch.html</a></td></tr>
+  </table>
+</div>
+
+<h2>📦 文件清单</h2>
+<div class="card">
+  <table>
+    <tr><th>z_config.py</th><td>超参数配置 (256D·128D·512D)</td></tr>
+    <tr><th>jepa_encoder.py</th><td>JEPA编码器: (s)→z</td></tr>
+    <tr><th>jepa_predictor.py</th><td>JEPA预测器: z→z'+能量评估</td></tr>
+    <tr><th>h_jepa_zflow.py</th><td>主模型: z1/z2/z3级联+DiT</td></tr>
+    <tr><th>train_h_jepa.py</th><td>训练脚本: MetaWorld兼容</td></tr>
+    <tr><th>comfyui_backend.py</th><td>推理后端: 5引擎调度</td></tr>
+  </table>
+</div>
+
+<h2>📊 训练结果</h2>
+<div class="card">
+  <table>
+    <tr><th>数据</th><td>Orin 300帧 (task_20260717_072939.npz)</td></tr>
+    <tr><th>Epochs</th><td>300</td></tr>
+    <tr><th>Loss</th><td>0.027 → 0.000</td></tr>
+    <tr><th>Energy</th><td>-0.04 → -24.02</td></tr>
+    <tr><th>W&B</th><td><a href="https://wandb.ai/xspace/zmax-hjepa">wandb.ai/xspace/zmax-hjepa</a></td></tr>
+    <tr><th>权重</th><td><a href="https://github.com/MikeBMW/lerobot-smolvla-lew/blob/web/models/hjepa_zflow.pt">GitHub models/hjepa_zflow.pt</a></td></tr>
+  </table>
+</div>
+
+<h2>🚀 推理性能</h2>
+<div class="card">
+  <table>
+    <tr><th>推理耗时</th><td>~250ms (4090)</td></tr>
+    <tr><th>VRAM</th><td>&lt;0.1GB</td></tr>
+    <tr><th>推理模式</th><td>门控归零·世界模型剥离·零开销</td></tr>
+    <tr><th>ComfyUI</th><td><a href="/comfyui.html">comfyui.html</a> → Sys1 Hybrid</td></tr>
+  </table>
+</div>
+
+<h2>🔬 验证报告</h2>
+<div class="card">
+  <span class="badge y">⏳ 待 @Hermes小芳 提交</span>
+  <div style="margin-top:8px;color:#8b949e;font-size:11px">
+    验证管线: Mac下载权重 → 加载模型 → 检查输出维度 → 确认三层z反馈
+  </div>
+</div>
+
+<h2>🤖 Orin 部署报告</h2>
+<div class="card">
+  <span class="badge r">⏳ 待 @xspace 提交</span>
+  <div style="margin-top:8px;color:#8b949e;font-size:11px">
+    部署管线: SSH隧道 → /root/models/hjepa_zflow/model.pt → IB-Robot加载 → ROS2 /zmax/sys1/act_action
+  </div>
+</div>
+
+<h2>🔗 页面索引</h2>
+<div class="card">
+  <div class="row">
+    <a href="/" class="badge b">🏠 主页</a>
+    <a href="/comfyui.html" class="badge b">🎨 ComfyUI</a>
+    <a href="/aspice-vmodel.html" class="badge g">📐 Z700 V-Model</a>
+    <a href="/vmodel-tshan.html" class="badge r">📐 Z700F V-Model</a>
+    <a href="/hjepa-arch.html" class="badge r">🔄 z流架构</a>
+    <a href="/hybrid-arch.html" class="badge r">🔀 混合架构</a>
+    <a href="/dds-data-space.html" class="badge b">🗄️ DDS</a>
+    <a href="/dds_export.json" class="badge g">📦 JSON</a>
+  </div>
+</div>
+
+</body></html>
