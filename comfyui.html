@@ -22,11 +22,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
 <button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
-<input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)"><input type="file" id="fileUpload" style="display:none" accept=".npz,.mcap" onchange="uploadData(this)"><button class="btn" style="background:#ff6b6b;color:#fff" onclick="document.getElementById('fileUpload').click()">📤 上传</button>
+<input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)">
 <button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
 <button class="btn btn-g" onclick="preset('insert')">插拔</button>
 <button class="btn btn-g" onclick="preset('pick')">取放</button>
 <button class="btn btn-g" onclick="preset('aoi')">AOI</button>
+<button class="btn btn-g" onclick="listServerJSON()" style="background:#ff6b6b;color:#fff">📋 JSON</button>
 <button class="btn btn-p" onclick="addCond()">+条件</button>
 <button class="btn btn-p" onclick="addModel()">+模型</button>
 <button class="btn btn-p" onclick="addAction()">+动作</button>
@@ -57,7 +58,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn c" draggable="true" data-t="condition" data-n="C038 电池SOC">C038 电池SOC</div>
 </div>
 <div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('m7')">🔵 场景数据 (7) ▾</div>
-<div id="ds-list" style="font-size:9px;color:#8b949e;padding:2px 8px">⏳ 加载中...</div>
 <div id="m7">
 <div class="sn m" draggable="true" data-t="model" data-n="M01 RGB图像">M01 RGB图像</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M02 深度图像">M02 深度图像</div>
@@ -67,28 +67,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('eng')">🧠 推理引擎 (5) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('eng')">🧠 推理引擎 (6) ▾</div>
 <div id="eng">
 <div class="sn m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT</div>
 <div class="sn m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA</div>
 <div class="sn m" draggable="true" data-t="model" data-n="VLA-Touch">VLA-Touch</div>
 <div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T</div>
 <div class="sn m" draggable="true" data-t="model" data-n="LeWM 推理引擎">LeWM</div>
-<div class="sn m" draggable="true" data-t="model" data-n="W&B">📊 W&B</div>
+<div class="sn m" draggable="true" data-t="model" data-n="X-Hybrid" style="border-left:3px solid#ff6b6b">🔀 X-Hybrid</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('sys')">🟡 System 系统 (8) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('sys')">🟡 System 系统 (9) ▾</div>
 <div id="sys">
-<div class="sn" draggable="true" data-t="system" data-n="Sys 1" style="border-left:3px solid #d4a800">Sys 1</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys 0 数据">Sys 0 数据</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys1 · 底座" style="border-left:3px solid #d4a800">Sys1 · 底座</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys1 Hybrid" style="border-left:3px solid #ff6b6b">🔀 Sys1 · Hybrid</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys10 · ACT" style="border-left:3px solid #d4a800">Sys10 · ACT</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys 11 VLA-T" style="border-left:3px solid #d4a800">Sys 11 VLA-T</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys 12 LeWM" style="border-left:3px solid #d4a800">Sys 12 LeWM</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys11 · SmolVLA" style="border-left:3px solid #d4a800">Sys11 · SmolVLA</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys12 · LeWorld" style="border-left:3px solid #d4a800">Sys12 · LeWorld</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys2 · 训练" style="border-left:3px solid #d4a800">Sys2 · 训练</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys20 · VLA-T底座" style="border-left:3px solid #d4a800">Sys20 · VLA-T底座</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys21 · VLA-T" style="border-left:3px solid #d4a800">Sys21 · VLA-T</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys20 · VTLA底座" style="border-left:3px solid #d4a800">Sys20 · VTLA底座</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys21 · VTLA" style="border-left:3px solid #d4a800">Sys21 · VTLA</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys22 · GR00T" style="border-left:3px solid #d4a800">Sys22 · GR00T</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('a30')">🟢 Action 动作 (30) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('hw')">🔩 硬件 (4) ▾</div>
+<div id="hw">
+<div class="sn" draggable="true" data-t="system" data-n="Orin Nano">🖥 Orin Nano</div>
+<div class="sn" draggable="true" data-t="system" data-n="MAC">💻 MAC</div>
+<div class="sn" draggable="true" data-t="system" data-n="4060 Gateway">📡 4060 Gateway</div>
+<div class="sn" draggable="true" data-t="system" data-n="4090 训练">🧠 4090 训练</div>
+</div>
+<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('viz')">📊 可视化 (1) ▾</div>
+<div id="viz">
+<div class="sn m" draggable="true" data-t="model" data-n="W&B 监控">📊 W&B 监控</div>
+</div>
+<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('intg')">🔌 集成 (2) ▾</div>
+<div id="intg">
+<div class="sn" draggable="true" data-t="system" data-n="🔬 验证">🔬 验证</div>
+<div class="sn" draggable="true" data-t="system" data-n="Orin 部署">🚀 Orin 部署</div>
+</div>
+
+<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('a30')">🟢 Action 动作 (30) ▾</div>
 <div id="a30">
 <div class="sn a" draggable="true" data-t="action" data-n="A00 Action输出">A00 Action输出</div>
 <div class="sn a" draggable="true" data-t="action" data-n="A04 力控插入">A04 力控插入</div>
@@ -180,8 +198,8 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
   cfg.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#111;border:2px solid'+colors[n.t]+';border-radius:8px;padding:10px;z-index:999;font-size:11px;min-width:200px';
   var incoming=L.filter(function(l){return l.t===n.id}).map(function(l){var src=N.find(function(x){return x.id===l.f});return src?src.name:'?'}).join(', ')||'(无)';
   var outgoing=L.filter(function(l){return l.f===n.id}).map(function(l){var dst=N.find(function(x){return x.id===l.t});return dst?dst.name:'?'}).join(', ')||'(无)';
+  var info={'M01 RGB图像':'DDS: /dds/model/rgb','SmolVLA 推理引擎':'DDS: /dds/model/smolvla','A00 Action输出':'DDS: /dds/action/output'}[n.name]||'';
   var dd='';
-  var info={'M01 RGB图像':'DDS: /dds/model/rgb','M02 深度图像':'DDS: /dds/model/depth','M03 六维力觉':'DDS: /dds/model/force','M04 触觉阵列':'DDS: /dds/model/tactile','SmolVLA 推理引擎':'DDS: /dds/model/smolvla','VLA-Touch 推理引擎':'DDS: /dds/model/vlatouch','GR00T 推理引擎':'DDS: /dds/model/gr00t','ACT 推理引擎':'DDS: /dds/model/act','LeWM 推理引擎':'DDS: /dds/model/lewm','A00 Action输出':'DDS: /dds/action/output','🔀 Sys1 · Hybrid':'H-JEPA zFlow·3.0M·分布式反馈'}[n.name]||'';
   if(n.name.indexOf('W&B')>=0){
     var connModel='smolvla';
     var conn=L.find(function(l){return l.t===n.id});
@@ -189,15 +207,17 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
     var projMap={smolvla:'zmax-smolvla','vla-touch':'zmax-vla-touch',gr00t:'zmax-gr00t',act:'zmax-act',lewm:'zmax-lewm'};
     var proj=projMap[connModel]||'zmax-smolvla';
     dd='<div style="font-size:11px;padding:8px;background:#0d1117;border-radius:6px;text-align:center"><span style="color:#8b949e;font-size:9px">'+incoming+'</span><br><a href="https://wandb.ai/xspace/'+proj+'" target="_blank" style="color:#facd3b;font-size:14px;text-decoration:none;font-weight:700">🔗 wandb.ai/xspace/'+proj+'</a></div>';}
-  if(n.name==='M01 RGB图像'){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="if(this.value===\"fetch_realsense\"){fetchRealsense()}else{Lg(this.value)}" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="fetch_realsense">📡 RealSense D405 实采 (Orin→ECS)</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
+  if(n.name.indexOf('Sys 0')>=0){
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
+  }else if(n.name==='M01 RGB图像'){
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
   }else if(n.name==='M04 触觉阵列'){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="if(this.value===\"fetch_realsense\"){fetchRealsense()}else{Lg(this.value)}" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L121" selected>随机噪声 torch.randn(1,6,200) @ L121</option><option value="lissajous_real">Lissajous力控 6N×200点 实采</option><option value="sim">仿真力觉</option></select></div>';
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L121" selected>随机噪声 torch.randn(1,6,200) @ L121</option><option value="lissajous_real">Lissajous力控 6N×200点 实采</option><option value="sim">仿真力觉</option></select></div>';
   }else if(n.name.indexOf('C0')===0||n.name.indexOf('C1')===0||n.name.indexOf('C2')===0||n.name.indexOf('C3')===0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#a371f7;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">示教预录轨迹 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">数据源:</div><select onchange="if(this.value===\"fetch_realsense\"){fetchRealsense()}else{Lg(this.value)}" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>ur5_demo 预录示教 (Orin Nano)</option><option>实时力控轨迹 (Lissajous)</option><option>手动拖拽轨迹</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">轨迹长度: 50-200步 · 6关节+夹爪</div></div>';
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#a371f7;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">示教预录轨迹 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">数据源:</div><select onchange="Lg(this.value)" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>ur5_demo 预录示教 (Orin Nano)</option><option>实时力控轨迹 (Lissajous)</option><option>手动拖拽轨迹</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">轨迹长度: 50-200步 · 6关节+夹爪</div></div>';
   }else if(n.name.indexOf('SmolVLA')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#58a6ff;font-weight:700;margin-bottom:4px">SmolVLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">骨干</td><td>SmolVLM-2 500M (16层VLM)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">专家</td><td>VLA-T ~470M DiT</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>3×RGB(512²)+state(7)+lang</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/smolvla_base</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>257ms(热)/800ms(冷)</td></tr></table></div>';
-  }else if(n.name.indexOf('VLA-Touch')>=0||n.name.indexOf('VLA-T')>=0){
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#58a6ff;font-weight:700;margin-bottom:4px">SmolVLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">骨干</td><td>SmolVLM-2 500M (16层VLM)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">专家</td><td>VTLA-450M DiT</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>3×RGB(512²)+state(7)+lang</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/smolvla_base</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>257ms(热)/800ms(冷)</td></tr></table></div>';
+  }else if(n.name.indexOf('VLA-Touch')>=0||n.name.indexOf('VTLA')>=0){
     dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ff6b6b;font-weight:700;margin-bottom:4px">VLA-Touch 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>DiT + Tactile Fusion (7层)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>RGB(512²)+力触觉(6,200)+state(7)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/vla_touch</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~180ms (4090)</td></tr></table></div>';
   }else if(n.name.indexOf('GR00T')>=0){
     dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ffa500;font-weight:700;margin-bottom:4px">GR00T N1.7 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>MoE Transformer</td></tr><tr><td style="color:#8b949e;padding:1px 4px">规模</td><td>6.9GB</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>多模态+语言+观测</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,7]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/gr00t_n1d7</td></tr><tr><td style="color:#8b949e;padding:1px 4px">VRAM</td><td>6.4GB</td></tr></table></div>';
@@ -208,9 +228,7 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
   }else if(n.name.indexOf('A00')>=0){
     dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">Action 输出</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">shape</td><td>[1,50,6] 50步×6关节(rad)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J1肩</td><td>±1.57rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J2臂</td><td>-0.79~0.52rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J3肘</td><td>-1.22~2.62rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J4腕</td><td>±6.28rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J5屈</td><td>±2.09rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J6翻</td><td>±6.28rad</td></tr></table></div>';
   }else if(n.name.indexOf('A0')===0||n.name.indexOf('A1')===0||n.name.indexOf('A2')===0||n.name.indexOf('A3')===0){
-  }else if(n.name.indexOf("Sys")>=0||n.name.indexOf("系统")>=0||n.name.indexOf("预测")>=0||n.name.indexOf("真实")>=0){
-    dd='<div style="font-size:9px;line-height:1.8;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#d4a800;font-weight:700;margin-bottom:4px">🟡 +n.name+</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">类型</td><td>系统节点</td></tr><tr><td style="color:#8b949e;padding:1px 4px">状态</td><td>就绪</td></tr></table></div>';
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">state动作序列 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">输出格式:</div><select onchange="if(this.value===\"fetch_realsense\"){fetchRealsense()}else{Lg(this.value)}" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>Action Chunk [1,50,7] (6关节+夹爪)</option><option>单步Action [1,7] 实时控制</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">步长50 · 7维 · 频率10Hz · DDS:/dds/action/'+n.name.split(' ')[0]+'</div></div>';
+    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">state动作序列 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">输出格式:</div><select onchange="Lg(this.value)" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>Action Chunk [1,50,7] (6关节+夹爪)</option><option>单步Action [1,7] 实时控制</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">步长50 · 7维 · 频率10Hz · DDS:/dds/action/'+n.name.split(' ')[0]+'</div></div>';
   }
   if(!dd)dd='';
   cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:4px">'+n.name+'</div>'
@@ -218,7 +236,7 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.le
     +dd+''+(info?'<div style="font-size:9px;color:#00d4aa;margin:4px 0;background:#00d4aa11;padding:4px;border-radius:4px">'+info+'</div>':'')
     +'<div style="margin-top:6px"><button style="padding:3px 8px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px" onclick="L=L.filter(function(l){return l.f!=='+n.id+'&&l.t!=='+n.id+'});N=N.filter(function(x){return x!==n});draw();this.parentElement.parentElement.remove()">删除</button>'
     +'<button style="padding:3px 8px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">关闭</button>'
-    +'<button style="padding:3px 8px;background:#d4a800;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="show3D(\''+n.name+'\',\''+n.t+'\')">🧊 3D</button><button style="padding:3px 8px;background:#00d4aa;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="showImage()">📷 图像</button></div>';
+    +'<button style="padding:3px 8px;background:#d4a800;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="show3D(\''+n.name+'\',\''+n.t+'\')">🧊 3D</button></div>';
   document.body.appendChild(cfg);
   cfg.addEventListener('click',function(e){e.stopPropagation()});
   setTimeout(function(){document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true})},100);
@@ -257,87 +275,6 @@ function trainHJEPA(){
   fetch("/api/comfy/train/hjepa",{method:"POST"}).then(function(r){return r.json()}).then(function(d){Lg("✅ 训练: "+d.status)}).catch(function(){Lg("❌ 训练接口未就绪")});
 }
 
-function showImage(){
-  var p=document.createElement("div");
-  p.style.cssText="position:fixed;left:3%;top:3%;width:94%;height:94%;background:#000;border:2px solid#00d4aa;border-radius:12px;z-index:99999;display:flex;flex-direction:column";
-  p.innerHTML='<div style="padding:8px 12px;background:#111;display:flex;justify-content:space-between;align-items:center;color:#00d4aa;font-weight:700;font-size:13px"><span>📷 Orin RealSense 实时画面</span><button onclick="this.parentElement.parentElement.remove()" style="padding:4px 12px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer">✕</button></div><img id="rs-img" style="flex:1;width:100%;height:100%;object-fit:contain" src=""><div id="img-status" style="padding:6px 12px;background:#111;color:#8b949e;font-size:10px;text-align:center">⏳ 拉取Orin实时数据...</div>';
-  document.body.appendChild(p);
-  fetch("http://datadrive.world/orin_live_data.json")
-    .then(function(r){return r.json()})
-    .then(function(d){
-      var frames=d.frames||d;
-      var latest=Array.isArray(frames)?frames[frames.length-1]:frames;
-      if(latest.camera_b64){
-        document.getElementById("rs-img").src="data:image/jpeg;base64,"+latest.camera_b64.replace(/\s/g,"");
-        document.getElementById("img-status").textContent="✅ "+latest.timestamp+" | joints:"+JSON.stringify(latest.joint).substring(0,30); window._realsenseB64=latest.camera_b64.replace(/\s/g,""); Lg("📡 真实图像已缓存 ("+(window._realsenseB64.length/1024).toFixed(1)+"KB)");
-      }else{
-        document.getElementById("img-status").textContent="⚠️ camera_b64缺失 | joints:"+JSON.stringify(latest.joint);
-      }
-    })
-    .catch(function(e){document.getElementById("img-status").textContent="❌ "+e.message});
-}
-
-function showImage(){
-  var p=document.createElement("div");
-  p.style.cssText="position:fixed;left:3%;top:3%;width:94%;height:94%;background:#000;border:2px solid#00d4aa;border-radius:12px;z-index:99999;display:flex;flex-direction:column";
-  p.innerHTML='<div style="padding:8px 12px;background:#111;display:flex;justify-content:space-between;align-items:center;color:#00d4aa;font-weight:700;font-size:13px"><span>📷 Orin RealSense 实时</span><div><button onclick="var e=document.getElementById(\"rs-img\");if(e)e.src=\"/orin_realtime.jpg?t=\"+Date.now()" style="padding:4px 8px;background:#00d4aa;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:10px">🔄</button><button onclick="this.parentElement.parentElement.parentElement.remove()" style="padding:4px 12px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px;margin-left:4px">✕</button></div></div><img id="rs-img" style="flex:1;width:100%;height:100%;object-fit:contain" src="/orin_realtime.jpg">';
-  document.body.appendChild(p);
-}
-
-function fetchRealsense(){
-  Lg("📡 拉取Orin实时数据...");
-  fetch("http://datadrive.world/orin_live_data.json")
-    .then(function(r){return r.json()})
-    .then(function(d){
-      var latest=d[d.length-1];
-      Lg("✅ 最新帧: "+latest.timestamp+" | state: "+JSON.stringify(latest.state).substring(0,60)+"...");
-      Lg("📊 共"+d.length+"帧 Orin实时数据");
-      if(d.length>0){
-        Lg("   observation: "+JSON.stringify(d[0]).substring(0,80)+"...");
-      }
-    })
-    .catch(function(e){Lg("❌ 拉取失败: "+e.message)});
-}
-
-
-function showLiveStream(){
-  var p=document.createElement("div");
-  p.style.cssText="position:fixed;left:2%;top:2%;width:96%;height:96%;background:#000;border:2px solid#00d4aa;border-radius:12px;z-index:99999;display:flex;flex-direction:column";
-  p.innerHTML='<div style="padding:8px 12px;background:#111;display:flex;justify-content:space-between;align-items:center;color:#00d4aa;font-weight:700;font-size:13px"><span>📡 Orin RealSense 实时视频流</span><div style="display:flex;gap:6px;align-items:center"><span id="fps-counter" style="color:#8b949e;font-size:10px">0 fps</span><button onclick="clearInterval(this._int)" style="padding:4px 8px;background:#d4a800;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:10px">⏸ 暂停</button><button onclick="this.parentElement.parentElement.parentElement.remove();clearInterval(this.parentElement.querySelector(\'button\')._int)" style="padding:4px 12px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:10px">✕</button></div></div><img id="rs-live" style="flex:1;width:100%;height:100%;object-fit:contain" src="" id="rs-live"><div id="stream-info" style="padding:4px 12px;background:#111;color:#8b949e;font-size:10px;text-align:center">🟢 推流中 @ /orin_realtime.jpg</div>';
-  document.body.appendChild(p);
-  var fps=0,last=Date.now();
-  var img=document.getElementById("rs-live");
-  img.src="/orin_realtime.jpg?r="+Math.random();
-  var int=setInterval(function(){
-    var el=document.getElementById("rs-live");
-    if(!el){clearInterval(int);return}
-    el.src="/orin_realtime.jpg?r="+Math.random();
-
-    fps++;var now=Date.now();
-    if(now-last>=1000){
-      var c=document.getElementById("fps-counter");if(c)c.textContent=fps+" fps";
-      fps=0;last=now;
-    }
-  },80);
-  // Store interval for pause button
-  p.querySelector("button")._int=int;
-}
-
-function uploadData(input){
-  var f=input.files[0]; if(!f)return;
-  Lg("📤 上传: "+f.name+" ("+(f.size/1024/1024).toFixed(1)+"MB)");
-  var fd=new FormData(); fd.append("file",f);
-  fetch("/api/comfy/upload",{method:"POST",body:fd})
-    .then(function(r){return r.json()})
-    .then(function(d){
-      Lg("✅ 上传成功: "+d.frames+"帧 · "+(d.size/1024/1024).toFixed(1)+"MB");
-      Lg("📂 路径: /root/datasets/metaworld/tasks/"+d.file);
-      if(d.frames) Lg("🧬 可触发训练: SmolVLA / H-JEPA");
-    })
-    .catch(function(e){Lg("❌ 上传失败: "+e.message)});
-  input.value="";
-}
-
 function step(){
   saveState();
   var nodes=N.map(function(n){return n.name});
@@ -365,12 +302,12 @@ function run(){
   Lg('  🔗 连线: '+L.length+'条');
   Lg('  🚀 提交到4090后端...');
   var tStart = Date.now();
-  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom',real_image:window._realsenseB64||null})})
+  fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom'})})
     .then(function(r){return r.json()}).then(function(d){
       var rtt = Date.now()-tStart;
       Lg('  ✅ 任务创建: '+d.id+' (RTT:'+rtt+'ms)');
       Lg('  🖥️ 硬件: '+ (d.hardware||'4090云端'));
-      Lg('  🧠 模型: '+ (d.model||'SmolVLA') + (window._realsenseB64?' (📡 真机图像)':''));
+      Lg('  🧠 模型: '+ (d.model||'SmolVLA'));
       Lg('  📍 位置: '+ (d.location||'4090'));
       if(d.steps)d.steps.forEach(function(s){Lg('    ↳ '+s)});
       Lg('  ⏳ 等待推理完成...');
@@ -524,9 +461,9 @@ function toggle(id){var el=document.getElementById(id);el.style.display=el.style
 function preset(t){
   N=[];L=[];
   var p={smolvla:[{t:'model',n:'M01 RGB图像',x:30,y:60},{t:'model',n:'SmolVLA 推理引擎',x:220,y:60},{t:'action',n:'A00 Action输出',x:410,y:60}],
-          insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VLA-T · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
+          insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
           pick:[{t:'condition',n:'C001 取料·100G',x:80,y:200},{t:'model',n:'ACT · Sys1',x:280,y:200},{t:'action',n:'A01 取料·100G',x:480,y:200}],
-          aoi:[{t:'condition',n:'C008 AOI·100G',x:80,y:200},{t:'model',n:'VLA-T · Sys21',x:280,y:200},{t:'action',n:'A09 AOI',x:480,y:200}]};
+          aoi:[{t:'condition',n:'C008 AOI·100G',x:80,y:200},{t:'model',n:'VTLA · Sys21',x:280,y:200},{t:'action',n:'A09 AOI',x:480,y:200}]};
   var ids=(p[t]||p.insert).map(function(pp){return add(pp.t,pp.n,pp.x,pp.y)});
   for(var i=0;i<ids.length-1;i++)L.push({f:ids[i],t:ids[i+1]});draw()
 }
@@ -593,5 +530,39 @@ function saveWorkflow(){
   Lg('💾 已保存: '+fname+' · '+N.length+'节点/'+L.length+'连线');
 }
 setTimeout(function(){rz();preset("smolvla");},800);
-setTimeout(function(){fetch("/api/comfy/datasets").then(function(r){return r.json()}).then(function(ds){var p=document.getElementById("ds-list");if(p&&ds.length){p.innerHTML="";ds.forEach(function(d){var e=document.createElement("div");e.className="sn m";e.style.cssText="font-size:9px;padding:3px 6px;border-left:2px solid#00d4aa";e.textContent="📦 "+d.name+" ("+d.frames+"帧)";p.appendChild(e)})}}).catch(function(){})},1000);
+
+function loadWorkflowFromData(d){
+  try{
+    saveState();N=[];L=[];var idMap={};
+    d.nodes.forEach(function(n){idMap[n.id]=add(n.t,n.name,n.x,n.y)});
+    var lnks=d.links||d.edges||[];
+    lnks.forEach(function(l){
+      var src=N.find(function(x){return x.id===idMap[l.f]});
+      var dst=N.find(function(x){return x.id===idMap[l.t]});
+      if(src&&dst)L.push({f:src.id,t:dst.id});
+    });
+    draw();Lg("📂 "+d.name+" · "+d.nodes.length+"节点/"+lnks.length+"连线");
+  }catch(e){Lg("❌ "+e.message)}
+}
+function listServerJSON(){
+  var p=document.createElement("div");
+  p.style.cssText="position:fixed;left:10%;top:10%;width:80%;max-height:80%;background:#0d1117;border:2px solid#00d4aa;border-radius:12px;z-index:99999;overflow-y:auto;padding:24px";
+  p.innerHTML="<h2>📋 JSON 工作流</h2><div id=\'jl\'>⏳</div><br><button onclick=\'this.parentElement.remove()\'>✕</button>";
+  document.body.appendChild(p);
+  fetch("/api/comfy/json-list?t="+Date.now()).then(function(r){return r.json()}).then(function(files){
+    var h="";
+    files.forEach(function(f){
+      if(f.nodes>0)h+="<div style=\'padding:12px 16px;margin:6px 0;background:#131726;border:1px solid#1e2740;border-radius:8px;display:flex;align-items:center;justify-content:space-between\'><div><div style=\'color:#c8d1d9;font-size:14px;font-weight:600\'>"+f.name+"</div><div style=\'color:#8b949e;font-size:11px;margin-top:2px\'>"+f.nodes+"节点 · "+f.desc+"</div></div><button data-u=\'"+f.url+"\' style=\'padding:8px 16px;background:#00d4aa;color:#000;border:none;border-radius:6px;cursor:pointer;font-size:12px\'>加载</button></div>";
+    });
+    document.getElementById("jl").innerHTML=h||"无可用工作流";
+    setTimeout(function(){
+      document.querySelectorAll("#jl button[data-u]").forEach(function(b){
+        b.onclick=function(){
+          fetch(this.getAttribute("data-u")+"?t="+Date.now()).then(function(r){return r.json()}).then(function(d){loadWorkflowFromData(d);p.remove()});
+        };
+      });
+    },50);
+  }).catch(function(e){document.getElementById("jl").innerHTML="❌ "+e.message});
+}
+
 </script></body></html>
