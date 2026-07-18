@@ -18,7 +18,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
-<button class="btn btn-r" onclick="Lg("⏹ 已停止")" style="background:#00d4aa;color:#000">⏹ 停止</button>
+<button class="btn btn-r" onclick="stopPipeline()" style="background:#00d4aa;color:#000">⏹ 停止</button>
+<button class="btn btn-r" onclick="toggleConnect()" style="background:#58a6ff;color:#fff">🔗 连接</button>
 <button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
@@ -85,14 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn" draggable="true" data-t="system" data-n="Sys21 · VTLA" style="border-left:3px solid #d4a800">Sys21 · VTLA</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys22 · GR00T" style="border-left:3px solid #d4a800">Sys22 · GR00T</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('hw')">🔩 硬件 (4) ▾</div>
-<div id="hw">
-<div class="sn" draggable="true" data-t="hardware" data-n="Orin Nano">🖥 Orin Nano</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="MAC">💻 MAC</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="4060 Gateway">📡 4060 Gateway</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="4090 训练">🧠 4090 训练</div>
-</div>
-<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('viz')">📊 可视化 (1) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('viz')">📊 可视化 (1) ▾</div>
 <div id="viz">
 <div class="sn m" draggable="true" data-t="model" data-n="W&B 监控">📊 W&B 监控</div>
 </div>
@@ -122,7 +116,7 @@ function logDragStart(e){if(e.offsetY<8){logDrag=true;logSY=e.clientY;logSH=docu
 document.addEventListener('mousemove',function(e){if(!logDrag)return;var h=logSH+(logSY-e.clientY);h=Math.max(40,Math.min(500,h));document.getElementById('log').style.height=h+'px';rz()});
 document.addEventListener('mouseup',function(){logDrag=false});
 document.getElementById('log').onmousemove=function(e){this.style.cursor=e.offsetY<8?'ns-resize':'default'};
-var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,pan=false,pdx=0,pdy=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1;
+var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,pan=false,pdx=0,pdy=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1,connected=false,connOverlays=[];
 var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444'};
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
@@ -130,6 +124,7 @@ if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={t
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
 function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-170),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
 window.onresize=rz;rz();
+function updateConnOverlays(){connOverlays.forEach(function(o){var n=o.node;o.el.style.left=(n.x*zoom+px*zoom-4)+'px';o.el.style.top=(n.y*zoom+py*zoom-4)+'px';o.el.style.width=(n.w*zoom+8)+'px';o.el.style.height=(dh*zoom+8)+'px'});}
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
@@ -193,8 +188,8 @@ canvas.onmousedown=function(e){
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
   var p=getPos(e);
-  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw()}
-  if(pan){px=p.x-pdx;py=p.y-pdy;draw()}
+  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();updateConnOverlays()}
+  if(pan){px=p.x-pdx;py=p.y-pdy;draw();updateConnOverlays()}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
 canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
@@ -282,6 +277,49 @@ function trainHJEPA(){
   fetch("/api/comfy/train/hjepa",{method:"POST"}).then(function(r){return r.json()}).then(function(d){Lg("✅ 训练: "+d.status)}).catch(function(){Lg("❌ 训练接口未就绪")});
 }
 
+
+function toggleConnect(){
+  connected=!connected;
+  if(!connected){clearConnOverlays();Lg("🔌 已断开");draw();return}
+  Lg("🔗 查询硬件状态...");
+  fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
+    Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
+    Lg("  Orin: "+(d.orin_online?"🟢 在线":"🔴 离线"));
+    clearConnOverlays();
+    var cv=document.getElementById("cv");
+    if(d.mac_connected>0){
+      var mac=N.find(function(n){return n.name.indexOf('MAC')>=0});
+      if(mac)addOverlay(mac,"#00d4aa");
+    }
+    if(d.orin_online){
+      var orin=N.find(function(n){return n.name.indexOf('Orin')>=0});
+      if(orin)addOverlay(orin,"#00d4aa");
+    }
+    // 4090 always online if status responds
+    var t4090=N.find(function(n){return n.name.indexOf('4090')>=0});
+    if(t4090)addOverlay(t4090,"#58a6ff");
+   }).catch(function(){Lg("🔴 4090离线")});
+}
+function addOverlay(n,color){
+  var cv=document.getElementById("cv");
+  var d=document.createElement("div");
+  d.style.cssText="position:absolute;pointer-events:none;border:3px solid "+color+";border-radius:8px;z-index:9;box-shadow:0 0 10px "+color;
+  d.style.left=(n.x*zoom+px*zoom-4)+"px";
+  d.style.top=(n.y*zoom+py*zoom-4)+"px";
+  d.style.width=(n.w*zoom+8)+"px";
+  d.style.height=(dh*zoom+8)+"px";
+  cv.appendChild(d);
+  connOverlays.push({el:d,node:n});
+}
+function clearConnOverlays(){
+  connOverlays.forEach(function(o){o.el.remove()});
+  connOverlays=[];
+}
+function stopPipeline(){
+  stage=0;if(pipelineTimer){clearInterval(pipelineTimer);pipelineTimer=null}
+  var gb=document.getElementById('glowBox');if(gb)gb.remove();stage=0;var gb=document.getElementById('glowBox');if(gb)gb.style.display='none';if(glowEl){glowEl.remove();glowEl=null}
+  Lg("⏹ 已停止");
+}
 function step(){
   saveState();
   var nodes=N.map(function(n){return n.name});
@@ -307,6 +345,56 @@ function run(){
   Lg('▶️ 执行工作流');
   Lg('  📋 节点: '+nodeNames);
   Lg('  🔗 连线: '+L.length+'条');
+  if(N.some(function(n){return n.name.indexOf('Orin Nano')>=0})&&stage===0){
+    stage=1;var st=Date.now();
+    Lg('🟢 Orin Nano MCAP采集 (30s)');
+    // CSS glow overlay
+    var orin=N.find(function(n){return n.name.indexOf('Orin')>=0});
+    if(orin){
+      var cv=document.getElementById("cv");
+      glowEl=document.createElement("div");
+      glowEl.id="glowBox";
+      glowEl.style.cssText="position:absolute;pointer-events:none;border:3px solid #00d4aa;border-radius:8px;z-index:99;animation:glowPulse .6s ease-in-out infinite alternate";
+      if(!document.getElementById('glowStyle')){
+        var s=document.createElement('style');s.id='glowStyle';
+        s.textContent='@keyframes glowPulse{from{box-shadow:0 0 8px #00d4aa,inset 0 0 8px rgba(0,212,170,.3)}to{box-shadow:0 0 24px #00d4aa,inset 0 0 16px rgba(0,212,170,.6)}}';
+        document.head.appendChild(s);
+      }
+      cv.appendChild(glowEl);
+      function posGlow(){
+        if(!glowEl)return;
+        if(stage===1){
+          var x=(orin.x+px)*zoom-4, y=(orin.y+py)*zoom-4;
+          glowEl.style.transform="translate("+x+"px,"+y+"px)";
+          glowEl.style.borderColor="#00d4aa";
+          glowEl.style.animation="glowPulse .6s ease-in-out infinite alternate";
+        } else if(stage===2){
+          var mac=N.find(function(n){return n.name.indexOf('MAC')>=0});
+          if(mac){
+            var x2=(mac.x+px)*zoom-4, y2=(mac.y+py)*zoom-4;
+            glowEl.style.transform="translate("+x2+"px,"+y2+"px)";
+            glowEl.style.width=(mac.w*zoom+8)+"px";
+            glowEl.style.height=(dh*zoom+8)+"px";
+            glowEl.style.borderColor="#58a6ff";
+            glowEl.style.animation="none";
+            glowEl.style.boxShadow="0 0 16px #58a6ff,inset 0 0 8px rgba(88,166,255,.4)";
+          }
+        } else { glowEl.style.display="none"; return; }
+        glowEl.style.display="block";
+        glowEl.style.transform="translate("+x+"px,"+y+"px)";
+        
+        requestAnimationFrame(posGlow);
+      }
+      posGlow();
+    }
+    pipelineTimer=setInterval(function(){
+      if(stage!==1){clearInterval(pipelineTimer);var gb=document.getElementById('glowBox');if(gb)gb.remove();var gb=document.getElementById('glowBox');if(gb)gb.remove();stage=0;var gb=document.getElementById('glowBox');if(gb)gb.style.display='none';if(glowEl){glowEl.remove();glowEl=null}return}
+      Lg('  📡 '+Math.round((Date.now()-st)/1000)+'s/30s');
+      if(Date.now()-st>=30000){clearInterval(pipelineTimer);var gb=document.getElementById('glowBox');if(gb)gb.remove();stage=0;var gb=document.getElementById('glowBox');if(gb)gb.style.display='none';if(glowEl){glowEl.remove();glowEl=null}Lg('✅ Orin采集完成');stage=2;Lg('💻 MAC 在线,等待转发...');}
+    },1000);
+    return;
+  }
+  if(stage>0){Lg('⏳ 采集中,点击停止');return}
   Lg('  🚀 提交到4090后端...');
   var tStart = Date.now();
   fetch('/api/comfy/task',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nodes:N.map(function(n){return n.name}),type:'custom'})})
