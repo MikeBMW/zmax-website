@@ -1,95 +1,55 @@
 {
-  "version": "3.1",
-  "name": "DDS全链路闭环 · Orin采集→训练→验证",
-  "description": "Orin MCAP(30s) → MAC → 4060转NPZ → 4090训练H-JEPA → W&B看loss",
+  "name": "DDS全链路闭环 · 7节点",
+  "description": "Orin→MAC→4060→4090训练→M01→SmolVLA→Action",
   "nodes": [
     {
       "id": "n1",
-      "t": "system",
-      "name": "Sys 0 数据",
-      "x": 30,
-      "y": 0,
-      "w": 150
+      "t": "model",
+      "name": "M01 RGB图像",
+      "x": 1113,
+      "y": 302
     },
     {
       "id": "n2",
-      "t": "hardware",
-      "name": "Orin Nano",
-      "x": 30,
-      "y": 55,
-      "w": 150
+      "t": "model",
+      "name": "SmolVLA 推理引擎",
+      "x": 1389,
+      "y": 322
     },
     {
       "id": "n3",
-      "t": "model",
-      "name": "M01 RGB图像",
-      "x": 30,
-      "y": 120,
-      "w": 150
-    },
-    {
-      "id": "n11",
-      "t": "hardware",
-      "name": "MAC",
-      "x": 30,
-      "y": 180,
-      "w": 150
+      "t": "action",
+      "name": "A00 Action输出",
+      "x": 1592,
+      "y": 284
     },
     {
       "id": "n4",
       "t": "hardware",
-      "name": "4060 Gateway",
-      "x": 230,
-      "y": 55,
-      "w": 150
+      "name": "Orin Nano",
+      "x": 194,
+      "y": 343
     },
     {
       "id": "n5",
       "t": "hardware",
-      "name": "4090 训练",
-      "x": 430,
-      "y": 55,
-      "w": 150
+      "name": "MAC",
+      "x": 424,
+      "y": 321
     },
     {
       "id": "n6",
-      "t": "model",
-      "name": "X-Hybrid",
-      "x": 430,
-      "y": 160,
-      "w": 150
+      "t": "hardware",
+      "name": "4060 Gateway",
+      "x": 625,
+      "y": 337
     },
     {
       "id": "n7",
-      "t": "action",
-      "name": "A00 Action输出",
-      "x": 630,
-      "y": 160,
-      "w": 150
-    },
-    {
-      "id": "n8",
-      "t": "system",
-      "name": "W&B 监控",
-      "x": 630,
-      "y": 55,
-      "w": 150
-    },
-    {
-      "id": "n9",
-      "t": "system",
-      "name": "🔬 验证",
-      "x": 830,
-      "y": 55,
-      "w": 150
-    },
-    {
-      "id": "n10",
-      "t": "system",
-      "name": "Orin 部署",
-      "x": 830,
-      "y": 160,
-      "w": 150
+      "t": "hardware",
+      "name": "4090 训练",
+      "x": 878,
+      "y": 329
     }
   ],
   "links": [
@@ -114,33 +74,8 @@
       "t": "n7"
     },
     {
-      "f": "n5",
-      "t": "n8"
-    },
-    {
-      "f": "n8",
-      "t": "n9"
-    },
-    {
-      "f": "n9",
-      "t": "n10"
-    },
-    {
-      "f": "n2",
-      "t": "n11"
-    },
-    {
-      "f": "n11",
-      "t": "n4"
+      "f": "n7",
+      "t": "n1"
     }
-  ],
-  "steps": [
-    "1. Orin: ros2 bag record -o orin_30s /realsense/* /real_joint_states → .mcap",
-    "2. ComfyUI 📤 上传 .mcap → 4090 /root/datasets/ros2_bags/",
-    "3. 4090 rosbag→.npz 自动转换 → /root/datasets/metaworld/tasks/",
-    "4. 4090 train_h_jepa.py 训练 300 epochs",
-    "5. W&B https://wandb.ai/xspace/zmax-hjepa 查看loss曲线",
-    "6. 模型保存 /root/models/hjepa_zflow/model.pt",
-    "7. SSH部署到Orin → zmax_sys1_hybrid"
   ]
 }
