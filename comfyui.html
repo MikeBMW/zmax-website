@@ -152,7 +152,7 @@ var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors
 var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
-function rz(){var lh=document.getElementById('log').offsetHeight;canvas.width=(window.innerWidth-170)*dpr;canvas.height=(window.innerHeight-38-lh)*dpr;canvas.style.width=(window.innerWidth-170)+'px';canvas.style.height=(window.innerHeight-38-lh)+'px';ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
+function rz(){var lh=document.getElementById('log').offsetHeight;canvas.width=(window.innerWidth-170)*dpr;canvas.height=(window.innerHeight-38-lh)*dpr;canvas.style.width=(window.innerWidth-170)+'px';canvas.style.height=(window.innerHeight-38-lh)+'px';ctx.setTransform(dpr*zoom,0,0,dpr*zoom,px,py);draw()}
 window.onresize=rz;rz();
 
 function add(t,name,x,y){
@@ -190,7 +190,7 @@ function draw(){
 
 function getPos(e){return{x:e.offsetX/zoom,y:e.offsetY/zoom}}
 
-canvas.onwheel=function(e){if(e.ctrlKey){e.preventDefault();zoom=Math.max(.2,Math.min(3,zoom-e.deltaY*.001));draw();Lg('🔍 '+Math.round(zoom*100)+'%')}};
+document.getElementById("cv").onwheel=function(e){if(e.ctrlKey){e.preventDefault();zoom=Math.max(.2,Math.min(3,zoom-e.deltaY*.001));ctx.setTransform(dpr*zoom,0,0,dpr*zoom,px,py);draw();Lg('🔍 '+Math.round(zoom*100)+'%')}};
 
 canvas.onmousedown=function(e){
   var p=getPos(e),mx=p.x-px,my=p.y-py,target=null;
