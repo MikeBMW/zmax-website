@@ -13,7 +13,7 @@
     },
     {
       "id": "n2",
-      "t": "system",
+      "t": "hardware",
       "name": "Orin Nano",
       "x": 30,
       "y": 55,
@@ -29,7 +29,7 @@
     },
     {
       "id": "n11",
-      "t": "system",
+      "t": "hardware",
       "name": "MAC",
       "x": 30,
       "y": 180,
@@ -37,7 +37,7 @@
     },
     {
       "id": "n4",
-      "t": "system",
+      "t": "hardware",
       "name": "4060 Gateway",
       "x": 230,
       "y": 55,
@@ -45,7 +45,7 @@
     },
     {
       "id": "n5",
-      "t": "system",
+      "t": "hardware",
       "name": "4090 训练",
       "x": 430,
       "y": 55,
