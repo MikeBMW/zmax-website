@@ -134,7 +134,7 @@ window.onresize=rz;rz();
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
-  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:150});
+  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:150,dataSource:""});
   saveState();draw();return id;
 }
 
@@ -194,7 +194,7 @@ canvas.onmousedown=function(e){
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
   var p=getPos(e);
-  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw()}
+  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();connOverlays.forEach(function(o){var n=o.node;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
   if(pan){px=p.x-pdx;py=p.y-pdy;draw()}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
@@ -217,8 +217,8 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
   }else if(n.name.indexOf('Sys 0')>=0){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
-  }else if(n.name==='M01 RGB图像'){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
+  }else if(n.name==='M01 RGB图像'){var savedDS=n.dataSource||'';
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120">随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
   }else if(n.name==='M04 触觉阵列'){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L121" selected>随机噪声 torch.randn(1,6,200) @ L121</option><option value="lissajous_real">Lissajous力控 6N×200点 实采</option><option value="sim">仿真力觉</option></select></div>';
   }else if(n.name.indexOf('C0')===0||n.name.indexOf('C1')===0||n.name.indexOf('C2')===0||n.name.indexOf('C3')===0){
@@ -560,7 +560,7 @@ function saveWorkflow(){
   var fname=ds+'_'+sys+'_'+machine+'.json';
   var dag={timestamp:now.toISOString(),filename:fname,system:sys,machine:machine,
     canvas:{px:px,py:py,zoom:zoom},
-    nodes:N.map(function(n){return{id:n.id,type:n.t,name:n.name,x:n.x,y:n.y}}),
+    nodes:N.map(function(n){return{id:n.id,type:n.t,name:n.name,x:n.x,y:n.y,ds:n.dataSource||""}}),
     links:L
   };
   // Also save open 3D window state
@@ -581,7 +581,7 @@ setTimeout(function(){rz();preset("smolvla");},800);
 function loadWorkflowFromData(d){
   try{
     saveState();N=[];L=[];var idMap={};
-    d.nodes.forEach(function(n){idMap[n.id]=add(n.t,n.name,n.x,n.y)});
+    d.nodes.forEach(function(n){var nid=add(n.t,n.name,n.x,n.y);idMap[n.id]=nid;var nn=N.find(function(x){return x.id===nid});if(nn&&n.ds)nn.dataSource=n.ds});
     var lnks=d.links||d.edges||[];
     lnks.forEach(function(l){
       var src=N.find(function(x){return x.id===idMap[l.f]});
@@ -615,7 +615,7 @@ function listServerJSON(){
 function loadWorkflowFromData(d){
   try{
     saveState();N=[];L=[];var idMap={};
-    d.nodes.forEach(function(n){idMap[n.id]=add(n.t,n.name,n.x,n.y)});
+    d.nodes.forEach(function(n){var nid=add(n.t,n.name,n.x,n.y);idMap[n.id]=nid;var nn=N.find(function(x){return x.id===nid});if(nn&&n.ds)nn.dataSource=n.ds});
     var lnks=d.links||d.edges||[];
     lnks.forEach(function(l){
       var src=N.find(function(x){return x.id===idMap[l.f]});
