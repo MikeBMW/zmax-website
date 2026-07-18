@@ -20,13 +20,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
 <button class="btn btn-r" onclick="Lg("⏹ 已停止")" style="background:#00d4aa;color:#000">⏹ 停止</button>
 <button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
+<button class="btn btn-r" onclick="toggleDashboard()" style="background:#d4a800;color:#000">📊 仪表盘</button>
 <button class="btn btn-r" onclick="toggleConnect()" style="background:#58a6ff;color:#fff">🔗 连接</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
 <button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
 <input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)">
 <button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
-<span id="st">检测中...</span>
+<span id="st" style="display:flex;gap:8px;font-size:10px"><span id="ps-orin">🖥 ⬜</span><span style="color:#333">→</span><span id="ps-mac">💻 ⬜</span><span style="color:#333">→</span><span id="ps-4090">🧠 ⬜</span></span>
 </div>
 <div id="side">
 <div style="font-size:10px;color:#8b949e;margin:4px 0;cursor:pointer" onclick="toggle('c38')">🟣 Condition 条件 (38) ▾</div>
@@ -130,11 +131,11 @@ var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
 function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-170),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
-window.onresize=rz;rz();
+window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);if(d.mac_connected>0||d.orin_online){clearConnOverlays();var cv=document.getElementById("cv");if(d.mac_connected>0){var m=N.find(function(n){return n.name.indexOf("MAC")>=0});if(m)addOverlay(m,"#00d4aa")}if(d.orin_online){var o=N.find(function(n){return n.name.indexOf("Orin")>=0});if(o)addOverlay(o,"#00d4aa")}}}).catch(function(){})},10000);
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
-  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:150,dataSource:""});
+  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:150});
   saveState();draw();return id;
 }
 
@@ -194,7 +195,7 @@ canvas.onmousedown=function(e){
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
   var p=getPos(e);
-  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();connOverlays.forEach(function(o){var n=o.node;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
+  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw()}
   if(pan){px=p.x-pdx;py=p.y-pdy;draw()}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
@@ -217,8 +218,8 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
   }else if(n.name.indexOf('Sys 0')>=0){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
-  }else if(n.name==='M01 RGB图像'){var savedDS=n.dataSource||'';
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120">随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
+  }else if(n.name==='M01 RGB图像'){
+    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
   }else if(n.name==='M04 触觉阵列'){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L121" selected>随机噪声 torch.randn(1,6,200) @ L121</option><option value="lissajous_real">Lissajous力控 6N×200点 实采</option><option value="sim">仿真力觉</option></select></div>';
   }else if(n.name.indexOf('C0')===0||n.name.indexOf('C1')===0||n.name.indexOf('C2')===0||n.name.indexOf('C3')===0){
@@ -285,6 +286,48 @@ function trainHJEPA(){
 
 
 function stopPipeline(){stage=0;if(pipelineTimer){clearInterval(pipelineTimer);pipelineTimer=null}removePulseOverlay();Lg("⏹ 已停止");}
+function toggleDashboard(){
+  var d=document.getElementById("dashboard");
+  if(d){d.remove();return}
+  d=document.createElement("div");
+  d.id="dashboard";
+  d.style.cssText="position:fixed;right:10px;top:45px;width:280px;max-height:80%;background:#0d1117;border:2px solid#00d4aa;border-radius:12px;z-index:999;padding:16px;overflow-y:auto;font-size:11px";
+  d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><span style="color:#00d4aa;font-weight:700;font-size:14px">📊 数据流水线</span><button onclick="this.parentElement.parentElement.remove()" style="background:#333;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer">✕</button></div><div id="dash-content">⏳ 加载中...</div>';
+  document.body.appendChild(d);
+  refreshDashboard();
+  setInterval(refreshDashboard,5000);
+}
+function refreshDashboard(){
+  fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(s){
+    var h='<div style="margin:8px 0;padding:10px;background:#131726;border-radius:8px;border-left:3px solid#ff4444"><div style="font-weight:700;color:#ff4444">🖥 Orin Nano</div>';
+    h+='<div style="color:#8b949e;font-size:10px;margin-top:4px">状态: '+(s.orin_online?'<span style="color:#00d4aa">🟢 在线</span>':'<span style="color:#ff4444">🔴 离线</span>')+'</div>';
+    h+='<div style="color:#8b949e;font-size:10px">ROS2: /realsense/color/image_raw</div>';
+    h+='<div style="color:#8b949e;font-size:10px">MCAP: 30s采集周期</div></div>';
+    
+    h+='<div style="text-align:center;color:#333;margin:2px 0">⬇</div>';
+    
+    h+='<div style="margin:8px 0;padding:10px;background:#131726;border-radius:8px;border-left:3px solid#58a6ff"><div style="font-weight:700;color:#58a6ff">💻 MAC 跳板机</div>';
+    h+='<div style="color:#8b949e;font-size:10px;margin-top:4px">连接: '+(s.mac_connected>0?'<span style="color:#00d4aa">🟢 已连接</span>':'<span style="color:#ff4444">🔴 未连接</span>')+'</div>';
+    h+='<div style="color:#8b949e;font-size:10px">心跳: 5s HTTP轮询</div>';
+    h+='<div style="color:#8b949e;font-size:10px">转发: Orin→4090 MCAP</div></div>';
+    
+    h+='<div style="text-align:center;color:#333;margin:2px 0">⬇</div>';
+    
+    h+='<div style="margin:8px 0;padding:10px;background:#131726;border-radius:8px;border-left:3px solid#00d4aa"><div style="font-weight:700;color:#00d4aa">🧠 4090 训练</div>';
+    h+='<div style="color:#8b949e;font-size:10px;margin-top:4px">GPU: RTX 4090</div>';
+    h+='<div style="color:#8b949e;font-size:10px">模型: H-JEPA 2.68M</div>';
+    h+='<div style="color:#8b949e;font-size:10px">数据: 300帧 Orin</div>';
+    h+='<div style="color:#8b949e;font-size:10px">训练: '+(s.auto_train?'<span style="color:#00d4aa">🔄 自动</span>':'<span style="color:#d4a800">⏸ 手动</span>')+'</div></div>';
+    
+    h+='<div style="margin-top:12px;padding-top:8px;border-top:1px solid#222;color:#8b949e;font-size:9px">刷新: '+new Date().toLocaleTimeString()+'</div>';
+    
+    var el=document.getElementById("dash-content");
+    if(el)el.innerHTML=h;
+  }).catch(function(e){
+    var el=document.getElementById("dash-content");
+    if(el)el.innerHTML='<div style="color:#ff4444">🔴 4090离线: '+e.message+'</div>';
+  });
+}
 function toggleConnect(){connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
   fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
     Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
@@ -295,6 +338,7 @@ function toggleConnect(){connected=!connected;Lg("c="+connected);if(!connected){
   var t=N.find(function(n){return n.name.indexOf("4090")>=0});if(t)addOverlay(t,"#58a6ff");}).catch(function(){Lg("🔴 4090离线")});
 }
 function addOverlay(n,c){var cv=document.getElementById("cv");var d=document.createElement("div");d.style.cssText="position:absolute;pointer-events:none;border:3px solid "+c+";border-radius:8px;z-index:9;box-shadow:0 0 10px "+c;d.style.left=(n.x*zoom+px*zoom-4)+"px";d.style.top=(n.y*zoom+py*zoom-4)+"px";d.style.width=(n.w*zoom+8)+"px";d.style.height=(dh*zoom+8)+"px";cv.appendChild(d);connOverlays.push({el:d,node:n})}
+function updatePipeStatus(d){var s=document.getElementById("ps-orin");if(s)s.innerHTML="🖥 "+(d.orin_online?"🟢":"🔴");s=document.getElementById("ps-mac");if(s)s.innerHTML="💻 "+(d.mac_connected>0?"🟢":"🔴");s=document.getElementById("ps-4090");if(s)s.innerHTML="🧠 🟢"}
 function clearConnOverlays(){connOverlays.forEach(function(o){o.el.remove()});connOverlays=[]}
 function addPulseOverlay(n,c){var cv=document.getElementById("cv");var d=document.createElement("div");d.id="pulseOverlay";d.style.cssText="position:absolute;pointer-events:none;border:4px solid "+c+";border-radius:8px;z-index:99;animation:pls .5s ease-in-out infinite alternate";cv.appendChild(d);if(!document.getElementById("ps")){var s=document.createElement("style");s.id="ps";s.textContent="@keyframes pls{from{box-shadow:0 0 8px "+c+"}to{box-shadow:0 0 24px "+c+"}}";document.head.appendChild(s)}(function upd(){var e=document.getElementById("pulseOverlay");if(!e)return;e.style.left=(n.x*zoom+px*zoom-5)+"px";e.style.top=(n.y*zoom+py*zoom-5)+"px";e.style.width=(n.w*zoom+10)+"px";e.style.height=(dh*zoom+10)+"px";requestAnimationFrame(upd)})()}
 function removePulseOverlay(){var e=document.getElementById("pulseOverlay");if(e)e.remove()}
@@ -560,7 +604,7 @@ function saveWorkflow(){
   var fname=ds+'_'+sys+'_'+machine+'.json';
   var dag={timestamp:now.toISOString(),filename:fname,system:sys,machine:machine,
     canvas:{px:px,py:py,zoom:zoom},
-    nodes:N.map(function(n){return{id:n.id,type:n.t,name:n.name,x:n.x,y:n.y,ds:n.dataSource||""}}),
+    nodes:N.map(function(n){return{id:n.id,type:n.t,name:n.name,x:n.x,y:n.y}}),
     links:L
   };
   // Also save open 3D window state
@@ -581,7 +625,7 @@ setTimeout(function(){rz();preset("smolvla");},800);
 function loadWorkflowFromData(d){
   try{
     saveState();N=[];L=[];var idMap={};
-    d.nodes.forEach(function(n){var nid=add(n.t,n.name,n.x,n.y);idMap[n.id]=nid;var nn=N.find(function(x){return x.id===nid});if(nn&&n.ds)nn.dataSource=n.ds});
+    d.nodes.forEach(function(n){idMap[n.id]=add(n.t,n.name,n.x,n.y)});
     var lnks=d.links||d.edges||[];
     lnks.forEach(function(l){
       var src=N.find(function(x){return x.id===idMap[l.f]});
@@ -615,7 +659,7 @@ function listServerJSON(){
 function loadWorkflowFromData(d){
   try{
     saveState();N=[];L=[];var idMap={};
-    d.nodes.forEach(function(n){var nid=add(n.t,n.name,n.x,n.y);idMap[n.id]=nid;var nn=N.find(function(x){return x.id===nid});if(nn&&n.ds)nn.dataSource=n.ds});
+    d.nodes.forEach(function(n){idMap[n.id]=add(n.t,n.name,n.x,n.y)});
     var lnks=d.links||d.edges||[];
     lnks.forEach(function(l){
       var src=N.find(function(x){return x.id===idMap[l.f]});

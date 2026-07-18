@@ -1,0 +1,61 @@
+{
+  "name": "数据流水线 · Orin→MAC→4090",
+  "version": "2.0",
+  "current_cycle": 0,
+  "auto_repeat": false,
+  "phases": [
+    {"name": "采集", "status": "idle", "duration": 30},
+    {"name": "转发", "status": "idle", "duration": 5},
+    {"name": "训练", "status": "idle", "duration": 60}
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "hardware",
+      "name": "Orin Nano",
+      "icon": "🖥",
+      "color": "#ff4444",
+      "status_key": "orin_online",
+      "actions": [
+        {"label": "▶ 采集", "cmd": "record_start", "duration": 30}
+      ],
+      "data_sources": [
+        {"topic": "/realsense/color/image_raw", "shape": "480x640x3", "fps": 30},
+        {"topic": "/real_joint_states", "shape": "6", "fps": 100}
+      ]
+    },
+    {
+      "id": "n2",
+      "type": "hardware",
+      "name": "MAC",
+      "icon": "💻",
+      "color": "#58a6ff",
+      "status_key": "mac_connected",
+      "actions": [
+        {"label": "🔄 转发", "cmd": "forward_start"}
+      ],
+      "data_sources": [
+        {"path": "/tmp/zmax_record/", "format": "MCAP"}
+      ]
+    },
+    {
+      "id": "n3",
+      "type": "hardware",
+      "name": "4090 训练",
+      "icon": "🧠",
+      "color": "#00d4aa",
+      "status_key": "gpu",
+      "actions": [
+        {"label": "🚀 训练", "cmd": "train_start"},
+        {"label": "📊 W&B", "url": "https://wandb.ai/xspace/zmax-hjepa"}
+      ],
+      "data_sources": [
+        {"path": "/root/datasets/metaworld/tasks/", "format": "NPZ"}
+      ]
+    }
+  ],
+  "links": [
+    {"f": "n1", "t": "n2"},
+    {"f": "n2", "t": "n3"}
+  ]
+}
