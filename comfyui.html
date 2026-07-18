@@ -18,7 +18,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
 <button class="btn btn-r" onclick="run()">▶ 执行</button>
-<button class="btn btn-r" onclick="stopPipeline()" style="background:#00d4aa;color:#000">⏹ 停止</button>
+<button class="btn btn-r" onclick="Lg("⏹ 已停止")" style="background:#00d4aa;color:#000">⏹ 停止</button>
 <button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
@@ -100,30 +100,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div id="intg">
 <div class="sn" draggable="true" data-t="system" data-n="🔬 验证">🔬 验证</div>
 <div class="sn" draggable="true" data-t="system" data-n="Orin 部署">🚀 Orin 部署</div>
+<div class="sn" draggable="true" data-t="system" data-n="Orin 部署">🚀 Orin 部署</div>
 </div>
 
 <div style="font-size:10px;color:#8b949e;cursor:pointer" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('hw')">🔩 硬件 (4) ▾</div>
 <div id="hw">
 <div class="sn" draggable="true" data-t="hardware" data-n="Orin Nano">🖥 Orin Nano</div>
 <div class="sn" draggable="true" data-t="hardware" data-n="MAC">💻 MAC</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="4060 Gateway">📡 4060 Gateway</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="4090 训练">🧠 4090 训练</div>
-</div>
-<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('viz')">📊 可视化 (1) ▾</div>
-<div id="viz">
-<div class="sn m" draggable="true" data-t="model" data-n="W&B 监控">📊 W&B 监控</div>
-</div>
-<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('intg')">🔌 集成 (2) ▾</div>
-<div id="intg">
-<div class="sn" draggable="true" data-t="system" data-n="🔬 验证">🔬 验证</div>
-<div class="sn" draggable="true" data-t="system" data-n="Orin 部署">🚀 Orin 部署</div>
-</div>
-
-<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('a30')">🟢 Action 动作 (30) ▾</div>
-<div id="a30">
-<div class="sn a" draggable="true" data-t="action" data-n="A00 Action输出">A00 Action输出</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A04 力控插入">A04 力控插入</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A06 拔出模块">A06 拔出</div>
 <div class="sn a" draggable="true" data-t="action" data-n="A09 AOI检测">A09 AOI</div>
 <div class="sn a" draggable="true" data-t="action" data-n="A01 取料·100G">A01 取料·100G</div>
 <div class="sn a" draggable="true" data-t="action" data-n="A02 扫码·100G">A02 扫码·100G</div>
@@ -145,7 +128,7 @@ var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors
 var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
-function rz(){var lh=document.getElementById('log').offsetHeight;canvas.width=(window.innerWidth-170)*dpr;canvas.height=(window.innerHeight-38-lh)*dpr;canvas.style.width=(window.innerWidth-170)+'px';canvas.style.height=(window.innerHeight-38-lh)+'px';ctx.setTransform(dpr*zoom,0,0,dpr*zoom,px,py);draw()}
+function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-170),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
 window.onresize=rz;rz();
 
 function add(t,name,x,y){
@@ -155,7 +138,9 @@ function add(t,name,x,y){
 }
 
 function draw(){
-  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.restore();
+  ctx.setTransform(dpr*zoom,0,0,dpr*zoom,0,0);
+  ctx.clearRect(px,py,(window.innerWidth-170)/zoom,(window.innerHeight-38)/zoom);
+  
   ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.strokeStyle='#111';ctx.lineWidth=1;
   for(var i=0;i<canvas.width;i+=50)for(var j=0;j<canvas.height;j+=50){ctx.beginPath();ctx.arc(i+(px%50),j+(py%50),1,0,Math.PI*2);ctx.stroke()}
@@ -183,7 +168,14 @@ function draw(){
 
 function getPos(e){return{x:e.offsetX/zoom,y:e.offsetY/zoom}}
 
-window.addEventListener('wheel',function(e){if(e.ctrlKey){e.preventDefault();zoom=Math.max(.2,Math.min(3,zoom-e.deltaY*.001));ctx.setTransform(dpr*zoom,0,0,dpr*zoom,px,py);draw();Lg('🔍 '+Math.round(zoom*100)+'%')}},{passive:false});
+window.addEventListener("wheel",function(e){
+  if(e.ctrlKey){
+    e.preventDefault();
+    zoom=Math.max(.2,Math.min(3,zoom-e.deltaY*.001));
+    draw();
+    Lg("🔍 "+Math.round(zoom*100)+"%");
+  }
+},{passive:false});
 
 canvas.onmousedown=function(e){
   var p=getPos(e),mx=p.x-px,my=p.y-py,target=null;
@@ -201,11 +193,11 @@ canvas.onmousedown=function(e){
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
   var p=getPos(e);
-  if(drag){drag.x=p.x-px-dx;drag.y=p.y-py-dy;draw()}
+  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw()}
   if(pan){px=p.x-pdx;py=p.y-pdy;draw()}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
-canvas.ondblclick=function(e){var p=getPos(e),mx=p.x-px,my=p.y-py;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
+canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
   // 显示配置面板
   var cfg=document.createElement('div');
   cfg.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#111;border:2px solid'+colors[n.t]+';border-radius:8px;padding:10px;z-index:999;font-size:11px;min-width:200px';
@@ -288,12 +280,6 @@ document.addEventListener('DOMContentLoaded',function(){var l=document.getElemen
 function trainHJEPA(){
   Lg("🧬 H-JEPA训练启动");
   fetch("/api/comfy/train/hjepa",{method:"POST"}).then(function(r){return r.json()}).then(function(d){Lg("✅ 训练: "+d.status)}).catch(function(){Lg("❌ 训练接口未就绪")});
-}
-
-function stopPipeline(){
-  stage=0;collecting=null;
-  if(pipelineTimer){clearInterval(pipelineTimer);pipelineTimer=null}
-  Lg("⏹ 采集已停止");draw();
 }
 
 function step(){
@@ -568,7 +554,6 @@ function loadWorkflowFromData(d){
 function listServerJSON(){
   var p=document.createElement("div");
   p.style.cssText="position:fixed;left:10%;top:10%;width:80%;max-height:80%;background:#0d1117;border:2px solid#00d4aa;border-radius:12px;z-index:99999;overflow-y:auto;padding:24px";
-  p.innerHTML="<h2>📋 JSON 工作流</h2><div id=\'jl\'>⏳</div><br><button onclick=\'this.parentElement.remove()\'>✕</button>";
   document.body.appendChild(p);
   fetch("/api/comfy/json-list?t="+Date.now()).then(function(r){return r.json()}).then(function(files){
     var h="";
@@ -603,7 +588,6 @@ function loadWorkflowFromData(d){
 function listServerJSON(){
   var p=document.createElement("div");
   p.style.cssText="position:fixed;left:10%;top:10%;width:80%;max-height:80%;background:#0d1117;border:2px solid#00d4aa;border-radius:12px;z-index:99999;overflow-y:auto;padding:24px";
-  p.innerHTML="<h2>📋 JSON 工作流</h2><div id='jl'>⏳</div><br><button onclick='this.parentElement.remove()'>✕</button>";
   document.body.appendChild(p);
   fetch("/api/comfy/json-list?t="+Date.now()).then(function(r){return r.json()}).then(function(files){
     var h="";
