@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script><title>ComfyUI · Z-MAX</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script><title>ComfyUI · Z-MAX v3.8 · 2026-07-19 00:00</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#c8d1d9;overflow:hidden;height:100vh}
@@ -27,7 +27,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
 <input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)">
 <button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
-<span id="st" style="display:flex;gap:8px;font-size:10px"><span id="ps-orin">🖥 ⬜</span><span style="color:#333">→</span><span id="ps-mac">💻 ⬜</span><span style="color:#333">→</span><span id="ps-4090">🧠 ⬜</span></span>
+<span id="st" style="display:flex;gap:8px;font-size:10px;color:#8b949e">v3.8 · 2026-07-19 00:00 | </span><span id="st" style="display:flex;gap:8px;font-size:10px"><span id="ps-orin">🖥 ⬜</span><span style="color:#333">→</span><span id="ps-mac">💻 ⬜</span><span style="color:#333">→</span><span id="ps-4090">🧠 ⬜</span></span>
 </div>
 <div id="side">
 <div style="font-size:10px;color:#8b949e;margin:4px 0;cursor:pointer" onclick="toggle('c38')">🟣 Condition 条件 (38) ▾</div>
@@ -131,7 +131,7 @@ var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
 function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-170),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
-window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);if(d.mac_connected>0||d.orin_online){clearConnOverlays();var cv=document.getElementById("cv");if(d.mac_connected>0){var m=N.find(function(n){return n.name.indexOf("MAC")>=0});if(m)addOverlay(m,"#00d4aa")}if(d.orin_online){var o=N.find(function(n){return n.name.indexOf("Orin")>=0});if(o)addOverlay(o,"#00d4aa")}}}).catch(function(){})},10000);
+window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);if(d.mac_connected>0||d.orin_online){clearConnOverlays();var cv=document.getElementById("cv");if(d.mac_connected>0){var m=N.find(function(n){return n.name.indexOf("MAC")>=0});if(m)addOverlay(m,"#00d4aa")}if(d.orin_online){var o=N.find(function(n){return n.name.indexOf("Orin")>=0});if(o)addOverlay(o,"#00d4aa")}}}).catch(function(){})},10000);document.getElementById("st").textContent="v3.8 · 2026-07-19 00:00 | "+document.getElementById("st").textContent;
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
