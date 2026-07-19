@@ -64,7 +64,7 @@ def update_kanban_html():
     读取本地状态并注入到 HTML
     """
     status = get_git_status()
-    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))
+    now = datetime.datetime.now()  # 系统本地已是 CST，不需要额外加偏移
 
     # 读取模板
     with open(LOCAL_KANBAN, 'r') as f:
