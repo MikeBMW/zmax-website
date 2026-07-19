@@ -254,9 +254,9 @@ canvas.onmousedown=function(e){
     var dist=Math.sqrt((mx-midX)*(mx-midX)+(my-midY)*(my-midY));
     if(dist<15){selectedLink=lk;draw();return}
   }
-  if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){selected=n;drag=n;dx=mx-n.x;dy=my-n.y;draw();return}
+  if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){selected=n;selectedLink=null;drag=n;dx=mx-n.x;dy=my-n.y;draw();return}
   }
-  selected=null;fromNode=null;pan=true;pdx=p.x-px;pdy=p.y-py;draw()
+  selected=null;selectedLink=null;fromNode=null;pan=true;pdx=p.x-px;pdy=p.y-py;draw()
 };
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
