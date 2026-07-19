@@ -183,7 +183,7 @@ function refreshWFPanel(){
 setInterval(function(){
   if(document.getElementById("wf-panel").classList.contains("open"))refreshWFPanel();
 },5000);
-window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d)}).catch(function(){})},10000);document.getElementById("st").textContent=document.getElementById("st").textContent;
+window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status",{signal:AbortSignal.timeout(5000)}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(function(d){updatePipeStatus(d)}).catch(function(){})},10000);document.getElementById("st").textContent=document.getElementById("st").textContent;
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
@@ -381,7 +381,7 @@ function refreshDashboard(){
   });
 }
 function toggleConnect(){connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
-  fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
+  fetch("/api/comfy/status",{signal:AbortSignal.timeout(5000)}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(function(d){
     updatePipeStatus(d);Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
     Lg("  Orin: "+(d.orin_online?"🟢 在线":"🔴 离线"));
     clearConnOverlays();var cv=document.getElementById("cv");
