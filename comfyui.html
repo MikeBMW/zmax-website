@@ -226,8 +226,7 @@ window.addEventListener("wheel",function(e){
   if(e.ctrlKey){
     e.preventDefault();
     zoom=Math.max(.2,Math.min(3,zoom-e.deltaY*.001));
-    draw();
-    Lg("🔍 "+Math.round(zoom*100)+"%");
+    draw();connOverlays.forEach(function(o){var n=o.node;if(!n)return;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px";o.el.style.width=(n.w*zoom+8)+"px";o.el.style.height=(dh*zoom+8)+"px"});Lg("🔍 "+Math.round(zoom*100)+"%");
   }
 },{passive:false});
 
