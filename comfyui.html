@@ -87,7 +87,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 <div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('sys')">🟡 System 系统 (9) ▾</div>
 <div id="sys">
-<div class="sn" draggable="true" data-t="system" data-n="Sys 0 数据">Sys 0 数据</div>
+<div class="sn" draggable="true" data-t="system" data-n="Sys0">Sys0</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys1" style="border-left:3px solid #ff6b6b">Sys1</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys10" style="border-left:3px solid #d4a800">Sys10</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys11" style="border-left:3px solid #d4a800">Sys11</div>
@@ -296,8 +296,8 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1
     var projMap={smolvla:'zmax-smolvla','vla-touch':'zmax-vla-touch',gr00t:'zmax-gr00t',act:'zmax-act',lewm:'zmax-lewm'};
     var proj=projMap[connModel]||'zmax-smolvla';
     dd='<div style="font-size:11px;padding:8px;background:#0d1117;border-radius:6px;text-align:center"><span style="color:#8b949e;font-size:9px">'+incoming+'</span><br><a href="https://wandb.ai/xspace/'+proj+'" target="_blank" style="color:#facd3b;font-size:14px;text-decoration:none;font-weight:700">🔗 wandb.ai/xspace/'+proj+'</a></div>';}
-  if(n.name.indexOf('Sys 0')>=0){
-    dd='<div style="font-size:10px;padding:8px;background:#0d1117;border-radius:8px;border:2px solid#d4a800"><div style="color:#d4a800;font-weight:700;font-size:11px">📊 Sys 0 数据管理</div><div style="color:#8b949e;margin:4px 0">路径: /root/datasets/mcab/</div><button onclick="listDatasets()" style="width:100%;padding:6px;margin-top:6px;background:#d4a80022;color:#d4a800;border:1px solid#d4a80044;border-radius:6px;cursor:pointer;font-size:10px">📂 查看数据集</button><button onclick="cleanupOld()" style="width:100%;padding:6px;margin-top:4px;background:#ff444422;color:#ff4444;border:1px solid#ff444444;border-radius:6px;cursor:pointer;font-size:10px">🗑 只保留最新3个</button><div id="ds-list" style="margin-top:6px;max-height:200px;overflow-y:auto;font-size:9px"></div></div>';
+  if(n.name.indexOf('Sys0')>=0){
+    dd='<div style="font-size:10px;padding:8px;background:#0d1117;border-radius:8px;border:2px solid#d4a800"><div style="color:#d4a800;font-weight:700;font-size:11px">📊 Sys0管理</div><div style="color:#8b949e;margin:4px 0">路径: /root/datasets/mcab/</div><button onclick="listDatasets()" style="width:100%;padding:6px;margin-top:6px;background:#d4a80022;color:#d4a800;border:1px solid#d4a80044;border-radius:6px;cursor:pointer;font-size:10px">📂 查看数据集</button><button onclick="cleanupOld()" style="width:100%;padding:6px;margin-top:4px;background:#ff444422;color:#ff4444;border:1px solid#ff444444;border-radius:6px;cursor:pointer;font-size:10px">🗑 只保留最新3个</button><div id="ds-list" style="margin-top:6px;max-height:200px;overflow-y:auto;font-size:9px"></div></div>';
   }else if(false){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
   }else if(false){
