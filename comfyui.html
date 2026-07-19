@@ -202,7 +202,7 @@ function refreshWFPanel(){
 setInterval(function(){
   if(document.getElementById("wf-panel").classList.contains("open"))refreshWFPanel();
 },5000);
-window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);updatePipeStatus(d)}).catch(function(){})},10000);function updateStatus(){fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){macPackets=d.mac_packets||0;forwardedMB=d.forwarded_mb||0;diskGB=d.disk_gb||0;orinRecording=d.orin_recording||false;orinOnline=d.orin_online||false;}).catch(function(){})};updateStatus();document.getElementById("st").textContent=document.getElementById("st").textContent;
+window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);updatePipeStatus(d)}).catch(function(){})},10000);var _lastMB=0,_lastMBt=0;function updateStatus(){fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){macPackets=d.mac_packets||0;forwardedMB=d.forwarded_mb||0;diskGB=d.disk_gb||0;var mb=d.forwarded_mb||0;if(mb>_lastMB){_lastMB=mb;_lastMBt=Date.now()}orinRecording=(Date.now()-_lastMBt<30000);orinOnline=d.orin_online||false;}).catch(function(){})};updateStatus();document.getElementById("st").textContent=document.getElementById("st").textContent;
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
@@ -233,7 +233,7 @@ function draw(){
     ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);
     if(n.name.indexOf('Orin')>=0){var txt=orinRecording?'🟢采集':orinOnline?'⚪待机':'🔴离线';ctx.fillStyle=orinRecording?'#00d4aa':'#888';ctx.font='bold 9px sans-serif';ctx.fillText(txt,n.x+px+n.w-40,n.y+py+dh-8)}
     if(n.name.indexOf('MAC')>=0){ctx.fillStyle='#00d4aa';ctx.font='bold 9px monospace';ctx.fillText('📦'+macPackets,n.x+px+n.w-35,n.y+py+dh-8)}
-    if(n.name.indexOf('4090')>=0){var mb=(diskGB*1024).toFixed(0);ctx.fillStyle='#00d4aa';ctx.font='bold 9px monospace';ctx.fillText('💾'+mb+'M',n.x+px+n.w-50,n.y+py+dh-8)}
+    if(n.name.indexOf('4090')>=0){var mb=(diskGB*1024)<1?(diskGB*1024*1024).toFixed(0):(diskGB*1024).toFixed(0);ctx.fillStyle='#00d4aa';ctx.font='bold 9px monospace';ctx.fillText('💾'+mb+(diskGB*1024<1?'K':'MB'),n.x+px+n.w-50,n.y+py+dh-8)}
     ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText({condition:'条件',model:'模型',action:'动作',system:'系统',hardware:'硬件'}[n.t],n.x+px+22,n.y+py+34);
     // Input port (left)
     ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+px,n.y+dh/2+py,5,0,Math.PI*2);ctx.fill();
@@ -419,10 +419,10 @@ var connectDebounce=0;function refreshStatus(){
     macPackets=d.mac_packets||0;
     forwardedMB=d.forwarded_mb||0;
     diskGB=d.disk_gb||0;
-    orinRecording=d.orin_recording||false;
+    var mb=d.forwarded_mb||0;if(mb>_lastMB){_lastMB=mb;_lastMBt=Date.now()}orinRecording=(Date.now()-_lastMBt<30000);
     orinOnline=d.orin_online||false;
     draw();
-    Lg("  📦 "+macPackets+"包 | 💾 "+(diskGB*1024).toFixed(0)+"MB | Orin: "+(orinRecording?"🟢采集":"⚪待机"));
+    Lg("  📦 "+macPackets+"包 | 💾 "+(diskGB*1024)<1?(diskGB*1024*1024).toFixed(0):(diskGB*1024).toFixed(0)+"MB | Orin: "+(orinRecording?"🟢采集":"⚪待机"));
   }).catch(function(){Lg("🔄 刷新失败")});
 }
 function toggleConnect(){if(Date.now()-connectDebounce<2000)return;connectDebounce=Date.now();connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
