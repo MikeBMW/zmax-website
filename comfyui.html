@@ -220,7 +220,7 @@ function draw(){
   });
 }
 
-function getPos(e){return{x:e.offsetX/zoom,y:e.offsetY/zoom}}
+function getPos(e){return{x:e.offsetX/dpr/zoom-px,y:e.offsetY/dpr/zoom-py}}
 
 window.addEventListener("wheel",function(e){
   if(e.ctrlKey){
