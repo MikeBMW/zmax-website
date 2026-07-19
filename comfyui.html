@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script><title>ComfyUI · Z-MAX v2.5.0 · 2026-07-19</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script><title>ComfyUI · Z-MAX v2.5.1 · 2026-07-19</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#c8d1d9;overflow:hidden;height:100vh}
@@ -26,6 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .wf-card .bar-fill{height:100%;background:#00d4aa;border-radius:2px;transition:width .5s}
 #wf-toggle{position:fixed;right:0;top:50%;transform:translateY(-50%);background:#0d1117;color:#00d4aa;border:1px solid#00d4aa;border-right:none;border-radius:6px 0 0 6px;padding:8px 4px;cursor:pointer;z-index:91;font-size:10px;writing-mode:vertical-rl}
 
+.g{display:none}.g.open{display:block}
 </style></head><body>
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
@@ -40,7 +41,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
 <input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)">
 <button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
-<span id="st" style="display:flex;gap:8px;font-size:10px;color:#8b949e">v2.5.0 · 2026-07-19 20:30 | </span><span id="st2" style="display:flex;gap:8px;font-size:10px"><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-orin" style="width:8px;height:8px;border-radius:50%;background:#333"></span>🖥 Orin</span><span id="arr1" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-mac" style="width:8px;height:8px;border-radius:50%;background:#333"></span>💻 MAC</span><span id="arr2" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-4090" style="width:8px;height:8px;border-radius:50%;background:#00d4aa"></span>🧠 4090</span></span>
+<span id="st" style="display:flex;gap:8px;font-size:10px;color:#8b949e">v2.5.1 · 2026-07-19 21:00 | </span><span id="st2" style="display:flex;gap:8px;font-size:10px"><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-orin" style="width:8px;height:8px;border-radius:50%;background:#333"></span>🖥 Orin</span><span id="arr1" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-mac" style="width:8px;height:8px;border-radius:50%;background:#333"></span>💻 MAC</span><span id="arr2" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-4090" style="width:8px;height:8px;border-radius:50%;background:#00d4aa"></span>🧠 4090</span></span>
 </div>
 <div id="side">
 <div style="font-size:10px;color:#8b949e;margin:4px 0;cursor:pointer" onclick="toggle('c38')">🟣 Condition 条件 (38) ▾</div>
@@ -179,6 +180,7 @@ function listDatasets(){
     Lg("📂 数据集: "+files.length+"个, "+files.reduce(function(s,f){return s+f.size_mb},0).toFixed(1)+"MB");
   }).catch(function(){el.innerHTML='<div style="color:#ff4444">❌ 加载失败</div>'});
 }
+function toggle(id){var el=document.getElementById(id);if(el){el.classList.toggle("open");var hdr=document.querySelector('[onclick="toggle(\\''+id+'\\')"]');if(hdr){hdr.textContent=hdr.textContent.replace("▸","▾").replace("▾",el.classList.contains("open")?"▾":"▸")}}}
 function toggleWFPanel(){
   var p=document.getElementById("wf-panel");
   p.classList.toggle("open");
