@@ -211,7 +211,7 @@ function draw(){
     if(n===selected)ctx.shadowColor=c;ctx.shadowBlur=8;
     ctx.beginPath();ctx.roundRect(n.x+px,n.y+py,n.w,dh,6);ctx.fill();ctx.stroke();
     ctx.shadowBlur=0;
-    ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);
+    ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);if(n.name.indexOf('MAC')>=0){ctx.fillStyle='#00d4aa';ctx.font='bold 16px monospace';ctx.textAlign='center';ctx.fillText(macPackets,n.x+px+n.w/2,n.y+py+dh-6);ctx.textAlign='start'}
     ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText({condition:'条件',model:'模型',action:'动作',system:'系统',hardware:'硬件'}[n.t],n.x+px+22,n.y+py+34);
     // Input port (left)
     ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+px,n.y+dh/2+py,5,0,Math.PI*2);ctx.fill();
