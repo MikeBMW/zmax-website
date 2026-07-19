@@ -88,7 +88,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('sys')">🟡 System 系统 (9) ▾</div>
 <div id="sys">
 <div class="sn" draggable="true" data-t="system" data-n="Sys 0 数据">Sys 0 数据</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys 0 数据">Sys 0 数据</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys1 · 底座" style="border-left:3px solid #d4a800">Sys1 · 底座</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys1 Hybrid" style="border-left:3px solid #ff6b6b">🔀 Sys1 · Hybrid</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys10 · ACT" style="border-left:3px solid #d4a800">Sys10 · ACT</div>
@@ -157,6 +156,18 @@ var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
 function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-180),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
+function listDatasets(){
+  var el=document.getElementById("ds-list");
+  if(!el)return;
+  el.innerHTML='⏳ 加载中...';
+  fetch("/api/comfy/datasets-list").then(function(r){return r.json()}).then(function(files){
+    if(!files.length){el.innerHTML='<div style="color:#888">无数据集</div>';return}
+    var h='';
+    files.forEach(function(f){h+='<div style="padding:4px;border-bottom:1px solid#222;display:flex;justify-content:space-between"><span style="color:#00d4aa">'+f.name+'</span><span style="color:#8b949e">'+f.size_mb+'MB</span></div>'});
+    el.innerHTML=h;
+    Lg("📂 数据集: "+files.length+"个, "+files.reduce(function(s,f){return s+f.size_mb},0).toFixed(1)+"MB");
+  }).catch(function(){el.innerHTML='<div style="color:#ff4444">❌ 加载失败</div>'});
+}
 function toggleWFPanel(){
   var p=document.getElementById("wf-panel");
   p.classList.toggle("open");
@@ -277,9 +288,9 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1
     var projMap={smolvla:'zmax-smolvla','vla-touch':'zmax-vla-touch',gr00t:'zmax-gr00t',act:'zmax-act',lewm:'zmax-lewm'};
     var proj=projMap[connModel]||'zmax-smolvla';
     dd='<div style="font-size:11px;padding:8px;background:#0d1117;border-radius:6px;text-align:center"><span style="color:#8b949e;font-size:9px">'+incoming+'</span><br><a href="https://wandb.ai/xspace/'+proj+'" target="_blank" style="color:#facd3b;font-size:14px;text-decoration:none;font-weight:700">🔗 wandb.ai/xspace/'+proj+'</a></div>';}
-  if(n.name.indexOf('Sys 0')>=0){
+  if(false&&n.name.indexOf('Sys 0')>=0){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
-  }else if(n.name.indexOf('Sys 0')>=0){
+  }else if(false){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
   }else if(n.name==='M01 RGB图像'){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
