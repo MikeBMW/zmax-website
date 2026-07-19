@@ -247,7 +247,7 @@ canvas.onmousedown=function(e){
 canvas.onmouseup=function(){drag=null;pan=false};
 canvas.onmousemove=function(e){
   var p=getPos(e);
-  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw()}
+  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();connOverlays.forEach(function(o){var n=o.node;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
   if(pan){px=p.x-pdx;py=p.y-pdy;draw()}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
