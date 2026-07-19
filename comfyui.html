@@ -241,6 +241,19 @@ canvas.onmousedown=function(e){
     // Node body
     if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){selected=n;drag=n;dx=mx-n.x;dy=my-n.y;draw();return}
   }
+  // Check link hit before pan
+  var linkHit=false;
+  for(var i=0;i<L.length;i++){
+    var lk=L[i];
+    var fn=N.find(function(nn){return nn.id===lk.f});
+    var tn=N.find(function(nn){return nn.id===lk.t});
+    if(!fn||!tn)continue;
+    var fx=fn.x+fn.w, fy=fn.y+dh/2;
+    var tx=tn.x, ty=tn.y+dh/2;
+    var midX=(fx+tx)/2, midY=(fy+ty)/2;
+    if(Math.abs(mx-midX)<20&&Math.abs(my-midY)<20){linkHit=true;break}
+  }
+  if(linkHit)return;
   selected=null;fromNode=null;pan=true;pdx=p.x-px;pdy=p.y-py;draw()
 };
 canvas.onmouseup=function(){drag=null;pan=false};
