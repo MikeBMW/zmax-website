@@ -33,6 +33,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn btn-r" onclick="Lg("⏹ 已停止")" style="background:#00d4aa;color:#000">⏹ 停止</button>
 <button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
 <button class="btn btn-r" onclick="toggleDashboard()" style="background:#d4a800;color:#000">📊 仪表盘</button>
+<button class="btn" style="background:#d4a800;color:#000" onclick="refreshStatus()">🔄 刷新</button>
 <button class="btn btn-r" onclick="toggleConnect()" style="background:#58a6ff;color:#fff">🔗 连接</button>
 <button class="btn btn-b" onclick="clearAll()">🗑</button>
 <button class="btn" style="background:#d4a800;color:#000" onclick="saveWorkflow()">💾 保存</button>
@@ -156,6 +157,13 @@ var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
 function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-180),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
+function cleanupOld(){
+  if(!confirm("删除旧数据，只保留最新3个。确定？"))return;
+  fetch("/api/comfy/cleanup-old").then(function(r){return r.json()}).then(function(d){
+    Lg("🗑 已删除"+d.deleted+"个, 保留"+d.kept+"个");
+    listDatasets();
+  });
+}
 function listDatasets(){
   var el=document.getElementById("ds-list");
   if(!el)return;
@@ -163,7 +171,7 @@ function listDatasets(){
   fetch("/api/comfy/datasets-list").then(function(r){return r.json()}).then(function(files){
     if(!files.length){el.innerHTML='<div style="color:#888">无数据集</div>';return}
     var h='';
-    files.forEach(function(f){h+='<div style="padding:4px;border-bottom:1px solid#222;display:flex;justify-content:space-between"><span style="color:#00d4aa">'+f.name+'</span><span style="color:#8b949e">'+f.size_mb+'MB</span></div>'});
+    files.forEach(function(f){h+='<div style="padding:4px;border-bottom:1px solid#222;display:flex;justify-content:space-between"><span style="color:#00d4aa">'+f.name+'</span><span style="color:#8b949e;font-size:8px">'+f.size_mb+'MB · '+f.modified+'</span></div>'});
     el.innerHTML=h;
     Lg("📂 数据集: "+files.length+"个, "+files.reduce(function(s,f){return s+f.size_mb},0).toFixed(1)+"MB");
   }).catch(function(){el.innerHTML='<div style="color:#ff4444">❌ 加载失败</div>'});
@@ -288,7 +296,9 @@ canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1
     var projMap={smolvla:'zmax-smolvla','vla-touch':'zmax-vla-touch',gr00t:'zmax-gr00t',act:'zmax-act',lewm:'zmax-lewm'};
     var proj=projMap[connModel]||'zmax-smolvla';
     dd='<div style="font-size:11px;padding:8px;background:#0d1117;border-radius:6px;text-align:center"><span style="color:#8b949e;font-size:9px">'+incoming+'</span><br><a href="https://wandb.ai/xspace/'+proj+'" target="_blank" style="color:#facd3b;font-size:14px;text-decoration:none;font-weight:700">🔗 wandb.ai/xspace/'+proj+'</a></div>';}
-  if(false&&n.name.indexOf('Sys 0')>=0){
+  if(n.name.indexOf('Sys 0')>=0){
+    dd='<div style="font-size:10px;padding:8px;background:#0d1117;border-radius:8px;border:2px solid#d4a800"><div style="color:#d4a800;font-weight:700;font-size:11px">📊 Sys 0 数据管理</div><div style="color:#8b949e;margin:4px 0">路径: /root/datasets/mcab/</div><button onclick="listDatasets()" style="width:100%;padding:6px;margin-top:6px;background:#d4a80022;color:#d4a800;border:1px solid#d4a80044;border-radius:6px;cursor:pointer;font-size:10px">📂 查看数据集</button><button onclick="cleanupOld()" style="width:100%;padding:6px;margin-top:4px;background:#ff444422;color:#ff4444;border:1px solid#ff444444;border-radius:6px;cursor:pointer;font-size:10px">🗑 只保留最新3个</button><div id="ds-list" style="margin-top:6px;max-height:200px;overflow-y:auto;font-size:9px"></div></div>';
+  }else if(false){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
   }else if(false){
     dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
@@ -402,7 +412,20 @@ function refreshDashboard(){
     if(el)el.innerHTML='<div style="color:#ff4444">🔴 4090离线: '+e.message+'</div>';
   });
 }
-var connectDebounce=0;function toggleConnect(){if(Date.now()-connectDebounce<2000)return;connectDebounce=Date.now();connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
+var connectDebounce=0;function refreshStatus(){
+  Lg("🔄 刷新状态...");
+  fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
+    updatePipeStatus(d);
+    macPackets=d.mac_packets||0;
+    forwardedMB=d.forwarded_mb||0;
+    diskGB=d.disk_gb||0;
+    orinRecording=d.orin_recording||false;
+    orinOnline=d.orin_online||false;
+    draw();
+    Lg("  📦 "+macPackets+"包 | 💾 "+(diskGB*1024).toFixed(0)+"MB | Orin: "+(orinRecording?"🟢采集":"⚪待机"));
+  }).catch(function(){Lg("🔄 刷新失败")});
+}
+function toggleConnect(){if(Date.now()-connectDebounce<2000)return;connectDebounce=Date.now();connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
   fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
     updatePipeStatus(d);Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
     Lg("  Orin: "+(d.orin_online?"🟢 在线":"🔴 离线"));
