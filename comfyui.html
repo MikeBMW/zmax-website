@@ -183,7 +183,7 @@ function refreshWFPanel(){
 setInterval(function(){
   if(document.getElementById("wf-panel").classList.contains("open"))refreshWFPanel();
 },5000);
-window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);updatePipeStatus(d)}).catch(function(){})},10000);document.getElementById("st").textContent=document.getElementById("st").textContent;
+window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d)}).catch(function(){})},10000);document.getElementById("st").textContent=document.getElementById("st").textContent;
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
