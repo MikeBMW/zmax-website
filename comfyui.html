@@ -382,7 +382,7 @@ function refreshDashboard(){
 }
 function toggleConnect(){connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
   fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
-    Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
+    updatePipeStatus(d);Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
     Lg("  Orin: "+(d.orin_online?"🟢 在线":"🔴 离线"));
     clearConnOverlays();var cv=document.getElementById("cv");
     if(d.mac_connected>0){var m=N.find(function(n){return n.name.indexOf("MAC")>=0});if(m)addOverlay(m,"#00d4aa")}
