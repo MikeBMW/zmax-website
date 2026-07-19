@@ -2,22 +2,34 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#c8d1d9;overflow:hidden;height:100vh}
-#bar{position:fixed;top:0;left:0;right:0;height:38px;background:#111;display:flex;align-items:center;padding:0 10px;gap:6px;z-index:100;border-bottom:1px solid#222}
-#bar .btn{padding:4px 12px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:none}
+#bar{position:fixed;top:0;left:0;right:0;height:44px;background:linear-gradient(180deg,#0d1117,#0a0a0f);display:flex;align-items:center;padding:0 12px;gap:8px;z-index:100;border-bottom:1px solid#1e2740;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#bar .btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;letter-spacing:.3px}#bar .btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
 .btn-r{background:#ff4444;color:#fff}.btn-g{background:#00d4aa;color:#000}.btn-b{background:#58a6ff;color:#fff}.btn-p{background:#a371f7;color:#fff}
 #st{font-size:10px;color:#8b949e;margin-left:auto}
-#side{position:fixed;top:38px;left:0;bottom:0;width:170px;background:#0d0d14;border-right:1px solid#222;padding:8px;overflow-y:auto;z-index:50}
-.sn{padding:7px 9px;margin:3px 0;border-radius:5px;font-size:10px;cursor:grab;border:1px solid#333;background:#111;transition:.15s;user-select:none}
+#side{position:fixed;top:44px;left:0;bottom:0;width:180px;background:linear-gradient(90deg,#0a0a0f,#0d1117);border-right:1px solid#1e2740;padding:8px 6px;overflow-y:auto;z-index:50;box-shadow:2px 0 8px rgba(0,0,0,.2)}
+.sn{padding:6px 8px;margin:2px 0;border-radius:6px;font-size:10px;cursor:grab;border:1px solid#1e274033;background:#0d1117;transition:all .15s;user-select:none;letter-spacing:.2px}.sn:hover{border-color:#00d4aa55;background:#131726;transform:translateX(2px)}
 .sn:hover{border-color:#00d4aa}
 .sn.c{border-left:3px solid#a371f7}.sn.m{border-left:3px solid#58a6ff}.sn.a{border-left:3px solid#00d4aa}.sn.s{border-left:3px solid#d4a800}
-#cv{position:fixed;top:38px;left:170px;right:0;bottom:0;overflow:hidden;cursor:default}
+#cv{position:fixed;top:44px;left:180px;right:0;bottom:0;overflow:hidden;cursor:default;background:#0a0a0f}
 #log{position:fixed;bottom:0;left:170px;right:0;height:140px;min-height:40px;background:#0d0d14;border-top:3px solid#00d4aa44;z-index:50;display:flex;flex-direction:column;overflow:hidden}
 #log-content{flex:1;overflow-y:auto;padding:4px 8px;font-size:10px;font-family:monospace;color:#8b949e;line-height:1.6;resize:vertical}
 #log-handle{display:none}
+
+#wf-panel{position:fixed;right:0;top:44px;bottom:0;width:0;background:#0d1117;border-left:2px solid#00d4aa;z-index:90;overflow:hidden;transition:width .3s}
+#wf-panel.open{width:260px}
+#wf-panel-inner{padding:16px;min-width:260px}
+.wf-card{margin:8px 0;padding:10px;background:#131726;border-radius:8px;border-left:3px solid#333}
+.wf-card.active{border-left-color:#00d4aa}
+.wf-card .name{font-weight:700;font-size:11px}
+.wf-card .status{font-size:9px;color:#8b949e;margin-top:2px}
+.wf-card .bar{height:3px;background:#1e2740;border-radius:2px;margin-top:6px;overflow:hidden}
+.wf-card .bar-fill{height:100%;background:#00d4aa;border-radius:2px;transition:width .5s}
+#wf-toggle{position:fixed;right:0;top:50%;transform:translateY(-50%);background:#0d1117;color:#00d4aa;border:1px solid#00d4aa;border-right:none;border-radius:6px 0 0 6px;padding:8px 4px;cursor:pointer;z-index:91;font-size:10px;writing-mode:vertical-rl}
+
 </style></head><body>
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
-<button class="btn btn-r" onclick="run()">▶ 执行</button>
+<span style="color:#00d4aa;font-weight:800;font-size:12px;margin-right:8px;letter-spacing:1px">Z-MAX</span><span style="color:#333;margin-right:8px">|</span><button class="btn btn-r" onclick="run()">▶ 执行</button>
 <button class="btn btn-r" onclick="Lg("⏹ 已停止")" style="background:#00d4aa;color:#000">⏹ 停止</button>
 <button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
 <button class="btn btn-r" onclick="toggleDashboard()" style="background:#d4a800;color:#000">📊 仪表盘</button>
@@ -53,7 +65,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn c" draggable="true" data-t="condition" data-n="C037 电池过流">C037 电池过流</div>
 <div class="sn c" draggable="true" data-t="condition" data-n="C038 电池SOC">C038 电池SOC</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('m7')">🔵 场景数据 (7) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('m7')">🔵 场景数据 (7) ▾</div>
 <div id="m7">
 <div class="sn m" draggable="true" data-t="model" data-n="M01 RGB图像">M01 RGB图像</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M02 深度图像">M02 深度图像</div>
@@ -63,7 +75,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
 <div class="sn m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('eng')">🧠 推理引擎 (6) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('eng')">🧠 推理引擎 (6) ▾</div>
 <div id="eng">
 <div class="sn m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT</div>
 <div class="sn m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA</div>
@@ -73,7 +85,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn m" draggable="true" data-t="model" data-n="X-Hybrid" style="border-left:3px solid#ff6b6b">🔀 X-Hybrid</div>
 <div class="sn m" draggable="true" data-t="model" data-n="X-Hybrid" style="border-left:3px solid#ff6b6b">🔀 X-Hybrid</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" onclick="toggle('sys')">🟡 System 系统 (9) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('sys')">🟡 System 系统 (9) ▾</div>
 <div id="sys">
 <div class="sn" draggable="true" data-t="system" data-n="Sys 0 数据">Sys 0 数据</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys 0 数据">Sys 0 数据</div>
@@ -87,7 +99,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn" draggable="true" data-t="system" data-n="Sys21 · VTLA" style="border-left:3px solid #d4a800">Sys21 · VTLA</div>
 <div class="sn" draggable="true" data-t="system" data-n="Sys22 · GR00T" style="border-left:3px solid #d4a800">Sys22 · GR00T</div>
 </div>
-<div style="font-size:10px;color:#8b949e;margin:8px 0 4px;cursor:pointer" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('hw')">🔩 硬件 (4) ▾</div>
+<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('hw')">🔩 硬件 (4) ▾</div>
 <div id="hw">
 <div class="sn" draggable="true" data-t="hardware" data-n="Orin Nano">🖥 Orin Nano</div>
 <div class="sn" draggable="true" data-t="hardware" data-n="MAC">💻 MAC</div>
@@ -116,8 +128,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="sn a" draggable="true" data-t="action" data-n="A10 NG分拣">A10 NG分拣</div>
 </div>
 </div>
+
+<div id="wf-toggle" onclick="toggleWFPanel()">工作流</div>
+<div id="wf-panel"><div id="wf-panel-inner">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <span style="color:#00d4aa;font-weight:700;font-size:13px">⚡ 工作流状态</span>
+    <span id="wf-cycle" style="color:#8b949e;font-size:9px">循环 #0</span>
+  </div>
+  <div id="wf-cards"></div>
+  <div style="margin-top:12px;padding-top:8px;border-top:1px solid#222">
+    <button onclick="Lg('📊 查看W&B')" style="width:100%;padding:6px;background:#00d4aa22;color:#00d4aa;border:1px solid#00d4aa44;border-radius:6px;cursor:pointer;font-size:10px;margin-bottom:4px">📊 W&B 监控</button>
+    <button onclick="Lg('📋 导出日志')" style="width:100%;padding:6px;background:#333;color:#ddd;border:none;border-radius:6px;cursor:pointer;font-size:10px;margin-bottom:4px">📋 导出日志</button>
+  </div>
+</div></div>
+
 <div id="cv"><canvas id="c"></canvas></div>
-<div id="log" onmousedown="logDragStart(event)" style="cursor:default"><div id="log-content">📋 拖拽上边缘调高度 · 默认SmolVLA已加载</div></div>
+<div id="log" style="background:linear-gradient(0deg,#0a0a0f,#0d1117);border-top:1px solid#1e2740" onmousedown="logDragStart(event)" style="cursor:default"><div id="log-content">📋 拖拽上边缘调高度 · 默认SmolVLA已加载</div></div>
 <script>
 var logDrag=false,logSY=0,logSH=0;
 function logDragStart(e){if(e.offsetY<8){logDrag=true;logSY=e.clientY;logSH=document.getElementById('log').offsetHeight;e.preventDefault();e.stopPropagation()}}
@@ -130,7 +156,33 @@ var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors
 var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
-function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-170),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
+function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-180),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
+function toggleWFPanel(){
+  var p=document.getElementById("wf-panel");
+  p.classList.toggle("open");
+  if(p.classList.contains("open")) refreshWFPanel();
+}
+function refreshWFPanel(){
+  fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(s){
+    var h='';
+    var items=[
+      {name:"Orin Nano",icon:"🖥",ok:s.orin_online,desc:"MCAP采集"},
+      {name:"MAC",icon:"💻",ok:s.mac_connected>0,desc:"数据转发"},
+      {name:"4090训练",icon:"🧠",ok:true,desc:"H-JEPA "+s.gpu}
+    ];
+    items.forEach(function(it,i){
+      h+='<div class="wf-card'+(it.ok?' active':'')+'"><div class="name">'+it.icon+' '+it.name+'</div>';
+      h+='<div class="status">'+(it.ok?'🟢 在线':'🔴 离线')+' · '+it.desc+'</div>';
+      h+='<div class="bar"><div class="bar-fill" style="width:'+(it.ok?100:10)+'%"></div></div></div>';
+    });
+    var el=document.getElementById("wf-cards");
+    if(el)el.innerHTML=h;
+    document.getElementById("wf-cycle").textContent="循环 #"+(s.active_jobs||0);
+  }).catch(function(){});
+}
+setInterval(function(){
+  if(document.getElementById("wf-panel").classList.contains("open"))refreshWFPanel();
+},5000);
 window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);if(d.mac_connected>0||d.orin_online){clearConnOverlays();var cv=document.getElementById("cv");if(d.mac_connected>0){var m=N.find(function(n){return n.name.indexOf("MAC")>=0});if(m)addOverlay(m,"#00d4aa")}if(d.orin_online){var o=N.find(function(n){return n.name.indexOf("Orin")>=0});if(o)addOverlay(o,"#00d4aa")}}}).catch(function(){})},10000);document.getElementById("st").textContent="v3.8 · 2026-07-19 00:00 | "+document.getElementById("st").textContent;
 
 function add(t,name,x,y){
@@ -141,7 +193,7 @@ function add(t,name,x,y){
 
 function draw(){
   ctx.setTransform(dpr*zoom,0,0,dpr*zoom,0,0);
-  ctx.clearRect(px,py,(window.innerWidth-170)/zoom,(window.innerHeight-38)/zoom);
+  ctx.clearRect(px,py,(window.innerWidth-180)/zoom,(window.innerHeight-38)/zoom);
   
   ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.strokeStyle='#111';ctx.lineWidth=1;
