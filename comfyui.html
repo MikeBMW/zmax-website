@@ -380,7 +380,7 @@ function refreshDashboard(){
     if(el)el.innerHTML='<div style="color:#ff4444">🔴 4090离线: '+e.message+'</div>';
   });
 }
-function toggleConnect(){connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
+var connectDebounce=0;function toggleConnect(){if(Date.now()-connectDebounce<2000)return;connectDebounce=Date.now();connected=!connected;Lg("c="+connected);if(!connected){clearConnOverlays();Lg("🔌 断开");return}Lg("🔗 查询中...");
   fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){
     updatePipeStatus(d);Lg("  MAC: "+(d.mac_connected>0?"🟢 在线":"🔴 离线"));
     Lg("  Orin: "+(d.orin_online?"🟢 在线":"🔴 离线"));
