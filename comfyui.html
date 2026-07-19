@@ -183,7 +183,7 @@ function refreshWFPanel(){
 setInterval(function(){
   if(document.getElementById("wf-panel").classList.contains("open"))refreshWFPanel();
 },5000);
-window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);if(d.mac_connected>0||d.orin_online){clearConnOverlays();var cv=document.getElementById("cv");if(d.mac_connected>0){var m=N.find(function(n){return n.name.indexOf("MAC")>=0});if(m)addOverlay(m,"#00d4aa")}if(d.orin_online){var o=N.find(function(n){return n.name.indexOf("Orin")>=0});if(o)addOverlay(o,"#00d4aa")}}}).catch(function(){})},10000);document.getElementById("st").textContent=document.getElementById("st").textContent;
+window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/comfy/status").then(function(r){return r.json()}).then(function(d){updatePipeStatus(d);updatePipeStatus(d)}).catch(function(){})},10000);document.getElementById("st").textContent=document.getElementById("st").textContent;
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
