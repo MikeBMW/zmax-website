@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>系统接口 · Z-MAX</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#06080d;color:#c8d1d9;font-family:system-ui,sans-serif;padding:20px;max-width:960px;margin:0 auto}
+h1{color:#00d4aa;font-size:24px;border-bottom:2px solid #00d4aa44;padding-bottom:8px;margin-bottom:16px}
+h2{color:#00d4aa;font-size:18px;margin:24px 0 10px;border-bottom:1px solid #30363d;padding-bottom:6px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th{background:#0d1117;color:#00d4aa;padding:8px;text-align:left;border-bottom:2px solid #30363d}
+td{padding:8px;border-bottom:1px solid #30363d}
+.green{color:#3fb950}.orange{color:#d29922}.cyan{color:#39d2c0}.blue{color:#58a6ff}.purple{color:#bc8cff}
+code{background:#1c2333;color:#3fb950;padding:2px 6px;border-radius:4px;font-size:13px}
+pre{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;overflow-x:auto;font-size:13px;color:#c8d1d9}
+@media(max-width:768px){table,tbody,tr,td,th{display:block}th{display:none}td{padding:6px 8px;font-size:13px}td:before{content:attr(data-label);display:block;color:#8b949e;font-size:11px}}
+</style></head><body>
+<a href="/" style="color:#8b949e">←返回主页</a>
+<h1>Z-MAX 系统切换接口</h1>
+
+<div class="card">
+<h2>系统层级</h2>
+<table><tr><th>系统</th><th>引擎</th><th>参数</th><th>延迟</th><th>部署</th></tr>
+<tr><td class="orange">Sys-0</td><td>规则引擎</td><td>—</td><td>&lt;1ms</td><td>Orin Nano</td></tr>
+<tr><td class="cyan">Sys-1</td><td>ACT/VTLA</td><td>52M/450M</td><td>1.2/280ms</td><td>4060+4090</td></tr>
+<tr><td class="blue">Sys-11</td><td>smolvla</td><td>450M</td><td>215ms</td><td>Orin AGX</td></tr>
+<tr><td class="purple">Sys-12</td><td>smolvla_lew</td><td>628M</td><td>186ms</td><td>Orin+RK</td></tr>
+<tr><td class="green">Sys-2</td><td>GR00T/VTLA</td><td>2B</td><td>280-500ms</td><td>4090云端</td></tr></table>
+</div>
+
+<div class="card">
+<h2>引擎切换API（Sys-1统一框架）</h2>
+<pre><code>
+model.set_engine('act')      # 本地 ACT 52M · 1.2ms
+model.set_engine('vtla')     # 远程 VTLA 450M · 280ms (4090:50052)
+model.set_engine('groot')    # 远程 GR00T 2B · ~500ms (4090:50052)
+model.set_engine('smolvla')  # 本地 smolvla 450M · 215ms (Sys-11)
+model.set_engine('lew')      # 本地 smolvla_lew 628M · 186ms (Sys-12)
+# 远程不可达 → 自动回退ACT
+</code></pre>
+</div>
+
+<div class="card">
+<h2>Sys-2 云端API</h2>
+<table><tr><th>端点</th><th>方法</th><th>说明</th><th>端口</th></tr>
+<tr><td><code>/health</code></td><td>GET</td><td>健康检查</td><td>50052</td></tr>
+<tr><td><code>/predict</code></td><td>POST</td><td>推理（VTLA/GR00T）</td><td>50052</td></tr>
+<tr><td><code>/load</code></td><td>POST</td><td>模型加载</td><td>50052</td></tr></table>
+<p style="margin-top:10px;font-size:13px;color:#8b949e">部署: 106.75.239.80 (AutoDL RTX4090 24GB)</p>
+</div>
+
+<div class="card">
+<h2>Sys-0 ROS2接口（Orin真机）</h2>
+<table><tr><th>Topic/Service</th><th>类型</th><th>频率</th><th>说明</th></tr>
+<tr><td><code>/zmax/sys0/insert_sequence</code></td><td>Service</td><td>按需</td><td>插拔工序</td></tr>
+<tr><td><code>/zmax/sys0/emergency_stop</code></td><td>Service</td><td>按需</td><td>紧急停止&lt;10ms</td></tr>
+<tr><td><code>/zmax/sys0/light_curtain</code></td><td>Topic</td><td>50Hz</td><td>光幕联动</td></tr>
+<tr><td><code>/zmax/sys0/tower_light</code></td><td>Topic</td><td>1Hz</td><td>三色塔灯</td></tr></table>
+</div>
+</body></html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>实时监控 · Z-MAX</title>
+<style>
+:root{--bg:#06080d;--c:#0d1117;--g:#00d4aa;--w:#e6edf3;--b:#c8d1d9;--x:#8b949e;--r:#ff6b6b;--o:#ff9944}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--b);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',monospace;min-height:100vh}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--c);border-bottom:1px solid #1a1f2b;flex-wrap:wrap;gap:10px}
+.top a{color:var(--x);text-decoration:none;font-size:13px}
+.top a:hover{color:#fff}
+.top .title{color:var(--g);font-weight:700;font-size:15px}
+.top .info{color:var(--x);font-size:12px}
+.btn{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-go{background:var(--g);color:var(--bg)}
+.btn-go:hover{background:#00ffcc}
+.btn-go:disabled{background:#1a1f2b;color:var(--x);cursor:not-allowed}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;max-width:1300px;margin:0 auto;padding:16px;padding-bottom:40px}
+.panel{background:var(--c);border:1px solid #1a1f2b;border-radius:12px;padding:18px}
+.panel h3{color:var(--g);font-size:13px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1a1f2b;display:flex;justify-content:space-between;align-items:center}
+.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1a1f2b22;font-size:13px}
+.row .k{color:var(--x)}
+.row .v{color:var(--b);font-weight:500}
+.vg{color:var(--g)!important}.vw{color:var(--o)!important}.vb{color:var(--r)!important}
+
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.d-on{background:var(--g);box-shadow:0 0 6px var(--g);animation:pulse 2s infinite}
+.d-off{background:var(--r)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.bar{background:#1a1f2b;height:6px;border-radius:3px;margin:4px 0;overflow:hidden}
+.bar-f{height:100%;border-radius:3px;transition:width .3s}
+
+.joint-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.joint{text-align:center;background:#0a0e18;border-radius:8px;padding:10px 6px}
+.joint .name{font-size:10px;color:var(--x)}
+.joint .deg{font-size:16px;font-weight:900;color:var(--g)}
+.joint .sub{font-size:9px;color:#484f58;margin-top:2px}
+
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.topic-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 6px;background:#0a0e18;border-radius:4px}
+.topic-row .n{color:var(--x);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.topic-row .h{color:var(--g);font-weight:600}
+
+.progress{display:flex;gap:4px;align-items:center;margin-bottom:10px}
+.progress .step{width:20px;height:4px;border-radius:2px;background:#1a1f2b;transition:background .3s}
+.progress .step.done{background:var(--g)}
+.progress .step.active{background:var(--o);animation:pulse .5s infinite}
+
+.camera-wrap{position:relative;background:#0a0e18;border-radius:8px;overflow:hidden;text-align:center}
+.camera-wrap img{max-width:100%;height:auto;display:block}
+.camera-wrap .overlay{position:absolute;top:8px;left:8px;background:#00000088;color:var(--g);font-size:10px;padding:3px 8px;border-radius:4px}
+
+.full-width{grid-column:1/-1}
+@media(max-width:768px){.grid{grid-template-columns:1fr}.joint-grid{grid-template-columns:repeat(3,1fr)}.topic-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a href="/">← 主页</a>
+  <span class="title">Z-MAX · 实时监控</span>
+  <span class="info" id="clock">--</span>
+  <button class="btn btn-go" id="refreshBtn" onclick="doRefresh()">🔄 刷新全量数据</button>
+</div>
+
+<div class="grid" id="dash">
+  <div class="panel full-width" style="text-align:center"><p style="color:var(--x);font-size:32px;margin:40px 0">⏳</p><p style="color:var(--x)">等待数据接入...</p></div>
+</div>
+
+<script>
+const API = '/robot-status-api.php';
+const REFRESH_INTERVAL = 30 * 60 * 1000; // 30分钟
+let lastFull = null, autoTimer = null;
+
+function doRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 加载关节...';
+  
+  // Sequential loading with visual feedback
+  loadStep(0);
+}
+
+function loadStep(step) {
+  const btn = document.getElementById('refreshBtn');
+  const steps = ['⏳ 加载关节角度...', '⏳ 加载Topic状态...', '⏳ 加载相机图像...', '✅ 完成'];
+  
+  if (step >= 3) {
+    btn.textContent = '🔄 刷新全量数据';
+    btn.disabled = false;
+    return;
+  }
+  btn.textContent = steps[step];
+  
+  fetch(API + '?mode=full').then(r => r.json()).then(data => {
+    lastFull = data;
+    renderFull(data, step);
+    setTimeout(() => loadStep(step + 1), 800);
+  }).catch(() => {
+    btn.textContent = '🔄 刷新全量数据';
+    btn.disabled = false;
+  });
+}
+
+function renderFull(data, step) {
+  let html = '';
+  
+  // Panel 1: Status + Gripper + Temp + Memory
+  const online = data.cached || data.status === 'running';
+  const s = online ? '<span class="dot d-on"></span>在线' : '<span class="dot d-off"></span>离线';
+  const t = data.server_time || data.timestamp || '--';
+  const ago = data.cached ? Math.round((Date.now()-new Date(t).getTime())/60000)+'分钟前' : '刚刚';
+  
+  html += `<div class="panel"><h3>🤖 状态 ${s}</h3>
+    <div class="row"><span class="k">机器人</span><span class="v">${data.robot||'Z700'}</span></div>
+    <div class="row"><span class="k">数据源</span><span class="v">${data.source||'--'}</span></div>
+    <div class="row"><span class="k">夹爪</span><span class="v">${data.gripper||'--'} / 255</span></div>
+    <div class="row"><span class="k">更新</span><span class="v">${t} (${ago})</span></div>
+    <div class="row"><span class="k">CPU</span><span class="v ${(data.temperature?.cpu||0)>70?'vb':(data.temperature?.cpu||0)>55?'vw':'vg'}">${data.temperature?.cpu||'--'}°C</span></div>
+    <div class="bar"><div class="bar-f" style="width:${(data.temperature?.cpu||45)/90*100}%"></div></div>
+    <div class="row"><span class="k">GPU</span><span class="v ${(data.temperature?.gpu||0)>80?'vb':(data.temperature?.gpu||0)>65?'vw':'vg'}">${data.temperature?.gpu||'--'}°C</span></div>
+    <div class="bar"><div class="bar-f" style="width:${(data.temperature?.gpu||52)/90*100}"></div></div>
+    ${data.memory?`<div class="row"><span class="k">内存</span><span class="v">${data.memory.used_gb||'--'} / ${data.memory.total_gb||'--'} GB</span></div>
+    <div class="bar"><div class="bar-f" style="width:${(data.memory.used_gb||0)/(data.memory.total_gb||8)*100}%;background:${(data.memory.used_gb||0)>6?'#ff6b6b':'#00d4aa'}"></div></div>`:''}
+    ${data.errors?.length?`<div class="row"><span class="k">⚠️ 错误</span><span class="v vw">${data.errors.join(',')}</span></div>`:''}
+  </div>`;
+
+  // Panel 2: Joints
+  const joints = data.joints || {};
+  const vels = data.joint_velocities || {};
+  const trqs = data.joint_torques || {};
+  html += `<div class="panel"><h3>💪 关节电机 (6轴)</h3>`;
+  if (data.cached !== undefined || step >= 0) {
+    html += `<div class="joint-grid">${Object.entries(joints).map(([k,v])=>
+      `<div class="joint"><div class="name">${k}</div><div class="deg">${(v*180/Math.PI).toFixed(1)}°</div><div class="sub">${(vels[k]||0).toFixed(1)} rad/s · ${(trqs[k]||0).toFixed(1)} Nm</div></div>`
+    ).join('')}</div>`;
+  }
+  html += `</div>`;
+
+  // Panel 3: Force
+  if (data.force) {
+    const f = data.force;
+    html += `<div class="panel"><h3>📡 力/力矩</h3>
+      ${Object.entries(f).map(([k,v])=>`<div class="row"><span class="k">${k}</span><span class="v ${Math.abs(v)>5?'vw':'vg'}">${Number(v).toFixed(2)}${k.startsWith('t')?' Nm':' N'}</span></div>`).join('')}
+      ${data.camera?`<div class="row"><span class="k">📷 ${data.camera.realsense||'D435i'}</span><span class="v vg">${data.camera.fps||30}FPS · ${data.camera.resolution||'512x512'}</span></div>`:''}
+    </div>`;
+  }
+
+  // Panel 4: Topics
+  if (data.topics && step >= 1) {
+    html += `<div class="panel full-width"><h3>📋 ROS2 Topics (${data.topics.length})</h3>
+      <div class="topic-grid">${data.topics.map(t=>`<div class="topic-row"><span class="n">${t.name}</span><span class="h" style="color:${t.hz>0?'var(--g)':'var(--r)'}">${t.hz>0?t.hz.toFixed(1)+'Hz':'stale'}</span></div>`).join('')}</div>
+    </div>`;
+  }
+
+  // Panel 5: Realsense
+  if (data.realsense_image_url && step >= 2) {
+    html += `<div class="panel full-width"><h3>📷 Realsense 快照</h3>
+      <div class="camera-wrap"><img src="${data.realsense_image_url}" alt="Realsense"><div class="overlay">D435i · ${data.timestamp||''}</div></div>
+    </div>`;
+  }
+
+  document.getElementById('dash').innerHTML = html;
+  document.getElementById('clock').textContent = `上次: ${t}`;
+}
+
+function lightPoll() {
+  fetch(API).then(r => r.json()).then(data => {
+    if (!data.status && !data.robot) return;
+    document.getElementById('clock').textContent = `心跳: ${data.server_time||data.timestamp||''}`;
+    if (!lastFull) lastFull = data;
+  }).catch(()=>{});
+}
+
+// Auto refresh: 30min, but offset by 30s to avoid simultaneous
+autoTimer = setInterval(() => {
+  document.getElementById('clock').textContent = '⏰ 定时刷新中...';
+  doRefresh();
+}, REFRESH_INTERVAL);
+
+// Lightweight poll every 2min
+setInterval(lightPoll, 120000);
+
+// Initial
+lightPoll();
+setTimeout(doRefresh, 2000);
+</script>
+</body>
+</html>

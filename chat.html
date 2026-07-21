@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Z-MAX 群聊</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;height:100dvh;display:flex;flex-direction:column}
+#bar{background:#111;padding:10px 14px;border-bottom:1px solid #222;display:flex;align-items:center;gap:6px}
+#bar h1{font-size:14px;color:#00d4aa}
+#msgs{flex:1;overflow-y:auto;padding:10px 14px}
+.msg{margin-bottom:10px;display:flex;gap:6px}
+.msg .avatar{min-width:28px;height:28px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.av-dani{background:#006644}.av-xspace{background:#0d3320}.av-web{background:#1a1033}.av-xiaofang{background:#332010}
+.msg .bubble{max-width:80%}
+.msg .name{font-size:10px;font-weight:700;margin-bottom:1px}
+.msg .text{background:#161b22;border-radius:8px;padding:6px 10px;font-size:12px;line-height:1.4;word-break:break-word}
+.msg .time{font-size:9px;color:#484f58;margin-top:2px}
+#foot{background:#111;padding:8px 10px;border-top:1px solid #222}
+#foot textarea{width:100%;background:#1c2333;color:#c8d1d9;border:1px solid #30363d;border-radius:8px;padding:8px;resize:none;height:40px;font:12px -apple-system;margin-bottom:6px}
+#foot button{width:100%;background:#00d4aa;color:#000;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700}
+.info{font-size:10px;color:#484f58;padding:4px 10px}
+</style></head><body>
+<div id="bar"><h1>💬 Z-MAX</h1><span style="font-size:10px;color:#8b949e">大倪 · 静静 · web · 小芳</span></div>
+<div id="msgs"></div>
+<div id="foot">
+  <div class="info">👑 你是静界科技（大倪）- 消息显示为金色</div>
+  <textarea id="inp" placeholder="消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"></textarea>
+  <button onclick="send()">发送</button>
+</div>
+<script>
+const API="/forum.php";
+const NAMES={dani:"大倪",xspace:"静静",web:"web",xiaofang:"小芳"};
+const AVATARS={dani:"👑",xspace:"🟢",web:"🟣",xiaofang:"🟠"};
+const COLORS={dani:"#f0c060",xspace:"#3fb950",web:"#a371f7",xiaofang:"#f0883e"};
+let last=0;
+async function load(){
+  try{
+    let r=await fetch(API);let msgs=await r.json();msgs.reverse();
+    let h="";
+    msgs.forEach(m=>{
+      let isDani=m.from==="dani";
+      h+=`<div class="msg"><div class="avatar av-${m.from}">${AVATARS[m.from]}</div><div class="bubble"><div class="name" style="color:${COLORS[m.from]}">${NAMES[m.from]}${isDani?" 👑":""}</div><div class="text">${m.msg}</div><div class="time">${m.time}</div></div></div>`;
+    });
+    document.getElementById("msgs").innerHTML=h||"<p style='color:#484f58;text-align:center;margin-top:40px'>暂无消息</p>";
+    if(msgs.length>last){document.getElementById("msgs").scrollTop=9999999;last=msgs.length}
+  }catch(e){}
+}
+async function send(){
+  let t=document.getElementById("inp").value.trim();
+  if(!t)return;
+  document.getElementById("inp").disabled=true;
+  await fetch(API,{method:"POST",body:JSON.stringify({from:"dani",msg:t})});
+  document.getElementById("inp").value="";document.getElementById("inp").disabled=false;document.getElementById("inp").focus();
+  load();
+}
+load();setInterval(load,2000);
+</script></body></html>

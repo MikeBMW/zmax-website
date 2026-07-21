@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>数据流 · Z-MAX</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#06080d;color:#c8d1d9;font-family:system-ui,sans-serif;padding:20px;max-width:1100px;margin:0 auto}
+h1{color:#00d4aa;border-bottom:2px solid #00d4aa44;padding-bottom:8px;margin-bottom:16px}
+.flow{display:flex;align-items:center;gap:16px;margin:24px 0;flex-wrap:wrap;justify-content:center}
+.block{background:#0d1117;border:2px solid #30363d;border-radius:16px;padding:20px 24px;text-align:center;position:relative;min-width:140px;transition:all .3s}
+.block .title{color:#00d4aa;font-size:16px;font-weight:bold;margin-bottom:8px}
+.block .shape{color:#8b949e;font-size:12px;font-family:monospace}
+.block .dims{color:#58a6ff;font-size:11px;margin-top:4px}
+.arrow{color:#00d4aa;font-size:28px;font-weight:bold}
+.tensor{position:absolute;bottom:6px;right:6px;background:#1c2333;border:1px solid #3fb950;border-radius:6px;padding:2px 6px;font-size:10px;color:#3fb950;cursor:pointer}
+.tensor:hover{background:#238636;color:#fff}
+#popup{position:fixed;top:0;left:0;width:100%;height:100%;background:#000000dd;display:none;align-items:center;justify-content:center;z-index:1000}
+#popup .content{background:#0d1117;border:2px solid #00d4aa;border-radius:16px;padding:24px;max-width:600px;text-align:center}
+#popup svg{max-width:100%}
+#popup .close{color:#f85149;font-size:20px;cursor:pointer;float:right}
+.palette .c1{fill:#3fb950}.palette .c2{fill:#58a6ff}.palette .c3{fill:#bc8cff}
+</style></head><body>
+<a href="/">←返回主页</a>
+<h1>Z-MAX 数据流 · Tensor 3D结构</h1>
+
+<div class="flow">
+<div class="block" style="border-color:#39d2c0">
+<div class="title">📷 RGB输入</div>
+<div class="shape">[1, 3, 256, 256]</div>
+<div class="dims">Batch×Channel×H×W</div>
+<div class="tensor" onclick="show('rgb')">🔲</div>
+</div>
+<div class="arrow">→</div>
+<div class="block" style="border-color:#bc8cff">
+<div class="title">🖼️ SigLIP</div>
+<div class="shape">[1, 64, 768]</div>
+<div class="dims">Batch×Token×Dim</div>
+<div class="tensor" onclick="show('siglip')">🔲</div>
+</div>
+<div class="arrow">→</div>
+<div class="block" style="border-color:#58a6ff">
+<div class="title">🧠 SmolVLM</div>
+<div class="shape">[1, 256, 512]</div>
+<div class="dims">Batch×Seq×Hidden</div>
+<div class="tensor" onclick="show('vlm')">🔲</div>
+</div>
+<div class="arrow">→</div>
+<div class="block" style="border-color:#d29922">
+<div class="title">⚡ DiT Decoder</div>
+<div class="shape">[1, 4, 1024]</div>
+<div class="dims">Batch×Time×ActionDim</div>
+<div class="tensor" onclick="show('dit')">🔲</div>
+</div>
+<div class="arrow">→</div>
+<div class="block" style="border-color:#3fb950">
+<div class="title">🤖 Action</div>
+<div class="shape">[1, 14]</div>
+<div class="dims">Batch×14-DOF</div>
+<div class="tensor" onclick="show('action')">🔲</div>
+</div>
+</div>
+
+<div class="flow">
+<div class="block" style="border-color:#39d2c0;border-style:dashed">
+<div class="title">⚡ 力觉输入</div>
+<div class="shape">[1, 6]</div>
+<div class="dims">Fx,Fy,Fz,Tx,Ty,Tz</div>
+<div class="tensor" onclick="show('force')">🔲</div>
+</div>
+<div class="arrow">→</div>
+<div class="block" style="border-color:#bc8cff">
+<div class="title">🔀 Fusion</div>
+<div class="shape">[1, 320, 512]</div>
+<div class="dims">视觉+力+语言融合</div>
+<div class="tensor" onclick="show('fusion')">🔲</div>
+</div>
+</div>
+
+<div id="popup" onclick="if(event.target===this)hide()">
+<div class="content" id="popup-content"></div>
+</div>
+
+<script>
+const VIS={
+  rgb:`<svg viewBox="0 0 280 200"><rect x=10 y=10 w=80 h=180 fill=#1c2333 stroke=#3fb950 rx=4/><rect x=100 y=10 w=80 h=180 fill=#1c2333 stroke=#58a6ff rx=4/><rect x=190 y=10 w=80 h=180 fill=#1c2333 stroke=#bc8cff rx=4/><text x=50 y=35 fill=#3fb950 font-size=11 text-anchor=middle>R</text><text x=140 y=35 fill=#58a6ff font-size=11 text-anchor=middle>G</text><text x=230 y=35 fill=#bc8cff font-size=11 text-anchor=middle>B</text><text x=50 y=105 fill=#3fb950 font-size=40 text-anchor=middle>0-255</text><text x=140 y=105 fill=#58a6ff font-size=40 text-anchor=middle>0-255</text><text x=230 y=105 fill=#bc8cff font-size=40 text-anchor=middle>0-255</text><text x=50 y=190 fill=#8b949e font-size=10 text-anchor=middle>256px</text><text x=140 y=190 fill=#8b949e font-size=10 text-anchor=middle>256px</text><text x=230 y=190 fill=#8b949e font-size=10 text-anchor=middle>256px</text><text x=140 y=15 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>RGB Input: [1,3,256,256]</text></svg>`,
+  siglip:`<svg viewBox="0 0 280 200"><rect x=10 y=40 w=260 h=120 fill=#1c2333 stroke=#bc8cff rx=4/><text x=140 y=30 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>SigLIP Encoder</text><text x=70 y=80 fill=#bc8cff font-size=14 text-anchor=middle>64 tokens</text><text x=210 y=80 fill=#58a6ff font-size=14 text-anchor=middle>768 dims</text><rect x=15 y=100 w=120 h=4 fill=#bc8cff rx=2/><rect x=145 y=100 w=120 h=4 fill=#3fb950 rx=2/><rect x=15 y=120 w=120 h=4 fill=#bc8cff rx=2/><rect x=145 y=120 w=120 h=4 fill=#3fb950 rx=2/><rect x=15 y=140 w=120 h=4 fill=#bc8cff rx=2/><rect x=145 y=140 w=120 h=4 fill=#3fb950 rx=2/><text x=140 y=175 fill=#8b949e font-size=11 text-anchor=middle>Output: [1, 64, 768]</text></svg>`,
+  vlm:`<svg viewBox="0 0 280 200"><rect x=30 y=40 w=220 h=130 fill=#1c2333 stroke=#58a6ff rx=4/><text x=140 y=30 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>SmolVLM Transformer</text><rect x=45 y=55 w=190 h=8 fill=#58a6ff rx=2 opacity=.8/><rect x=45 y=70 w=190 h=8 fill=#58a6ff rx=2 opacity=.6/><rect x=45 y=85 w=190 h=8 fill=#58a6ff rx=2 opacity=.4/><rect x=45 y=100 w=190 h=8 fill=#58a6ff rx=2 opacity=.3/><rect x=45 y=115 w=190 h=8 fill=#58a6ff rx=2 opacity=.2/><rect x=45 y=130 w=190 h=8 fill=#58a6ff rx=2 opacity=.1/><text x=140 y=175 fill=#8b949e font-size=11 text-anchor=middle>256 seq × 512 hidden</text></svg>`,
+  dit:`<svg viewBox="0 0 280 200"><rect x=10 y=40 w=260 h=120 fill=#1c2333 stroke=#d29922 rx=4/><text x=140 y=30 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>Flow Matching DiT</text><circle cx=70 cy=90 r=14 fill=none stroke=#d29922 stroke-width=2/><circle cx=140 cy=90 r=14 fill=#d29922 opacity=.5/><circle cx=210 cy=90 r=14 fill=none stroke=#3fb950 stroke-width=2 stroke-dasharray=4/><text x=70 y=75 fill=#d29922 font-size=10 text-anchor=middle>t=1</text><text x=140 y=75 fill=#d29922 font-size=10 text-anchor=middle>t=0.5</text><text x=210 y=75 fill=#3fb950 font-size=10 text-anchor=middle>t=0</text><line x1=84 y1=90 x2=126 y2=90 stroke=#d29922/><line x1=154 y1=90 x2=196 y2=90 stroke=#d29922 stroke-dasharray=4/><text x=140 y=175 fill=#8b949e font-size=11 text-anchor=middle>4 flow steps → [1,14] action</text></svg>`,
+  action:`<svg viewBox="0 0 280 200"><rect x=10 y=40 w=260 h=140 fill=#1c2333 stroke=#3fb950 rx=4/><text x=140 y=30 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>Action 14-DOF</text><rect x=20 y=55 w=240 h=8 fill=#39d2c0 rx=3/><text x=265 y=63 fill=#39d2c0 font-size=8 text-anchor=end>x,y,z</text><rect x=20 y=75 w=240 h=8 fill=#d29922 rx=3/><text x=265 y=83 fill=#d29922 font-size=8 text-anchor=end>rx,ry,rz</text><rect x=20 y=95 w=240 h=8 fill=#58a6ff rx=3/><text x=265 y=103 fill=#58a6ff font-size=8 text-anchor=end>j1..j6</text><rect x=20 y=115 w=200 h=8 fill=#bc8cff rx=3/><text x=225 y=123 fill=#bc8cff font-size=8 text-anchor=end>gripper</text><rect x=20 y=135 w=240 h=8 fill=#3fb950 rx=3/><text x=265 y=143 fill=#3fb950 font-size=8 text-anchor=end>姿势×平移×关节×夹爪</text><text x=140 y=170 fill=#8b949e font-size=10 text-anchor=middle>输出: [1,14] tensor</text></svg>`,
+  force:`<svg viewBox="0 0 280 200"><rect x=10 y=40 w=260 h=120 fill=#1c2333 stroke=#39d2c0 rx=4/><text x=140 y=30 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>Force/Torque [6]</text><rect x=20 y=55 w=120 h=35 fill=#1c2333 stroke=#3fb950 rx=4/><text x=80 y=77 fill=#3fb950 font-size=12 text-anchor=middle>Fx,Fy,Fz</text><rect x=150 y=55 w=120 h=35 fill=#1c2333 stroke=#d29922 rx=4/><text x=210 y=77 fill=#d29922 font-size=12 text-anchor=middle>Tx,Ty,Tz</text><rect x=20 y=105 w=250 h=8 fill=#39d2c0 rx=3/><text x=275 y=113 fill=#39d2c0 font-size=8 text-anchor=end>1kHz</text><text x=140 y=175 fill=#8b949e font-size=11 text-anchor=middle>Input: [1,6] @ 1000Hz</text></svg>`,
+  fusion:`<svg viewBox="0 0 280 200"><rect x=10 y=40 w=260 h=120 fill=#1c2333 stroke=#bc8cff rx=4/><text x=140 y=30 fill=#00d4aa font-size=13 font-weight=bold text-anchor=middle>Multi-Modal Fusion</text><rect x=20 y=55 w=80 h=25 fill=#39d2c0 rx=3 opacity=.8/><text x=60 y=72 fill=#fff font-size=9 text-anchor=middle>Vision</text><rect x=105 y=55 w=80 h=25 fill=#3fb950 rx=3 opacity=.8/><text x=145 y=72 fill=#fff font-size=9 text-anchor=middle>Force</text><rect x=190 y=55 w=80 h=25 fill=#d29922 rx=3 opacity=.8/><text x=230 y=72 fill=#fff font-size=9 text-anchor=middle>Language</text><rect x=70 y=95 w=150 h=40 fill=#bc8cff rx=6 opacity=.5/><text x=145 y=118 fill=#bc8cff font-size=16 text-anchor=middle>⊕ Concat</text><text x=140 y=175 fill=#8b949e font-size=11 text-anchor=middle>Fusion: [1, 320, 512]</text></svg>`
+};
+function show(id){
+  let c=document.getElementById('popup-content');
+  c.innerHTML='<span class="close" onclick="hide()">✕</span>'+VIS[id];
+  document.getElementById('popup').style.display='flex';
+}
+function hide(){document.getElementById('popup').style.display='none'}
+</script>
+</body></html>
+<style id=mobile-fix>
+@media(max-width:768px){
+.flow{flex-direction:column;align-items:center;gap:8px}
+.arrow{transform:rotate(90deg);font-size:20px}
+.block{min-width:100px;padding:14px 16px}
+.block .title{font-size:14px}
+.block .shape{font-size:11px}
+.tensor{padding:3px 8px;font-size:11px}
+h1{font-size:18px}
+}
+</style>

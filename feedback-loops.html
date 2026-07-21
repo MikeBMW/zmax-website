@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>反馈回路 · Z-MAX Hybrid</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#06080d;color:#c8d1d9;font-family:system-ui,monospace;padding:20px;max-width:1100px;margin:0 auto}
+h1{color:#00d4aa;border-bottom:2px solid #00d4aa44;padding-bottom:8px;margin-bottom:16px}
+.loop{background:#0d1117;border:1px solid #30363d;border-radius:12px;padding:16px;margin:12px 0;transition:all .2s}
+.loop:hover{border-color:#00d4aa}
+.loop h3{font-size:14px;margin-bottom:8px}
+.loop .code{background:#1c2333;padding:12px;border-radius:8px;font-size:11px;line-height:1.6;overflow-x:auto;white-space:pre;color:#c8d1d9}
+.l1{border-left:4px solid #bc8cff} .l2{border-left:4px solid #58a6ff} .l3{border-left:4px solid #39d2c0}
+.l4{border-left:4px solid #d29922} .l5{border-left:4px solid #3fb950}
+.keyword{color:#00d4aa}.var{color:#d29922}.func{color:#bc8cff}.arrow{color:#3fb950}.err{color:#f85149}
+</style></head><body>
+<a href="/tensor-flow.html" style="color:#8b949e;font-size:12px">←返回数据流</a>
+<h1>Z-MAX Hybrid · 5条分布式反馈回路</h1>
+<p style="color:#8b949e;margin-bottom:16px">时间 t → t+1 预测-反馈循环</p>
+
+<div class="loop l1"><h3 style="color:#bc8cff">回路① 语义反馈 JEPA₃</h3>
+<div class="code">
+<span class="func">JEPA3_Encoder.forward</span>(s_t, a_t-1) → <span class="var">z3_t</span>  <span class="arrow"># 语义表征 128D</span>
+    │
+<span class="func">JEPA3_Predictor.forward</span>(<span class="var">z3_t</span>) → <span class="var">z3_prime</span>  <span class="arrow"># 预测下帧语义</span>
+    │
+<span class="var">loss_jepa3</span> = <span class="keyword">MSE</span>(<span class="var">z3_prime</span>, <span class="func">JEPA3_Encoder</span>(s_t+1))
+    │
+    └── <span class="err">░ L_jepa₃ 反向传播</span> ← 修正语义层预测
+</div>
+</div>
+
+<div class="loop l2"><h3 style="color:#58a6ff">回路② 物体反馈 JEPA₂ (接收回路①先验)</h3>
+<div class="code">
+<span class="func">JEPA2_Encoder.forward</span>(s_t, prior=<span class="var">z3_prime</span>) → <span class="var">z2_t</span>  <span class="arrow"># 物体表征 256D</span>
+    │                          
+<span class="func">JEPA2_Predictor.forward</span>(<span class="var">z2_t</span>, prior=<span class="var">z3_prime</span>) → <span class="var">z2_prime</span>
+    │
+<span class="var">loss_jepa2</span> = <span class="keyword">MSE</span>(<span class="var">z2_prime</span>, <span class="func">JEPA2_Encoder</span>(s_t+1, prior=<span class="var">z3_t.detach()</span>))
+    │
+    └── <span class="err">░ L_jepa₂ 反向传播</span> ← 修正物体层预测
+</div>
+</div>
+
+<div class="loop l3"><h3 style="color:#39d2c0">回路③ 空间反馈 JEPA₁ (接收回路②先验)</h3>
+<div class="code">
+<span class="func">JEPA1_Encoder.forward</span>(s_t, prior=<span class="var">z2_prime</span>) → <span class="var">z1_t</span>  <span class="arrow"># 空间表征 256D</span>
+    │
+<span class="func">JEPA1_Predictor.forward</span>(<span class="var">z1_t</span>, prior=<span class="var">z2_prime</span>) → <span class="var">z1_prime</span>
+    │
+<span class="var">loss_jepa1</span> = <span class="keyword">MSE</span>(<span class="var">z1_prime</span>, <span class="func">JEPA1_Encoder</span>(s_t+1, prior=<span class="var">z2_t.detach()</span>))
+    │
+    └── <span class="err">░ L_jepa₁ 反向传播</span> ← 修正空间层预测
+</div>
+</div>
+
+<div class="loop l4"><h3 style="color:#d29922">回路④ 跨模态反馈</h3>
+<div class="code">
+<span class="func">VLM_Encoder</span>(rgb) → <span class="var">vlm_feat</span>        <span class="arrow"># 500M参数 视觉流</span>
+<span class="func">GNN_Encoder</span>(state_graph) → <span class="var">gnn_feat</span>  <span class="arrow"># GAT 2层 状态机图</span>
+<span class="func">Force_MLP</span>(force_6d) → <span class="var">force_feat</span>    <span class="arrow"># 256D 力觉流</span>
+    │                                     
+<span class="func">CrossModal_Fusion</span>(<span class="var">vlm_feat</span>↔<span class="var">gnn_feat</span>↔<span class="var">force_feat</span>) → <span class="var">fused_512D</span>
+    │  <span class="arrow">视觉纠正图结构  ·  图结构约束力空间  ·  力反馈修正视觉</span>
+    └── <span class="err">░ 多模态一致性损失 反向传播</span> ← 三流对齐
+</div>
+</div>
+
+<div class="loop l5"><h3 style="color:#3fb950">回路⑤ 动作反馈 (全局闭环)</h3>
+<div class="code">
+<span class="keyword">z_fused</span> = <span class="keyword">Concat</span>(<span class="var">z1_t</span>, <span class="var">z2_t</span>, <span class="var">z3_t</span>)  <span class="arrow"># 256+256+128 = 640D</span>
+    │
+<span class="func">DiT_ActionHead</span>(<span class="var">z_fused</span>) → <span class="var">action_t</span>  <span class="arrow"># Flow Matching · 50块</span>
+    │
+<span class="var">loss_action</span> = <span class="keyword">MSE</span>(<span class="var">action_t</span>, action_gt)
+    │
+    ▼  <span class="arrow">执行</span>
+环境 <span class="arrow">←</span> <span class="var">action_t</span> → <span class="var">s_t+1</span>  <span class="arrow">(下一帧状态反馈)</span>
+    │
+    └── <span class="err">░ L_action 反向传播</span> ← 修正全局动作
+    └── s_t+1 → <span class="func">JEPA_Encoders</span> → <span class="var">z_t+1</span> <span class="arrow">(循环)</span>
+</div>
+</div>
+
+<h2 style="color:#00d4aa;margin-top:20px">总损失</h2>
+<div class="code" style="border-left:4px solid #00d4aa">
+<span class="keyword">L_total</span> = <span class="var">L_action</span> + <span class="err">0.025·L_jepa₁</span> + <span class="err">0.05·L_jepa₂</span> + <span class="err">0.1·L_jepa₃</span>
+          <span class="arrow"># JEPA权重递增: 空间<物体<语义</span>
+</div>
+</body></html>

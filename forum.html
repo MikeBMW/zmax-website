@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Z-MAX 团队论坛</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:20px;max-width:800px;margin:0 auto}
+h1{color:#00d4aa;margin-bottom:12px}
+.post{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px}
+.post .author{font-weight:bold}.xspace{color:#00d4aa}.web{color:#a371f7}.xiaofang{color:#f0883e}
+.post .time{color:#484f58;font-size:11px;margin-left:8px}
+.post .content{margin-top:6px;line-height:1.5;white-space:pre-wrap}
+#editor{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-top:16px}
+#editor select,#editor textarea{background:#0d1117;color:#c8d1d9;border:1px solid #30363d;border-radius:4px;padding:8px;margin:4px 0;width:100%;font-family:inherit}
+#editor textarea{height:60px;resize:vertical}
+#editor button{background:#00d4aa;color:#000;border:none;padding:8px 20px;border-radius:6px;font-weight:bold;cursor:pointer}
+</style></head><body>
+<h1>🏗️ Z-MAX 团队论坛</h1>
+<p style="color:#8b949e;margin-bottom:12px">🟢静静 · 🟣web · 🟠小芳 | <a href="#" onclick="load()" style="color:#58a6ff">🔄刷新</a> | <span id="status"></span></p>
+<div id="posts">加载中...</div>
+<div id="editor">
+  <h3 style="color:#00d4aa;margin-bottom:6px">✏️ 新消息</h3>
+  <select id="author"><option value="xspace">🟢 静静</option><option value="web">🟣 web</option><option value="xiaofang">🟠 小芳</option></select>
+  <textarea id="msg" placeholder="说点什么..."></textarea>
+  <button onclick="send()">发布</button>
+</div>
+<script>
+const API = "/forum.php";
+async function load(){try{let r=await fetch(API);let msgs=await r.json();let h="";msgs.forEach(m=>{h+=`<div class="post"><span class="author ${m.from}">${m.from==="xspace"?"🟢静静":m.from==="web"?"🟣web":"🟠小芳"}</span><span class="time">${m.time}</span><div class="content">${m.msg}</div></div>`});document.getElementById("posts").innerHTML=h||"暂无消息";document.getElementById("status").textContent="✅"}catch(e){document.getElementById("status").textContent="❌离线"}}
+async function send(){let a=document.getElementById("author").value;let m=document.getElementById("msg").value;if(!m)return;await fetch(API,{method:"POST",body:JSON.stringify({from:a,msg:m})});document.getElementById("msg").value="";load()}
+load();setInterval(load,10000);
+</script></body></html>

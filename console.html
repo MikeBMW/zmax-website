@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>功能控制台 · Z-MAX</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#06080d;color:#c8d1d9;font-family:system-ui,sans-serif;padding:20px;max-width:960px;margin:0 auto}
+h1{color:#00d4aa;border-bottom:2px solid #00d4aa44;padding-bottom:8px;margin-bottom:16px}
+h2{color:#00d4aa;margin:20px 0 10px}
+.card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.item{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:16px}
+.item a{color:#00d4aa;text-decoration:none;font-size:16px;font-weight:bold}
+.item p{color:#8b949e;font-size:13px;margin-top:6px}
+.badge{font-size:11px;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:8px}
+.green{background:#23863622;color:#3fb950}.orange{background:#d2992222;color:#d29922}
+</style></head><body>
+<a href="/" style="color:#8b949e">←返回主页</a>
+<h1>Z-MAX 功能控制台</h1>
+<p style="color:#8b949e;margin-bottom:16px">全部GUI功能已映射到Web端。点击进入各控制页面。</p>
+
+<div class="grid">
+
+<div class="item">
+<a href="/system-api.html">🔌 系统接口</a>
+<p>五系统引擎切换接口, Sys-0→Sys-2 全谱API</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+<div class="item">
+<a href="/data-loop.html">🔄 数据闭环</a>
+<p>Orin采集→Mac仿真→训练→部署 四节点流水线</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+<div class="item">
+<a href="/simulation.html">📊 仿真报告</a>
+<p>ACT/SmolVLA/LEW/VTLA 模型性能基准+延迟曲线</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+<div class="item">
+<a href="/monitor.html">📡 实时监控</a>
+<p>6轴关节·力/力矩·温度·相机FPS·Topic状态</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+<div class="item">
+<a href="/hardware-tree.html">🔧 硬件树</a>
+<p>L2/L3/L4 三级硬件节点全谱+ROS2 Topic映射</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+<div class="item">
+<a href="/patent.html">📜 专利技术</a>
+<p>6项权利要求+实用新型交底书+规避设计</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+<div class="item">
+<a href="/system-interfaces.html">🎛️ 引擎切换</a>
+<p>ACT/VTLA/GR00T/smolvla/LEW 一键切换控制</p>
+<span class="badge orange">web待完善</span>
+</div>
+
+<div class="item">
+<a href="/training-console.html">🏋️ 训练控制台</a>
+<p>→4090下发训练任务·进度监控·checkpoint管理</p>
+<span class="badge orange">web待创建</span>
+</div>
+
+<div class="item">
+<a href="/state-machine.html">⚙️ 状态机可视化</a>
+<p>Orin生产流程106行YAML实时展示+节点控制</p>
+<span class="badge orange">web待创建</span>
+</div>
+
+<div class="item">
+<a href="/docs.html">📚 文档中心</a>
+<p>30+份文档·解决方案·里程碑·项目总结</p>
+<span class="badge green">✅ 已上线</span>
+</div>
+
+</div>
+</body></html>
