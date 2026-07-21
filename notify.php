@@ -1,7 +1,6 @@
 <?php
 /**
- * Z-MAX 飞书通知桥
- * forum.php 收到 @all / @mention 消息时，同步推送到飞书群
+ * Z-MAX 飞书通知桥 v3 — 简化 text 格式
  */
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
@@ -19,87 +18,59 @@ if (!$input || !isset($input["from"]) || !isset($input["msg"])) {
 
 $from = $input["from"];
 $msg = $input["msg"];
-$mentions = isset($input["mentions"]) ? $input["mentions"] : [];
 
-// Feishu config
+$NAMES = ["dani" => "大倪", "xspace" => "静静", "web" => "web", "xiaofang" => "小芳"];
+$AVATARS = ["dani" => "👑", "xspace" => "🟢", "web" => "🟣", "xiaofang" => "🟠"];
+$sender = isset($NAMES[$from]) ? $NAMES[$from] : $from;
+$avatar = isset($AVATARS[$from]) ? $AVATARS[$from] : "💬";
+$hasAll = preg_match('/@all\b/i', $msg);
+
+// Build simple text
+$text = $avatar . " " . $sender . "：" . $msg;
+if ($hasAll) $text = "📢 " . $text;
+$text .= "\n👉 https://datadrive.world/chat.html";
+
+// Feishu API
 $APP_ID = "cli_aad84fde4a619cc7";
 $APP_SECRET = "3uSXj0T82lc1njzChVX82sBufnhv3Rvg";
-$CHAT_ID = "oc_c0b4048546145c5c581ddd1a9e8f565d"; // dataworld group
+$CHAT_ID = "oc_c0b4048546145c5c581ddd1a9e8f565d";
 
-// Step 1: Get tenant_access_token
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal");
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(["app_id" => $APP_ID, "app_secret" => $APP_SECRET]));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-$resp = curl_exec($ch);
-$token_data = json_decode($resp, true);
+curl_setopt_array($ch, [
+    CURLOPT_URL => "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode(["app_id" => $APP_ID, "app_secret" => $APP_SECRET]),
+    CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT => 5
+]);
+$token_data = json_decode(curl_exec($ch), true);
 $token = isset($token_data["tenant_access_token"]) ? $token_data["tenant_access_token"] : null;
 
 if (!$token) {
-    echo json_encode(["status" => "error", "msg" => "feishu auth failed"]);
+    echo json_encode(["status" => "error", "msg" => "auth failed"]);
+    curl_close($ch);
     exit;
 }
 
-// Step 2: Build message content
-$NAMES = ["dani" => "大倪", "xspace" => "静静", "web" => "web", "xiaofang" => "小芳"];
-$sender_name = isset($NAMES[$from]) ? $NAMES[$from] : $from;
+$content = json_encode(["text" => $text], JSON_UNESCAPED_UNICODE);
 
-// Build @ mentions in Feishu format
-$at_elements = [];
-$has_all = preg_match('/@all\b/i', $msg);
-
-if ($has_all) {
-    $at_elements[] = [
-        "tag" => "at",
-        "user_id" => "all",
-        "user_name" => "所有人"
-    ];
-}
-
-foreach ($mentions as $m) {
-    $at_elements[] = [
-        "tag" => "at",
-        "user_id" => $m,
-        "user_name" => isset($NAMES[$m]) ? $NAMES[$m] : $m
-    ];
-}
-
-// Build content blocks
-$blocks = [];
-$blocks[] = [
-    "tag" => "markdown",
-    "content" => "**💬 来自 Z-MAX 群聊**\n{$sender_name}：{$msg}"
-];
-
-// Step 3: Send to Feishu group
-$body = [
+$body = json_encode([
     "receive_id" => $CHAT_ID,
-    "msg_type" => "interactive",
-    "content" => json_encode([
-        "config" => ["wide_screen_mode" => true],
-        "elements" => [
-            [
-                "tag" => "markdown",
-                "content" => "**💬 Z-MAX 群聊**\n**{$sender_name}**：{$msg}\n\n— 来自 [chat.html](https://datadrive.world/chat.html)"
-            ]
-        ],
-        "header" => [
-            "title" => ["tag" => "plain_text", "content" => $has_all ? "📢 @all 全员通知" : "💬 新消息"]
-        ]
-    ])
-];
+    "msg_type" => "text",
+    "content" => $content
+], JSON_UNESCAPED_UNICODE);
 
-curl_setopt($ch, CURLOPT_URL, "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id");
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "Content-Type: application/json",
-    "Authorization: Bearer " . $token
+curl_setopt_array($ch, [
+    CURLOPT_URL => "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => $body,
+    CURLOPT_HTTPHEADER => [
+        "Content-Type: application/json",
+        "Authorization: Bearer " . $token
+    ]
 ]);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
 $send_resp = curl_exec($ch);
 curl_close($ch);
 
@@ -107,7 +78,7 @@ $send_data = json_decode($send_resp, true);
 $success = isset($send_data["code"]) && $send_data["code"] === 0;
 
 echo json_encode([
-    "status" => $success ? "ok" : "feishu_error",
-    "feishu_code" => isset($send_data["code"]) ? $send_data["code"] : -1,
-    "msg" => isset($send_data["msg"]) ? $send_data["msg"] : "unknown"
-]);
+    "status" => $success ? "ok" : "error",
+    "code" => isset($send_data["code"]) ? $send_data["code"] : -1,
+    "msg" => isset($send_data["msg"]) ? $send_data["msg"] : ""
+], JSON_UNESCAPED_UNICODE);
