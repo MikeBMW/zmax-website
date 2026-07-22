@@ -334,7 +334,7 @@ function createTrajectory(x1,z1,x2,z2){
   arrow.rotation.x=-Math.PI/2;arrow.position.set(len/2-.2,.04,0);
   g.add(arrow);
   g.position.set((x1+x2)/2,.01,(z1+z2)/2);
-  g.rotation.y=-Math.atan2(dx,dz);
+  g.rotation.y=Math.atan2(dz,dx);
   return g;
 }
 
