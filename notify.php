@@ -31,8 +31,8 @@ if ($hasAll) $text = "📢 " . $text;
 $text .= "\n👉 https://datadrive.world/chat.html";
 
 // Feishu API
-$APP_ID = "cli_aad84fde4a619cc7";
-$APP_SECRET = "3uSXj0T82lc1njzChVX82sBufnhv3Rvg";
+$APP_ID = "getenv('FEISHU_APP_ID','cli_aad84fde4a619cc7')";
+$APP_SECRET = "getenv('FEISHU_APP_SECRET','')";
 $CHAT_ID = "oc_c0b4048546145c5c581ddd1a9e8f565d";
 
 $ch = curl_init();
