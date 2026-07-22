@@ -23,26 +23,8 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 #view3d canvas{display:block}
 
 #panel{width:320px;background:#0d1117;border-left:1px solid #1a1f2b;overflow-y:auto;flex-shrink:0}
-@media(max-width:768px){
-  #bar h1{font-size:12px}
-  #bar .tabs .tab{padding:4px 8px;font-size:9px}
-  #bar .badge{font-size:8px;padding:1px 4px}
-  #bar{gap:4px;padding:6px 8px}
-  #bar .spec-summary{display:none}
-  #panel{position:fixed;right:0;top:42px;bottom:0;z-index:20;width:280px;display:none;transform:translateX(100%);transition:transform .3s}
-  #panel.open{display:block;transform:translateX(0)}
-  #panel-toggle{display:block;position:fixed;right:8px;top:46px;z-index:21;background:#0d1117;color:#00d4aa;border:1px solid #00d4aa44;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer}
-  #specs-overlay{top:6px;left:6px;font-size:9px;padding:6px 8px}
-  #specs-overlay .row{gap:6px}
-  #specs-overlay .k{min-width:50px}
-  .zone-label{font-size:12px}
-  #dock .ds{min-width:44px;font-size:8px}
-  #dock .ds .di{font-size:11px}
-  #info-popup{max-width:240px;padding:10px 14px}
-  #info-popup .name{font-size:11px}
-  #info-popup .desc{font-size:9px}
-  #legend{bottom:6px;right:6px;font-size:8px;padding:6px 8px}
-}
+@media(max-width:900px){#panel{display:none;position:absolute;right:0;top:50px;bottom:0;z-index:20;width:280px}
+  #panel.open{display:block}}
 
 #panel h3{font-size:11px;color:#00d4aa;padding:10px 12px 4px;border-bottom:1px solid #1a1f2b}
 .zone-card{background:#111827;border:1px solid #1a1f2b;border-radius:8px;padding:10px;margin:6px 10px;transition:all .2s}
@@ -73,6 +55,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
+  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.5 · 2026-07-22 14:54</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -81,8 +64,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   </div>
 </div>
 <div id="main">
-<div id="view3d"><div id="info-popup"></div>
-</div>
+<div id="view3d"><div id="info-popup"></div></div>
 <div id="panel">
   <h3>🏭 工厂区域</h3>
   <div id="zones-list"></div>
@@ -98,7 +80,6 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 </div>
 </div>
 
-<button id="panel-toggle" onclick="document.getElementById('panel').classList.toggle('open')" style="display:none">📋 面板</button>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ═══════════════════════════════════════
@@ -138,8 +119,10 @@ const ZONES=[
   ]}
 ];
 
-let stationObjects=[],robots=[],agvs=[];
-let time=0;
+let stationObjects=[],robotObj=null,agvObj=null;
+let robotTarget={x:-14,z:-4},robotPos={x:-14,z:-4};
+let agvTarget={x:-6,z:0},agvPos={x:-6,z:0};
+let hoveredStation=null;
 
 // ═══════ THREE.JS ═══════
 const wrap=document.getElementById("view3d"),W=wrap.clientWidth,H=wrap.clientHeight;
@@ -167,39 +150,6 @@ const floorGeom=new THREE.PlaneGeometry(36,24);
 const floor=new THREE.Mesh(floorGeom,new THREE.MeshStandardMaterial({color:0x111520,roughness:.85}));
 floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
 const grid=new THREE.GridHelper(36,36,0x2a3040,0x1a1f2b);grid.position.y=.003;scene.add(grid);
-
-// ═══════ Coordinate system: X(→) Y(↑) origin at bottom-left ═══════
-// Map: 3D(x,z) → display(X=x+18, Y=-z+12)  |  Floor 36×24
-function toDisp(x3d,z3d){return{x:x3d+18,y:-z3d+12}}
-
-function addCoordLabel(text,x,y,z,color,size){
-  const c=document.createElement("canvas");c.width=128;c.height=64;
-  const ctx=c.getContext("2d");ctx.font="bold 26px monospace";
-  ctx.textAlign="center";ctx.textBaseline="middle";
-  ctx.fillStyle=color||"#484f58";ctx.fillText(text,64,32);
-  const t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;
-  const s=size||1.6;
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(s,.6),new THREE.MeshBasicMaterial({map:t,transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));
-  m.rotation.x=-Math.PI/2;m.position.set(x,.025,z);m.renderOrder=998;scene.add(m);
-}
-// X axis (bottom edge, Z=+12): labels every 4 units
-for(let dx=0;dx<=36;dx+=4){const p=toDisp(dx-18,12);addCoordLabel("X:"+dx,p.x,.025,p.z,"#00d4aa66",1.2)}
-// Y axis (left edge, X=-18): labels every 4 units
-for(let dy=0;dy<=24;dy+=4){const p=toDisp(-18,12-dy);addCoordLabel("Y:"+dy,p.x-.8,.025,p.z,"#f0a50066",1.2)}
-// Origin
-{const o=toDisp(-18,12);addCoordLabel("(0,0)",o.x-.5,.03,o.z,"#ffffff");}
-// Corner markers
-{const tr=toDisp(18,-12);addCoordLabel("(36,24)",tr.x+.8,.03,tr.z,"#ffffff55",1.6);}
-
-// Station coordinate labels on ground
-function addStationLabel(text,x3d,z3d){
-  const c=document.createElement("canvas");c.width=96;c.height=32;
-  const ctx=c.getContext("2d");ctx.font="bold 16px monospace";ctx.textAlign="center";ctx.textBaseline="middle";
-  ctx.fillStyle="#ffffff44";ctx.fillText(text,48,16);
-  const t=new THREE.CanvasTexture(c);t.minFilter=THREE.LinearFilter;
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(1,.3),new THREE.MeshBasicMaterial({map:t,transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide}));
-  m.rotation.x=-Math.PI/2;m.position.set(x3d,.022,z3d+.5);m.renderOrder=997;scene.add(m);
-}
 
 // ═══════ Factory walls ═══════
 function createWall(x,z,w,d,color){
@@ -356,67 +306,17 @@ function buildFactory(){
       const s=createStation(sx,sz,z.color,st.label,st.specs);
       s.userData={...s.userData,...st,zoneId:z.id,zoneName:z.name};
       scene.add(s);stationObjects.push(s);
-      // Station coordinates on ground
-      const dc=toDisp(sx,sz);
-      addStationLabel("("+dc.x.toFixed(0)+","+dc.y.toFixed(0)+")",sx,sz);
     });
   });
 
-  // 4 Robots — one per zone
-  const robotZones=[
-    {x:-14,z:-4,zone:"coc"},
-    {x:8,z:-4,zone:"oe"},
-    {x:8,z:4,zone:"mod"},
-    {x:-14,z:4,zone:"wh"}
-  ];
-  robots.forEach(r=>scene.remove(r));
-  robots=[];
-  robotZones.forEach(rz=>{
-    const r=createRobot(rz.x,rz.z);
-    // Coordinate sprite above robot head
-    const sc=document.createElement("canvas");sc.width=200;sc.height=60;
-    const sctx=sc.getContext("2d");
-    sctx.fillStyle="rgba(0,0,0,.75)";sctx.beginPath();sctx.roundRect(0,0,200,60,10);sctx.fill();
-    sctx.fillStyle="#00d4aa";sctx.font="bold 20px monospace";sctx.textAlign="center";sctx.textBaseline="middle";
-    sctx.fillText(`X:${rz.x.toFixed(1)} Z:${rz.z.toFixed(1)}`,100,30);
-    const st=new THREE.CanvasTexture(sc);st.minFilter=THREE.LinearFilter;
-    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:st,transparent:true,depthTest:false,depthWrite:false}));
-    sp.scale.set(2.5,.75,1);sp.position.y=1.5;sp.renderOrder=1000;
-    r.add(sp);
-    r.userData={zone:rz.zone,origX:rz.x,origZ:rz.z,patrolIdx:0,paused:false,pauseTimer:0,sprite:sp,canvas:sc,ctx:sctx};
-    scene.add(r);robots.push(r);
-  });
+  // Robot — starts at COC zone
+  if(!robotObj){robotObj=createRobot(-14,-4);scene.add(robotObj)}
+  robotPos={x:-14,z:-4};robotTarget={x:-14,z:-4};
 
-  // 4 AGVs — inter-zone transport
-  agvs.forEach(a=>scene.remove(a));
-  agvs=[];
-  const agvStarts=[
-    {x:-3,z:-6},{x:3,z:-6},  // top COC↔OE
-    {x:3,z:6},{x:-3,z:6}    // bottom Module↔WH
-  ];
-  agvStarts.forEach(as=>{const a=createAGV(as.x,as.z);scene.add(a);agvs.push(a);});
+  // AGV
+  if(!agvObj){agvObj=createAGV(0,-6);scene.add(agvObj)}
+  agvPos={x:0,z:-6};agvTarget={x:0,z:-6};
 
-  // Zone labels — white text on floor center, always visible
-  const zoneLabels=[
-    {text:"COC 基板区",x:-14,z:-8},
-    {text:"OE 光引擎区",x:8,z:-8},
-    {text:"模块组装区",x:8,z:6},
-    {text:"仓库物流区",x:-14,z:6}
-  ];
-  zoneLabels.forEach(zl=>{
-    const canvas=document.createElement("canvas");canvas.width=512;canvas.height=128;
-    const ctx=canvas.getContext("2d");
-    ctx.font="bold 44px -apple-system,'PingFang SC','Microsoft YaHei',sans-serif";
-    ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillStyle="#ffffff";ctx.fillText(zl.text,256,64);
-    const tex=new THREE.CanvasTexture(canvas);tex.minFilter=THREE.LinearFilter;
-    const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false,side:THREE.DoubleSide});
-    const plane=new THREE.Mesh(new THREE.PlaneGeometry(10,2.5),mat);
-    plane.rotation.x=-Math.PI/2;plane.position.set(zl.x,.03,zl.z);
-    plane.renderOrder=999;
-    scene.add(plane);
-  });
-  
   buildZonesList();
 }
 
@@ -439,16 +339,15 @@ function buildZonesList(){
 function flyTo(zoneId){
   const z=ZONES.find(x=>x.id===zoneId);
   if(!z)return;
-  // Smooth animate orbitCenter
-  const start={x:orbitCenter.x,y:orbitCenter.y,z:orbitCenter.z};
+  const start={x:lookTarget.x,y:lookTarget.y,z:lookTarget.z};
   const end={x:z.pos.x,y:0,z:z.pos.z};
-  const startTime=Date.now();
+  const st=Date.now();
   function anim(){
-    const t=Math.min((Date.now()-startTime)/800,1);
-    const ease=t<.5?2*t*t:-1+(4-2*t)*t; // easeInOutQuad
-    orbitCenter.x=start.x+(end.x-start.x)*ease;
-    orbitCenter.y=start.y+(end.y-start.y)*ease;
-    orbitCenter.z=start.z+(end.z-start.z)*ease;
+    const t=Math.min((Date.now()-st)/800,1);
+    const e=t<.5?2*t*t:-1+(4-2*t)*t;
+    lookTarget.x=start.x+(end.x-start.x)*e;
+    lookTarget.y=start.y+(end.y-start.y)*e;
+    lookTarget.z=start.z+(end.z-start.z)*e;
     updateCam();
     if(t<1)requestAnimationFrame(anim);
   }
@@ -484,19 +383,18 @@ wrap.addEventListener("click",e=>{
   }
 });
 
-// ═══════ Camera orbit — pure spherical + middle-pan ═══════
+// ═══════ Camera: left=orbit, middle=pan, wheel=zoom ═══════
 let dragging=false,panning=false,prevMX=0,prevMY=0;
-let camTheta=Math.PI/4,camPhi=.7,camDist=22;
-let orbitCenter={x:0,y:1,z:0}; // always orbit around this point
+let camTheta=0,camPhi=.7,camDist=22;
+let lookTarget={x:0,y:0,z:0};
 
 function updateCam(){
-  const cx=orbitCenter.x,cy=orbitCenter.y,cz=orbitCenter.z;
   camera.position.set(
-    cx+camDist*Math.sin(camPhi)*Math.cos(camTheta),
-    cy+camDist*Math.cos(camPhi),
-    cz+camDist*Math.sin(camPhi)*Math.sin(camTheta)
+    lookTarget.x+camDist*Math.sin(camPhi)*Math.cos(camTheta),
+    lookTarget.y+camDist*Math.cos(camPhi),
+    lookTarget.z+camDist*Math.sin(camPhi)*Math.sin(camTheta)
   );
-  camera.lookAt(cx,cy,cz);
+  camera.lookAt(lookTarget.x,lookTarget.y,lookTarget.z);
 }
 wrap.addEventListener("mousedown",e=>{
   if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}
@@ -504,33 +402,30 @@ wrap.addEventListener("mousedown",e=>{
 });
 wrap.addEventListener("mousemove",e=>{
   if(dragging){
-    camTheta+=(e.clientX-prevMX)*.004;
-    camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.004));
+    camTheta+=(e.clientX-prevMX)*.005;
+    camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.005));
     prevMX=e.clientX;prevMY=e.clientY;
     updateCam();
   }
   if(panning){
-    // Pan perpendicular to view direction
     const right=new THREE.Vector3();camera.getWorldDirection(right);
     const up=new THREE.Vector3(0,1,0);
     const left=new THREE.Vector3().crossVectors(up,right).normalize();
     const worldUp=new THREE.Vector3().crossVectors(right,left).normalize();
-    const dx=(e.clientX-prevMX)*.015;
-    const dy=(e.clientY-prevMY)*.015;
-    orbitCenter.x+=left.x*dx+worldUp.x*dy;
-    orbitCenter.y+=left.y*dx+worldUp.y*dy;
-    orbitCenter.z+=left.z*dx+worldUp.z*dy;
+    const dx=(e.clientX-prevMX)*.02,dy=(e.clientY-prevMY)*.02;
+    lookTarget.x+=left.x*dx+worldUp.x*dy;
+    lookTarget.y+=left.y*dx+worldUp.y*dy;
+    lookTarget.z+=left.z*dx+worldUp.z*dy;
     prevMX=e.clientX;prevMY=e.clientY;
     updateCam();
   }
 });
-wrap.addEventListener("mouseup",e=>{dragging=false;panning=false});
+wrap.addEventListener("mouseup",()=>{dragging=false;panning=false});
 wrap.addEventListener("wheel",e=>{
   e.preventDefault();
   camDist=Math.max(5,Math.min(40,camDist+e.deltaY*.03));
   updateCam();
 },{passive:false});
-// Prevent middle-click default scroll
 wrap.addEventListener("auxclick",e=>e.preventDefault());
 // Touch
 wrap.addEventListener("touchstart",e=>{
@@ -538,94 +433,38 @@ wrap.addEventListener("touchstart",e=>{
 });
 wrap.addEventListener("touchmove",e=>{
   if(!dragging||e.touches.length!==1)return;
-  camTheta+=(e.touches[0].clientX-prevMX)*.004;
-  camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.touches[0].clientY-prevMY)*.004));
+  camTheta+=(e.touches[0].clientX-prevMX)*.005;
+  camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.touches[0].clientY-prevMY)*.005));
   prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY;
   updateCam();
 });
 wrap.addEventListener("touchend",()=>dragging=false);
 
-// ═══════ Animation: 4 robots per zone + 4 AGVs inter-zone ═══════
-// Build local path for a robot within its zone
-function getZoneStations(zoneId){
-  const indices={coc:[0,5],oe:[6,11],mod:[12,17],wh:[18,22]};
-  const [a,b]=indices[zoneId]||[0,0];
-  return stationObjects.slice(a,b+1);
-}
-
+// ═══════ Animation ═══════
+let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
   
-  // Each robot patrols its own zone stations — stay on rail line, don't cross zone boundaries
-  const zoneBounds={coc:{xMin:-20,xMax:-8},oe:{xMin:1,xMax:15},mod:{xMin:1,xMax:15},wh:{xMin:-20,xMax:-8}};
-  robots.forEach((r,i)=>{
-    const zone=r.userData.zone;
-    const zoneStations=getZoneStations(zone);
-    const bounds=zoneBounds[zone];
-    if(!zoneStations.length||!bounds)return;
-    
-    if(!r.userData.paused){
-      const target=zoneStations[r.userData.patrolIdx];
-      // Robot stays on rail (z fixed), only moves x to station's x
-      const railZ=target.position.z>0?3:-3;
-      const dx=target.position.x-r.position.x;
-      const dz=railZ-r.position.z;
-      const dist=Math.sqrt(dx*dx+dz*dz);
-      
-      if(dist<.3){
-        r.userData.paused=true;r.userData.pauseTimer=0;
-      }else{
-        r.position.x+=dx*.04;r.position.z+=dz*.04;
-        // Clamp within zone
-        if(r.position.x<bounds.xMin)r.position.x=bounds.xMin;
-        if(r.position.x>bounds.xMax)r.position.x=bounds.xMax;
-        r.rotation.y=Math.atan2(dx,dz);
-      }
-    }else{
-      r.userData.pauseTimer+=.016;
-      // Arm animation
-      const arm=r.children[6];
-      if(arm){
-        const phase=r.userData.pauseTimer*3;
-        arm.rotation.z=-.35+Math.sin(phase)*.3;
-        if(arm.children[3])arm.children[3].scale.setScalar(1+Math.sin(phase*2)*.2);
-      }
-      if(r.userData.pauseTimer>2){
-        r.userData.paused=false;
-        r.userData.patrolIdx=(r.userData.patrolIdx+1)%zoneStations.length;
-        const arm=r.children[6];
-        if(arm){arm.rotation.z=-.35;if(arm.children[3])arm.children[3].scale.setScalar(1)}
-      }
-    }
-    r.position.y=.05+Math.sin(time*2.5+i)*.02;
-    // Update coordinate label on sprite — new X/Y system
-    if(r.userData.sprite&&r.userData.ctx){
-      const cc=r.userData.canvas,cx=r.userData.ctx;
-      const dc=toDisp(r.position.x,r.position.z);
-      cx.clearRect(0,0,200,60);
-      cx.fillStyle="rgba(0,0,0,.75)";cx.beginPath();cx.roundRect(0,0,200,60,10);cx.fill();
-      cx.fillStyle="#00d4aa";cx.font="bold 20px monospace";cx.textAlign="center";cx.textBaseline="middle";
-      cx.fillText(`X:${dc.x.toFixed(1)} Y:${dc.y.toFixed(1)}`,100,30);
-      r.userData.sprite.material.map.needsUpdate=true;
-    }
-  });
+  // Robot movement
+  const rdx=robotTarget.x-robotPos.x,rdz=robotTarget.z-robotPos.z;
+  if(Math.abs(rdx)>.03||Math.abs(rdz)>.03){robotPos.x+=rdx*.04;robotPos.z+=rdz*.04}
+  robotObj.position.set(robotPos.x,.05,robotPos.z);
+  robotObj.position.y+=Math.sin(time*2.5)*.02;
   
-  // 4 AGVs on inter-zone paths
-  const agvRoutes=[
-    [{x:-10,z:-6},{x:-4,z:-6},{x:-1,z:-6},{x:2,z:-6},{x:8,z:-6},{x:4,z:-6},{x:0,z:-6},{x:-4,z:-6}],  // COC↔OE top
-    [{x:-10,z:-2},{x:-10,z:0},{x:-10,z:2},{x:-10,z:4},{x:-10,z:2},{x:-10,z:0}],  // COC↔WH left
-    [{x:8,z:-2},{x:8,z:0},{x:8,z:2},{x:8,z:4},{x:8,z:2},{x:8,z:0}],  // OE↔Module right
-    [{x:-4,z:6},{x:0,z:6},{x:4,z:6},{x:0,z:6},{x:-4,z:6}]  // Module↔WH bottom
+  // AGV movement (patrol)
+  const agvPath=[
+    {x:-10,z:-6},{x:-4,z:-6},{x:0,z:-6},{x:4,z:-6},{x:10,z:-6},
+    {x:10,z:-2},{x:10,z:2},{x:10,z:6},
+    {x:4,z:6},{x:0,z:6},{x:-4,z:6},{x:-10,z:6},
+    {x:-10,z:2},{x:-10,z:-2}
   ];
-  agvs.forEach((a,i)=>{
-    const route=agvRoutes[i];
-    const idx=Math.floor(time*(.2+i*.05))%route.length;
-    const tgt=route[idx];
-    a.position.x+=(tgt.x-a.position.x)*.04;
-    a.position.z+=(tgt.z-a.position.z)*.04;
-    const adx=tgt.x-a.position.x,adz=tgt.z-a.position.z;
-    if(Math.abs(adx)>.03||Math.abs(adz)>.03) a.rotation.y=Math.atan2(adx,adz);
-  });
+  const agvIdx=Math.floor(time*0.3)%agvPath.length;
+  agvTarget=agvPath[agvIdx];
+  const adx=agvTarget.x-agvPos.x,adz=agvTarget.z-agvPos.z;
+  agvPos.x+=adx*.03;agvPos.z+=adz*.03;
+  agvObj.position.set(agvPos.x,.03,agvPos.z);
+  if(Math.abs(adx)>.05) agvObj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
+  else if(Math.abs(adz)>.05) agvObj.rotation.y=adz>0?0:Math.PI;
   
   // Station lights
   stationObjects.forEach(s=>{
@@ -637,6 +476,7 @@ function animate(){
 }
 
 buildFactory();
+updateCam();
 animate();
 window.addEventListener("resize",()=>{
   renderer.setSize(wrap.clientWidth,wrap.clientHeight);
