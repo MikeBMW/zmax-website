@@ -97,7 +97,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 // MULTI-ZONE FACTORY LAYOUT
 // ═══════════════════════════════════════
 const ZONES=[
-  {id:"coc",name:"COC基板区",color:0xf0a500,pos:{x:-14,z:-8},size:{w:14,d:8},stations:[
+  {id:"coc",name:"COC基板区",color:0xf0a500,pos:{x:-11,z:-8},size:{w:14,d:8},stations:[
     {id:"S01",label:"上料",desc:"Tray供料·视觉定位±5μm",specs:[["±5μm","定位"],["3s","节拍"]]},
     {id:"S02",label:"共晶焊",desc:"AuSn 280°C·力控3N",specs:[["280°C","温控"],["8s","节拍"]]},
     {id:"S03",label:"COC贴装",desc:"±1μm·6轴力控",specs:[["±1μm","精度"],["5s","节拍"]]},
@@ -121,7 +121,7 @@ const ZONES=[
     {id:"S17",label:"标签",desc:"激光打标·MES",specs:[["激光","打标"],["2s","节拍"]]},
     {id:"S18",label:"FQC包装",desc:"100%全检·ESD",specs:[["FQC","全检"],["3s","节拍"]]}
   ]},
-  {id:"wh",name:"仓库物流区",color:0x3fb950,pos:{x:-14,z:6},size:{w:14,d:8},stations:[
+  {id:"wh",name:"仓库物流区",color:0x3fb950,pos:{x:-11,z:6},size:{w:14,d:8},stations:[
     {id:"S25",label:"IQC来料检",desc:"AQL抽检",specs:[["AQL","标准"],["千分尺","量具"]]},
     {id:"S26",label:"原料入库",desc:"扫码·FIFO",specs:[["MES","系统"],["条码","追溯"]]},
     {id:"S27",label:"AGV配送",desc:"自动配送±10mm",specs:[["±10mm","定位"],["AGV","自动"]]},
@@ -136,10 +136,10 @@ let hoveredStation=null;
 
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
-  {name:"Z1",zone:"coc",x:-14,z:-4,patrol:[{x:-14,z:-4},{x:-7,z:-4},{x:-7,z:-10},{x:-14,z:-10}]},
+  {name:"Z1",zone:"coc",x:-11,z:-4,patrol:[{x:-11,z:-4},{x:-4,z:-4},{x:-4,z:-10},{x:-11,z:-10}]},
   {name:"Z2",zone:"oe", x:8,  z:-4,patrol:[{x:8,z:-4},{x:14,z:-4},{x:14,z:-10},{x:8,z:-10}]},
   {name:"Z3",zone:"mod",x:8,  z:2, patrol:[{x:8,z:2},{x:14,z:2},{x:14,z:8},{x:8,z:8}]},
-  {name:"Z4",zone:"wh", x:-14,z:2, patrol:[{x:-14,z:2},{x:-7,z:2},{x:-7,z:8},{x:-14,z:8}]}
+  {name:"Z4",zone:"wh", x:-11,z:2, patrol:[{x:-11,z:2},{x:-4,z:2},{x:-4,z:8},{x:-11,z:8}]}
 ];
 
 // ═══════ THREE.JS ═══════
@@ -397,23 +397,23 @@ function buildFactory(){
 
   // Rails — loop around zones + branches to stations
   // Main horizontal: COC→OE (top), Module→Warehouse (bottom)  
-  scene.add(createRail(-7,-12,14,0));  // COC front
+  scene.add(createRail(-4,-12,14,0));  // COC front
   scene.add(createRail(7,-12,14,0));   // OE front
   scene.add(createRail(7,4,14,0));     // Module front
-  scene.add(createRail(-7,4,14,0));    // Warehouse front
+  scene.add(createRail(-4,4,14,0));    // Warehouse front
   // Vertical connectors
-  scene.add(createRail(-14,-2,12,Math.PI/2)); // COC→WH
+  scene.add(createRail(-11,-2,12,Math.PI/2)); // COC→WH
   scene.add(createRail(14,-2,12,Math.PI/2));  // OE→Module
   // AGV path (wider, on ground)
-  for(let [rx,rz,rw,rh] of [[0,-12,28,.08],[0,4,28,.08],[-14,-2,.08,12],[14,-2,.08,12]]){
+  for(let [rx,rz,rw,rh] of [[0,-12,28,.08],[0,4,28,.08],[-11,-2,.08,12],[14,-2,.08,12]]){
     const path=new THREE.Mesh(new THREE.BoxGeometry(rw,.015,rh),new THREE.MeshStandardMaterial({color:0x1a2a1a,roughness:.9}));
     path.position.set(rx,.008,rz);scene.add(path);
   }
 
   // Green trajectory: COC→OE→MOD→WH (zone centers)
-  scene.add(createTrajectory(-14,-8,8,-8));   // COC→OE
+  scene.add(createTrajectory(-11,-8,8,-8));   // COC→OE
   scene.add(createTrajectory(8,-8,8,6));      // OE→MOD
-  scene.add(createTrajectory(8,6,-14,6));     // MOD→WH
+  scene.add(createTrajectory(8,6,-11,6));     // MOD→WH
 
   // Stations — placed CLOSE to rails, facing inward
   ZONES.forEach(z=>{
@@ -614,10 +614,10 @@ function animate(){
   
   // AGV movement (patrol)
   const agvPath=[
-    {x:-10,z:-6},{x:-4,z:-6},{x:0,z:-6},{x:4,z:-6},{x:10,z:-6},
+    {x:-7,z:-6},{x:-4,z:-6},{x:0,z:-6},{x:4,z:-6},{x:10,z:-6},
     {x:10,z:-2},{x:10,z:2},{x:10,z:6},
-    {x:4,z:6},{x:0,z:6},{x:-4,z:6},{x:-10,z:6},
-    {x:-10,z:2},{x:-10,z:-2}
+    {x:4,z:6},{x:0,z:6},{x:-4,z:6},{x:-7,z:6},
+    {x:-7,z:2},{x:-7,z:-2}
   ];
   const agvIdx=Math.floor(time*0.3)%agvPath.length;
   agvTarget=agvPath[agvIdx];
