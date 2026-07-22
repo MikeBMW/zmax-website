@@ -412,8 +412,11 @@ function buildFactory(){
 
   // Green trajectory: COC→OE→MOD→WH (zone centers)
   scene.add(createTrajectory(-11,-8,8,-8));   // COC→OE
-  scene.add(createTrajectory(8,-8,8,6));      // OE→MOD
   scene.add(createTrajectory(8,6,-11,6));     // MOD→WH
+  // Turning point coordinate markers
+  [{x:-11,z:-8},{x:8,z:-8},{x:8,z:6},{x:-11,z:6}].forEach(p=>{
+    scene.add(createCoordSprite(p.x,p.z,'#00d4aa').sprite);
+  });
 
   // Stations — placed CLOSE to rails, facing inward
   ZONES.forEach(z=>{
