@@ -273,6 +273,49 @@ function createAGV(x,z){
   return g;
 }
 
+// ═══════ Green trajectory line between zone centers ═══════
+function createTrajectory(x1,z1,x2,z2){
+  const dx=x2-x1,dz=z2-z1,len=Math.sqrt(dx*dx+dz*dz);
+  const g=new THREE.Group();
+  // Glow layer (wider, transparent)
+  const glow=new THREE.Mesh(
+    new THREE.BoxGeometry(len,.02,.15),
+    new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.3})
+  );
+  glow.position.y=.012;g.add(glow);
+  // Core line
+  const core=new THREE.Mesh(
+    new THREE.BoxGeometry(len,.02,.06),
+    new THREE.MeshBasicMaterial({color:0x00d4aa})
+  );
+  core.position.y=.014;g.add(core);
+  // Arrowhead at end
+  const arrow=new THREE.Mesh(
+    new THREE.ConeGeometry(.15,.35,4),
+    new THREE.MeshBasicMaterial({color:0x00d4aa})
+  );
+  arrow.rotation.x=-Math.PI/2;arrow.position.set(len/2-.2,.04,0);
+  g.add(arrow);
+  g.position.set((x1+x2)/2,.01,(z1+z2)/2);
+  g.rotation.y=-Math.atan2(dx,dz);
+  return g;
+}
+
+// ═══════ Floor zone labels ═══════
+function createFloorLabel(text,x,z){
+  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#ffffff';ctx.font='bold 44px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(text,256,64);
+  const tex=new THREE.CanvasTexture(canvas);
+  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(10,2.5),mat);
+  plane.rotation.x=-Math.PI/2;plane.position.set(x,.02,z);
+  plane.renderOrder=999;
+  return plane;
+}
+
 // ═══════ Build factory ═══════
 function buildFactory(){
   // Clear
@@ -287,6 +330,7 @@ function buildFactory(){
   ZONES.forEach(z=>{
     const wall=createWall(z.pos.x,z.pos.z,z.size.w,z.size.d,z.color);
     scene.add(wall);
+    scene.add(createFloorLabel(z.name,z.pos.x,z.pos.z));
   });
 
   // Rails — loop around zones + branches to stations
@@ -303,6 +347,11 @@ function buildFactory(){
     const path=new THREE.Mesh(new THREE.BoxGeometry(rw,.015,rh),new THREE.MeshStandardMaterial({color:0x1a2a1a,roughness:.9}));
     path.position.set(rx,.008,rz);scene.add(path);
   }
+
+  // Green trajectory: COC→OE→MOD→WH (zone centers)
+  scene.add(createTrajectory(-14,-8,8,-8));   // COC→OE
+  scene.add(createTrajectory(8,-8,8,6));      // OE→MOD
+  scene.add(createTrajectory(8,6,-14,6));     // MOD→WH
 
   // Stations — placed CLOSE to rails, facing inward
   ZONES.forEach(z=>{
