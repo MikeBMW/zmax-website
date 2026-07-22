@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.8 · 2026-07-22 19:15</span>
+  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.10 · 2026-07-23 07:00</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -131,7 +131,7 @@ const ZONES=[
   ]}
 ];
 
-let stationObjects=[],agvObj=null,robotObjs=[];
+let stationObjects=[],agvObjs=[],robotObjs=[];
 let agvTarget={x:-6,z:0},agvPos={x:-6,z:0};
 let hoveredStation=null;
 
@@ -181,7 +181,7 @@ function addLabel(text,x,y,z,color,size){
   m.rotation.x=-Math.PI/2;m.position.set(x,.025,z);m.renderOrder=998;scene.add(m);
 }
 // X axis — bottom edge (Z=+12): display X = 3D_X + 18
-for(let x3d=-16;x3d<=16;x3d+=6) addLabel("X:"+(x3d+18),x3d,.025,11.8,"#00d4aa88");
+for(let x3d=-16;x3d<=16;x3d+=6) addLabel("X:"+(x3d+18),x3d,.025,11.8,"#ffffff22");
 // Y axis — left edge (X=-18): display Y = -3D_Z + 12
 for(let z3d=10;z3d>=-10;z3d-=6) addLabel("Y:"+(-z3d+12),-17.8,.025,z3d,"#f0a50088");
 // Origin marker — bright sphere + large label at bottom-left corner (3D -18,12 = display 0,0)
@@ -236,17 +236,6 @@ function createStation(x,z,color,label,specs){
   return g;
 }
 
-// ═══════ Rail segment ═══════
-function createRail(x,z,len,rotY){
-  const g=new THREE.Group();
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(len,.1,.2),new THREE.MeshStandardMaterial({color:0x3a4050,metalness:.9,roughness:.3})));
-  g.children[0].position.y=.05;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(len,.01,.04),new THREE.MeshBasicMaterial({color:0x00d4aa})));
-  g.children[1].position.y=.11;
-  g.position.set(x,0,z);if(rotY)g.rotation.y=rotY;
-  return g;
-}
-
 // ═══════ Robot — close to machines ═══════
 function createRobot(x,z){
   const g=new THREE.Group();const bc=0x99aabb,ac=0x00d4aa;
@@ -288,52 +277,30 @@ function createRobot(x,z){
 }
 
 // ═══════ AGV cart ═══════
-function createAGV(x,z){
+function createAGV(x,z,bodyColor,stripeColor){
   const g=new THREE.Group();
-  const bc=0x667788;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.5,.15,.35),new THREE.MeshStandardMaterial({color:bc,metalness:.4,roughness:.3})));
+  const bc=bodyColor||0x00ffcc;
+  const sc=stripeColor||0xffffff;
+  // Body — emissive glow on dark background
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.5,.15,.35),
+    new THREE.MeshStandardMaterial({color:bc,metalness:.2,roughness:.4,emissive:bc,emissiveIntensity:.5})));
   g.children[0].position.y=.12;g.children[0].castShadow=true;
-  // Cargo
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.4,.2,.3),new THREE.MeshStandardMaterial({color:0x334455,metalness:.3})));
+  // Cargo — bright stripe
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.4,.2,.3),
+    new THREE.MeshStandardMaterial({color:sc,metalness:.2,roughness:.4,emissive:sc,emissiveIntensity:.4})));
   g.children[1].position.y=.3;
-  // Light
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.03),new THREE.MeshBasicMaterial({color:0xffaa00})));
-  g.children[2].position.set(.2,.25,.12);
+  // Beacon — pulsing bright
+  g.add(new THREE.Mesh(new THREE.SphereGeometry(.04),
+    new THREE.MeshBasicMaterial({color:bc})));
+  g.children[2].position.set(.2,.30,.12);
   // Wheels
   for(let [sx,sz] of[[-.18,.14],[-.18,-.14],[.18,.14],[.18,-.14]]){
-    const w=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.03,10),new THREE.MeshStandardMaterial({color:0x222}));
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.03,10),
+      new THREE.MeshStandardMaterial({color:0x444444,metalness:.6,roughness:.2}));
     w.rotation.z=Math.PI/2;w.position.set(sx,.05,sz);g.add(w);
   }
   g.position.set(x,.03,z);
   g.userData={isAGV:true};
-  return g;
-}
-
-// ═══════ Green trajectory line between zone centers ═══════
-function createTrajectory(x1,z1,x2,z2){
-  const dx=x2-x1,dz=z2-z1,len=Math.sqrt(dx*dx+dz*dz);
-  const g=new THREE.Group();
-  // Glow layer (wider, transparent)
-  const glow=new THREE.Mesh(
-    new THREE.BoxGeometry(len,.02,.15),
-    new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.3})
-  );
-  glow.position.y=.012;g.add(glow);
-  // Core line
-  const core=new THREE.Mesh(
-    new THREE.BoxGeometry(len,.02,.06),
-    new THREE.MeshBasicMaterial({color:0x00d4aa})
-  );
-  core.position.y=.014;g.add(core);
-  // Arrowhead at end
-  const arrow=new THREE.Mesh(
-    new THREE.ConeGeometry(.15,.35,4),
-    new THREE.MeshBasicMaterial({color:0x00d4aa})
-  );
-  arrow.rotation.x=-Math.PI/2;arrow.position.set(len/2-.2,.04,0);
-  g.add(arrow);
-  g.position.set((x1+x2)/2,.01,(z1+z2)/2);
-  g.rotation.y=Math.atan2(dz,dx);
   return g;
 }
 
@@ -394,28 +361,10 @@ function buildFactory(){
     scene.add(createFloorLabel(z.name,z.pos.x,z.pos.z));
   });
 
-  // Rails — loop around zones + branches to stations
-  // Main horizontal: COC→OE (top), Module→Warehouse (bottom)  
-  scene.add(createRail(-4,-12,14,0));  // COC front
-  scene.add(createRail(7,-12,14,0));   // OE front
-  scene.add(createRail(7,4,14,0));     // Module front
-  scene.add(createRail(-4,4,14,0));    // Warehouse front
-  // Vertical connectors
-  scene.add(createRail(-11,-2,12,Math.PI/2)); // COC→WH
-  scene.add(createRail(14,-2,12,Math.PI/2));  // OE→Module
-  // AGV path (wider, on ground)
-  for(let [rx,rz,rw,rh] of [[0,-12,28,.08],[0,4,28,.08],[-11,-2,.08,12],[14,-2,.08,12]]){
-    const path=new THREE.Mesh(new THREE.BoxGeometry(rw,.015,rh),new THREE.MeshStandardMaterial({color:0x1a2a1a,roughness:.9}));
-    path.position.set(rx,.008,rz);scene.add(path);
-  }
+  // Rails removed — clean layout
 
-  // Green trajectory: COC→OE→MOD→WH (zone centers)
-  scene.add(createTrajectory(-11,-8,8,-8));   // COC→OE
-  scene.add(createTrajectory(8,6,-11,6));     // MOD→WH
-  // Turning point coordinate markers
-  [{x:-11,z:-8},{x:8,z:-8},{x:8,z:6},{x:-11,z:6}].forEach(p=>{
-    scene.add(createCoordSprite(p.x,p.z,'#00d4aa').sprite);
-  });
+
+
 
   // Stations — placed CLOSE to rails, facing inward
   ZONES.forEach(z=>{
@@ -453,8 +402,19 @@ function buildFactory(){
     });
   }
 
-  // AGV
-  if(!agvObj){agvObj=createAGV(0,-6);scene.add(agvObj)}
+  // AGVs — 4台高对比色往返4区（当前1台展开）
+  const AGV_DEFS=[
+    {x:-3,z:-6,c:0x00ffcc,s:0xffffff},  // 亮青
+    {x:10,z:-6,c:0xffff00,s:0x222222},  // 亮黄
+    {x:10,z:2, c:0xff44ff,s:0xffffff},  // 亮粉
+    {x:-3,z:2, c:0xff8800,s:0x222222}   // 亮橙
+  ];
+  if(agvObjs.length===0){
+    AGV_DEFS.forEach((d,i)=>{
+      const a={obj:createAGV(d.x,d.z,d.c,d.s),pos:{x:d.x,z:d.z},target:{x:d.x,z:d.z},def:d};
+      scene.add(a.obj);agvObjs.push(a);
+    });
+  }
   agvPos={x:0,z:-6};agvTarget={x:0,z:-6};
 
   buildZonesList();
@@ -625,20 +585,23 @@ function animate(){
     if(r.nameSprite){r.nameSprite.sprite.position.set(r.pos.x,1.6,r.pos.z)};
   });
   
-  // AGV movement (patrol)
-  const agvPath=[
-    {x:-7,z:-6},{x:-4,z:-6},{x:0,z:-6},{x:4,z:-6},{x:10,z:-6},
-    {x:10,z:-2},{x:10,z:2},{x:10,z:6},
-    {x:4,z:6},{x:0,z:6},{x:-4,z:6},{x:-7,z:6},
-    {x:-7,z:2},{x:-7,z:-2}
+  // AGV movement — 4台各自区内巡逻
+  const AGV_PATROLS=[
+    [{x:-7,z:-6},{x:-4,z:-6},{x:0,z:-6}],          // 青: COC下边界
+    [{x:10,z:-6},{x:10,z:-2},{x:10,z:2}],           // 黄: OE右边界
+    [{x:10,z:6},{x:4,z:6},{x:0,z:6}],               // 粉: MOD上边界
+    [{x:-4,z:6},{x:-7,z:6},{x:-7,z:2}]              // 橙: WH左边界
   ];
-  const agvIdx=Math.floor(time*0.3)%agvPath.length;
-  agvTarget=agvPath[agvIdx];
-  const adx=agvTarget.x-agvPos.x,adz=agvTarget.z-agvPos.z;
-  agvPos.x+=adx*.03;agvPos.z+=adz*.03;
-  agvObj.position.set(agvPos.x,.03,agvPos.z);
-  if(Math.abs(adx)>.05) agvObj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
-  else if(Math.abs(adz)>.05) agvObj.rotation.y=adz>0?0:Math.PI;
+  agvObjs.forEach((a,i)=>{
+    const path=AGV_PATROLS[i];
+    const idx=Math.floor(time*0.25)%path.length;
+    a.target=path[idx];
+    const adx=a.target.x-a.pos.x,adz=a.target.z-a.pos.z;
+    a.pos.x+=adx*.03;a.pos.z+=adz*.03;
+    a.obj.position.set(a.pos.x,.03,a.pos.z);
+    if(Math.abs(adx)>.05) a.obj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
+    else if(Math.abs(adz)>.05) a.obj.rotation.y=adz>0?0:Math.PI;
+  });
   
   // Station lights
   stationObjects.forEach(s=>{
