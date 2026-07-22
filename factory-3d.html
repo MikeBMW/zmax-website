@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.11 · 2026-07-23 07:10</span>
+  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.12 · 2026-07-23 07:15</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -320,13 +320,13 @@ function createFloorLabel(text,x,z){
 }
 
 // ═══════ Coordinate sprite (small label on ground) ═══════
-function createCoordSprite(x3d,z3d,color){
-  const dx=x3d+18,dy=-z3d+12;
+function createCoordSprite(x3d,z3d,color,sizeMul){
+  const dx=(x3d+18)*10,dy=(-z3d+12)*10;
   const cv=document.createElement('canvas');cv.width=256;cv.height=64;
   const cx=cv.getContext('2d');
   cx.fillStyle=color||'#8b949e';cx.font='bold 18px monospace';
   cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',128,32);
+  cx.fillText('('+dx.toFixed(0)+','+dy.toFixed(0)+')',128,32);
   const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
   const m=new THREE.Mesh(new THREE.PlaneGeometry(3.2,.8),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
   m.rotation.x=-Math.PI/2;m.position.set(x3d,.018,z3d);m.renderOrder=997;
@@ -334,12 +334,12 @@ function createCoordSprite(x3d,z3d,color){
 }
 
 function updateCoordSprite(cs,x3d,z3d){
-  const dx=x3d+18,dy=-z3d+12;
+  const dx=(x3d+18)*10,dy=(-z3d+12)*10;
   cs.ctx.clearRect(0,0,256,64);
   cs.ctx.fillStyle=cs.ctx.fillStyle||'#00d4aa';
   cs.ctx.font='bold 18px monospace';
   cs.ctx.textAlign='center';cs.ctx.textBaseline='middle';
-  cs.ctx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',128,32);
+  cs.ctx.fillText('('+dx.toFixed(0)+','+dy.toFixed(0)+')',128,32);
   cs.texture.needsUpdate=true;
   cs.sprite.position.set(x3d,.018,z3d);
 }
@@ -377,6 +377,13 @@ function buildFactory(){
       scene.add(s);stationObjects.push(s);
       scene.add(createCoordSprite(sx,sz,z.color).sprite);
     });
+    // Zone corner coordinates (4 corners)
+    const zx=z.pos.x,zz=z.pos.z,zw=z.size.w,zd=z.size.d;
+    const corners=[
+      {x:zx-zw/2,z:zz-zd/2},{x:zx+zw/2,z:zz-zd/2},
+      {x:zx-zw/2,z:zz+zd/2},{x:zx+zw/2,z:zz+zd/2}
+    ];
+    corners.forEach(cn=>{scene.add(createCoordSprite(cn.x,cn.z,z.color).sprite)});
   });
 
   // Robots — 4 robots, one per zone, patrol within zone only
