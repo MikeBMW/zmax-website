@@ -233,8 +233,6 @@ function createStation(x,z,color,label,specs){
   
   g.position.set(x,0,z);
   g.userData={label,color,specs,isStation:true};
-  // tiny coord label
-  const cl=createCoordSprite(x,z,color);g.add(cl.sprite);
   return g;
 }
 
@@ -357,26 +355,26 @@ function createFloorLabel(text,x,z){
 // ═══════ Coordinate sprite (small label on ground) ═══════
 function createCoordSprite(x3d,z3d,color){
   const dx=x3d+18,dy=-z3d+12;
-  const cv=document.createElement('canvas');cv.width=128;cv.height=32;
+  const cv=document.createElement('canvas');cv.width=256;cv.height=64;
   const cx=cv.getContext('2d');
-  cx.fillStyle=color||'#8b949e';cx.font='bold 12px monospace';
+  cx.fillStyle=color||'#8b949e';cx.font='bold 18px monospace';
   cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',64,16);
+  cx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',128,32);
   const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(2,.5),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
-  m.rotation.x=-Math.PI/2;m.position.set(x3d,.015,z3d);m.renderOrder=997;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(3.2,.8),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.position.set(x3d,.018,z3d);m.renderOrder=997;
   return {sprite:m,canvas:cv,ctx:cx,texture:tx};
 }
 
 function updateCoordSprite(cs,x3d,z3d){
   const dx=x3d+18,dy=-z3d+12;
-  cs.ctx.clearRect(0,0,128,32);
+  cs.ctx.clearRect(0,0,256,64);
   cs.ctx.fillStyle=cs.ctx.fillStyle||'#00d4aa';
-  cs.ctx.font='bold 12px monospace';
+  cs.ctx.font='bold 18px monospace';
   cs.ctx.textAlign='center';cs.ctx.textBaseline='middle';
-  cs.ctx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',64,16);
+  cs.ctx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',128,32);
   cs.texture.needsUpdate=true;
-  cs.sprite.position.set(x3d,.015,z3d);
+  cs.sprite.position.set(x3d,.018,z3d);
 }
 
 // ═══════ Build factory ═══════
@@ -428,6 +426,7 @@ function buildFactory(){
       const s=createStation(sx,sz,z.color,st.label,st.specs);
       s.userData={...s.userData,...st,zoneId:z.id,zoneName:z.name};
       scene.add(s);stationObjects.push(s);
+      scene.add(createCoordSprite(sx,sz,z.color).sprite);
     });
   });
 
