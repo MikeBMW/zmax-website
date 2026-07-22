@@ -23,8 +23,26 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 #view3d canvas{display:block}
 
 #panel{width:320px;background:#0d1117;border-left:1px solid #1a1f2b;overflow-y:auto;flex-shrink:0}
-@media(max-width:900px){#panel{display:none;position:absolute;right:0;top:50px;bottom:0;z-index:20;width:280px}
-  #panel.open{display:block}}
+@media(max-width:768px){
+  #bar h1{font-size:12px}
+  #bar .tabs .tab{padding:4px 8px;font-size:9px}
+  #bar .badge{font-size:8px;padding:1px 4px}
+  #bar{gap:4px;padding:6px 8px}
+  #bar .spec-summary{display:none}
+  #panel{position:fixed;right:0;top:42px;bottom:0;z-index:20;width:280px;display:none;transform:translateX(100%);transition:transform .3s}
+  #panel.open{display:block;transform:translateX(0)}
+  #panel-toggle{display:block;position:fixed;right:8px;top:46px;z-index:21;background:#0d1117;color:#00d4aa;border:1px solid #00d4aa44;border-radius:4px;padding:4px 10px;font-size:11px;cursor:pointer}
+  #specs-overlay{top:6px;left:6px;font-size:9px;padding:6px 8px}
+  #specs-overlay .row{gap:6px}
+  #specs-overlay .k{min-width:50px}
+  .zone-label{font-size:12px}
+  #dock .ds{min-width:44px;font-size:8px}
+  #dock .ds .di{font-size:11px}
+  #info-popup{max-width:240px;padding:10px 14px}
+  #info-popup .name{font-size:11px}
+  #info-popup .desc{font-size:9px}
+  #legend{bottom:6px;right:6px;font-size:8px;padding:6px 8px}
+}
 
 #panel h3{font-size:11px;color:#00d4aa;padding:10px 12px 4px;border-bottom:1px solid #1a1f2b}
 .zone-card{background:#111827;border:1px solid #1a1f2b;border-radius:8px;padding:10px;margin:6px 10px;transition:all .2s}
@@ -80,6 +98,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 </div>
 </div>
 
+<button id="panel-toggle" onclick="document.getElementById('panel').classList.toggle('open')" style="display:none">📋 面板</button>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ═══════════════════════════════════════
@@ -488,27 +507,32 @@ function getZoneStations(zoneId){
   return stationObjects.slice(a,b+1);
 }
 
-let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
   
-  // Each robot patrols its own zone stations
+  // Each robot patrols its own zone stations — stay on rail line, don't cross zone boundaries
+  const zoneBounds={coc:{xMin:-20,xMax:-8},oe:{xMin:1,xMax:15},mod:{xMin:1,xMax:15},wh:{xMin:-20,xMax:-8}};
   robots.forEach((r,i)=>{
     const zone=r.userData.zone;
     const zoneStations=getZoneStations(zone);
-    if(!zoneStations.length)return;
+    const bounds=zoneBounds[zone];
+    if(!zoneStations.length||!bounds)return;
     
     if(!r.userData.paused){
-      // Move toward next station
       const target=zoneStations[r.userData.patrolIdx];
+      // Robot stays on rail (z fixed), only moves x to station's x
+      const railZ=target.position.z>0?3:-3;
       const dx=target.position.x-r.position.x;
-      const dz=(target.position.z+.6)-r.position.z;
+      const dz=railZ-r.position.z;
       const dist=Math.sqrt(dx*dx+dz*dz);
       
-      if(dist<.4){
+      if(dist<.3){
         r.userData.paused=true;r.userData.pauseTimer=0;
       }else{
-        r.position.x+=dx*.03;r.position.z+=dz*.03;
+        r.position.x+=dx*.04;r.position.z+=dz*.04;
+        // Clamp within zone
+        if(r.position.x<bounds.xMin)r.position.x=bounds.xMin;
+        if(r.position.x>bounds.xMax)r.position.x=bounds.xMax;
         r.rotation.y=Math.atan2(dx,dz);
       }
     }else{

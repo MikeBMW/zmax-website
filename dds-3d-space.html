@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DDS 全局数据空间 · 条件↔动作 3D映射 | Z-MAX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#bar{background:#0d1117;padding:6px 12px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:8px;flex-shrink:0;z-index:10;flex-wrap:wrap}
+#bar h1{font-size:14px;color:#00d4aa}
+#bar a{font-size:10px;color:#484f58;border:1px solid #1a1f2b;border-radius:4px;padding:2px 7px;text-decoration:none}
+.badge{padding:2px 6px;font-size:9px;border-radius:3px}
+#canvas-wrap{flex:1;position:relative;cursor:grab}
+#canvas-wrap canvas{display:block}
+#hud{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:12px;background:rgba(13,17,23,.9);border:1px solid #1a1f2b;border-radius:8px;padding:6px 12px;font-size:10px;z-index:5;flex-wrap:wrap}
+#hud span{display:flex;align-items:center;gap:4px}
+#hud .dot{width:7px;height:7px;border-radius:4px}
+#tip{position:absolute;pointer-events:none;background:rgba(13,17,23,.95);border:1px solid #00d4aa44;border-radius:8px;padding:8px 12px;font-size:10px;z-index:10;display:none;max-width:260px}
+@media(max-width:768px){#bar h1{font-size:12px}#hud{font-size:8px;gap:6px;padding:4px 8px}}
+</style>
+</head>
+<body>
+<div id="bar">
+  <a href="/">← 主页</a>
+  <h1>🌐 DDS 全局数据空间</h1>
+  <span class="badge" style="background:#1a1033;color:#a371f7">54 条件</span>
+  <span class="badge" style="background:#0d3320;color:#00d4aa">48 动作</span>
+  <span class="badge" style="background:#1a1a2e;color:#f0a500">29 工位</span>
+  <span class="badge" style="background:#1a1f2b;color:#8b949e">216 映射</span>
+</div>
+<div id="canvas-wrap">
+  <div id="tip"></div>
+  <div id="hud">
+    <span><span class="dot" style="background:#a371f7"></span>条件·螺旋</span>
+    <span><span class="dot" style="background:#00d4aa"></span>动作·平面</span>
+    <span><span class="dot" style="background:#f0a500"></span>工位·地面</span>
+    <span style="color:#484f58">🖱旋转|滚轮缩放|点击节点</span>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════
+// DDS v3.0 — 完整光模块全流程原子映射
+// 54 Conditions × 48 Actions × 29 Stations
+// ═══════════════════════════════════════
+
+const catCol={"100G":"#58a6ff","400G":"#00d4aa","800G":"#f0883e",safety:"#ff4444",battery:"#f0a500",
+  oe:"#ff6b35",mod:"#58a6ff",osa:"#a371f7",wh:"#3fb950",coc:"#f0a500",
+  pick:"#58a6ff",scan:"#8b949e",pre:"#a371f7",insert:"#00d4aa",push:"#3fb950",
+  test:"#f0a500",extract:"#ff6b35",aoi:"#58a6ff",place_ok:"#3fb950",place_ng:"#ff4444",
+  lens:"#ff6b35",weld:"#ff8833",seal:"#58a6ff",smt:"#a371f7",assy:"#00d4aa",bert:"#f0a500",
+  eye:"#3fb950",mark:"#8b949e",fqc:"#3fb950",pack:"#3fb950",age:"#ff6b35"};
+
+const CONDITIONS=[
+  // ── 100G QSFP28 (C001-C010) ──
+  {id:"C001",name:"插入·100G",cat:"100G",links:["A01","A04"]},{id:"C002",name:"扫码·100G",cat:"100G",links:["A02"]},
+  {id:"C003",name:"预插·100G",cat:"100G",links:["A03"]},{id:"C004",name:"力控·100G",cat:"100G",links:["A04"]},
+  {id:"C005",name:"推入·100G",cat:"100G",links:["A05"]},{id:"C006",name:"测试·100G",cat:"100G",links:["A06","A42"]},
+  {id:"C007",name:"拔出·100G",cat:"100G",links:["A07"]},{id:"C008",name:"AOI·100G",cat:"100G",links:["A08","A44"]},
+  {id:"C009",name:"OK·100G",cat:"100G",links:["A09"]},{id:"C010",name:"NG·100G",cat:"100G",links:["A10"]},
+  // ── 400G QSFP-DD (C011-C020) ──
+  {id:"C011",name:"插入·400G",cat:"400G",links:["A11","A14"]},{id:"C012",name:"扫码·400G",cat:"400G",links:["A12"]},
+  {id:"C013",name:"预插·400G",cat:"400G",links:["A13"]},{id:"C014",name:"力控·400G⭐",cat:"400G",links:["A14","A24","S03"]},
+  {id:"C015",name:"推入·400G",cat:"400G",links:["A15"]},{id:"C016",name:"BERT·400G",cat:"400G",links:["A16","A42","S15"]},
+  {id:"C017",name:"拔出·400G",cat:"400G",links:["A17"]},{id:"C018",name:"AOI·400G",cat:"400G",links:["A18","A44","S06"]},
+  {id:"C019",name:"OK·400G",cat:"400G",links:["A19","A45"]},{id:"C020",name:"NG·400G",cat:"400G",links:["A20"]},
+  // ── 800G OSFP (C021-C030) ──
+  {id:"C021",name:"插入·800G",cat:"800G",links:["A21"]},{id:"C022",name:"扫码·800G",cat:"800G",links:["A22"]},
+  {id:"C023",name:"预插·800G",cat:"800G",links:["A23"]},{id:"C024",name:"力控·800G",cat:"800G",links:["A24"]},
+  {id:"C025",name:"推入·800G",cat:"800G",links:["A25"]},{id:"C026",name:"EVB·800G",cat:"800G",links:["A26"]},
+  {id:"C027",name:"拔出·800G",cat:"800G",links:["A27"]},{id:"C028",name:"AOI·800G",cat:"800G",links:["A28","A44"]},
+  {id:"C029",name:"OK·800G",cat:"800G",links:["A29"]},{id:"C030",name:"NG·800G",cat:"800G",links:["A30"]},
+  // ── Safety (C031-C034) ──
+  {id:"C031",name:"急停·安全",cat:"safety",links:["A01"]},{id:"C032",name:"力超限",cat:"safety",links:["A04","A14","A24"]},
+  {id:"C033",name:"碰撞检测",cat:"safety",links:["A01"]},{id:"C034",name:"光功率安全",cat:"safety",links:["A37"]},
+  // ── Battery (C035-C038) ──
+  {id:"C035",name:"电压<22V",cat:"battery",links:["A01"]},{id:"C036",name:"温度>60°C",cat:"battery",links:["A01"]},
+  {id:"C037",name:"过流>30A",cat:"battery",links:["A01"]},{id:"C038",name:"SOC<15%",cat:"battery",links:["A01"]},
+  // ── OE 光引擎工艺条件 (C039-C048) ──
+  {id:"C039",name:"透镜对准",cat:"oe",links:["A31","A32","S07"]},{id:"C040",name:"UV固化",cat:"oe",links:["A32"]},
+  {id:"C041",name:"FA阵列对准",cat:"oe",links:["A33","A34","S08"]},{id:"C042",name:"激光焊接",cat:"oe",links:["A34"]},
+  {id:"C043",name:"隔离器装配",cat:"oe",links:["A35","S09"]},{id:"C044",name:"气密封装",cat:"oe",links:["A36","A37","S10"]},
+  {id:"C045",name:"光参数测试",cat:"oe",links:["A38","S11"]},{id:"C046",name:"老炼筛选",cat:"oe",links:["A39","S12"]},
+  {id:"C047",name:"IL/RL监测",cat:"oe",links:["A38"]},{id:"C048",name:"He检漏",cat:"oe",links:["A37"]},
+  // ── 模块组装条件 (C049-C054) ──
+  {id:"C049",name:"PCB焊接",cat:"mod",links:["A40","S13"]},{id:"C050",name:"外壳装配",cat:"mod",links:["A41","S14"]},
+  {id:"C051",name:"BERT测试",cat:"mod",links:["A42","S15"]},{id:"C052",name:"眼图测试",cat:"mod",links:["A43","S16"]},
+  {id:"C053",name:"激光打标",cat:"mod",links:["A44","S17"]},{id:"C054",name:"FQC全检",cat:"mod",links:["A45","A46","S18"]}
+];
+
+const ACTIONS=[
+  // ── Module Pick-Place (A01-A30) ──
+  {id:"A01",name:"取料",x:-19,z:-3,cat:"pick",desc:"吸嘴取料·通用",st:"S01"},
+  {id:"A02",name:"扫码",x:-17,z:-3,cat:"scan",desc:"序列号·MES",st:"S01"},
+  {id:"A03",name:"预插定位",x:-15,z:-3,cat:"pre",desc:"视觉引导对准",st:"S03"},
+  {id:"A04",name:"力控插入⭐",x:-13,z:-3,cat:"insert",desc:"核心力控Z3N/6N/8N",st:"S03"},
+  {id:"A05",name:"二次推入",x:-11,z:-3,cat:"push",desc:"确认到位",st:"S04"},
+  {id:"A06",name:"Eye测试",x:-9,z:-3,cat:"test",desc:"眼图15/60/120s",st:"S15"},
+  {id:"A07",name:"拔出",x:-7,z:-3,cat:"extract",desc:"力控防损伤",st:"S06"},
+  {id:"A08",name:"AOI检测",x:-5,z:-3,cat:"aoi",desc:"缺陷识别",st:"S06"},
+  {id:"A09",name:"放合格品",x:-3,z:-3,cat:"place_ok",desc:"入Tray盘",st:"S18"},
+  {id:"A10",name:"放不良品",x:-1,z:-3,cat:"place_ng",desc:"进NG仓",st:"S18"},
+  {id:"A11",name:"取料·400G",x:1,z:-3,cat:"pick",desc:"400G取料",st:"S01"},
+  {id:"A12",name:"扫码·400G",x:3,z:-3,cat:"scan",desc:"400G扫码",st:"S01"},
+  {id:"A13",name:"预插·400G",x:5,z:-3,cat:"pre",desc:"400G预插",st:"S03"},
+  {id:"A14",name:"力控·400G⭐",x:7,z:-3,cat:"insert",desc:"主力Z6N",st:"S03"},
+  {id:"A15",name:"推入·400G",x:9,z:-3,cat:"push",desc:"400G推入",st:"S04"},
+  {id:"A16",name:"BERT·400G",x:11,z:-3,cat:"test",desc:"BERT 60s",st:"S15"},
+  {id:"A17",name:"拔出·400G",x:13,z:-3,cat:"extract",desc:"400G拔出",st:"S06"},
+  {id:"A18",name:"AOI·400G",x:15,z:-3,cat:"aoi",desc:"400G AOI",st:"S06"},
+  {id:"A19",name:"OK·400G",x:1,z:3,cat:"place_ok",desc:"400G合格",st:"S18"},
+  {id:"A20",name:"NG·400G",x:3,z:3,cat:"place_ng",desc:"400G不良",st:"S18"},
+  {id:"A21",name:"取料·800G",x:5,z:3,cat:"pick",desc:"800G取料",st:"S01"},
+  {id:"A22",name:"扫码·800G",x:7,z:3,cat:"scan",desc:"800G扫码",st:"S01"},
+  {id:"A23",name:"预插·800G",x:9,z:3,cat:"pre",desc:"800G预插",st:"S03"},
+  {id:"A24",name:"力控·800G",x:11,z:3,cat:"insert",desc:"Z8N大模块",st:"S03"},
+  {id:"A25",name:"推入·800G",x:13,z:3,cat:"push",desc:"800G推入",st:"S04"},
+  {id:"A26",name:"EVB·800G",x:15,z:3,cat:"test",desc:"EVB 120s",st:"S15"},
+  {id:"A27",name:"拔出·800G",x:-19,z:3,cat:"extract",desc:"800G拔出",st:"S06"},
+  {id:"A28",name:"AOI·800G",x:-17,z:3,cat:"aoi",desc:"MPO×4面",st:"S06"},
+  {id:"A29",name:"OK·800G",x:-15,z:3,cat:"place_ok",desc:"800G合格",st:"S18"},
+  {id:"A30",name:"NG·800G",x:-13,z:3,cat:"place_ng",desc:"800G不良",st:"S18"},
+  // ── OE光引擎原子动作 (A31-A42) ──
+  {id:"A31",name:"透镜耦合",x:3,z:-5,cat:"lens",desc:"±0.5μm有源对准",st:"S07"},
+  {id:"A32",name:"UV固化",x:5,z:-5,cat:"lens",desc:"UV预固化+热固化",st:"S07"},
+  {id:"A33",name:"FA阵列对准",x:7,z:-5,cat:"lens",desc:"多通道并行对准",st:"S08"},
+  {id:"A34",name:"激光焊接",x:9,z:-5,cat:"weld",desc:"3光束应力平衡焊",st:"S08"},
+  {id:"A35",name:"隔离器装配",x:11,z:-5,cat:"assy",desc:">30dB精密装配",st:"S09"},
+  {id:"A36",name:"TO封帽",x:13,z:-5,cat:"seal",desc:"气密封装压合",st:"S10"},
+  {id:"A37",name:"He检漏",x:15,z:-5,cat:"seal",desc:"<1E-8 100%全检",st:"S10"},
+  {id:"A38",name:"光参数测试",x:-19,z:-5,cat:"test",desc:"IL/RL/光谱/BW",st:"S11"},
+  {id:"A39",name:"老炼上下料",x:-17,z:-5,cat:"age",desc:"85°C 48h自动",st:"S12"},
+  {id:"A40",name:"SMT焊接",x:3,z:5,cat:"smt",desc:"260°C回流焊",st:"S13"},
+  {id:"A41",name:"外壳装配",x:5,z:5,cat:"assy",desc:"QSFP-DD·0.3N·m",st:"S14"},
+  {id:"A42",name:"BERT测试",x:7,z:5,cat:"bert",desc:"PRBS31 BER<1E-12",st:"S15"},
+  // ── 模块组装 (A43-A48) ──
+  {id:"A43",name:"眼图测试",x:9,z:5,cat:"eye",desc:"ER>4dB·模板",st:"S16"},
+  {id:"A44",name:"激光打标",x:11,z:5,cat:"mark",desc:"二维码·MES绑定",st:"S17"},
+  {id:"A45",name:"FQC全检",x:13,z:5,cat:"fqc",desc:"100%终检",st:"S18"},
+  {id:"A46",name:"ESD包装",x:15,z:5,cat:"pack",desc:"防静电·出货",st:"S18"},
+  {id:"A47",name:"AGV转运",x:-11,z:5,cat:"wh",desc:"智禾自动配送",st:"S27"},
+  {id:"A48",name:"出货扫码",x:-9,z:5,cat:"wh",desc:"MES闭环追溯",st:"S29"}
+];
+
+const STATIONS=[
+  {id:"S01",name:"上料",x:-19,z:-6,zid:"COC"},{id:"S02",name:"共晶焊",x:-17,z:-6,zid:"COC"},
+  {id:"S03",name:"COC贴装",x:-15,z:-6,zid:"COC"},{id:"S04",name:"金线键合",x:-13,z:-6,zid:"COC"},
+  {id:"S05",name:"老化上料",x:-11,z:-6,zid:"COC"},{id:"S06",name:"AOI下料",x:-9,z:-6,zid:"COC"},
+  {id:"S07",name:"透镜耦合",x:3,z:-6,zid:"OE"},{id:"S08",name:"光纤阵列",x:5,z:-6,zid:"OE"},
+  {id:"S09",name:"隔离器",x:7,z:-6,zid:"OE"},{id:"S10",name:"封帽气密",x:9,z:-6,zid:"OE"},
+  {id:"S11",name:"光参数",x:11,z:-6,zid:"OE"},{id:"S12",name:"老炼筛选",x:13,z:-6,zid:"OE"},
+  {id:"S13",name:"PCB焊接",x:3,z:6,zid:"Module"},{id:"S14",name:"外壳装配",x:5,z:6,zid:"Module"},
+  {id:"S15",name:"BERT",x:7,z:6,zid:"Module"},{id:"S16",name:"眼图",x:9,z:6,zid:"Module"},
+  {id:"S17",name:"打标",x:11,z:6,zid:"Module"},{id:"S18",name:"FQC",x:13,z:6,zid:"Module"},
+  {id:"S19",name:"滤波片",x:-19,z:6,zid:"OSA"},{id:"S20",name:"耦合焊",x:-17,z:6,zid:"OSA"},
+  {id:"S21",name:"TC循环",x:-15,z:6,zid:"OSA"},{id:"S22",name:"焊软板",x:-13,z:6,zid:"OSA"},
+  {id:"S23",name:"综合测",x:-11,z:6,zid:"OSA"},{id:"S24",name:"包装",x:-9,z:6,zid:"OSA"},
+  {id:"S25",name:"IQC",x:-7,z:6,zid:"WH"},{id:"S26",name:"入库",x:-5,z:6,zid:"WH"},
+  {id:"S27",name:"AGV",x:-3,z:6,zid:"WH"},{id:"S28",name:"成品库",x:-1,z:6,zid:"WH"},
+  {id:"S29",name:"出货",x:1,z:6,zid:"WH"}
+];
+const zCol={COC:0xf0a500,OE:0xff6b35,Module:0x58a6ff,OSA:0xa371f7,WH:0x3fb950};
+
+// ═══════ THREE.JS ═══════
+const wrap=document.getElementById("canvas-wrap"),W=wrap.clientWidth,H=wrap.clientHeight;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);
+const camera=new THREE.PerspectiveCamera(50,W/H,.5,80);camera.position.set(0,12,30);camera.lookAt(0,0,0);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W,H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+wrap.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0x334455,.6));
+scene.add(new THREE.DirectionalLight(0xffffff,.8)).position.set(5,15,10);
+const grid=new THREE.GridHelper(36,24,0x1a2a3a,0x0a0f15);grid.position.y=-5;scene.add(grid);
+
+// Stars background
+const starsGeom=new THREE.BufferGeometry();
+const starPos=new Float32Array(400*3);
+for(let i=0;i<400*3;i+=3){starPos[i]=(Math.random()-.5)*50;starPos[i+1]=(Math.random()-.5)*30;starPos[i+2]=(Math.random()-.5)*40}
+starsGeom.setAttribute("position",new THREE.BufferAttribute(starPos,3));
+scene.add(new THREE.Points(starsGeom,new THREE.PointsMaterial({color:0x334466,size:.05})));
+
+function mkNode(x,y,z,color,size,type){
+  const g=new THREE.Group();
+  const geom=type==="cond"?new THREE.SphereGeometry(size,12,12):type==="stat"?new THREE.CylinderGeometry(size,size,size*2,8):new THREE.BoxGeometry(size*1.5,size*1.5,size*1.5);
+  const mat=new THREE.MeshStandardMaterial({color,roughness:.2,metalness:.4,emissive:color,emissiveIntensity:.12});
+  g.add(new THREE.Mesh(geom,mat));
+  if(type==="cond"){const r=new THREE.Mesh(new THREE.TorusGeometry(size*1.3,.02,8,12),new THREE.MeshBasicMaterial({color}));r.rotation.x=Math.PI/2;g.add(r)}
+  g.position.set(x,y,z);return g;
+}
+
+const allNodes=[],cNodes=[],aNodes=[],sNodes=[];
+
+// Conditions — helix
+CONDITIONS.forEach((c,i)=>{
+  const a=(i/CONDITIONS.length)*Math.PI*5,r=14+Math.sin(i*.4)*2;
+  const y=-2+(i/CONDITIONS.length)*10,x=Math.cos(a)*r,z=Math.sin(a)*r;
+  const n=mkNode(x,y,z,new THREE.Color(catCol[c.cat]||"#a371f7"),.32,"cond");
+  n.userData={label:c.id+" "+c.name,color:catCol[c.cat],desc:"触发: "+(c.links||[]).join(" "),links:c.links};
+  scene.add(n);cNodes.push(n);allNodes.push(n);
+});
+
+// Actions — flat plane
+ACTIONS.forEach((a,i)=>{
+  const n=mkNode(a.x*.85,a.z>0?-4.5:-4.5,a.z*.85,new THREE.Color(catCol[a.cat]||"#00d4aa"),.28,"act");
+  n.userData={label:a.id+" "+a.name,color:catCol[a.cat],desc:a.desc,st:a.st};
+  scene.add(n);aNodes.push(n);allNodes.push(n);
+});
+
+// Stations — ground
+STATIONS.forEach((s,i)=>{
+  const n=mkNode(s.x*.85,-5.5,s.z*.85,new THREE.Color(zCol[s.zid]||0xf0a500),.2,"stat");
+  n.userData={label:s.id+" "+s.name,zid:s.zid};
+  scene.add(n);sNodes.push(n);allNodes.push(n);
+});
+
+// Lines — cond → action
+CONDITIONS.forEach(c=>{
+  const cn=cNodes.find(n=>n.userData.label.startsWith(c.id));
+  if(!cn||!c.links)return;
+  c.links.forEach(aid=>{
+    const an=aNodes.find(n=>n.userData.label.startsWith(aid));
+    if(!an)return;
+    const g=new THREE.BufferGeometry().setFromPoints([cn.position,an.position]);
+    scene.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(catCol[c.cat]||"#a371f7"),opacity:.12,transparent:true})));
+  });
+});
+
+// ═══════ Camera ═══════
+let drag=false,prev={x:0,y:0},ct=Math.PI/4,cp=.8,cd=30;
+function uc(){
+  camera.position.set(cd*Math.sin(cp)*Math.cos(ct),cd*Math.cos(cp),cd*Math.sin(cp)*Math.sin(ct));
+  camera.lookAt(0,0,0);
+}
+wrap.addEventListener("mousedown",e=>{if(e.button===0){drag=true;prev={x:e.clientX,y:e.clientY}}});
+wrap.addEventListener("mousemove",e=>{if(!drag)return;ct+=(e.clientX-prev.x)*.004;cp=Math.max(.2,Math.min(1.5,cp-(e.clientY-prev.y)*.004));prev={x:e.clientX,y:e.clientY};uc()});
+wrap.addEventListener("mouseup",()=>drag=false);
+wrap.addEventListener("wheel",e=>{e.preventDefault();cd=Math.max(10,Math.min(50,cd+e.deltaY*.03));uc()},{passive:false});
+wrap.addEventListener("touchstart",e=>{if(e.touches.length===1){drag=true;prev={x:e.touches[0].clientX,y:e.touches[0].clientY}}});
+wrap.addEventListener("touchmove",e=>{if(!drag||e.touches.length!==1)return;ct+=(e.touches[0].clientX-prev.x)*.004;cp=Math.max(.2,Math.min(1.5,cp-(e.touches[0].clientY-prev.y)*.004));prev={x:e.touches[0].clientX,y:e.touches[0].clientY};uc()});
+wrap.addEventListener("touchend",()=>drag=false);
+
+// ═══════ Click ═══════
+const rc=new THREE.Raycaster(),ms=new THREE.Vector2();
+wrap.addEventListener("click",e=>{
+  ms.x=(e.clientX/wrap.clientWidth)*2-1;ms.y=-(e.clientY/wrap.clientHeight)*2+1;
+  rc.setFromCamera(ms,camera);
+  const hits=rc.intersectObjects(allNodes,true);
+  if(hits.length>0){
+    let o=hits[0].object;while(o&&!o.userData.label)o=o.parent;
+    if(o&&o.userData.label){
+      const d=o.userData,t=document.getElementById("tip");
+      let ex="";if(d.links)ex="→ "+d.links.join(" ");if(d.st)ex+=" · 工位:"+d.st;if(d.zid)ex=" · 区域:"+d.zid;
+      t.innerHTML=`<b style="color:${d.color||"#00d4aa"}">${d.label}</b><br><span style="color:#8b949e">${d.desc||""} ${ex}</span>`;
+      t.style.display="block";t.style.left=(e.clientX+15)+"px";t.style.top=(e.clientY-10)+"px";
+      setTimeout(()=>t.style.display="none",3000);
+    }
+  }
+});
+
+// ═══════ Animate ═══════
+let time=0;
+function anim(){
+  requestAnimationFrame(anim);time+=.016;
+  cNodes.forEach((n,i)=>{n.rotation.y+=.002;n.rotation.x+=.001;if(n.children[1])n.children[1].rotation.z+=.004});
+  aNodes.forEach((n,i)=>{n.scale.setScalar(1+Math.sin(time*2+i)*.06)});
+  renderer.render(scene,camera);
+}
+anim();
+window.addEventListener("resize",()=>{renderer.setSize(wrap.clientWidth,wrap.clientHeight);camera.aspect=wrap.clientWidth/wrap.clientHeight;camera.updateProjectionMatrix()});
+</script>
+</body>
+</html>
