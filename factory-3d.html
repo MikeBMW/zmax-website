@@ -45,6 +45,17 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 #info-popup .spec{text-align:center}
 #info-popup .spec .v{font-size:12px;font-weight:700;color:#3fb950}
 #info-popup .spec .l{font-size:8px;color:#484f58}
+
+.zone-card{cursor:pointer}
+.zone-card .zone-process{display:none;margin-top:8px;padding-top:8px;border-top:1px solid #1a1f2b}
+.zone-card.expanded .zone-process{display:block}
+.process-flow{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
+.process-step{background:#0d1117;border:1px solid #1a1f2b;border-radius:5px;padding:4px 6px;min-width:60px;text-align:center}
+.process-step .st-id{font-size:8px;color:#484f58}
+.process-step .st-label{font-size:10px;font-weight:600;color:#c8d1d9}
+.process-step .st-specs{font-size:7px;color:#8b949e;margin-top:1px}
+.process-arrow{color:#00d4aa44;font-size:10px;flex-shrink:0}
+.process-flow .process-arrow:last-child{display:none}
 </style>
 </head>
 <body>
@@ -197,6 +208,8 @@ function createStation(x,z,color,label,specs){
   
   g.position.set(x,0,z);
   g.userData={label,color,specs,isStation:true};
+  // tiny coord label
+  const cl=createCoordSprite(x,z,color);g.add(cl);
   return g;
 }
 
@@ -316,6 +329,20 @@ function createFloorLabel(text,x,z){
   return plane;
 }
 
+// ═══════ Coordinate sprite (small label on ground) ═══════
+function createCoordSprite(x3d,z3d,color){
+  const dx=x3d+18,dy=-z3d+12;
+  const cv=document.createElement('canvas');cv.width=128;cv.height=32;
+  const cx=cv.getContext('2d');
+  cx.fillStyle=color||'#8b949e';cx.font='bold 12px monospace';
+  cx.textAlign='center';cx.textBaseline='middle';
+  cx.fillText('('+dx.toFixed(1)+','+dy.toFixed(1)+')',64,16);
+  const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(2,.5),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.position.set(x3d,.015,z3d);m.renderOrder=997;
+  return m;
+}
+
 // ═══════ Build factory ═══════
 function buildFactory(){
   // Clear
@@ -369,8 +396,9 @@ function buildFactory(){
   if(robotObjs.length===0){
     ROBOT_DEFS.forEach(rd=>{
       const r={obj:createRobot(rd.x,rd.z),pos:{x:rd.x,z:rd.z},target:{x:rd.x,z:rd.z},
-               patrol:rd.patrol,patrolIdx:0,zone:rd.zone};
-      scene.add(r.obj);
+               patrol:rd.patrol,patrolIdx:0,zone:rd.zone,coordSprite:null};
+      r.coordSprite=createCoordSprite(rd.x,rd.z,'#00d4aa');
+      scene.add(r.obj);scene.add(r.coordSprite);
       robotObjs.push(r);
     });
   }
@@ -385,16 +413,33 @@ function buildFactory(){
 function buildZonesList(){
   let h="";
   ZONES.forEach(z=>{
-    h+=`<div class="zone-card" id="zone-${z.id}" onclick="flyTo('${z.id}')">
-      <div class="zone-title" style="color:${'#'+z.color.toString(16).padStart(6,'0')}">${z.name}</div>
-      <div class="zone-sub">${z.stations.length}个工位</div>
-      <div class="zone-stats">
-        ${z.stations.slice(0,3).map(s=>'<span>'+s.label.slice(0,4)+'</span>').join("")}
-        ${z.stations.length>3?'<span>+'+ (z.stations.length-3) +'</span>':''}
+    const clr='#'+z.color.toString(16).padStart(6,'0');
+    const steps=z.stations.map(s=>
+      '<span class="process-step">'+
+        '<div class="st-id">'+s.id+'</div>'+
+        '<div class="st-label">'+s.label+'</div>'+
+        '<div class="st-specs">'+(s.specs||[]).map(sp=>sp[0]).join(' · ')+'</div>'+
+      '</span>'
+    ).join('<span class="process-arrow">→</span>');
+    h+=`<div class="zone-card" id="zone-${z.id}" onclick="event.stopPropagation();toggleZone('${z.id}')">
+      <div class="zone-title" style="color:${clr}" onclick="event.stopPropagation();flyTo('${z.id}')">${z.name}</div>
+      <div class="zone-sub" style="display:flex;justify-content:space-between">
+        <span>${z.stations.length}个工位</span>
+        <span style="font-size:7px;color:#484f58">点击展开工艺▼</span>
+      </div>
+      <div class="zone-process">
+        <div class="process-flow">${steps}</div>
       </div>
     </div>`;
   });
   document.getElementById("zones-list").innerHTML=h;
+}
+
+function toggleZone(zoneId){
+  const card=document.getElementById('zone-'+zoneId);
+  card.classList.toggle('expanded');
+  // close others
+  document.querySelectorAll('.zone-card').forEach(c=>{if(c!==card)c.classList.remove('expanded')});
 }
 
 // ═══════ Camera fly-to ═══════
@@ -516,6 +561,8 @@ function animate(){
     r.obj.position.set(r.pos.x,.05,r.pos.z);
     r.obj.position.y+=Math.sin(time*2.5+r.pos.x)*.02;
     r.obj.rotation.y=Math.atan2(rdx,rdz);
+    // update coord sprite
+    if(r.coordSprite){r.coordSprite.position.set(r.pos.x,.015,r.pos.z)};
   });
   
   // AGV movement (patrol)
