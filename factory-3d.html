@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.16 · 2026-07-23 07:32</span>
+  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.17 · 2026-07-23 07:35</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -609,9 +609,9 @@ function animate(){
   // AGV movement — 4台各自区内巡逻
   const AGV_PATROLS=[
     [{x:-6,z:-8},{x:2,z:-8}],                        // 青A1: COC下边 (120,200)↔(200,200)
-    [{x:10,z:-6},{x:10,z:-2},{x:10,z:3}],           // 黄A2: OE右边界 (280,180)(280,140)(280,90)
+    [{x:10,z:-6},{x:10,z:-2},{x:10,z:2.5}],           // 黄A2: OE右边界 (280,180)(280,140)(280,90)
     [{x:10,z:6},{x:4,z:6},{x:0,z:6}],               // 粉: MOD上边界
-    [{x:-4,z:6},{x:-7,z:6},{x:-7,z:2}]              // 橙: WH左边界
+    [{x:-7,z:2.5},{x:-7,z:-4.5},{x:-5.5,z:-4.5},{x:-7,z:-4.5}], // 橙A4: (110,95)(110,165)(125,165)(110,165)
   ];
   agvObjs.forEach((a,i)=>{
     const path=AGV_PATROLS[i];
