@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>光模块OE产线 · 轨道机器人场景 | Z-MAX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1400px;margin:0 auto;padding:20px 16px}
+a{color:#00d4aa;text-decoration:none}
+h1{font-size:20px;color:#00d4aa;margin-bottom:4px}
+h2{font-size:15px;color:#8b949e;font-weight:400;margin-bottom:20px}
+h3{font-size:13px;color:#e6edf3;margin:16px 0 8px}
+.sub{font-size:11px;color:#484f58;margin-bottom:16px}
+.back-home{display:inline-block;margin-bottom:16px;color:#00d4aa;font-size:12px;padding:4px 12px;border:1px solid #1a1f2b;border-radius:4px}
+
+/* Layout */
+.main-grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+
+/* SVG floor plan */
+.floor-plan{background:#0d1117;border-radius:10px;border:1px solid #1a1f2b;padding:16px;overflow-x:auto}
+.floor-plan svg{min-width:900px;width:100%}
+
+/* Station cards */
+.station-list{display:flex;flex-direction:column;gap:8px}
+.station{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px;transition:all .2s}
+.station:hover{border-color:#00d4aa44;background:#111827}
+.station.active{border-color:#00d4aa;box-shadow:0 0 12px rgba(0,212,170,.1)}
+.station .st-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.station .st-num{width:24px;height:24px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#000}
+.station .st-name{font-size:13px;font-weight:700}
+.station .st-desc{font-size:11px;color:#8b949e;line-height:1.5}
+.station .st-tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.station .st-tag{font-size:9px;padding:2px 6px;border-radius:3px;background:#1a1f2b;color:#8b949e}
+
+/* Process flow */
+.flow-bar{display:flex;align-items:center;gap:0;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:8px;margin-bottom:16px;overflow-x:auto}
+.flow-step{flex:1;min-width:60px;text-align:center;padding:8px 4px;font-size:10px}
+.flow-step .icon{font-size:20px;margin-bottom:2px}
+.flow-step .label{color:#c8d1d9;font-weight:600}
+.flow-step .time{color:#484f58;font-size:9px}
+.flow-arrow{color:#1a1f2b;font-size:16px;flex-shrink:0}
+
+/* Robot specs */
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.spec{background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:8px;text-align:center}
+.spec .val{font-size:16px;font-weight:700;color:#00d4aa}
+.spec .lab{font-size:9px;color:#8b949e}
+
+/* Key metrics */
+.metrics{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.metric{flex:1;min-width:100px;background:linear-gradient(135deg,#0d3320,#0d1117);border:1px solid #00d4aa33;border-radius:8px;padding:12px;text-align:center}
+.metric .val{font-size:22px;font-weight:800;color:#00d4aa}
+.metric .lab{font-size:10px;color:#8b949e;margin-top:2px}
+
+/* Animate */
+@keyframes moveRobot{0%{transform:translateX(0)}100%{transform:translateX(100%)}}
+.robot-marker{animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Legend */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#8b949e}
+.legend-dot{width:8px;height:8px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<a href="/" class="back-home">← 返回主页</a>
+<h1>🤖 光模块 OE 产线 · 轨道机器人场景</h1>
+<h2>艾利特 Centaur-G1 轮式人形机器人 × 轨道移动系统 × 6工位全流程</h2>
+
+<!-- Metrics -->
+<div class="metrics">
+  <div class="metric"><div class="val">6</div><div class="lab">工位覆盖</div></div>
+  <div class="metric"><div class="val">±0.01mm</div><div class="lab">重复定位精度</div></div>
+  <div class="metric"><div class="val">7-DOF</div><div class="lab">冗余机械臂</div></div>
+  <div class="metric"><div class="val">28s</div><div class="lab">单件节拍</div></div>
+  <div class="metric"><div class="val">>99.5%</div><div class="lab">良率目标</div></div>
+</div>
+
+<!-- Process flow -->
+<div class="flow-bar" style="margin-top:16px">
+  <div class="flow-step"><div class="icon">📦</div><div class="label">上料</div><div class="time">3s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🔥</div><div class="label">共晶</div><div class="time">8s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🎯</div><div class="label">COC贴装</div><div class="time">5s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🔗</div><div class="label">打线</div><div class="time">4s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🕐</div><div class="label">老化上料</div><div class="time">2s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">✅</div><div class="label">下料</div><div class="time">3s</div></div>
+</div>
+
+<div class="main-grid">
+  <!-- Floor Plan SVG -->
+  <div class="floor-plan">
+    <svg viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="rail" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#1a1f2b"/><stop offset="50%" stop-color="#00d4aa44"/><stop offset="100%" stop-color="#1a1f2b"/>
+        </linearGradient>
+        <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#1a1f2b"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- Cleanroom background -->
+      <rect x="0" y="0" width="1000" height="520" fill="#0a0a0f" rx="8"/>
+      <text x="20" y="25" fill="#484f58" font-size="10">洁净车间 Class 1000 · 轨道长度 8m · 6工位</text>
+
+      <!-- Floor grid -->
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1f2b" stroke-width="0.5"/>
+      </pattern>
+      <rect x="20" y="60" width="960" height="380" fill="url(#grid)" opacity="0.5"/>
+
+      <!-- Rail track -->
+      <rect x="20" y="240" width="960" height="8" fill="url(#rail)" rx="4"/>
+      <text x="500" y="235" fill="#484f58" font-size="9" text-anchor="middle">轨道导轨 · 精度 ±0.01m</text>
+
+      <!-- Station 1: 上料 -->
+      <g transform="translate(60,120)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#f0a500" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#f0a500" font-size="11" font-weight="700" text-anchor="middle">📦 上料站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Tray盘供料</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">视觉定位 ±5μm</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 3s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#f0a500" rx="1"/>
+        <!-- Connection to rail -->
+        <line x1="65" y1="100" x2="65" y2="120" stroke="#f0a500" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 2: 共晶 -->
+      <g transform="translate(230,100)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#ff6b35" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#ff6b35" font-size="11" font-weight="700" text-anchor="middle">🔥 共晶站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">AuSn共晶焊</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">280°C ±2°C</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 8s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#ff6b35" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="140" stroke="#ff6b35" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 3: COC -->
+      <g transform="translate(400,120)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#00d4aa" stroke-width="2" rx="6"/>
+        <text x="65" y="22" fill="#00d4aa" font-size="11" font-weight="700" text-anchor="middle">🎯 COC贴装</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Chip-on-Carrier</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">精度 ±1μm · 力控</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 5s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#00d4aa" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="120" stroke="#00d4aa" stroke-width="1" stroke-dasharray="4,2"/>
+        <!-- Active indicator -->
+        <circle cx="120" cy="10" r="4" fill="#00d4aa" filter="url(#glow)" class="robot-marker"/>
+        <text x="115" y="98" fill="#00d4aa" font-size="8">● 当前工位</text>
+      </g>
+
+      <!-- Station 4: 打线 -->
+      <g transform="translate(570,100)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#58a6ff" font-size="11" font-weight="700" text-anchor="middle">🔗 打线站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Wire Bonding</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">Au线 25μm · US焊</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 4s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#58a6ff" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="140" stroke="#58a6ff" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 5: 老化 -->
+      <g transform="translate(740,110)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#a371f7" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#a371f7" font-size="11" font-weight="700" text-anchor="middle">🕐 老化站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Burn-in 85°C</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">96槽位烤箱</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">上下料 2s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#a371f7" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="130" stroke="#a371f7" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 6: 下料 -->
+      <g transform="translate(880,120)">
+        <rect x="0" y="0" width="100" height="100" fill="#0d1117" stroke="#3fb950" stroke-width="1.5" rx="6"/>
+        <text x="50" y="22" fill="#3fb950" font-size="11" font-weight="700" text-anchor="middle">✅ 下料</text>
+        <text x="50" y="42" fill="#8b949e" font-size="9" text-anchor="middle">AOI检测</text>
+        <text x="50" y="58" fill="#8b949e" font-size="9" text-anchor="middle">分拣OK/NG</text>
+        <text x="50" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 3s</text>
+        <rect x="25" y="88" width="50" height="3" fill="#3fb950" rx="1"/>
+        <line x1="50" y1="100" x2="50" y2="120" stroke="#3fb950" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Robot on rail -->
+      <g transform="translate(420,225)">
+        <!-- Robot body -->
+        <rect x="0" y="0" width="40" height="30" fill="#1c2333" stroke="#00d4aa" stroke-width="2" rx="6"/>
+        <!-- Arm base -->
+        <circle cx="20" cy="15" r="10" fill="none" stroke="#00d4aa" stroke-width="1.5"/>
+        <!-- Arm -->
+        <line x1="20" y1="10" x2="10" y2="-20" stroke="#00d4aa" stroke-width="3" stroke-linecap="round"/>
+        <line x1="10" y1="-20" x2="25" y2="-40" stroke="#00d4aa" stroke-width="2" stroke-linecap="round"/>
+        <!-- Gripper -->
+        <rect x="20" y="-45" width="10" height="6" fill="#00d4aa" rx="2"/>
+        <!-- Wheels -->
+        <circle cx="8" cy="28" r="5" fill="#1a1f2b" stroke="#8b949e" stroke-width="1"/>
+        <circle cx="32" cy="28" r="5" fill="#1a1f2b" stroke="#8b949e" stroke-width="1"/>
+        <!-- Head -->
+        <rect x="12" y="-5" width="16" height="12" fill="#1c2333" stroke="#00d4aa" stroke-width="1" rx="4"/>
+        <circle cx="16" cy="0" r="2" fill="#00d4aa"/>
+        <circle cx="24" cy="0" r="2" fill="#00d4aa"/>
+        <!-- Label -->
+        <text x="20" y="45" fill="#00d4aa" font-size="8" text-anchor="middle" font-weight="700">Centaur-G1</text>
+        <text x="20" y="55" fill="#484f58" font-size="7" text-anchor="middle">DDS VLA-T 控制</text>
+      </g>
+
+      <!-- DDS data flow arrows -->
+      <g opacity="0.3">
+        <path d="M 470 270 Q 470 310 130 310 Q 60 310 60 280" fill="none" stroke="#00d4aa" stroke-width="1" stroke-dasharray="3,3"/>
+        <path d="M 470 270 Q 470 350 300 350 Q 230 350 230 320" fill="none" stroke="#ff6b35" stroke-width="1" stroke-dasharray="3,3"/>
+      </g>
+
+      <!-- DDS label -->
+      <rect x="10" y="480" width="980" height="30" fill="#0d1117" rx="4"/>
+      <text x="500" y="500" fill="#8b949e" font-size="9" text-anchor="middle">
+        DDS 数据闭环：VLA-T视觉采集 → z₁z₂z₃潜空间推理 → 力控动作生成 → 实时反馈优化
+      </text>
+    </svg>
+  </div>
+
+  <!-- Right panel: station details -->
+  <div>
+    <h3>📍 工位详情</h3>
+    <div class="station-list">
+      <div class="station" style="border-left:3px solid #f0a500">
+        <div class="st-header"><span class="st-num" style="background:#f0a500">1</span><span class="st-name">📦 上料站</span></div>
+        <div class="st-desc">Tray盘自动供料，视觉定位芯片方向。机器人从轨道移动到供料位，双指夹爪拾取 COC 基板。</div>
+        <div class="st-tags"><span class="st-tag">视觉定位</span><span class="st-tag">力控夹取</span><span class="st-tag">±5μm</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #ff6b35">
+        <div class="st-header"><span class="st-num" style="background:#ff6b35">2</span><span class="st-name">🔥 共晶站</span></div>
+        <div class="st-desc">AuSn 共晶焊接，280°C±2°C 精准控温。机器人放置芯片到加热台，视觉对准焊盘，力控压合。</div>
+        <div class="st-tags"><span class="st-tag">280°C</span><span class="st-tag">AuSn焊料</span><span class="st-tag">力控 3N</span></div>
+      </div>
+      <div class="station active" style="border-left:3px solid #00d4aa">
+        <div class="st-header"><span class="st-num" style="background:#00d4aa">3</span><span class="st-name">🎯 COC贴装</span></div>
+        <div class="st-desc">Chip-on-Carrier 精密贴装，±1μm 精度。视觉+力觉融合控制，六维力传感器实时反馈贴合压力。</div>
+        <div class="st-tags"><span class="st-tag">±1μm</span><span class="st-tag">6轴力控</span><span class="st-tag">DDS VLA-T</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #58a6ff">
+        <div class="st-header"><span class="st-num" style="background:#58a6ff">4</span><span class="st-name">🔗 打线站</span></div>
+        <div class="st-desc">金线键合 Wire Bonding，25μm Au 线超声波焊接。机器人辅助送料和夹具定位。</div>
+        <div class="st-tags"><span class="st-tag">Au 25μm</span><span class="st-tag">US焊</span><span class="st-tag">辅助定位</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #a371f7">
+        <div class="st-header"><span class="st-num" style="background:#a371f7">5</span><span class="st-name">🕐 老化站</span></div>
+        <div class="st-desc">Burn-in 老化测试，85°C 恒温烤箱 96 槽位。机器人自动上下料，耐受高温环境作业。</div>
+        <div class="st-tags"><span class="st-tag">85°C</span><span class="st-tag">96槽</span><span class="st-tag">高温作业</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #3fb950">
+        <div class="st-header"><span class="st-num" style="background:#3fb950">6</span><span class="st-name">✅ 下料站</span></div>
+        <div class="st-desc">AOI 自动光学检测 + 分拣。合格品入Tray盘，不良品进NG仓。全流程可追溯。</div>
+        <div class="st-tags"><span class="st-tag">AOI</span><span class="st-tag">分拣</span><span class="st-tag">追溯</span></div>
+      </div>
+    </div>
+
+    <!-- Robot specs -->
+    <h3>🤖 机器人规格</h3>
+    <div class="specs">
+      <div class="spec"><div class="val">Centaur-G1</div><div class="lab">型号</div></div>
+      <div class="spec"><div class="val">7-DOF</div><div class="lab">机械臂自由度</div></div>
+      <div class="spec"><div class="val">5kg</div><div class="lab">单臂负载</div></div>
+      <div class="spec"><div class="val">±0.01m</div><div class="lab">轨道导航精度</div></div>
+      <div class="spec"><div class="val">±0.1mm</div><div class="lab">重复定位精度</div></div>
+      <div class="spec"><div class="val">VLA-T</div><div class="lab">推理引擎</div></div>
+    </div>
+
+    <!-- Legend -->
+    <h3>图例</h3>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#f0a500"></span>上料</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b35"></span>共晶</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#00d4aa"></span>COC</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#58a6ff"></span>打线</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#a371f7"></span>老化</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#3fb950"></span>下料</div>
+    </div>
+  </div>
+</div>
+
+<p style="text-align:center;color:#484f58;font-size:10px;margin-top:20px">
+  Z-MAX 静界科技 · DDS 数据闭环 · VLA-T 视触觉语言动作模型 · 光模块智能装配
+</p>
+
+</body>
+</html>

@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Push to Feishu
         $ch = curl_init();
         curl_setopt_array($ch, [
-            CURLOPT_URL => "http://127.0.0.1/notify.php",
+            CURLOPT_URL => "http://datadrive.world/notify.php",
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => json_encode(["from" => $input["from"], "msg" => $input["msg"]]),
             CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
