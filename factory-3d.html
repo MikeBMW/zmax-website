@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.8 · 2026-07-22 19:15</span>
+  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.9 · 2026-07-22 20:36</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -181,7 +181,7 @@ function addLabel(text,x,y,z,color,size){
   m.rotation.x=-Math.PI/2;m.position.set(x,.025,z);m.renderOrder=998;scene.add(m);
 }
 // X axis — bottom edge (Z=+12): display X = 3D_X + 18
-for(let x3d=-16;x3d<=16;x3d+=6) addLabel("X:"+(x3d+18),x3d,.025,11.8,"#00d4aa88");
+for(let x3d=-16;x3d<=16;x3d+=6) addLabel("X:"+(x3d+18),x3d,.025,11.8,"#ffffff22");
 // Y axis — left edge (X=-18): display Y = -3D_Z + 12
 for(let z3d=10;z3d>=-10;z3d-=6) addLabel("Y:"+(-z3d+12),-17.8,.025,z3d,"#f0a50088");
 // Origin marker — bright sphere + large label at bottom-left corner (3D -18,12 = display 0,0)
@@ -233,17 +233,6 @@ function createStation(x,z,color,label,specs){
   
   g.position.set(x,0,z);
   g.userData={label,color,specs,isStation:true};
-  return g;
-}
-
-// ═══════ Rail segment ═══════
-function createRail(x,z,len,rotY){
-  const g=new THREE.Group();
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(len,.1,.2),new THREE.MeshStandardMaterial({color:0x3a4050,metalness:.9,roughness:.3})));
-  g.children[0].position.y=.05;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(len,.01,.04),new THREE.MeshBasicMaterial({color:0x00d4aa})));
-  g.children[1].position.y=.11;
-  g.position.set(x,0,z);if(rotY)g.rotation.y=rotY;
   return g;
 }
 
@@ -309,34 +298,6 @@ function createAGV(x,z){
   return g;
 }
 
-// ═══════ Green trajectory line between zone centers ═══════
-function createTrajectory(x1,z1,x2,z2){
-  const dx=x2-x1,dz=z2-z1,len=Math.sqrt(dx*dx+dz*dz);
-  const g=new THREE.Group();
-  // Glow layer (wider, transparent)
-  const glow=new THREE.Mesh(
-    new THREE.BoxGeometry(len,.02,.15),
-    new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.3})
-  );
-  glow.position.y=.012;g.add(glow);
-  // Core line
-  const core=new THREE.Mesh(
-    new THREE.BoxGeometry(len,.02,.06),
-    new THREE.MeshBasicMaterial({color:0x00d4aa})
-  );
-  core.position.y=.014;g.add(core);
-  // Arrowhead at end
-  const arrow=new THREE.Mesh(
-    new THREE.ConeGeometry(.15,.35,4),
-    new THREE.MeshBasicMaterial({color:0x00d4aa})
-  );
-  arrow.rotation.x=-Math.PI/2;arrow.position.set(len/2-.2,.04,0);
-  g.add(arrow);
-  g.position.set((x1+x2)/2,.01,(z1+z2)/2);
-  g.rotation.y=Math.atan2(dz,dx);
-  return g;
-}
-
 // ═══════ Floor zone labels ═══════
 function createFloorLabel(text,x,z){
   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
@@ -394,28 +355,10 @@ function buildFactory(){
     scene.add(createFloorLabel(z.name,z.pos.x,z.pos.z));
   });
 
-  // Rails — loop around zones + branches to stations
-  // Main horizontal: COC→OE (top), Module→Warehouse (bottom)  
-  scene.add(createRail(-4,-12,14,0));  // COC front
-  scene.add(createRail(7,-12,14,0));   // OE front
-  scene.add(createRail(7,4,14,0));     // Module front
-  scene.add(createRail(-4,4,14,0));    // Warehouse front
-  // Vertical connectors
-  scene.add(createRail(-11,-2,12,Math.PI/2)); // COC→WH
-  scene.add(createRail(14,-2,12,Math.PI/2));  // OE→Module
-  // AGV path (wider, on ground)
-  for(let [rx,rz,rw,rh] of [[0,-12,28,.08],[0,4,28,.08],[-11,-2,.08,12],[14,-2,.08,12]]){
-    const path=new THREE.Mesh(new THREE.BoxGeometry(rw,.015,rh),new THREE.MeshStandardMaterial({color:0x1a2a1a,roughness:.9}));
-    path.position.set(rx,.008,rz);scene.add(path);
-  }
+  // Rails removed — clean layout
 
-  // Green trajectory: COC→OE→MOD→WH (zone centers)
-  scene.add(createTrajectory(-11,-8,8,-8));   // COC→OE
-  scene.add(createTrajectory(8,6,-11,6));     // MOD→WH
-  // Turning point coordinate markers
-  [{x:-11,z:-8},{x:8,z:-8},{x:8,z:6},{x:-11,z:6}].forEach(p=>{
-    scene.add(createCoordSprite(p.x,p.z,'#00d4aa').sprite);
-  });
+
+
 
   // Stations — placed CLOSE to rails, facing inward
   ZONES.forEach(z=>{
