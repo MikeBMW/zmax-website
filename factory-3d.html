@@ -119,10 +119,17 @@ const ZONES=[
   ]}
 ];
 
-let stationObjects=[],robotObj=null,agvObj=null;
-let robotTarget={x:-14,z:-4},robotPos={x:-14,z:-4};
+let stationObjects=[],agvObj=null,robotObjs=[];
 let agvTarget={x:-6,z:0},agvPos={x:-6,z:0};
 let hoveredStation=null;
+
+// 4 robots — one per zone, never cross zones
+const ROBOT_DEFS=[
+  {zone:"coc",x:-14,z:-4,patrol:[{x:-14,z:-4},{x:-7,z:-4},{x:-7,z:-10},{x:-14,z:-10}]},
+  {zone:"oe", x:8,  z:-4,patrol:[{x:8,z:-4},{x:14,z:-4},{x:14,z:-10},{x:8,z:-10}]},
+  {zone:"mod",x:8,  z:2, patrol:[{x:8,z:2},{x:14,z:2},{x:14,z:8},{x:8,z:8}]},
+  {zone:"wh", x:-14,z:2, patrol:[{x:-14,z:2},{x:-7,z:2},{x:-7,z:8},{x:-14,z:8}]}
+];
 
 // ═══════ THREE.JS ═══════
 const wrap=document.getElementById("view3d"),W=wrap.clientWidth,H=wrap.clientHeight;
@@ -309,9 +316,15 @@ function buildFactory(){
     });
   });
 
-  // Robot — starts at COC zone
-  if(!robotObj){robotObj=createRobot(-14,-4);scene.add(robotObj)}
-  robotPos={x:-14,z:-4};robotTarget={x:-14,z:-4};
+  // Robots — 4 robots, one per zone, patrol within zone only
+  if(robotObjs.length===0){
+    ROBOT_DEFS.forEach(rd=>{
+      const r={obj:createRobot(rd.x,rd.z),pos:{x:rd.x,z:rd.z},target:{x:rd.x,z:rd.z},
+               patrol:rd.patrol,patrolIdx:0,zone:rd.zone};
+      scene.add(r.obj);
+      robotObjs.push(r);
+    });
+  }
 
   // AGV
   if(!agvObj){agvObj=createAGV(0,-6);scene.add(agvObj)}
@@ -445,11 +458,16 @@ let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
   
-  // Robot movement
-  const rdx=robotTarget.x-robotPos.x,rdz=robotTarget.z-robotPos.z;
-  if(Math.abs(rdx)>.03||Math.abs(rdz)>.03){robotPos.x+=rdx*.04;robotPos.z+=rdz*.04}
-  robotObj.position.set(robotPos.x,.05,robotPos.z);
-  robotObj.position.y+=Math.sin(time*2.5)*.02;
+  // Robot movement — 4 robots, each patrols within its own zone
+  robotObjs.forEach(r=>{
+    const wp=r.patrol[r.patrolIdx];
+    const rdx=wp.x-r.pos.x,rdz=wp.z-r.pos.z;
+    if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08) r.patrolIdx=(r.patrolIdx+1)%r.patrol.length;
+    r.pos.x+=rdx*.03;r.pos.z+=rdz*.03;
+    r.obj.position.set(r.pos.x,.05,r.pos.z);
+    r.obj.position.y+=Math.sin(time*2.5+r.pos.x)*.02;
+    r.obj.rotation.y=Math.atan2(rdx,rdz);
+  });
   
   // AGV movement (patrol)
   const agvPath=[
