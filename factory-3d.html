@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.14 · 2026-07-23 07:25</span>
+  <span style="color:#8b949e;font-size:9px;margin-left:4px">v2.5.15 · 2026-07-23 07:30</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -148,7 +148,7 @@ const wrap=document.getElementById("view3d"),W=wrap.clientWidth,H=wrap.clientHei
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);
 scene.fog=new THREE.Fog(0x06080d,15,50);
 const camera=new THREE.PerspectiveCamera(50,W/H,.5,120);
-camera.position.set(0,28,1);camera.lookAt(0,0,0);
+camera.position.set(0,28,4);camera.lookAt(0,0,0);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W,H);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -528,7 +528,7 @@ wrap.addEventListener("click",e=>{
 
 // ═══════ Camera: left=orbit, middle=pan, wheel=zoom ═══════
 let dragging=false,panning=false,prevMX=0,prevMY=0;
-let camTheta=0,camPhi=.15,camDist=28;
+let camTheta=1.57,camPhi=.15,camDist=28;
 let lookTarget={x:0,y:0,z:0};
 
 function updateCam(){
