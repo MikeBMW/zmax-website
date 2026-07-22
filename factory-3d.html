@@ -338,18 +338,28 @@ function buildZonesList(){
 function flyTo(zoneId){
   const z=ZONES.find(x=>x.id===zoneId);
   if(!z)return;
-  targetPos={x:z.pos.x,y:10,z:z.pos.z+10};
-  targetLook={x:z.pos.x,y:0,z:z.pos.z};
+  // Smooth animate orbitCenter
+  const start={x:orbitCenter.x,y:orbitCenter.y,z:orbitCenter.z};
+  const end={x:z.pos.x,y:0,z:z.pos.z};
+  const startTime=Date.now();
+  function anim(){
+    const t=Math.min((Date.now()-startTime)/800,1);
+    const ease=t<.5?2*t*t:-1+(4-2*t)*t; // easeInOutQuad
+    orbitCenter.x=start.x+(end.x-start.x)*ease;
+    orbitCenter.y=start.y+(end.y-start.y)*ease;
+    orbitCenter.z=start.z+(end.z-start.z)*ease;
+    updateCam();
+    if(t<1)requestAnimationFrame(anim);
+  }
+  anim();
   document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
   document.querySelectorAll(".zone-card").forEach(c=>c.classList.remove("active"));
   const btn=document.querySelector(`.nav button[onclick*="${zoneId}"]`);
   if(btn)btn.classList.add("active");
   document.getElementById("zone-"+zoneId)?.classList.add("active");
-  
   // Move robot to that zone
   robotTarget={x:z.pos.x,z:z.pos.z-4};
 }
-let targetPos={x:0,y:22,z:18},targetLook={x:0,y:0,z:0};
 
 // ═══════ Mouse interaction ═══════
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
@@ -375,37 +385,51 @@ wrap.addEventListener("click",e=>{
   }
 });
 
-// ═══════ Camera orbit ═══════
-let dragging=false,prevMX=0,prevMY=0,camTheta=0,camPhi=.7;
-let camDist=22;
+// ═══════ Camera orbit — pure spherical, no pan ═══════
+let dragging=false,prevMX=0,prevMY=0;
+let camTheta=Math.PI/4,camPhi=.7,camDist=22;
+let orbitCenter={x:0,y:1,z:0}; // always orbit around this point
 
 function updateCam(){
-  camera.position.lerp(new THREE.Vector3(
-    targetPos.x+camDist*Math.sin(camPhi)*Math.cos(camTheta),
-    targetPos.y+camDist*Math.cos(camPhi),
-    targetPos.z+camDist*Math.sin(camPhi)*Math.sin(camTheta)
-  ),.08);
-  camera.lookAt(targetLook.x,targetLook.y,targetLook.z);
+  const cx=orbitCenter.x,cy=orbitCenter.y,cz=orbitCenter.z;
+  camera.position.set(
+    cx+camDist*Math.sin(camPhi)*Math.cos(camTheta),
+    cy+camDist*Math.cos(camPhi),
+    cz+camDist*Math.sin(camPhi)*Math.sin(camTheta)
+  );
+  camera.lookAt(cx,cy,cz);
 }
 wrap.addEventListener("mousedown",e=>{if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}});
 wrap.addEventListener("mousemove",e=>{
   if(!dragging)return;
-  camTheta-=(e.clientX-prevMX)*.005;
-  camPhi=Math.max(.2,Math.min(1.5,camPhi-(e.clientY-prevMY)*.005));
+  camTheta-=(e.clientX-prevMX)*.004;
+  camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.004));
   prevMX=e.clientX;prevMY=e.clientY;
+  updateCam();
 });
-wrap.addEventListener("mouseup",()=>dragging=false);
-wrap.addEventListener("wheel",e=>{camDist=Math.max(6,Math.min(45,camDist+e.deltaY*.02))});
+wrap.addEventListener("mouseup",()=>{dragging=false});
+wrap.addEventListener("wheel",e=>{
+  e.preventDefault();
+  camDist=Math.max(5,Math.min(40,camDist+e.deltaY*.03));
+  updateCam();
+},{passive:false});
 // Touch
-wrap.addEventListener("touchstart",e=>{if(e.touches.length===1){dragging=true;prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY}});
-wrap.addEventListener("touchmove",e=>{if(!dragging||e.touches.length!==1)return;camTheta-=(e.touches[0].clientX-prevMX)*.005;camPhi=Math.max(.2,Math.min(1.5,camPhi-(e.touches[0].clientY-prevMY)*.005));prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY});
+wrap.addEventListener("touchstart",e=>{
+  if(e.touches.length===1){dragging=true;prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY}
+});
+wrap.addEventListener("touchmove",e=>{
+  if(!dragging||e.touches.length!==1)return;
+  camTheta-=(e.touches[0].clientX-prevMX)*.004;
+  camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.touches[0].clientY-prevMY)*.004));
+  prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY;
+  updateCam();
+});
 wrap.addEventListener("touchend",()=>dragging=false);
 
 // ═══════ Animation ═══════
 let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
-  updateCam();
   
   // Robot movement
   const rdx=robotTarget.x-robotPos.x,rdz=robotTarget.z-robotPos.z;
