@@ -45,6 +45,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 #info-popup .spec{text-align:center}
 #info-popup .spec .v{font-size:12px;font-weight:700;color:#3fb950}
 #info-popup .spec .l{font-size:8px;color:#484f58}
+.zone-label{position:absolute;pointer-events:none;z-index:4;font-size:18px;font-weight:900;text-align:center;transform:translate(-50%,-50%);text-shadow:0 0 20px rgba(0,0,0,.9),0 0 40px rgba(0,0,0,.7);letter-spacing:2px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -63,7 +64,12 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   </div>
 </div>
 <div id="main">
-<div id="view3d"><div id="info-popup"></div></div>
+<div id="view3d"><div id="info-popup"></div>
+<div class="zone-label" id="lbl-coc" style="color:#f0a500">🔩 COC基板区</div>
+<div class="zone-label" id="lbl-oe" style="color:#ff6b35">🔬 OE光引擎区</div>
+<div class="zone-label" id="lbl-mod" style="color:#58a6ff">📦 模块组装区</div>
+<div class="zone-label" id="lbl-wh" style="color:#3fb950">📦 仓库物流区</div>
+</div>
 <div id="panel">
   <h3>🏭 工厂区域</h3>
   <div id="zones-list"></div>
@@ -566,6 +572,24 @@ function animate(){
   stationObjects.forEach(s=>{
     const lt=s.children[4];
     if(lt)lt.scale.setScalar(1+Math.sin(time*3+s.position.x)*.2);
+  });
+  
+  // Update zone labels (3D→screen projection)
+  const labelData=[
+    {id:"lbl-coc",x:-14,y:2,z:-8},
+    {id:"lbl-oe",x:8,y:2,z:-8},
+    {id:"lbl-mod",x:8,y:2,z:6},
+    {id:"lbl-wh",x:-14,y:2,z:6}
+  ];
+  labelData.forEach(l=>{
+    const el=document.getElementById(l.id);
+    if(!el)return;
+    const v=new THREE.Vector3(l.x,l.y,l.z);
+    v.project(camera);
+    const sx=(v.x*.5+.5)*wrap.clientWidth;
+    const sy=(-v.y*.5+.5)*wrap.clientHeight;
+    if(v.z<1){el.style.left=sx+"px";el.style.top=sy+"px";el.style.display="block"}
+    else el.style.display="none";
   });
   
   renderer.render(scene,camera);
