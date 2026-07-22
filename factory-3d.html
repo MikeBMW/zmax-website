@@ -385,8 +385,8 @@ wrap.addEventListener("click",e=>{
   }
 });
 
-// ═══════ Camera orbit — pure spherical, no pan ═══════
-let dragging=false,prevMX=0,prevMY=0;
+// ═══════ Camera orbit — pure spherical + middle-pan ═══════
+let dragging=false,panning=false,prevMX=0,prevMY=0;
 let camTheta=Math.PI/4,camPhi=.7,camDist=22;
 let orbitCenter={x:0,y:1,z:0}; // always orbit around this point
 
@@ -399,20 +399,40 @@ function updateCam(){
   );
   camera.lookAt(cx,cy,cz);
 }
-wrap.addEventListener("mousedown",e=>{if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}});
-wrap.addEventListener("mousemove",e=>{
-  if(!dragging)return;
-  camTheta-=(e.clientX-prevMX)*.004;
-  camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.004));
-  prevMX=e.clientX;prevMY=e.clientY;
-  updateCam();
+wrap.addEventListener("mousedown",e=>{
+  if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}
+  if(e.button===1){panning=true;prevMX=e.clientX;prevMY=e.clientY;e.preventDefault()}
 });
-wrap.addEventListener("mouseup",()=>{dragging=false});
+wrap.addEventListener("mousemove",e=>{
+  if(dragging){
+    camTheta-=(e.clientX-prevMX)*.004;
+    camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.004));
+    prevMX=e.clientX;prevMY=e.clientY;
+    updateCam();
+  }
+  if(panning){
+    // Pan perpendicular to view direction
+    const right=new THREE.Vector3();camera.getWorldDirection(right);
+    const up=new THREE.Vector3(0,1,0);
+    const left=new THREE.Vector3().crossVectors(up,right).normalize();
+    const worldUp=new THREE.Vector3().crossVectors(right,left).normalize();
+    const dx=(e.clientX-prevMX)*.015;
+    const dy=(e.clientY-prevMY)*.015;
+    orbitCenter.x+=left.x*dx+worldUp.x*dy;
+    orbitCenter.y+=left.y*dx+worldUp.y*dy;
+    orbitCenter.z+=left.z*dx+worldUp.z*dy;
+    prevMX=e.clientX;prevMY=e.clientY;
+    updateCam();
+  }
+});
+wrap.addEventListener("mouseup",e=>{dragging=false;panning=false});
 wrap.addEventListener("wheel",e=>{
   e.preventDefault();
   camDist=Math.max(5,Math.min(40,camDist+e.deltaY*.03));
   updateCam();
 },{passive:false});
+// Prevent middle-click default scroll
+wrap.addEventListener("auxclick",e=>e.preventDefault());
 // Touch
 wrap.addEventListener("touchstart",e=>{
   if(e.touches.length===1){dragging=true;prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY}
