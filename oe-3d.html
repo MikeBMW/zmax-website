@@ -33,24 +33,21 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang 
 
 #panel h3{font-size:12px;color:var(--accent);padding:12px 14px 6px;border-bottom:1px solid var(--border)}
 .card{background:#111827;border:1px solid var(--border);border-radius:8px;padding:12px;margin:8px}
-.card.active{border-color:var(--accent);box-shadow:0 0 10px rgba(0,212,170,.08)}
+.card.active{border-color:var(--accent);box-shadow:0 0 10px rgba(0,212,170,.1)}
 .card .phase-tag{font-size:9px;padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:4px}
 .card .card-title{font-size:13px;font-weight:700;margin-bottom:2px}
 .card .card-desc{font-size:10px;color:var(--muted);line-height:1.4;margin-bottom:6px}
 .card .specs-row{display:flex;gap:8px;flex-wrap:wrap}
 .card .spec-item{flex:1;min-width:60px;background:rgba(0,0,0,.3);border-radius:5px;padding:6px 8px;text-align:center}
-.card .spec-item .sv{font-size:13px;font-weight:700}
+.card .spec-item .sv{font-size:13px;font-weight:700;color:#3fb950}
 .card .spec-item .sl{font-size:8px;color:var(--dim)}
-.sv-ok{color:#3fb950}.sv-warn{color:#f0a500}.sv-crit{color:#ff4444}
-.card .req-row{display:flex;align-items:center;gap:4px;font-size:9px;margin-top:4px;color:var(--dim)}
+.card .req-row{display:flex;align-items:center;gap:4px;font-size:9px;margin-top:4px;color:var(--dim);flex-wrap:wrap}
 .card .req-dot{width:5px;height:5px;border-radius:3px}
-.card .req-dot.ok{background:#3fb950}.req-dot.warn{background:#f0a500}
+.req-ok{background:#3fb950}.req-warn{background:#f0a500}.req-crit{background:#ff4444}
 
-/* Bottom progress */
-#progress{position:absolute;bottom:56px;left:0;right:0;height:3px;background:#1a1f2b;z-index:5}
+#progress{position:absolute;bottom:52px;left:0;right:0;height:2px;background:#1a1f2b;z-index:5}
 #progress .bar{height:100%;background:var(--accent);transition:width .5s}
 
-/* Bottom dock */
 #dock{position:absolute;bottom:0;left:0;right:0;background:rgba(13,17,23,.96);border-top:1px solid var(--border);display:flex;gap:0;overflow-x:auto;z-index:5;padding:4px 8px;backdrop-filter:blur(10px)}
 #dock .ds{flex:1;min-width:70px;text-align:center;padding:6px 3px;cursor:pointer;border-radius:5px;font-size:9px;transition:all .15s;border:1px solid transparent}
 #dock .ds:hover{background:#111827}
@@ -59,7 +56,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang 
 #dock .ds .dn{font-weight:600}
 #dock .ds .dt{color:var(--dim);font-size:8px}
 
-/* Key specifications table */
 #specs-table{position:absolute;top:12px;left:12px;z-index:5;background:rgba(13,17,23,.92);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:10px;backdrop-filter:blur(6px)}
 #specs-table .row{display:flex;gap:12px;margin:2px 0}
 #specs-table .row .k{color:var(--muted);min-width:80px}
@@ -91,9 +87,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang 
     <div class="row"><span class="k">操作成功率</span><span class="v">>99%</span></div>
     <div class="row"><span class="k">力控精度</span><span class="v">±0.1N</span></div>
     <div class="row"><span class="k">轨道导航精度</span><span class="v">±0.01m</span></div>
-    <div class="row"><span class="k">视觉定位精度</span><span class="v">±5μm</span></div>
-    <div class="row"><span class="k">机器人自由度</span><span class="v">7-DOF</span></div>
-    <div class="row"><span class="k">推理引擎</span><span class="v">VLA-T 三层潜空间</span></div>
+    <div class="row"><span class="k">推理引擎</span><span class="v">VLA-T z₁z₂z₃三层潜空间</span></div>
   </div>
   <div id="progress"><div class="bar" style="width:0%"></div></div>
   <div id="dock"></div>
@@ -103,7 +97,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang 
   <h3>📋 工艺卡片</h3>
   <div id="cards"></div>
   <div style="padding:12px;font-size:10px;color:var(--dim);text-align:center;border-top:1px solid var(--border);margin-top:8px">
-    Z-MAX 静界科技 · DDS数据闭环 · VLA-T视触觉语言动作模型
+    Z-MAX 静界科技 · DDS · VLA-T 三层潜空间
   </div>
 </div>
 </div>
@@ -112,185 +106,263 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ═══════════════════════════════════════
-// SCENE REQUIREMENT DEFINITION
+// PROCESS DATA
 // ═══════════════════════════════════════
-// Global Requirements (from 储翰 meeting + user spec):
-// - Repeatable positioning: ±0.02mm
-// - Per-station cycle time: ≤15s (target 5-10s typical)
-// - Operation success rate: >99% (with force feedback + vision)
-// - Force control: ±0.1N resolution
-// - Rail navigation: ±0.01m
-// - Vision alignment: ±5μm
-// - Robot: 7-DOF arm, 5kg payload, Centaur-G1 class
-// - Inference: VLA-T three-layer latent space (z1/z2/z3)
-// - Cleanroom: Class 10,000 (188) / Class 100,000 (OSA)
-
-const GLOBAL_SPEC={
-  precision:"±0.02mm",
-  cycleTime:"≤15s",
-  successRate:">99%",
-  forceCtrl:"±0.1N",
-  railNav:"±0.01m",
-  visionAlign:"±5μm",
-  robotDOF:"7-DOF",
-  payload:"5kg",
-  inference:"VLA-T z₁z₂z₃",
-  cleanroom188:"万级(Class 10,000)",
-  cleanroomOSA:"十万级(Class 100,000)"
-};
-
-// ═══════ PROCESS DATA ═══════
-// Each station has: label, desc, specs[{value,label}], requirements[{label,met}], color
 const LINES=[
-{name:"188车间 · 高速数通产线",clean:10000,color:0x00d4aa,sections:[
+{name:"188车间 · 高速数通产线",color:0x00d4aa,sections:[
   {name:"COC基板段",color:0xf0a500,icon:"🔩",stations:[
-    {id:"S01",label:"📦 上料",desc:"Tray盘自动供料，双指夹爪拾取COC基板，视觉定位芯片方向及位置",specs:[["±5μm","定位精度"],["3s","节拍"],["2N","夹持力"]],reqs:[["视觉定位","ok"],["力控夹取","ok"],["防静电","warn"]]},
-    {id:"S02",label:"🔥 共晶焊",desc:"AuSn共晶焊接，加热台280°C±2°C，机器人放置芯片并力控压合",specs:[["280°C±2°C","温控"],["8s","节拍"],["3N","压合力"]],reqs:[["温控精准","ok"],["力控反馈","ok"],["高温防护","ok"]]},
-    {id:"S03",label:"🎯 COC贴装",desc:"Chip-on-Carrier精密贴装，视觉+六维力觉融合控制，贴装精度±1μm",specs:[["±1μm","贴装精度"],["5s","节拍"],["6轴","力传感器"]],reqs:[["亚微米对准","crit"],["力觉融合","ok"],["UV固化","ok"]]},
-    {id:"S04",label:"🔗 金线键合",desc:"25μm Au线超声波焊接Wire Bonding，机器人辅助送料及夹具定位",specs:[["25μm","金线直径"],["4s","节拍"],["US焊","工艺"]],reqs:[["辅助定位","ok"],["送料精度","ok"],["夹具适配","warn"]]},
-    {id:"S05",label:"🕐 老化上料",desc:"85°C Burn-in烤箱自动上下料，96槽位，机器人耐受高温环境持续作业",specs:[["85°C","老化温度"],["2s","单次"],["96槽","容量"]],reqs:[["高温耐受","crit"],["精准插拔","ok"],["槽位识别","ok"]]},
-    {id:"S06",label:"✅ AOI下料",desc:"自动光学检测+OK/NG分拣，条码扫描全流程MES追溯",specs:[["AOI","检测方式"],["3s","节拍"],["MES","追溯"]],reqs:[["缺陷识别","ok"],["分拣准确","ok"],["数据追溯","ok"]]}
+    {id:"S01",label:"📦上料",desc:"Tray盘供料，视觉定位芯片方向，双指夹爪拾取COC基板",specs:[["±5μm","定位"],["3s","节拍"],["2N","夹持力"]],reqs:[["视觉定位","ok"],["力控夹取","ok"],["防静电","warn"]]},
+    {id:"S02",label:"🔥共晶焊",desc:"AuSn共晶焊接280°C±2°C，力控压合3N",specs:[["280°C","温控"],["8s","节拍"],["3N","压合"]],reqs:[["温控精准","ok"],["力控反馈","ok"],["高温防护","ok"]]},
+    {id:"S03",label:"🎯COC贴装",desc:"Chip-on-Carrier精密贴装±1μm，视觉+六维力觉融合",specs:[["±1μm","精度"],["5s","节拍"],["6轴","力控"]],reqs:[["亚微米对准","crit"],["力觉融合","ok"],["UV固化","ok"]]},
+    {id:"S04",label:"🔗金线键合",desc:"25μm Au线超声波焊接，机器人辅助送料及夹具定位",specs:[["25μm","金线"],["4s","节拍"],["US焊","工艺"]],reqs:[["辅助定位","ok"],["送料精度","ok"],["夹具适配","warn"]]},
+    {id:"S05",label:"🕐老化上料",desc:"85°C Burn-in烤箱上下料，96槽位自动插拔",specs:[["85°C","温度"],["2s","单次"],["96槽","容量"]],reqs:[["高温耐受","crit"],["精准插拔","ok"],["槽位识别","ok"]]},
+    {id:"S06",label:"✅AOI下料",desc:"自动光学检测+OK/NG分拣，MES全流程追溯",specs:[["AOI","检测"],["3s","节拍"],["MES","追溯"]],reqs:[["缺陷识别","ok"],["分拣准确","ok"],["数据追溯","ok"]]}
   ]},
   {name:"OE光引擎段",color:0xff6b35,icon:"🔬",stations:[
-    {id:"S07",label:"🔍 透镜耦合",desc:"有源对准耦合，UV预固化+热固化，实时IL/RL监测反馈调整",specs:[["±0.5μm","对准精度"],["8s","节拍"],["IL<1dB","插损"]],reqs:[["有源对准","crit"],["UV固化","ok"],["实时监测","ok"]]},
-    {id:"S08",label:"🔗 光纤阵列",desc:"FA光纤阵列多通道并行对准耦合，激光焊接固定",specs:[["多通道","并行"],["6s","节拍"],["激光焊","固定"]],reqs:[["多通道对齐","crit"],["激光焊接","ok"],["应力控制","warn"]]},
-    {id:"S09",label:"🛡 隔离器",desc:"光隔离器精密装配，减少回波反射，隔离度>30dB",specs:[[">30dB","隔离度"],["<1dB","额外插损"],["4s","节拍"]],reqs:[["精密装配","ok"],["角度对准","ok"],["洁净操作","ok"]]},
-    {id:"S10",label:"🔒 封帽气密",desc:"TO-CAN气密封装，氦气检漏100%全检，漏率<1×10⁻⁸",specs:[["<1×10⁻⁸","氦检漏率"],["6s","节拍"],["100%","全检"]],reqs:[["气密性","crit"],["氦检适配","ok"],["力控封帽","ok"]]},
-    {id:"S11",label:"📊 光参数测试",desc:"IL/RL/光谱/BW全参数自动测试，自动判定Pass/Fail",specs:[["IL<3dB","插损上限"],["RL>12dB","回损下限"],["5s","节拍"]],reqs:[["全参数覆盖","ok"],["自动判定","ok"],["数据上传","ok"]]},
-    {id:"S12",label:"🔥 老炼筛选",desc:"85°C 48h带电老炼，自动上下料，剔除早期失效品",specs:[["85°C","温度"],["48h","时长"],["2s","上下料"]],reqs:[["长期高温","crit"],["自动上下料","ok"],["失效标记","ok"]]}
+    {id:"S07",label:"🔍透镜耦合",desc:"有源对准耦合±0.5μm，UV固化，实时IL/RL监测",specs:[["±0.5μm","对准"],["8s","节拍"],["IL<1dB","插损"]],reqs:[["有源对准","crit"],["UV固化","ok"],["实时监测","ok"]]},
+    {id:"S08",label:"🔗光纤阵列",desc:"FA光纤阵列多通道并行耦合，激光焊接固定",specs:[["多通道","并行"],["6s","节拍"],["激光焊","固定"]],reqs:[["多通道对齐","crit"],["激光焊接","ok"]]},
+    {id:"S09",label:"🛡隔离器",desc:"光隔离器精密装配，隔离度>30dB，插损<1dB",specs:[[">30dB","隔离度"],["<1dB","插损"],["4s","节拍"]],reqs:[["精密装配","ok"],["洁净操作","ok"]]},
+    {id:"S10",label:"🔒封帽气密",desc:"TO-CAN气密封装，氦气检漏100%全检",specs:[["<1E-8","漏率"],["6s","节拍"],["100%","全检"]],reqs:[["气密性","crit"],["氦检适配","ok"]]},
+    {id:"S11",label:"📊光参数测",desc:"IL/RL/光谱/BW全参数自动测试判定",specs:[["IL<3dB","插损"],["RL>12dB","回损"],["5s","节拍"]],reqs:[["全参数","ok"],["自动判定","ok"]]},
+    {id:"S12",label:"🔥老炼筛选",desc:"85°C 48h带电老炼，自动上下料，剔除早期失效",specs:[["85°C","温度"],["48h","时长"],["2s","上下料"]],reqs:[["长期高温","crit"],["自动上下料","ok"]]}
   ]},
   {name:"模块组装段",color:0x58a6ff,icon:"📦",stations:[
-    {id:"S13",label:"🔌 PCB焊接",desc:"SMT贴片+回流焊260°C，PCB与光引擎电气连接I2C通信",specs:[["260°C","回流焊"],["5s","节拍"],["I2C","通信"]],reqs:[["SMT精度","ok"],["温度曲线","ok"],["电气测试","ok"]]},
-    {id:"S14",label:"📦 外壳装配",desc:"QSFP-DD金属外壳组装，导热垫片贴合，螺钉自动锁紧",specs:[["QSFP-DD","封装"],["5s","节拍"],["0.3N·m","扭力"]],reqs:[["扭矩控制","ok"],["导热贴合","ok"],["外观检查","ok"]]},
-    {id:"S15",label:"📡 BERT测试",desc:"误码率测试PRBS31，灵敏度/过载全温测试",specs:[["BER<1E-12","误码率"],["PRBS31","码型"],["8s","节拍"]],reqs:[["BER达标","crit"],["全温覆盖","ok"],["自动报告","ok"]]},
-    {id:"S16",label:"👁 眼图测试",desc:"眼图模板测试，消光比ER>4dB，抖动/上升时间自动测量",specs:[["ER>4dB","消光比"],["眼图模板","判定"],["5s","节拍"]],reqs:[["眼图达标","crit"],["抖动测量","ok"],["模板匹配","ok"]]},
-    {id:"S17",label:"🏷 标签序列号",desc:"激光打标二维码+序列号，MES系统绑定全流程追溯",specs:[["激光打标","方式"],["2s","节拍"],["MES绑定","追溯"]],reqs:[["码制正确","ok"],["可读性","ok"],["数据关联","ok"]]},
-    {id:"S18",label:"📦 FQC包装",desc:"最终质检100%全检，防静电包装，MES出货记录",specs:[["FQC","100%"],["ESD防护","标准"],["3s","节拍"]],reqs:[["全检无误","crit"],["ESD合规","ok"],["出货追溯","ok"]]}
+    {id:"S13",label:"🔌PCB焊接",desc:"SMT贴片+回流焊260°C，PCB与OE电气连接I2C",specs:[["260°C","回流焊"],["5s","节拍"],["I2C","通信"]],reqs:[["SMT精度","ok"],["温度曲线","ok"]]},
+    {id:"S14",label:"📦外壳装配",desc:"QSFP-DD金属外壳组装，导热垫贴合，螺钉自动锁紧0.3N·m",specs:[["QSFP-DD","封装"],["5s","节拍"],["0.3N·m","扭力"]],reqs:[["扭矩控制","ok"],["导热贴合","ok"]]},
+    {id:"S15",label:"📡BERT测试",desc:"误码率PRBS31，灵敏度/过载全温测试BER<1E-12",specs:[["BER<1E-12","误码"],["PRBS31","码型"],["8s","节拍"]],reqs:[["BER达标","crit"],["全温覆盖","ok"]]},
+    {id:"S16",label:"👁眼图测试",desc:"眼图模板测试，消光比ER>4dB，抖动自动测量",specs:[["ER>4dB","消光比"],["眼图","模板"],["5s","节拍"]],reqs:[["眼图达标","crit"],["抖动测量","ok"]]},
+    {id:"S17",label:"🏷标签打标",desc:"激光打标二维码+序列号，MES系统绑定追溯",specs:[["激光","打标"],["2s","节拍"],["MES","追溯"]],reqs:[["码制正确","ok"],["数据关联","ok"]]},
+    {id:"S18",label:"📦FQC包装",desc:"最终质检100%全检，防静电包装，MES出货",specs:[["FQC","100%"],["ESD","防护"],["3s","节拍"]],reqs:[["全检无误","crit"],["ESD合规","ok"]]}
   ]}
 ]},
-{name:"OSA车间 · 电信/PON产线",clean:100000,color:0xa371f7,sections:[
-  {name:"滤波片→封帽",color:0xa371f7,icon:"🔍",stations:[
-    {id:"S19",label:"🔍 滤波片贴装",desc:"CWDM/DWDM滤波片精密贴装，角度对准±0.1°，UV固化",specs:[["±0.1°","角度"],["4s","节拍"],["UV固化","工艺"]],reqs:[["角度精度","crit"],["UV固化","ok"],["洁净操作","ok"]]},
-    {id:"S20",label:"🔗 耦合焊接",desc:"三光束激光焊接固定，应力平衡，位移<2μm",specs:[["3光束","激光焊"],["<2μm","位移"],["6s","节拍"]],reqs:[["应力平衡","crit"],["位移控制","ok"],["焊接质量","ok"]]},
-    {id:"S21",label:"🌡 TC循环",desc:"-40°C~+85°C温度循环筛选，10次循环自动上下料",specs:[["-40~85°C","温度范围"],["10次","循环"],["2s","上下料"]],reqs:[["温循覆盖","ok"],["自动上下料","ok"],["失效标记","ok"]]},
-    {id:"S22",label:"📐 焊软板",desc:"柔性PCB FPC焊接，机器人辅助定位送料，烙铁焊工艺",specs:[["FPC","软板"],["5s","节拍"],["烙铁焊","工艺"]],reqs:[["辅助定位","ok"],["送料精度","ok"],["焊接质量","warn"]]},
-    {id:"S23",label:"📊 综合测试",desc:"IL/RL/PD响应/追踪误差全参数自动测试判定",specs:[["IL<0.5dB","插损"],["PD响应","监测"],["6s","节拍"]],reqs:[["全参数","ok"],["自动判定","ok"],["数据上传","ok"]]},
-    {id:"S24",label:"📦 包装出货",desc:"防静电包装+标签打印+MES出货记录，全流程追溯",specs:[["ESD","防护"],["2s","节拍"],["MES","追溯"]],reqs:[["ESD合规","ok"],["标签准确","ok"],["数据完整","ok"]]}
+{name:"OSA车间 · 电信/PON产线",color:0xa371f7,sections:[
+  {name:"电信OSA段",color:0xa371f7,icon:"🔍",stations:[
+    {id:"S19",label:"🔍滤波片",desc:"CWDM/DWDM滤波片精密贴装±0.1°，UV固化",specs:[["±0.1°","角度"],["4s","节拍"],["UV","固化"]],reqs:[["角度精度","crit"],["洁净操作","ok"]]},
+    {id:"S20",label:"🔗耦合焊",desc:"三光束激光焊接，应力平衡，位移<2μm",specs:[["3光束","激光"],["<2μm","位移"],["6s","节拍"]],reqs:[["应力平衡","crit"],["焊接质量","ok"]]},
+    {id:"S21",label:"🌡TC循环",desc:"-40~+85°C温度循环10次，自动上下料",specs:[["-40~85°C","范围"],["10次","循环"],["2s","上下料"]],reqs:[["温循覆盖","ok"],["自动上下料","ok"]]},
+    {id:"S22",label:"📐焊软板",desc:"柔性FPC焊接，机器人辅助定位送料",specs:[["FPC","软板"],["5s","节拍"],["烙铁","工艺"]],reqs:[["辅助定位","ok"],["送料精度","ok"]]},
+    {id:"S23",label:"📊综合测",desc:"IL/RL/PD响应/追踪误差全参数测试",specs:[["IL<0.5dB","插损"],["PD","监测"],["6s","节拍"]],reqs:[["全参数","ok"],["自动判定","ok"]]},
+    {id:"S24",label:"📦包装",desc:"防静电包装+标签+MES出货记录",specs:[["ESD","防护"],["2s","节拍"],["MES","追溯"]],reqs:[["ESD合规","ok"],["数据完整","ok"]]}
   ]}
 ]},
-{name:"仓库 · 原材料+成品+智禾AGV",clean:0,color:0x3fb950,sections:[
-  {name:"原材料仓",color:0xf0a500,icon:"📦",stations:[
-    {id:"S25",label:"📥 IQC来料检",desc:"来料检验：外观/尺寸/电性能按AQL抽检，千分尺量测",specs:[["AQL","抽检标准"],["千分尺","量具"],["5min/批","节拍"]],reqs:[["抽检覆盖","ok"],["数据记录","ok"],["异常处理","ok"]]},
-    {id:"S26",label:"📦 原料入库",desc:"扫码入库，货架定位，MES库存管理FIFO先进先出",specs:[["MES","系统"],["条码","追溯"],["FIFO","策略"]],reqs:[["扫码准确","ok"],["货位正确","ok"],["库存同步","ok"]]},
-    {id:"S27",label:"🚚 AGV配送",desc:"智禾AGV叉车自动配送原料到产线工位，定位±10mm",specs:[["±10mm","定位"],["AGV","自动"],["按需","配送"]],reqs:[["路径规划","ok"],["避障安全","crit"],["准时送达","ok"]]}
-  ]},
-  {name:"成品仓",color:0x3fb950,icon:"✅",stations:[
-    {id:"S28",label:"📦 成品入库",desc:"FQC后成品扫码入库，温湿度监控23±3°C/<60%RH",specs:[["23±3°C","温度"],["<60%RH","湿度"],["扫码","入库"]],reqs:[["温湿度监控","ok"],["扫码准确","ok"],["先进先出","ok"]]},
-    {id:"S29",label:"🚛 出货发货",desc:"按订单拣货，打包发货，物流追踪，MES闭环",specs:[["按单拣货","模式"],["物流追踪","全程"],["MES闭环","系统"]],reqs:[["拣货准确","ok"],["包装完好","ok"],["信息闭环","ok"]]}
+{name:"仓库 · 原材料+成品+AGV",color:0x3fb950,sections:[
+  {name:"仓管段",color:0x3fb950,icon:"📦",stations:[
+    {id:"S25",label:"📥IQC来料检",desc:"外观/尺寸/电性能AQL抽检，千分尺量测",specs:[["AQL","抽检"],["千分尺","量具"],["5min/批","节拍"]],reqs:[["抽检覆盖","ok"],["数据记录","ok"]]},
+    {id:"S26",label:"📦原料入库",desc:"扫码入库，货架定位，MES库存管理FIFO",specs:[["MES","系统"],["条码","追溯"],["FIFO","策略"]],reqs:[["扫码准确","ok"],["库存同步","ok"]]},
+    {id:"S27",label:"🚚AGV配送",desc:"智禾AGV叉车自动配送原料到产线工位±10mm",specs:[["±10mm","定位"],["AGV","自动"],["按需","配送"]],reqs:[["路径规划","ok"],["避障安全","crit"]]},
+    {id:"S28",label:"📦成品入库",desc:"FQC后成品扫码入库，23±3°C/<60%RH",specs:[["23±3°C","温控"],["<60%RH","湿度"],["扫码","入库"]],reqs:[["温湿度监控","ok"],["扫码准确","ok"]]},
+    {id:"S29",label:"🚛出货发货",desc:"按订单拣货，打包发货，物流追踪MES闭环",specs:[["按单拣货","模式"],["全程","追踪"],["MES","闭环"]],reqs:[["拣货准确","ok"],["信息闭环","ok"]]}
   ]}
 ]}
 ];
 
 let currentLine=0,focusedStation=0;
 let stationObjects=[],robotObj=null;
-let robotTarget={x:-20,z:-3},robotPos={x:-20,z:-3};
+let robotTargetX=-18,robotPosX=-18;
 
 // ═══════ THREE.JS ═══════
 const wrap=document.getElementById("canvas-wrap");
 const W=wrap.clientWidth,H=wrap.clientHeight;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);scene.fog=new THREE.Fog(0x06080d,12,55);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);scene.fog=new THREE.Fog(0x06080d,15,50);
 const camera=new THREE.PerspectiveCamera(42,W/H,1,120);
-camera.position.set(8,14,24);camera.lookAt(0,0,0);
+camera.position.set(4,10,22);camera.lookAt(0,0,-1);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W,H);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 wrap.appendChild(renderer.domElement);
 
-scene.add(new THREE.AmbientLight(0x1a1f2b,.5));
-const sun=new THREE.DirectionalLight(0xffffff,.7);sun.position.set(10,22,5);
+// Bright ambient
+scene.add(new THREE.AmbientLight(0x334455,.7));
+const sun=new THREE.DirectionalLight(0xffeedd,.9);sun.position.set(5,18,10);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
-sun.shadow.camera.near=1;sun.shadow.camera.far=70;
-sun.shadow.camera.left=-22;sun.shadow.camera.right=22;
-sun.shadow.camera.top=22;sun.shadow.camera.bottom=-5;
+sun.shadow.camera.near=1;sun.shadow.camera.far=60;
+sun.shadow.camera.left=-20;sun.shadow.camera.right=20;
+sun.shadow.camera.top=20;sun.shadow.camera.bottom=-3;
 scene.add(sun);
+// Fill light from front
+const fill=new THREE.DirectionalLight(0xaaccff,.4);fill.position.set(0,5,15);scene.add(fill);
+// Under-rail glow
+const railGlow=new THREE.PointLight(0x00d4aa,.3,8);railGlow.position.set(0,.3,0);scene.add(railGlow);
 
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(48,18),new THREE.MeshStandardMaterial({color:0x0d1117,roughness:.9}));
+// Floor
+const floorGeom=new THREE.PlaneGeometry(48,20);
+const floor=new THREE.Mesh(floorGeom,new THREE.MeshStandardMaterial({color:0x111520,roughness:.85}));
 floor.rotation.x=-Math.PI/2;floor.position.y=-.02;floor.receiveShadow=true;scene.add(floor);
-scene.add(new THREE.GridHelper(48,48,0x1a1f2b,0x111));
+const grid=new THREE.GridHelper(48,48,0x2a3040,0x1a1f2b);grid.position.y=.005;scene.add(grid);
 
-// Ceiling lights
-for(let x=-18;x<=18;x+=9){
-  const lt=new THREE.Mesh(new THREE.BoxGeometry(1.5,.08,.4),new THREE.MeshBasicMaterial({color:0x333}));
-  lt.position.set(x,6.5,0);scene.add(lt);
+// ═══════ RAIL — single straight track ═══════
+const railLen=44;
+// Base rail
+const railBase=new THREE.Mesh(
+  new THREE.BoxGeometry(railLen,.15,.35),
+  new THREE.MeshStandardMaterial({color:0x3a4050,metalness:.9,roughness:.3})
+);
+railBase.position.y=.08;railBase.castShadow=true;railBase.receiveShadow=true;scene.add(railBase);
+// Glow line
+const railLine=new THREE.Mesh(
+  new THREE.BoxGeometry(railLen,.015,.06),
+  new THREE.MeshBasicMaterial({color:0x00d4aa})
+);
+railLine.position.y=.16;scene.add(railLine);
+// Rail side markers every 2m
+for(let x=-20;x<=20;x+=2){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(.05,.04,.4),new THREE.MeshBasicMaterial({color:0x00d4aa44}));
+  m.position.set(x,.12,0);scene.add(m);
 }
 
-// Rail
-const railGroup=new THREE.Group();railGroup.name="rail";
-railGroup.add(new THREE.Mesh(new THREE.BoxGeometry(42,.1,.22),new THREE.MeshStandardMaterial({color:0x2a3040,metalness:.8,roughness:.4})));
-railGroup.children[0].position.y=.05;railGroup.children[0].receiveShadow=true;
-railGroup.add(new THREE.Mesh(new THREE.BoxGeometry(42,.012,.035),new THREE.MeshBasicMaterial({color:0x00d4aa})));
-railGroup.children[1].position.y=.11;
-scene.add(railGroup);
-
-function createStation(x,z,color,size){
+// ═══════ Station creation — all on BACK side (Z=-3), facing rail ═══════
+function createStation(x,color,size){
   const g=new THREE.Group();
-  const base=new THREE.Mesh(new THREE.BoxGeometry(size||.9,.22,.55),new THREE.MeshStandardMaterial({color:0x1a1a2e,roughness:.7}));
-  base.position.y=.11;base.castShadow=true;base.receiveShadow=true;g.add(base);
-  const body=new THREE.Mesh(new THREE.BoxGeometry(size||.9,.5,.42),new THREE.MeshStandardMaterial({color,roughness:.3,emissive:color,emissiveIntensity:.08,metalness:.4}));
-  body.position.y=.47;body.castShadow=true;g.add(body);
-  const screen=new THREE.Mesh(new THREE.BoxGeometry(.4,.18,.02),new THREE.MeshBasicMaterial({color:0x001a1a}));
-  screen.position.set(0,.52,.22);g.add(screen);
-  const light=new THREE.Mesh(new THREE.SphereGeometry(.035),new THREE.MeshBasicMaterial({color}));
-  light.position.set(.35,.72,.18);g.add(light);
-  const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,Math.abs(z),6),new THREE.MeshStandardMaterial({color:0x2a3040,metalness:.6}));
-  pipe.position.set(0,.08,-z/2);g.add(pipe);
-  g.position.set(x,0,z);
+  const w=size||1;
+  // Heavy base platform
+  const base=new THREE.Mesh(
+    new THREE.BoxGeometry(w,.3,.7),
+    new THREE.MeshStandardMaterial({color:0x1a1a2e,roughness:.6})
+  );
+  base.position.y=.15;base.castShadow=true;base.receiveShadow=true;g.add(base);
+  // Machine body - brighter
+  const body=new THREE.Mesh(
+    new THREE.BoxGeometry(w-.1,.65,.5),
+    new THREE.MeshStandardMaterial({color,roughness:.25,metalness:.4,emissive:color,emissiveIntensity:.12})
+  );
+  body.position.y=.6;body.castShadow=true;g.add(body);
+  // Work surface (facing rail)
+  const surface=new THREE.Mesh(
+    new THREE.BoxGeometry(w-.2,.05,.3),
+    new THREE.MeshStandardMaterial({color:0x334455,metalness:.6,roughness:.2})
+  );
+  surface.position.set(0,.3,.45);g.add(surface);
+  // Display
+  const screen=new THREE.Mesh(
+    new THREE.BoxGeometry(.35,.2,.02),
+    new THREE.MeshBasicMaterial({color:0x002233})
+  );
+  screen.position.set(0,.7,.26);g.add(screen);
+  // Status light on top
+  const lt=new THREE.Mesh(new THREE.SphereGeometry(.05),new THREE.MeshBasicMaterial({color}));
+  lt.position.set(.3,.95,.2);g.add(lt);
+  // Cable to rail
+  const cable=new THREE.Mesh(
+    new THREE.CylinderGeometry(.02,.02,3.5,6),
+    new THREE.MeshStandardMaterial({color:0x2a3040})
+  );
+  cable.rotation.x=Math.PI/2;cable.position.set(0,.08,1.75);g.add(cable);
+  
+  g.position.set(x,0,-3.5);
   return g;
 }
 
+// ═══════ BIG BRIGHT ROBOT ═══════
 function createRobot(){
   const g=new THREE.Group();
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.38,.32,.25),new THREE.MeshStandardMaterial({color:0x1c2333,metalness:.5,roughness:.4})));
-  g.children[0].position.y=.28;g.children[0].castShadow=true;
-  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.1,.12,.4,8),new THREE.MeshStandardMaterial({color:0x2a3040,metalness:.6}));
-  torso.position.y=.64;torso.castShadow=true;g.add(torso);
-  const head=new THREE.Mesh(new THREE.BoxGeometry(.18,.14,.14),new THREE.MeshStandardMaterial({color:0x1c2333,metalness:.4}));
-  head.position.y=.92;head.castShadow=true;g.add(head);
-  const eyeM=new THREE.MeshBasicMaterial({color:0x00d4aa});
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.02),eyeM)).position.set(-.04,.94,.07);
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.02),eyeM)).position.set(.04,.94,.07);
-  const armG=new THREE.Group();armG.position.set(.12,.68,0);armG.rotation.z=-.25;
-  armG.add(new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.45),new THREE.MeshStandardMaterial({color:0x3a4050,metalness:.7})));
-  const grip=new THREE.Mesh(new THREE.BoxGeometry(.05,.1,.04),new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.25}));
-  grip.position.y=-.25;armG.add(grip);g.add(armG);
-  for(let sx of[-.13,.13]){
-    const w=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,.04,10),new THREE.MeshStandardMaterial({color:0x111,roughness:.9}));
-    w.rotation.z=Math.PI/2;w.position.set(sx,.06,.1);g.add(w);
-    const w2=w.clone();w2.position.z=-.1;g.add(w2);
+  const bodyColor=0x8899aa,accentColor=0x00d4aa;
+  
+  // Large chassis base
+  const chassis=new THREE.Mesh(
+    new THREE.BoxGeometry(.8,.4,.6),
+    new THREE.MeshStandardMaterial({color:bodyColor,metalness:.3,roughness:.35})
+  );
+  chassis.position.y=.35;chassis.castShadow=true;g.add(chassis);
+  
+  // Body/torso - tall
+  const torso=new THREE.Mesh(
+    new THREE.BoxGeometry(.5,.8,.4),
+    new THREE.MeshStandardMaterial({color:bodyColor,metalness:.35,roughness:.3})
+  );
+  torso.position.y=1.0;torso.castShadow=true;g.add(torso);
+  
+  // Accent stripe
+  const stripe=new THREE.Mesh(
+    new THREE.BoxGeometry(.52,.08,.42),
+    new THREE.MeshStandardMaterial({color:accentColor,emissive:accentColor,emissiveIntensity:.4,roughness:.2})
+  );
+  stripe.position.y=.8;g.add(stripe);
+  
+  // Head - visible
+  const head=new THREE.Mesh(
+    new THREE.BoxGeometry(.3,.25,.22),
+    new THREE.MeshStandardMaterial({color:bodyColor,metalness:.3,roughness:.3})
+  );
+  head.position.y=1.55;head.castShadow=true;g.add(head);
+  
+  // Face screen
+  const face=new THREE.Mesh(
+    new THREE.BoxGeometry(.2,.15,.02),
+    new THREE.MeshBasicMaterial({color:0x001a2a})
+  );
+  face.position.set(0,1.55,.12);g.add(face);
+  
+  // Eyes - bright green
+  const eyeM=new THREE.MeshBasicMaterial({color:accentColor});
+  const eL=new THREE.Mesh(new THREE.SphereGeometry(.04),eyeM);eL.position.set(-.06,1.6,.12);g.add(eL);
+  const eR=eL.clone();eR.position.x=.06;g.add(eR);
+  
+  // Arm - prominent
+  const armGroup=new THREE.Group();armGroup.position.set(.3,1.15,0);armGroup.rotation.z=-.4;
+  // Upper arm
+  const upperArm=new THREE.Mesh(
+    new THREE.CylinderGeometry(.06,.05,.6,8),
+    new THREE.MeshStandardMaterial({color:bodyColor,metalness:.4,roughness:.3})
+  );
+  upperArm.position.y=-.1;armGroup.add(upperArm);
+  // Forearm
+  const forearm=new THREE.Mesh(
+    new THREE.CylinderGeometry(.05,.04,.5,8),
+    new THREE.MeshStandardMaterial({color:bodyColor,metalness:.4,roughness:.3})
+  );
+  forearm.position.y=-.6;forearm.rotation.z=.15;armGroup.add(forearm);
+  // Gripper - bright green
+  const gripBase=new THREE.Mesh(
+    new THREE.BoxGeometry(.08,.18,.06),
+    new THREE.MeshStandardMaterial({color:accentColor,emissive:accentColor,emissiveIntensity:.5,roughness:.1})
+  );
+  gripBase.position.y=-.85;armGroup.add(gripBase);
+  // Gripper fingers
+  for(let s of[-1,1]){
+    const finger=new THREE.Mesh(
+      new THREE.BoxGeometry(.03,.08,.02),
+      new THREE.MeshStandardMaterial({color:accentColor,emissive:accentColor,emissiveIntensity:.3})
+    );
+    finger.position.set(s*.03,-.95,.02);armGroup.add(finger);
   }
+  g.add(armGroup);
+  
+  // Wheels - large and visible
+  for(let sx of[-.28,.28]){
+    const wheelGeom=new THREE.CylinderGeometry(.1,.1,.06,16);
+    const wheelMat=new THREE.MeshStandardMaterial({color:0x222,roughness:.8});
+    const w=new THREE.Mesh(wheelGeom,wheelMat);
+    w.rotation.z=Math.PI/2;w.position.set(sx,.1,.22);g.add(w);
+    const w2=w.clone();w2.position.z=-.22;g.add(w2);
+  }
+  
+  g.position.set(-18,.08,.5); // On rail, slightly forward
   return g;
 }
 
+// ═══════ Build ═══════
 function buildLine(idx){
   stationObjects.forEach(s=>scene.remove(s));stationObjects=[];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",i===idx));
   
-  const line=LINES[idx];let si=0,allStations=[];
+  const line=LINES[idx];let allStations=[];
   line.sections.forEach(sec=>{sec.stations.forEach(st=>{allStations.push({...st,color:sec.color,sectionName:sec.name})})});
   
   const total=allStations.length;
-  const spacing=total>10?38/total:3.5;
+  const spacing=total>12?40/total:3.2;
   
   allStations.forEach((st,i)=>{
-    const x=-18+i*spacing;
-    const z=i%2===0?-3.2:3.2;
-    const s=createStation(x,z,st.color,total>10?.7:.9);
+    const x=-19+i*spacing;
+    const s=createStation(x,st.color,total>12?.75:1);
     s.userData={...st,index:i};scene.add(s);stationObjects.push(s);
-    st._pos={x,z};
   });
   
   if(!robotObj){robotObj=createRobot();scene.add(robotObj)}
-  const first=allStations[0];robotTarget={x:first?first._pos.x:0,z:first?first._pos.z-.6:0};
   focusedStation=0;
+  robotTargetX=allStations[0]?(-19):0;
+  robotPosX=robotTargetX;
+  robotObj.position.x=robotPosX;
+  
   buildDock(allStations);
   buildCards(allStations);
   focusStation(0);
@@ -311,17 +383,14 @@ function buildDock(stations){
 function buildCards(stations){
   let h="";
   stations.forEach((st,i)=>{
-    const reqsH=st.reqs.map(r=>{
-      const cls=r[1]==="crit"?"sv-crit":r[1]==="warn"?"sv-warn":"sv-ok";
-      return `<span class="req-dot ${r[1]}"></span>${r[0]}`
-    }).join(" ");
-    const specsH=st.specs.map(s=>`<div class="spec-item"><div class="sv sv-ok">${s[0]}</div><div class="sl">${s[1]}</div></div>`).join("");
+    const reqsH=st.reqs.map(r=>`<span class="req-dot req-${r[1]}"></span>${r[0]}`).join(" ");
+    const specsH=st.specs.map(s=>`<div class="spec-item"><div class="sv">${s[0]}</div><div class="sl">${s[1]}</div></div>`).join("");
     h+=`<div class="card" id="card${i}" onclick="focusStation(${i})">
       <span class="phase-tag" style="background:${'#'+st.color.toString(16).padStart(6,'0')}22;color:${'#'+st.color.toString(16).padStart(6,'0')}">${st.sectionName}</span>
       <div class="card-title">${st.id} ${st.label}</div>
       <div class="card-desc">${st.desc}</div>
       <div class="specs-row">${specsH}</div>
-      <div class="req-row">✅ 需求: ${reqsH}</div>
+      <div class="req-row">✅ ${reqsH}</div>
     </div>`;
   });
   document.getElementById("cards").innerHTML=h;
@@ -331,17 +400,18 @@ function focusStation(idx){
   focusedStation=idx;
   const s=stationObjects[idx];
   if(!s)return;
-  robotTarget={x:s.position.x,z:s.position.z-.6};
+  robotTargetX=s.position.x;
   document.querySelectorAll(".ds").forEach((d,i)=>d.classList.toggle("active",i===idx));
   document.querySelectorAll(".card").forEach((c,i)=>c.classList.toggle("active",i===idx));
   document.getElementById("progress").querySelector(".bar").style.width=((idx+1)/stationObjects.length*100)+"%";
-  document.getElementById("panel").scrollTo(0,document.getElementById("card"+idx)?.offsetTop-60||0);
+  const card=document.getElementById("card"+idx);
+  if(card) card.scrollIntoView({behavior:"smooth",block:"center"});
 }
 
 function switchLine(idx){currentLine=idx;buildLine(idx)}
 
-// ═══════ Camera ═══════
-let dragging=false,prev={x:0,y:0},camTheta=0,camPhi=.45,camDist=24,target={x:0,y:0,z:0};
+// ═══════ Camera — orbit ═══════
+let dragging=false,prev={x:0,y:0},camTheta=0,camPhi=.5,camDist=22,target={x:0,y:1,z:-1.5};
 function updateCam(){
   camera.position.x=target.x+camDist*Math.sin(camPhi)*Math.cos(camTheta);
   camera.position.y=target.y+camDist*Math.cos(camPhi);
@@ -352,6 +422,7 @@ wrap.addEventListener("mousedown",e=>{dragging=true;prev={x:e.clientX,y:e.client
 wrap.addEventListener("mousemove",e=>{if(!dragging)return;camTheta-=(e.clientX-prev.x)*.005;camPhi=Math.max(.1,Math.min(1.4,camPhi-(e.clientY-prev.y)*.005));prev={x:e.clientX,y:e.clientY};updateCam()});
 wrap.addEventListener("mouseup",()=>dragging=false);
 wrap.addEventListener("wheel",e=>{camDist=Math.max(5,Math.min(40,camDist+e.deltaY*.02));updateCam()});
+// Touch
 wrap.addEventListener("touchstart",e=>{if(e.touches.length===1){dragging=true;prev={x:e.touches[0].clientX,y:e.touches[0].clientY}}});
 wrap.addEventListener("touchmove",e=>{if(!dragging||e.touches.length!==1)return;camTheta-=(e.touches[0].clientX-prev.x)*.005;camPhi=Math.max(.1,Math.min(1.4,camPhi-(e.touches[0].clientY-prev.y)*.005));prev={x:e.touches[0].clientX,y:e.touches[0].clientY};updateCam()});
 wrap.addEventListener("touchend",()=>dragging=false);
@@ -360,12 +431,14 @@ wrap.addEventListener("touchend",()=>dragging=false);
 let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
-  const dx=robotTarget.x-robotPos.x,dz=robotTarget.z-robotPos.z;
-  const dist=Math.sqrt(dx*dx+dz*dz);
-  if(dist>.03){robotPos.x+=dx*.05;robotPos.z+=dz*.05}
-  robotObj.position.set(robotPos.x,.08,robotPos.z);
-  robotObj.position.y+=Math.sin(time*3)*.012;
-  stationObjects.forEach(s=>{const lt=s.children[3];if(lt)lt.scale.setScalar(1+Math.sin(time*3+s.position.x)*.12)});
+  // Smooth lateral movement only
+  const dx=robotTargetX-robotPosX;
+  if(Math.abs(dx)>.02) robotPosX+=dx*.06;
+  robotObj.position.x=robotPosX;
+  // Subtle bob
+  robotObj.position.y=.08+Math.sin(time*2.5)*.025;
+  // Station lights pulse
+  stationObjects.forEach(s=>{const lt=s.children[4];if(lt)lt.scale.setScalar(1+Math.sin(time*3+s.position.x)*.2)});
   renderer.render(scene,camera);
 }
 
