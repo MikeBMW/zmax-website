@@ -3,397 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>储翰光模块产线 · 轨道机器人场景 | Z-MAX</title>
+<title>光模块OE产线 · 轨道机器人场景 | Z-MAX</title>
 <style>
-:root{--bg:#06080d;--panel:#0d1117;--border:#1a1f2b;--accent:#00d4aa;--text:#c8d1d9;--muted:#8b949e;--dim:#484f58}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-#bar{background:var(--panel);padding:8px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:10;flex-wrap:wrap}
-#bar h1{font-size:14px;color:var(--accent);white-space:nowrap}
-#bar .tabs{display:flex;gap:0}
-#bar .tab{padding:5px 10px;font-size:10px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
-#bar .tab:first-child{border-radius:5px 0 0 5px}
-#bar .tab:last-child{border-radius:0 5px 5px 0}
-#bar .tab.active{background:#0d3320;color:var(--accent);border-color:#00d4aa44}
-#bar a{font-size:10px;color:var(--dim);border:1px solid var(--border);border-radius:4px;padding:3px 8px;text-decoration:none}
-.badge{font-size:9px;padding:2px 6px;border-radius:3px;white-space:nowrap}
-.badge-ok{background:#0d3320;color:#3fb950;border:1px solid #3fb95033}
-.badge-warn{background:#332010;color:#f0a500;border:1px solid #f0a50033}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1400px;margin:0 auto;padding:20px 16px}
+a{color:#00d4aa;text-decoration:none}
+h1{font-size:20px;color:#00d4aa;margin-bottom:4px}
+h2{font-size:15px;color:#8b949e;font-weight:400;margin-bottom:20px}
+h3{font-size:13px;color:#e6edf3;margin:16px 0 8px}
+.sub{font-size:11px;color:#484f58;margin-bottom:16px}
+.back-home{display:inline-block;margin-bottom:16px;color:#00d4aa;font-size:12px;padding:4px 12px;border:1px solid #1a1f2b;border-radius:4px}
 
-#main{flex:1;display:flex;overflow:hidden}
+/* Layout */
+.main-grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
 
-/* 3D view */
-#view3d{flex:1;position:relative;cursor:grab;min-width:0}
-#view3d:active{cursor:grabbing}
-#view3d canvas{display:block}
-
-#specs-overlay{position:absolute;top:10px;left:10px;z-index:5;background:rgba(13,17,23,.9);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:10px}
-#specs-overlay .row{display:flex;gap:10px;margin:2px 0}
-#specs-overlay .k{color:var(--muted);min-width:70px}
-#specs-overlay .v{color:var(--accent);font-weight:700}
-
-#dock{position:absolute;bottom:0;left:0;right:0;background:rgba(13,17,23,.96);border-top:1px solid var(--border);display:flex;gap:0;overflow-x:auto;z-index:5;padding:4px 8px}
-#dock .ds{flex:1;min-width:60px;text-align:center;padding:5px 2px;cursor:pointer;border-radius:5px;font-size:9px;border:1px solid transparent;transition:all .15s}
-#dock .ds:hover{background:#111827}
-#dock .ds.active{background:#0d3320;border-color:#00d4aa44}
-#dock .ds .di{font-size:14px;display:block}
-#dock .ds .dn{font-weight:600}
-#dock .ds .dt{color:var(--dim);font-size:8px}
-
-/* Right panel */
-#panel{width:370px;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
-@media(max-width:1000px){#panel{display:none;position:absolute;right:0;top:50px;bottom:0;z-index:20;width:320px}
-  #panel.open{display:flex}}
-#panel-toggle{display:none;position:fixed;right:8px;top:54px;z-index:21;background:var(--panel);border:1px solid var(--accent);color:var(--accent);padding:4px 8px;border-radius:4px;font-size:11px}
-@media(max-width:1000px){#panel-toggle{display:block}}
-
-#panel h3{font-size:12px;color:var(--accent);padding:10px 14px 4px;border-bottom:1px solid var(--border);margin-bottom:4px}
-
-/* Flow bar */
-.flow-bar{display:flex;align-items:center;gap:0;padding:6px 10px;overflow-x:auto;border-bottom:1px solid var(--border)}
-.flow-step{flex:1;min-width:50px;text-align:center;padding:4px 2px;font-size:9px}
-.flow-step .icon{font-size:16px;display:block}
-.flow-step .label{color:var(--text);font-weight:600;font-size:9px}
-.flow-step .time{color:var(--dim);font-size:8px}
-.flow-arrow{color:var(--border);font-size:12px;flex-shrink:0}
+/* SVG floor plan */
+.floor-plan{background:#0d1117;border-radius:10px;border:1px solid #1a1f2b;padding:16px;overflow-x:auto}
+.floor-plan svg{min-width:900px;width:100%}
 
 /* Station cards */
-.station{background:#111827;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:6px 10px;transition:all .2s;cursor:pointer}
-.station:hover{border-color:#00d4aa44}
-.station.active{border-color:var(--accent);box-shadow:0 0 8px rgba(0,212,170,.08)}
-.station .st-header{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.station .st-num{min-width:22px;height:22px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000}
-.station .st-name{font-size:12px;font-weight:700}
-.station .st-section{font-size:9px;color:var(--dim)}
-.station .st-desc{font-size:10px;color:var(--muted);line-height:1.4;margin:4px 0}
-.station .st-specs{display:flex;gap:6px;flex-wrap:wrap}
-.station .st-spec{background:rgba(0,0,0,.3);border-radius:4px;padding:4px 8px;text-align:center;font-size:10px}
-.station .st-spec .sv{font-weight:700;color:#3fb950}
-.station .st-spec .sl{font-size:8px;color:var(--dim)}
-.station .st-reqs{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:9px;color:var(--dim)}
-.station .st-req{display:flex;align-items:center;gap:2px}
-.station .st-req .dot{width:5px;height:5px;border-radius:3px}
-.dot-ok{background:#3fb950}.dot-warn{background:#f0a500}.dot-crit{background:#ff4444}
+.station-list{display:flex;flex-direction:column;gap:8px}
+.station{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px;transition:all .2s}
+.station:hover{border-color:#00d4aa44;background:#111827}
+.station.active{border-color:#00d4aa;box-shadow:0 0 12px rgba(0,212,170,.1)}
+.station .st-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.station .st-num{width:24px;height:24px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#000}
+.station .st-name{font-size:13px;font-weight:700}
+.station .st-desc{font-size:11px;color:#8b949e;line-height:1.5}
+.station .st-tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.station .st-tag{font-size:9px;padding:2px 6px;border-radius:3px;background:#1a1f2b;color:#8b949e}
 
-/* Robot specs section */
-.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 10px}
-.sp-item{background:#111827;border:1px solid var(--border);border-radius:6px;padding:8px;text-align:center}
-.sp-item .val{font-size:14px;font-weight:700;color:var(--accent)}
-.sp-item .lab{font-size:8px;color:var(--dim)}
+/* Process flow */
+.flow-bar{display:flex;align-items:center;gap:0;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:8px;margin-bottom:16px;overflow-x:auto}
+.flow-step{flex:1;min-width:60px;text-align:center;padding:8px 4px;font-size:10px}
+.flow-step .icon{font-size:20px;margin-bottom:2px}
+.flow-step .label{color:#c8d1d9;font-weight:600}
+.flow-step .time{color:#484f58;font-size:9px}
+.flow-arrow{color:#1a1f2b;font-size:16px;flex-shrink:0}
 
-.legend-row{display:flex;gap:10px;flex-wrap:wrap;padding:6px 10px;font-size:9px;color:var(--muted)}
-.legend-row span{display:flex;align-items:center;gap:3px}
-.legend-dot{width:7px;height:7px;border-radius:4px}
+/* Robot specs */
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.spec{background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:8px;text-align:center}
+.spec .val{font-size:16px;font-weight:700;color:#00d4aa}
+.spec .lab{font-size:9px;color:#8b949e}
+
+/* Key metrics */
+.metrics{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.metric{flex:1;min-width:100px;background:linear-gradient(135deg,#0d3320,#0d1117);border:1px solid #00d4aa33;border-radius:8px;padding:12px;text-align:center}
+.metric .val{font-size:22px;font-weight:800;color:#00d4aa}
+.metric .lab{font-size:10px;color:#8b949e;margin-top:2px}
+
+/* Animate */
+@keyframes moveRobot{0%{transform:translateX(0)}100%{transform:translateX(100%)}}
+.robot-marker{animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Legend */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:#8b949e}
+.legend-dot{width:8px;height:8px;border-radius:4px}
 </style>
 </head>
 <body>
 
-<div id="bar">
-  <a href="/">← 主页</a>
-  <h1>🏭 储翰 · 光模块全流程产线</h1>
-  <span class="badge badge-ok">精度 ±0.02mm</span>
-  <span class="badge badge-ok">节拍 ≤15s</span>
-  <span class="badge badge-ok">成功率 >99%</span>
-  <span class="badge badge-warn">万级洁净</span>
-  <div class="tabs">
-    <button class="tab active" onclick="switchLine(0)">🔩 188数通</button>
-    <button class="tab" onclick="switchLine(1)">🔬 OSA电信</button>
-    <button class="tab" onclick="switchLine(2)">📦 仓库</button>
-  </div>
+<a href="/" class="back-home">← 返回主页</a>
+<h1>🤖 光模块 OE 产线 · 轨道机器人场景</h1>
+<h2>艾利特 Centaur-G1 轮式人形机器人 × 轨道移动系统 × 6工位全流程</h2>
+
+<!-- Metrics -->
+<div class="metrics">
+  <div class="metric"><div class="val">6</div><div class="lab">工位覆盖</div></div>
+  <div class="metric"><div class="val">±0.01mm</div><div class="lab">重复定位精度</div></div>
+  <div class="metric"><div class="val">7-DOF</div><div class="lab">冗余机械臂</div></div>
+  <div class="metric"><div class="val">28s</div><div class="lab">单件节拍</div></div>
+  <div class="metric"><div class="val">>99.5%</div><div class="lab">良率目标</div></div>
 </div>
 
-<div id="main">
-<div id="view3d">
-  <div id="specs-overlay">
-    <div class="row"><span class="k">重复定位</span><span class="v">±0.02mm</span></div>
-    <div class="row"><span class="k">力控精度</span><span class="v">±0.1N</span></div>
-    <div class="row"><span class="k">轨道导航</span><span class="v">±0.01m</span></div>
-    <div class="row"><span class="k">推理引擎</span><span class="v">VLA-T</span></div>
-  </div>
-  <div id="dock"></div>
+<!-- Process flow -->
+<div class="flow-bar" style="margin-top:16px">
+  <div class="flow-step"><div class="icon">📦</div><div class="label">上料</div><div class="time">3s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🔥</div><div class="label">共晶</div><div class="time">8s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🎯</div><div class="label">COC贴装</div><div class="time">5s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🔗</div><div class="label">打线</div><div class="time">4s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">🕐</div><div class="label">老化上料</div><div class="time">2s</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step"><div class="icon">✅</div><div class="label">下料</div><div class="time">3s</div></div>
 </div>
 
-<div id="panel">
-  <h3>🔄 流程总览</h3>
-  <div class="flow-bar" id="flow-bar"></div>
-  
-  <h3>📋 工艺卡片</h3>
-  <div id="stations-list"></div>
-  
-  <h3>🤖 机器人规格</h3>
-  <div class="sp-grid">
-    <div class="sp-item"><div class="val">Centaur-G1</div><div class="lab">型号</div></div>
-    <div class="sp-item"><div class="val">7-DOF</div><div class="lab">机械臂自由度</div></div>
-    <div class="sp-item"><div class="val">5kg</div><div class="lab">单臂负载</div></div>
-    <div class="sp-item"><div class="val">±0.01m</div><div class="lab">轨道导航精度</div></div>
-    <div class="sp-item"><div class="val">±0.1mm</div><div class="lab">重复定位精度</div></div>
-    <div class="sp-item"><div class="val">VLA-T</div><div class="lab">推理引擎</div></div>
+<div class="main-grid">
+  <!-- Floor Plan SVG -->
+  <div class="floor-plan">
+    <svg viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="rail" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#1a1f2b"/><stop offset="50%" stop-color="#00d4aa44"/><stop offset="100%" stop-color="#1a1f2b"/>
+        </linearGradient>
+        <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0d1117"/><stop offset="100%" stop-color="#1a1f2b"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- Cleanroom background -->
+      <rect x="0" y="0" width="1000" height="520" fill="#0a0a0f" rx="8"/>
+      <text x="20" y="25" fill="#484f58" font-size="10">洁净车间 Class 1000 · 轨道长度 8m · 6工位</text>
+
+      <!-- Floor grid -->
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1f2b" stroke-width="0.5"/>
+      </pattern>
+      <rect x="20" y="60" width="960" height="380" fill="url(#grid)" opacity="0.5"/>
+
+      <!-- Rail track -->
+      <rect x="20" y="240" width="960" height="8" fill="url(#rail)" rx="4"/>
+      <text x="500" y="235" fill="#484f58" font-size="9" text-anchor="middle">轨道导轨 · 精度 ±0.01m</text>
+
+      <!-- Station 1: 上料 -->
+      <g transform="translate(60,120)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#f0a500" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#f0a500" font-size="11" font-weight="700" text-anchor="middle">📦 上料站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Tray盘供料</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">视觉定位 ±5μm</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 3s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#f0a500" rx="1"/>
+        <!-- Connection to rail -->
+        <line x1="65" y1="100" x2="65" y2="120" stroke="#f0a500" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 2: 共晶 -->
+      <g transform="translate(230,100)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#ff6b35" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#ff6b35" font-size="11" font-weight="700" text-anchor="middle">🔥 共晶站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">AuSn共晶焊</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">280°C ±2°C</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 8s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#ff6b35" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="140" stroke="#ff6b35" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 3: COC -->
+      <g transform="translate(400,120)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#00d4aa" stroke-width="2" rx="6"/>
+        <text x="65" y="22" fill="#00d4aa" font-size="11" font-weight="700" text-anchor="middle">🎯 COC贴装</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Chip-on-Carrier</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">精度 ±1μm · 力控</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 5s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#00d4aa" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="120" stroke="#00d4aa" stroke-width="1" stroke-dasharray="4,2"/>
+        <!-- Active indicator -->
+        <circle cx="120" cy="10" r="4" fill="#00d4aa" filter="url(#glow)" class="robot-marker"/>
+        <text x="115" y="98" fill="#00d4aa" font-size="8">● 当前工位</text>
+      </g>
+
+      <!-- Station 4: 打线 -->
+      <g transform="translate(570,100)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#58a6ff" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#58a6ff" font-size="11" font-weight="700" text-anchor="middle">🔗 打线站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Wire Bonding</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">Au线 25μm · US焊</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 4s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#58a6ff" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="140" stroke="#58a6ff" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 5: 老化 -->
+      <g transform="translate(740,110)">
+        <rect x="0" y="0" width="130" height="100" fill="#0d1117" stroke="#a371f7" stroke-width="1.5" rx="6"/>
+        <text x="65" y="22" fill="#a371f7" font-size="11" font-weight="700" text-anchor="middle">🕐 老化站</text>
+        <text x="65" y="42" fill="#8b949e" font-size="9" text-anchor="middle">Burn-in 85°C</text>
+        <text x="65" y="58" fill="#8b949e" font-size="9" text-anchor="middle">96槽位烤箱</text>
+        <text x="65" y="78" fill="#484f58" font-size="8" text-anchor="middle">上下料 2s</text>
+        <rect x="40" y="88" width="50" height="3" fill="#a371f7" rx="1"/>
+        <line x1="65" y1="100" x2="65" y2="130" stroke="#a371f7" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Station 6: 下料 -->
+      <g transform="translate(880,120)">
+        <rect x="0" y="0" width="100" height="100" fill="#0d1117" stroke="#3fb950" stroke-width="1.5" rx="6"/>
+        <text x="50" y="22" fill="#3fb950" font-size="11" font-weight="700" text-anchor="middle">✅ 下料</text>
+        <text x="50" y="42" fill="#8b949e" font-size="9" text-anchor="middle">AOI检测</text>
+        <text x="50" y="58" fill="#8b949e" font-size="9" text-anchor="middle">分拣OK/NG</text>
+        <text x="50" y="78" fill="#484f58" font-size="8" text-anchor="middle">节拍 3s</text>
+        <rect x="25" y="88" width="50" height="3" fill="#3fb950" rx="1"/>
+        <line x1="50" y1="100" x2="50" y2="120" stroke="#3fb950" stroke-width="1" stroke-dasharray="4,2"/>
+      </g>
+
+      <!-- Robot on rail -->
+      <g transform="translate(420,225)">
+        <!-- Robot body -->
+        <rect x="0" y="0" width="40" height="30" fill="#1c2333" stroke="#00d4aa" stroke-width="2" rx="6"/>
+        <!-- Arm base -->
+        <circle cx="20" cy="15" r="10" fill="none" stroke="#00d4aa" stroke-width="1.5"/>
+        <!-- Arm -->
+        <line x1="20" y1="10" x2="10" y2="-20" stroke="#00d4aa" stroke-width="3" stroke-linecap="round"/>
+        <line x1="10" y1="-20" x2="25" y2="-40" stroke="#00d4aa" stroke-width="2" stroke-linecap="round"/>
+        <!-- Gripper -->
+        <rect x="20" y="-45" width="10" height="6" fill="#00d4aa" rx="2"/>
+        <!-- Wheels -->
+        <circle cx="8" cy="28" r="5" fill="#1a1f2b" stroke="#8b949e" stroke-width="1"/>
+        <circle cx="32" cy="28" r="5" fill="#1a1f2b" stroke="#8b949e" stroke-width="1"/>
+        <!-- Head -->
+        <rect x="12" y="-5" width="16" height="12" fill="#1c2333" stroke="#00d4aa" stroke-width="1" rx="4"/>
+        <circle cx="16" cy="0" r="2" fill="#00d4aa"/>
+        <circle cx="24" cy="0" r="2" fill="#00d4aa"/>
+        <!-- Label -->
+        <text x="20" y="45" fill="#00d4aa" font-size="8" text-anchor="middle" font-weight="700">Centaur-G1</text>
+        <text x="20" y="55" fill="#484f58" font-size="7" text-anchor="middle">DDS VLA-T 控制</text>
+      </g>
+
+      <!-- DDS data flow arrows -->
+      <g opacity="0.3">
+        <path d="M 470 270 Q 470 310 130 310 Q 60 310 60 280" fill="none" stroke="#00d4aa" stroke-width="1" stroke-dasharray="3,3"/>
+        <path d="M 470 270 Q 470 350 300 350 Q 230 350 230 320" fill="none" stroke="#ff6b35" stroke-width="1" stroke-dasharray="3,3"/>
+      </g>
+
+      <!-- DDS label -->
+      <rect x="10" y="480" width="980" height="30" fill="#0d1117" rx="4"/>
+      <text x="500" y="500" fill="#8b949e" font-size="9" text-anchor="middle">
+        DDS 数据闭环：VLA-T视觉采集 → z₁z₂z₃潜空间推理 → 力控动作生成 → 实时反馈优化
+      </text>
+    </svg>
   </div>
-  
-  <h3>图例</h3>
-  <div class="legend-row">
-    <span><span class="legend-dot" style="background:#f0a500"></span>COC基板</span>
-    <span><span class="legend-dot" style="background:#ff6b35"></span>OE光引擎</span>
-    <span><span class="legend-dot" style="background:#58a6ff"></span>模块组装</span>
-    <span><span class="legend-dot" style="background:#a371f7"></span>OSA电信</span>
-    <span><span class="legend-dot" style="background:#3fb950"></span>仓库物流</span>
-  </div>
-  
-  <div style="padding:10px;font-size:9px;color:var(--dim);text-align:center;border-top:1px solid var(--border);margin-top:8px">
-    Z-MAX 静界科技 · DDS · VLA-T z₁z₂z₃ 三层潜空间 · 光模块智能装配
-  </div>
-</div>
-</div>
-<button id="panel-toggle" onclick="document.getElementById('panel').classList.toggle('open')">📋 面板</button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-// ═══════════════════════════════════════
-// DATA: 储翰光模块产线 全流程工艺定义
-// ═══════════════════════════════════════
-const LINES=[
-{name:"188车间 · 高速数通",color:0x00d4aa,sections:[
-  {name:"COC基板段",color:0xf0a500,icon:"🔩",stations:[
-    {id:"S01",label:"📦上料",desc:"Tray盘自动供料，视觉定位芯片方向，双指夹爪拾取COC基板",specs:[["±5μm","定位精度"],["3s","节拍"],["2N","夹持力"]],reqs:[["视觉定位","ok"],["力控夹取","ok"],["防静电","warn"]]},
-    {id:"S02",label:"🔥共晶焊",desc:"AuSn共晶焊接280°C±2°C，力控压合3N，高温环境作业",specs:[["280°C±2°C","温控"],["8s","节拍"],["3N","压合力"]],reqs:[["温控精准","ok"],["力控反馈","ok"],["高温防护","ok"]]},
-    {id:"S03",label:"🎯COC贴装",desc:"Chip-on-Carrier精密贴装，视觉+六维力觉融合控制，±1μm精度",specs:[["±1μm","贴装精度"],["5s","节拍"],["6轴","力传感器"]],reqs:[["亚微米对准","crit"],["力觉融合","ok"],["UV固化","ok"]]},
-    {id:"S04",label:"🔗金线键合",desc:"25μm Au线超声波焊接Wire Bonding，机器人辅助送料及夹具定位",specs:[["25μm","金线直径"],["4s","节拍"],["US焊","工艺"]],reqs:[["辅助定位","ok"],["送料精度","ok"],["夹具适配","warn"]]},
-    {id:"S05",label:"🕐老化上料",desc:"85°C Burn-in烤箱自动上下料，96槽位，机器人耐受高温持续作业",specs:[["85°C","老化温度"],["2s","单次"],["96槽","容量"]],reqs:[["高温耐受","crit"],["精准插拔","ok"],["槽位识别","ok"]]},
-    {id:"S06",label:"✅AOI下料",desc:"自动光学检测+OK/NG分拣，条码扫描全流程MES追溯",specs:[["AOI","检测方式"],["3s","节拍"],["MES","追溯"]],reqs:[["缺陷识别","ok"],["分拣准确","ok"],["数据追溯","ok"]]}
-  ]},
-  {name:"OE光引擎段",color:0xff6b35,icon:"🔬",stations:[
-    {id:"S07",label:"🔍透镜耦合",desc:"有源对准耦合±0.5μm，UV预固化+热固化，实时IL/RL监测反馈",specs:[["±0.5μm","对准精度"],["8s","节拍"],["IL<1dB","插损"]],reqs:[["有源对准","crit"],["UV固化","ok"],["实时监测","ok"]]},
-    {id:"S08",label:"🔗光纤阵列",desc:"FA光纤阵列多通道并行对准耦合，激光焊接固定",specs:[["多通道","并行"],["6s","节拍"],["激光焊","固定"]],reqs:[["多通道对齐","crit"],["激光焊接","ok"]]},
-    {id:"S09",label:"🛡隔离器",desc:"光隔离器精密装配，隔离度>30dB，额外插损<1dB",specs:[[">30dB","隔离度"],["<1dB","插损"],["4s","节拍"]],reqs:[["精密装配","ok"],["洁净操作","ok"]]},
-    {id:"S10",label:"🔒封帽气密",desc:"TO-CAN气密封装，氦气检漏100%全检，漏率<1×10⁻⁸",specs:[["<1E-8","氦检漏率"],["6s","节拍"],["100%","全检"]],reqs:[["气密性","crit"],["氦检适配","ok"]]},
-    {id:"S11",label:"📊光参数测",desc:"IL/RL/光谱/BW全参数自动测试，自动判定Pass/Fail",specs:[["IL<3dB","插损上限"],["RL>12dB","回损"],["5s","节拍"]],reqs:[["全参数覆盖","ok"],["自动判定","ok"]]},
-    {id:"S12",label:"🔥老炼筛选",desc:"85°C 48h带电老炼，自动上下料，剔除早期失效品",specs:[["85°C","温度"],["48h","时长"],["2s","上下料"]],reqs:[["长期高温","crit"],["自动上下料","ok"]]}
-  ]},
-  {name:"模块组装段",color:0x58a6ff,icon:"📦",stations:[
-    {id:"S13",label:"🔌PCB焊接",desc:"SMT贴片+回流焊260°C，PCB与光引擎电气连接I2C通信",specs:[["260°C","回流焊"],["5s","节拍"],["I2C","通信"]],reqs:[["SMT精度","ok"],["温度曲线","ok"]]},
-    {id:"S14",label:"📦外壳装配",desc:"QSFP-DD金属外壳组装，导热垫片贴合，螺钉自动锁紧0.3N·m",specs:[["QSFP-DD","封装"],["5s","节拍"],["0.3N·m","扭力"]],reqs:[["扭矩控制","ok"],["导热贴合","ok"]]},
-    {id:"S15",label:"📡BERT测试",desc:"误码率PRBS31测试，灵敏度/过载全温覆盖，BER<1E-12",specs:[["BER<1E-12","误码率"],["PRBS31","码型"],["8s","节拍"]],reqs:[["BER达标","crit"],["全温覆盖","ok"]]},
-    {id:"S16",label:"👁眼图测试",desc:"眼图模板测试，消光比ER>4dB，抖动/上升时间自动测量",specs:[["ER>4dB","消光比"],["眼图","模板"],["5s","节拍"]],reqs:[["眼图达标","crit"],["抖动测量","ok"]]},
-    {id:"S17",label:"🏷标签打标",desc:"激光打标二维码+序列号，MES系统绑定全流程追溯",specs:[["激光打标","方式"],["2s","节拍"],["MES","追溯"]],reqs:[["码制正确","ok"],["数据关联","ok"]]},
-    {id:"S18",label:"📦FQC包装",desc:"最终质检100%全检，防静电包装，MES出货记录",specs:[["FQC","100%"],["ESD防护","标准"],["3s","节拍"]],reqs:[["全检无误","crit"],["ESD合规","ok"]]}
-  ]}
-]},
-{name:"OSA车间 · 电信/PON",color:0xa371f7,sections:[
-  {name:"电信OSA段",color:0xa371f7,icon:"🔍",stations:[
-    {id:"S19",label:"🔍滤波片贴装",desc:"CWDM/DWDM滤波片精密贴装±0.1°，UV固化",specs:[["±0.1°","角度精度"],["4s","节拍"],["UV固化","工艺"]],reqs:[["角度精度","crit"],["洁净操作","ok"]]},
-    {id:"S20",label:"🔗耦合焊接",desc:"三光束激光焊接固定，应力平衡，位移<2μm",specs:[["3光束","激光焊"],["<2μm","位移"],["6s","节拍"]],reqs:[["应力平衡","crit"],["焊接质量","ok"]]},
-    {id:"S21",label:"🌡TC循环",desc:"-40°C~+85°C温度循环10次筛选，自动上下料",specs:[["-40~85°C","温度范围"],["10次","循环"],["2s","上下料"]],reqs:[["温循覆盖","ok"],["自动上下料","ok"]]},
-    {id:"S22",label:"📐焊软板",desc:"柔性FPC焊接，机器人辅助定位送料，烙铁焊工艺",specs:[["FPC","软板"],["5s","节拍"],["烙铁焊","工艺"]],reqs:[["辅助定位","ok"],["送料精度","ok"]]},
-    {id:"S23",label:"📊综合测试",desc:"IL/RL/PD响应/追踪误差全参数自动测试判定",specs:[["IL<0.5dB","插损"],["PD响应","监测"],["6s","节拍"]],reqs:[["全参数","ok"],["自动判定","ok"]]},
-    {id:"S24",label:"📦包装出货",desc:"防静电包装+标签打印+MES出货记录全流程追溯",specs:[["ESD","防护"],["2s","节拍"],["MES","追溯"]],reqs:[["ESD合规","ok"],["数据完整","ok"]]}
-  ]}
-]},
-{name:"仓库 · 原材料+成品+AGV",color:0x3fb950,sections:[
-  {name:"仓管段",color:0x3fb950,icon:"📦",stations:[
-    {id:"S25",label:"📥IQC来料检",desc:"来料外观/尺寸/电性能AQL抽检，千分尺量测",specs:[["AQL","抽检标准"],["千分尺","量具"],["5min/批","节拍"]],reqs:[["抽检覆盖","ok"],["数据记录","ok"]]},
-    {id:"S26",label:"📦原料入库",desc:"扫码入库，货架定位，MES库存管理FIFO先进先出",specs:[["MES","系统"],["条码","追溯"],["FIFO","策略"]],reqs:[["扫码准确","ok"],["库存同步","ok"]]},
-    {id:"S27",label:"🚚AGV配送",desc:"智禾AGV叉车自动配送原料到产线工位，定位±10mm",specs:[["±10mm","定位精度"],["AGV","自动"],["按需","配送"]],reqs:[["路径规划","ok"],["避障安全","crit"]]},
-    {id:"S28",label:"📦成品入库",desc:"FQC后成品扫码入库，23±3°C/<60%RH温湿度监控",specs:[["23±3°C","温控"],["<60%RH","湿度"],["扫码","入库"]],reqs:[["温湿度","ok"],["扫码准确","ok"]]},
-    {id:"S29",label:"🚛出货发货",desc:"按订单拣货打包发货，物流追踪MES闭环",specs:[["按单拣货","模式"],["全程","追踪"],["MES","闭环"]],reqs:[["拣货准确","ok"],["信息闭环","ok"]]}
-  ]}
-]}];
-
-let currentLine=0,focusedStation=0,allStations=[];
-let stationObjects=[],robotObj=null;
-let robotTargetX=-18,robotPosX=-18;
-
-// ═══════ THREE.JS ═══════
-const wrap3d=document.getElementById("view3d");
-const W=wrap3d.clientWidth,H=wrap3d.clientHeight;
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);scene.fog=new THREE.Fog(0x06080d,15,50);
-const camera=new THREE.PerspectiveCamera(42,W/H,1,120);
-camera.position.set(4,10,20);camera.lookAt(0,0,-1);
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W,H);
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-wrap3d.appendChild(renderer.domElement);
-
-scene.add(new THREE.AmbientLight(0x334455,.7));
-const sun=new THREE.DirectionalLight(0xffeedd,.9);sun.position.set(5,18,10);
-sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
-sun.shadow.camera.near=1;sun.shadow.camera.far=60;
-sun.shadow.camera.left=-20;sun.shadow.camera.right=20;
-sun.shadow.camera.top=20;sun.shadow.camera.bottom=-3;
-scene.add(sun);
-scene.add(new THREE.DirectionalLight(0xaaccff,.4)).position.set(0,5,15);
-scene.add(new THREE.PointLight(0x00d4aa,.3,8)).position.set(0,.3,0);
-
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(48,20),new THREE.MeshStandardMaterial({color:0x111520,roughness:.85}));
-floor.rotation.x=-Math.PI/2;floor.position.y=-.02;floor.receiveShadow=true;scene.add(floor);
-scene.add(new THREE.GridHelper(48,48,0x2a3040,0x1a1f2b)).position.y=.005;
-
-// Single rail
-const rl=new THREE.Mesh(new THREE.BoxGeometry(44,.15,.35),new THREE.MeshStandardMaterial({color:0x3a4050,metalness:.9,roughness:.3}));
-rl.position.y=.08;rl.castShadow=true;rl.receiveShadow=true;scene.add(rl);
-const rlLine=new THREE.Mesh(new THREE.BoxGeometry(44,.015,.06),new THREE.MeshBasicMaterial({color:0x00d4aa}));
-rlLine.position.y=.16;scene.add(rlLine);
-
-function createStation(x,color,w){
-  const g=new THREE.Group();const s=w||.7;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(s,.3,.65),new THREE.MeshStandardMaterial({color:0x1a1a2e,roughness:.6}))).position.y=.15;
-  g.children[0].castShadow=g.children[0].receiveShadow=true;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(s-.1,.6,.45),new THREE.MeshStandardMaterial({color,roughness:.25,metalness:.4,emissive:color,emissiveIntensity:.12})));
-  g.children[1].position.y=.55;g.children[1].castShadow=true;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(s-.2,.04,.25),new THREE.MeshStandardMaterial({color:0x334455,metalness:.6,roughness:.2}))).position.set(0,.28,.42);
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.17,.02),new THREE.MeshBasicMaterial({color:0x002233}))).position.set(0,.62,.24);
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.045),new THREE.MeshBasicMaterial({color}))).position.set(.25,.88,.18);
-  const cb=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,3.5,6),new THREE.MeshStandardMaterial({color:0x2a3040}));
-  cb.rotation.x=Math.PI/2;cb.position.set(0,.08,1.75);g.add(cb);
-  g.position.set(x,0,-3.5);
-  return g;
-}
-
-function createRobot(){
-  const g=new THREE.Group();const bc=0x8899aa,ac=0x00d4aa;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.75,.35,.55),new THREE.MeshStandardMaterial({color:bc,metalness:.3,roughness:.35}))).position.y=.32;
-  g.children[0].castShadow=true;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.45,.7,.35),new THREE.MeshStandardMaterial({color:bc,metalness:.35,roughness:.3})));
-  g.children[1].position.y=.88;g.children[1].castShadow=true;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.48,.07,.37),new THREE.MeshStandardMaterial({color:ac,emissive:ac,emissiveIntensity:.4})));
-  g.children[2].position.y=.72;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.28,.22,.2),new THREE.MeshStandardMaterial({color:bc,metalness:.3})));
-  g.children[3].position.y=1.38;g.children[3].castShadow=true;
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.18,.12,.02),new THREE.MeshBasicMaterial({color:0x001a2a}))).position.set(0,1.38,.11);
-  const em=new THREE.MeshBasicMaterial({color:ac});
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.035),em)).position.set(-.05,1.42,.11);
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.035),em)).position.set(.05,1.42,.11);
-  const armG=new THREE.Group();armG.position.set(.28,1.0,0);armG.rotation.z=-.4;
-  armG.add(new THREE.Mesh(new THREE.CylinderGeometry(.05,.04,.55,8),new THREE.MeshStandardMaterial({color:bc,metalness:.4})));
-  armG.children[0].position.y=-.08;
-  armG.add(new THREE.Mesh(new THREE.CylinderGeometry(.04,.035,.45,8),new THREE.MeshStandardMaterial({color:bc,metalness:.4})));
-  armG.children[1].position.y=-.55;armG.children[1].rotation.z=.15;
-  const gripM=new THREE.MeshStandardMaterial({color:ac,emissive:ac,emissiveIntensity:.5,roughness:.1});
-  armG.add(new THREE.Mesh(new THREE.BoxGeometry(.07,.15,.05),gripM)).position.y=-.78;
-  for(let s of[-1,1]) armG.add(new THREE.Mesh(new THREE.BoxGeometry(.025,.07,.015),gripM)).position.set(s*.025,-.88,.015);
-  g.add(armG);
-  for(let sx of[-.25,.25]){
-    const w=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.05,16),new THREE.MeshStandardMaterial({color:0x222,roughness:.8}));
-    w.rotation.z=Math.PI/2;w.position.set(sx,.09,.2);g.add(w);
-    const w2=w.clone();w2.position.z=-.2;g.add(w2);
-  }
-  g.position.set(-18,.08,.5);
-  return g;
-}
-
-// ═══════ Build ═══════
-function buildLine(idx){
-  stationObjects.forEach(s=>scene.remove(s));stationObjects=[];
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",i===idx));
-  
-  const line=LINES[idx];
-  allStations=[];
-  line.sections.forEach(sec=>{sec.stations.forEach(st=>{allStations.push({...st,color:sec.color,sectionName:sec.name})})});
-  
-  const total=allStations.length,spacing=total>12?38/total:3;
-  allStations.forEach((st,i)=>{
-    const x=-18+i*spacing;
-    const s=createStation(x,st.color,total>12?.6:.8);
-    s.userData={...st,index:i};scene.add(s);stationObjects.push(s);
-  });
-  
-  if(!robotObj){robotObj=createRobot();scene.add(robotObj)}
-  focusedStation=0;robotTargetX=-18;robotPosX=-18;robotObj.position.x=-18;
-  
-  buildFlowBar(line);
-  buildDock();
-  buildStationCards();
-  focusStation(0);
-}
-
-function buildFlowBar(line){
-  let h="",si=0;
-  line.sections.forEach(sec=>{
-    sec.stations.forEach(st=>{
-      h+=`<div class="flow-step"><span class="icon">${st.label.slice(0,2)}</span><span class="label">${st.label.slice(3)}</span><span class="time">${st.specs?.[0]?.[0]||""}</span></div>`;
-      si++;
-      if(si<line.sections.reduce((s,sec)=>s+sec.stations.length,0)) h+='<span class="flow-arrow">→</span>';
-    });
-  });
-  document.getElementById("flow-bar").innerHTML=h;
-}
-
-function buildDock(){
-  let h="";
-  allStations.forEach((st,i)=>{
-    h+=`<div class="ds" onclick="focusStation(${i})" id="ds${i}">
-      <span class="di">${st.label.slice(0,2)}</span><span class="dn">${st.label.slice(3)}</span><span class="dt">${st.specs?.[0]?.[0]||""}</span>
-    </div>`;
-  });
-  document.getElementById("dock").innerHTML=h;
-}
-
-function buildStationCards(){
-  let h="";
-  allStations.forEach((st,i)=>{
-    const reqsH=st.reqs.map(r=>`<span class="st-req"><span class="dot dot-${r[1]}"></span>${r[0]}</span>`).join("");
-    const specsH=st.specs.map(s=>`<span class="st-spec"><span class="sv">${s[0]}</span><span class="sl">${s[1]}</span></span>`).join("");
-    h+=`<div class="station" id="card${i}" onclick="focusStation(${i})">
-      <div class="st-header">
-        <span class="st-num" style="background:${'#'+st.color.toString(16).padStart(6,'0')}">${i+1}</span>
-        <span class="st-name">${st.id} ${st.label}</span>
+  <!-- Right panel: station details -->
+  <div>
+    <h3>📍 工位详情</h3>
+    <div class="station-list">
+      <div class="station" style="border-left:3px solid #f0a500">
+        <div class="st-header"><span class="st-num" style="background:#f0a500">1</span><span class="st-name">📦 上料站</span></div>
+        <div class="st-desc">Tray盘自动供料，视觉定位芯片方向。机器人从轨道移动到供料位，双指夹爪拾取 COC 基板。</div>
+        <div class="st-tags"><span class="st-tag">视觉定位</span><span class="st-tag">力控夹取</span><span class="st-tag">±5μm</span></div>
       </div>
-      <div class="st-section">${st.sectionName}</div>
-      <div class="st-desc">${st.desc}</div>
-      <div class="st-specs">${specsH}</div>
-      <div class="st-reqs">${reqsH}</div>
-    </div>`;
-  });
-  document.getElementById("stations-list").innerHTML=h;
-}
+      <div class="station" style="border-left:3px solid #ff6b35">
+        <div class="st-header"><span class="st-num" style="background:#ff6b35">2</span><span class="st-name">🔥 共晶站</span></div>
+        <div class="st-desc">AuSn 共晶焊接，280°C±2°C 精准控温。机器人放置芯片到加热台，视觉对准焊盘，力控压合。</div>
+        <div class="st-tags"><span class="st-tag">280°C</span><span class="st-tag">AuSn焊料</span><span class="st-tag">力控 3N</span></div>
+      </div>
+      <div class="station active" style="border-left:3px solid #00d4aa">
+        <div class="st-header"><span class="st-num" style="background:#00d4aa">3</span><span class="st-name">🎯 COC贴装</span></div>
+        <div class="st-desc">Chip-on-Carrier 精密贴装，±1μm 精度。视觉+力觉融合控制，六维力传感器实时反馈贴合压力。</div>
+        <div class="st-tags"><span class="st-tag">±1μm</span><span class="st-tag">6轴力控</span><span class="st-tag">DDS VLA-T</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #58a6ff">
+        <div class="st-header"><span class="st-num" style="background:#58a6ff">4</span><span class="st-name">🔗 打线站</span></div>
+        <div class="st-desc">金线键合 Wire Bonding，25μm Au 线超声波焊接。机器人辅助送料和夹具定位。</div>
+        <div class="st-tags"><span class="st-tag">Au 25μm</span><span class="st-tag">US焊</span><span class="st-tag">辅助定位</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #a371f7">
+        <div class="st-header"><span class="st-num" style="background:#a371f7">5</span><span class="st-name">🕐 老化站</span></div>
+        <div class="st-desc">Burn-in 老化测试，85°C 恒温烤箱 96 槽位。机器人自动上下料，耐受高温环境作业。</div>
+        <div class="st-tags"><span class="st-tag">85°C</span><span class="st-tag">96槽</span><span class="st-tag">高温作业</span></div>
+      </div>
+      <div class="station" style="border-left:3px solid #3fb950">
+        <div class="st-header"><span class="st-num" style="background:#3fb950">6</span><span class="st-name">✅ 下料站</span></div>
+        <div class="st-desc">AOI 自动光学检测 + 分拣。合格品入Tray盘，不良品进NG仓。全流程可追溯。</div>
+        <div class="st-tags"><span class="st-tag">AOI</span><span class="st-tag">分拣</span><span class="st-tag">追溯</span></div>
+      </div>
+    </div>
 
-function focusStation(idx){
-  focusedStation=idx;
-  const s=stationObjects[idx];
-  if(!s)return;
-  robotTargetX=s.position.x;
-  document.querySelectorAll(".ds").forEach((d,i)=>d.classList.toggle("active",i===idx));
-  document.querySelectorAll(".station").forEach((c,i)=>c.classList.toggle("active",i===idx));
-  const card=document.getElementById("card"+idx);
-  if(card) card.scrollIntoView({behavior:"smooth",block:"center"});
-}
+    <!-- Robot specs -->
+    <h3>🤖 机器人规格</h3>
+    <div class="specs">
+      <div class="spec"><div class="val">Centaur-G1</div><div class="lab">型号</div></div>
+      <div class="spec"><div class="val">7-DOF</div><div class="lab">机械臂自由度</div></div>
+      <div class="spec"><div class="val">5kg</div><div class="lab">单臂负载</div></div>
+      <div class="spec"><div class="val">±0.01m</div><div class="lab">轨道导航精度</div></div>
+      <div class="spec"><div class="val">±0.1mm</div><div class="lab">重复定位精度</div></div>
+      <div class="spec"><div class="val">VLA-T</div><div class="lab">推理引擎</div></div>
+    </div>
 
-function switchLine(idx){currentLine=idx;buildLine(idx)}
+    <!-- Legend -->
+    <h3>图例</h3>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#f0a500"></span>上料</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ff6b35"></span>共晶</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#00d4aa"></span>COC</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#58a6ff"></span>打线</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#a371f7"></span>老化</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#3fb950"></span>下料</div>
+    </div>
+  </div>
+</div>
 
-// ═══════ Camera ═══════
-let dragging=false,prev={x:0,y:0},camTheta=0,camPhi=.5,camDist=20,target={x:0,y:1,z:-1.5};
-function updateCam(){
-  camera.position.x=target.x+camDist*Math.sin(camPhi)*Math.cos(camTheta);
-  camera.position.y=target.y+camDist*Math.cos(camPhi);
-  camera.position.z=target.z+camDist*Math.sin(camPhi)*Math.sin(camTheta);
-  camera.lookAt(target.x,target.y,target.z);
-}
-wrap3d.addEventListener("mousedown",e=>{dragging=true;prev={x:e.clientX,y:e.clientY}});
-wrap3d.addEventListener("mousemove",e=>{if(!dragging)return;camTheta-=(e.clientX-prev.x)*.005;camPhi=Math.max(.1,Math.min(1.4,camPhi-(e.clientY-prev.y)*.005));prev={x:e.clientX,y:e.clientY};updateCam()});
-wrap3d.addEventListener("mouseup",()=>dragging=false);
-wrap3d.addEventListener("wheel",e=>{camDist=Math.max(5,Math.min(38,camDist+e.deltaY*.02));updateCam()});
-wrap3d.addEventListener("touchstart",e=>{if(e.touches.length===1){dragging=true;prev={x:e.touches[0].clientX,y:e.touches[0].clientY}}});
-wrap3d.addEventListener("touchmove",e=>{if(!dragging||e.touches.length!==1)return;camTheta-=(e.touches[0].clientX-prev.x)*.005;camPhi=Math.max(.1,Math.min(1.4,camPhi-(e.touches[0].clientY-prev.y)*.005));prev={x:e.touches[0].clientX,y:e.touches[0].clientY};updateCam()});
-wrap3d.addEventListener("touchend",()=>dragging=false);
+<p style="text-align:center;color:#484f58;font-size:10px;margin-top:20px">
+  Z-MAX 静界科技 · DDS 数据闭环 · VLA-T 视触觉语言动作模型 · 光模块智能装配
+</p>
 
-// ═══════ Animation ═══════
-let time=0;
-function animate(){
-  requestAnimationFrame(animate);time+=.016;
-  const dx=robotTargetX-robotPosX;
-  if(Math.abs(dx)>.02) robotPosX+=dx*.06;
-  robotObj.position.x=robotPosX;
-  robotObj.position.y=.08+Math.sin(time*2.5)*.025;
-  stationObjects.forEach(s=>{const lt=s.children[4];if(lt)lt.scale.setScalar(1+Math.sin(time*3+s.position.x)*.18)});
-  renderer.render(scene,camera);
-}
-
-buildLine(0);updateCam();animate();
-setInterval(()=>{if(stationObjects.length>0){focusedStation=(focusedStation+1)%stationObjects.length;focusStation(focusedStation)}},6000);
-
-window.addEventListener("resize",()=>{
-  renderer.setSize(wrap3d.clientWidth,wrap3d.clientHeight);
-  camera.aspect=wrap3d.clientWidth/wrap3d.clientHeight;camera.updateProjectionMatrix();
-});
-</script>
 </body>
 </html>
