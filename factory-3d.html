@@ -405,7 +405,7 @@ wrap.addEventListener("mousedown",e=>{
 });
 wrap.addEventListener("mousemove",e=>{
   if(dragging){
-    camTheta-=(e.clientX-prevMX)*.004;
+    camTheta+=(e.clientX-prevMX)*.004;
     camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.004));
     prevMX=e.clientX;prevMY=e.clientY;
     updateCam();
@@ -439,25 +439,115 @@ wrap.addEventListener("touchstart",e=>{
 });
 wrap.addEventListener("touchmove",e=>{
   if(!dragging||e.touches.length!==1)return;
-  camTheta-=(e.touches[0].clientX-prevMX)*.004;
+  camTheta+=(e.touches[0].clientX-prevMX)*.004;
   camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.touches[0].clientY-prevMY)*.004));
   prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY;
   updateCam();
 });
 wrap.addEventListener("touchend",()=>dragging=false);
 
-// ═══════ Animation ═══════
+// ═══════ Animation: robot path + station operations ═══════
+// Build path through all stations with smooth curves
+function buildRobotPath(){
+  const pts=[];
+  // Pass by each station position, collecting waypoints
+  const allPos=stationObjects.map(s=>({x:s.position.x,z:s.position.z}));
+  
+  // COC zone: sweep through S01-S06 (z≈-6 side)
+  for(let i=0;i<6;i++) pts.push(new THREE.Vector3(allPos[i].x,0,allPos[i].z+.5));
+  // Turn corner: COC→OE (smooth curve)
+  const cocLast=pts[pts.length-1];
+  pts.push(new THREE.Vector3(-2,0,cocLast.z));
+  pts.push(new THREE.Vector3(2,0,cocLast.z));
+  // OE zone: S07-S12
+  const oeStart=allPos[6];
+  pts.push(new THREE.Vector3(oeStart.x,0,oeStart.z+.5));
+  for(let i=6;i<12;i++) pts.push(new THREE.Vector3(allPos[i].x,0,allPos[i].z+.5));
+  // Turn corner: OE→Module (go down)
+  const oeLast=pts[pts.length-1];
+  pts.push(new THREE.Vector3(oeLast.x,0,-1));
+  pts.push(new THREE.Vector3(oeLast.x,0,2));
+  // Module zone: S13-S18
+  for(let i=12;i<18;i++) pts.push(new THREE.Vector3(allPos[i].x,0,allPos[i].z-.5));
+  // Turn corner: Module→Warehouse
+  const modLast=pts[pts.length-1];
+  pts.push(new THREE.Vector3(2,0,modLast.z));
+  pts.push(new THREE.Vector3(-2,0,modLast.z));
+  // Warehouse: S25-S29 (indices 18-22)
+  for(let i=18;i<allPos.length;i++) pts.push(new THREE.Vector3(allPos[i].x,0,allPos[i].z-.5));
+  // Return to COC
+  const whLast=pts[pts.length-1];
+  pts.push(new THREE.Vector3(whLast.x,0,1));
+  pts.push(new THREE.Vector3(whLast.x,0,-3));
+  pts.push(new THREE.Vector3(allPos[0].x,0,allPos[0].z+.5));
+  
+  return new THREE.CatmullRomCurve3(pts,true, 'catmullrom', .5);
+}
+
+let robotCurve=null;
+let robotPathT=0;
+let robotSpeed=.015;
+let robotPaused=false;
+let pauseTimer=0;
+let pauseDuration=2.5; // seconds paused at station
+let currentStationIdx=0;
+let armAnimPhase=0;
+
+function rebuildPath(){robotCurve=buildRobotPath();robotPathT=0;}
+
 let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
   
-  // Robot movement
-  const rdx=robotTarget.x-robotPos.x,rdz=robotTarget.z-robotPos.z;
-  if(Math.abs(rdx)>.03||Math.abs(rdz)>.03){robotPos.x+=rdx*.04;robotPos.z+=rdz*.04}
-  robotObj.position.set(robotPos.x,.05,robotPos.z);
-  robotObj.position.y+=Math.sin(time*2.5)*.02;
+  // Robot path following
+  if(robotCurve){
+    if(!robotPaused){
+      robotPathT+=robotSpeed*.016;
+      if(robotPathT>1)robotPathT-=1;
+      
+      const pt=robotCurve.getPointAt(robotPathT);
+      robotObj.position.set(pt.x,.05,pt.z);
+      robotObj.position.y+=Math.sin(time*2.5)*.02;
+      
+      // Face movement direction
+      const next=robotCurve.getPointAt(Math.min(robotPathT+.001,1));
+      const angle=Math.atan2(next.x-pt.x,next.z-pt.z);
+      robotObj.rotation.y=angle;
+      
+      // Check if near a station → pause
+      let nearStation=-1;
+      stationObjects.forEach((s,i)=>{
+        const dx=pt.x-s.position.x,dz=(pt.z+.5)-s.position.z;
+        if(Math.sqrt(dx*dx+dz*dz)<.6) nearStation=i;
+      });
+      if(nearStation>=0&&nearStation!==currentStationIdx){
+        currentStationIdx=nearStation;
+        robotPaused=true;pauseTimer=0;armAnimPhase=0;
+        // Highlight station
+        document.querySelectorAll(".ds").forEach((d,i)=>d.classList.toggle("active",i===nearStation));
+        document.querySelectorAll(".station").forEach((c,i)=>c.classList.toggle("active",i===nearStation));
+      }
+    }else{
+      pauseTimer+=.016;
+      // Arm operation animation
+      const arm=robotObj.children[6]; // arm group
+      if(arm){
+        armAnimPhase+=.05;
+        arm.rotation.z=-.35+Math.sin(armAnimPhase)*.3; // swing arm
+        if(arm.children[3]){
+          arm.children[3].scale.setScalar(1+Math.sin(armAnimPhase*2)*.2); // gripper open/close
+        }
+      }
+      if(pauseTimer>pauseDuration){
+        robotPaused=false;armAnimPhase=0;
+        // Reset gripper
+        const arm=robotObj.children[6];
+        if(arm&&arm.children[3])arm.children[3].scale.setScalar(1);
+      }
+    }
+  }
   
-  // AGV movement (patrol)
+  // AGV patrol
   const agvPath=[
     {x:-10,z:-6},{x:-4,z:-6},{x:0,z:-6},{x:4,z:-6},{x:10,z:-6},
     {x:10,z:-2},{x:10,z:2},{x:10,z:6},
@@ -482,6 +572,7 @@ function animate(){
 }
 
 buildFactory();
+rebuildPath();
 animate();
 window.addEventListener("resize",()=>{
   renderer.setSize(wrap.clientWidth,wrap.clientHeight);
