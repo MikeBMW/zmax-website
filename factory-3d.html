@@ -56,6 +56,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 .process-step .st-specs{font-size:7px;color:#8b949e;margin-top:1px}
 .process-arrow{color:#00d4aa44;font-size:10px;flex-shrink:0}
 .process-flow .process-arrow:last-child{display:none}
+#cursor-coord{position:fixed;pointer-events:none;z-index:20;background:rgba(0,212,170,.15);border:1px solid #00d4aa44;border-radius:4px;padding:2px 6px;font:9px monospace;color:#00d4aa;display:none}
 </style>
 </head>
 <body>
@@ -75,7 +76,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   </div>
 </div>
 <div id="main">
-<div id="view3d"><div id="info-popup"></div></div>
+<div id="view3d"><div id="info-popup"></div><div id="cursor-coord"></div></div>
 <div id="panel">
   <h3>🏭 工厂区域</h3>
   <div id="zones-list"></div>
@@ -520,6 +521,11 @@ const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
 wrap.addEventListener("mousemove",e=>{
   mouse.x=(e.clientX/wrap.clientWidth)*2-1;
   mouse.y=-(e.clientY/wrap.clientHeight)*2+1;
+  const cc=document.getElementById("cursor-coord");
+  raycaster.setFromCamera(mouse,camera);
+  const hits=raycaster.intersectObject(floor);
+  if(hits.length){const p=hits[0].point;cc.textContent='('+(p.x+18).toFixed(1)+','+(-p.z+12).toFixed(1)+')';cc.style.display='block';cc.style.left=(e.clientX+14)+'px';cc.style.top=(e.clientY-24)+'px'}
+  else{cc.style.display='none'}
 });
 wrap.addEventListener("click",e=>{
   raycaster.setFromCamera(mouse,camera);
