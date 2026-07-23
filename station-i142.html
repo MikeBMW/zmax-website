@@ -18,7 +18,7 @@
 <body>
 <a id="back" href="/factory-3d.html">← 返回产线总览</a>
 <div id="title-bar">I-142 老化墙</div>
-<div id="coord">X:0.00 Y:-0.65 Z:0.00<br>L:0.00 0.10 -0.20<br>R:0.00 -0.10 0.20</div>
+<div id="coord">X:0.00 Y:0.00 Z:-0.65<br>L:0.00 0.10 -0.20<br>R:0.00 -0.10 0.20</div>
 <div id="status">● 老化测试中</div>
 <div id="info">Z轴往复 v2 · 自主导航Z700 · 拖拽旋转 | 滚轮缩放</div>
 
@@ -33,15 +33,17 @@ var stName=params.get('name')||'老化墙';
 tEl.textContent=stId+' '+stName;
 document.title='Z-MAX '+stId+' '+stName;
 var scene=new THREE.Scene();scene.background=new THREE.Color(0x0a0a14);
+// World root: rotate scene 90° around X → Z-up, Y points toward rack
+var worldRoot=new THREE.Group();worldRoot.rotation.x=Math.PI/2;scene.add(worldRoot);
 var camera=new THREE.PerspectiveCamera(45,W/Math.max(H,1),0.1,40);
-camera.position.set(3,1.5,3.5);camera.lookAt(0,-.2,-.8);
+camera.position.set(4,-1,3);camera.lookAt(0,0,-.3);
 
 var renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setSize(W,H);
 renderer.shadowMap.enabled=true;
 renderer.domElement.style.cssText="position:absolute;top:0;left:0;z-index:1";document.body.appendChild(renderer.domElement);
 
-var target=new THREE.Vector3(0,-.2,-.8),sph=new THREE.Spherical(4.5,Math.PI/5.5,-Math.PI/12);
+var target=new THREE.Vector3(0,0,-.3),sph=new THREE.Spherical(5,Math.PI/5.5,-Math.PI/8);
 var dragging=false,pm={x:0,y:0};
 renderer.domElement.addEventListener("mousedown",function(e){dragging=true;pm.x=e.clientX;pm.y=e.clientY});
 window.addEventListener("mouseup",function(){dragging=false});
@@ -80,26 +82,25 @@ Q.tableLeg=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.3,metalness
 
 // Floor
 var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
-fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
+fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;worldRoot.add(fm);
 
-// Ground coordinate grid
+// Ground coordinate grid (XY plane at Z=floor level)
 var grid=new THREE.GridHelper(8,16,0x334455,0x222a33);
-grid.position.y=-.71;grid.material.opacity=.35;grid.material.transparent=true;
+grid.rotation.x=Math.PI/2;grid.position.z=-.71;grid.material.opacity=.35;grid.material.transparent=true;
 scene.add(grid);
 
-// World origin marker
+// World origin marker (Z-up: X=red right, Y=green toward rack, Z=blue up)
 var originG=new THREE.Group();scene.add(originG);
-var axisLen=.25;
-[['X',0xff4444,[axisLen,0,0],[0,0,-Math.PI/2]],
- ['Y',0x44ff44,[0,axisLen,0],[0,0,0]],
- ['Z',0x4444ff,[0,0,axisLen],[Math.PI/2,0,0]]].forEach(function(a){
-  var g=new THREE.Group();
-  var cyl=mk(new THREE.CylinderGeometry(.006,.006,axisLen,8),new THREE.MeshStandardMaterial({color:a[1],emissive:a[1],emissiveIntensity:.6}));
-  cyl.position.set(a[2][0]/2,a[2][1]/2,a[2][2]/2);
-  cyl.rotation.set(a[3][0],a[3][1],a[3][2]);
-  g.add(cyl);
-  originG.add(g);
-});
+var axisLen=.3;
+// X axis (red, right) - cylinder along X
+var xCyl=mk(new THREE.CylinderGeometry(.008,.008,axisLen,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.6}));
+xCyl.rotation.z=-Math.PI/2;xCyl.position.set(axisLen/2,0,0);originG.add(xCyl);
+// Y axis (green, toward rack) - cylinder along Y
+var yCyl=mk(new THREE.CylinderGeometry(.008,.008,axisLen,8),new THREE.MeshStandardMaterial({color:0x44ff44,emissive:0x44ff44,emissiveIntensity:.6}));
+yCyl.position.set(0,axisLen/2,0);originG.add(yCyl);
+// Z axis (blue, up) - cylinder along Z
+var zCyl=mk(new THREE.CylinderGeometry(.008,.008,axisLen,8),new THREE.MeshStandardMaterial({color:0x4444ff,emissive:0x4444ff,emissiveIntensity:.6}));
+zCyl.position.set(0,0,axisLen/2);originG.add(zCyl);
 originG.add(set(mkNS(new THREE.SphereGeometry(.025,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.8})),0,0,0));
 
 // Robot cruise waypoints on floor (y just above floor at -0.72)
@@ -107,13 +108,13 @@ var wpPts=[{z:0,label:"中心",c:0x00d4aa},{z:0.8,label:"入料",c:0x6699cc},{z:
 wpPts.forEach(function(w){
   var ring=mk(new THREE.TorusGeometry(.08,.012,16,32),new THREE.MeshStandardMaterial({color:w.c,emissive:w.c,emissiveIntensity:1.2,roughness:.1}));
   ring.rotation.x=-Math.PI/2;ring.position.set(0,-.71,w.z);ring.castShadow=false;ring.receiveShadow=false;
-  scene.add(ring);
-  scene.add(mkl(w.label,"#ffffff",new THREE.Vector3(0,-.6,w.z)));
+  worldRoot.add(ring);
+  worldRoot.add(mkl(w.label,"#ffffff",new THREE.Vector3(0,-.6,w.z)));
 });
 
 // ==== TABLES ====
 function mkTable(gx,gz){
-  var t=new THREE.Group();t.position.set(gx,-.72,gz);scene.add(t);
+  var t=new THREE.Group();t.position.set(gx,-.72,gz);worldRoot.add(t);
   t.add(set(mk(new THREE.BoxGeometry(.5,.03,.4),Q.tableTop),0,.33,0));
   [t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),-.2,.15,.16)),
    t.add(set(mk(new THREE.CylinderGeometry(.02,.025,.28,8),Q.tableLeg),.2,.15,.16)),
@@ -128,14 +129,14 @@ mkTable(.85,.8);  // 出料台(前方右)
 var modsL=[];
 for(var i=0;i<4;i++){
   var m=new THREE.Group();m.position.set(-.85+(i-1.5)*.1,-.39,.8+(Math.random()-.5)*.1);
-  scene.add(m);
+  worldRoot.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),i%2?Q.modY:Q.modG),0,.01,0));
   modsL.push(m);
 }
 
 // ==== BURN-IN RACK ====
 var RACK_W=1.8,RACK_H=1.2,RACK_D=.5,LAYERS=4,SLOTS=12;
-var rackG=new THREE.Group();rackG.position.set(0,-.7,-1.4);scene.add(rackG);
+var rackG=new THREE.Group();rackG.position.set(0,-.7,-1.4);worldRoot.add(rackG);
 rackG.add(set(mk(new THREE.BoxGeometry(RACK_W+.1,RACK_H+.1,RACK_D+.05),Q.rack),0,RACK_H/2,0));
 rackG.add(set(mkNS(new THREE.BoxGeometry(RACK_W-.05,RACK_H-.05,.02),Q.rackS),0,RACK_H/2,RACK_D/2-.02));
 var slotH=RACK_H/LAYERS,slotW=RACK_W/SLOTS;
@@ -151,7 +152,7 @@ for(var l=0;l<LAYERS;l++){
 }
 
 // ==== ROBOT (moves on Z, between tables and rack) ====
-var robot=new THREE.Group();robot.position.set(0,-.65,0);scene.add(robot);
+var robot=new THREE.Group();robot.position.set(0,-.65,0);worldRoot.add(robot);
 
 var base=new THREE.Group();robot.add(base);
 base.add(set(mk(new THREE.CylinderGeometry(.2,.23,.1,24),Q.dark),0,.05,0));
@@ -228,13 +229,13 @@ function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.heig
   var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
   var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
   s.position.copy(p);s.scale.set(1,.3,1);return s}
-scene.add(mkl("老化箱","#ff8844",new THREE.Vector3(0,RACK_H-.1,-1.4)));
-scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.8)));
-scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.8)));
+worldRoot.add(mkl("老化箱","#ff8844",new THREE.Vector3(0,RACK_H-.1,-1.4)));
+worldRoot.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.8)));
+worldRoot.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.8)));
 
 // Floor coordinate labels
 for(var i=-3;i<=3;i++){
-  if(i!==0){scene.add(mkl(i+"","#556677",new THREE.Vector3(i,-.69,0)));scene.add(mkl(i+"","#556677",new THREE.Vector3(0,-.69,i)));}
+  if(i!==0){worldRoot.add(mkl(i+"","#556677",new THREE.Vector3(i,-.69,0)));worldRoot.add(mkl(i+"","#556677",new THREE.Vector3(0,-.69,-i)));}
 }
 
 // ==== ANIMATION (Z-axis: tables at z=0.8, rack at z=-1.4) ====
@@ -345,8 +346,8 @@ function loop(){
 
   var phNames=["⬆入料台","↓取料","⬇老化箱","⇅插拔","⬆出料台","↓放料","⬇返回","·待机"];
   sEl.textContent="● 第"+(layerIdx+1)+"/"+LAYERS+"层 "+phNames[phase]+" | 待取:"+modsL.length;
-  var wp=robot.position;
-  cEl.innerHTML="X:"+wp.x.toFixed(2)+" Y:"+wp.y.toFixed(2)+" Z:"+wp.z.toFixed(2)+
+  var wp=robot.position; // local coords in worldRoot; worldPos = Rx(PI/2)*local = (x, -z, y)
+  cEl.innerHTML="X:"+wp.x.toFixed(2)+" Y:"+(-wp.z).toFixed(2)+" Z:"+wp.y.toFixed(2)+
     "<br>L:"+shL.rotation.x.toFixed(2)+" "+uaL.rotation.z.toFixed(2)+" "+elL.rotation.z.toFixed(2)+
     "<br>R:"+shR.rotation.x.toFixed(2)+" "+uaR.rotation.z.toFixed(2)+" "+elR.rotation.z.toFixed(2);
   ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
@@ -362,7 +363,7 @@ var modsR=[];
 function addPlacedMod(){
   var m=new THREE.Group();
   m.position.set(.85+(Math.random()-.5)*.1,-.39,.8+(Math.random()-.5)*.1);
-  scene.add(m);
+  worldRoot.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
   modsR.push(m);
 }
