@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-MAX I-201 自动耦合测试</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#0a0a14;overflow:hidden;font-family:Arial,sans-serif}
+  canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
+  #back{position:absolute;top:12px;left:15px;z-index:10;color:#00d4aa;font-size:12px;cursor:pointer;background:rgba(10,10,26,.75);padding:6px 14px;border-radius:20px;border:1px solid #00d4aa44;text-decoration:none}
+  #title-bar{position:absolute;top:0;left:0;right:0;color:#fff;font-size:20px;font-weight:800;z-index:11;pointer-events:none;text-align:center;background:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,0));padding:16px 18px 30px;letter-spacing:2px}
+  #status{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;z-index:10;pointer-events:none;background:rgba(10,10,26,.75);padding:6px 18px;border-radius:20px}
+  #proc-panel{position:absolute;top:50px;right:12px;z-index:10;background:rgba(10,10,26,.88);border:1px solid #ff6b3544;border-radius:10px;padding:14px 16px;max-width:240px;font-size:11px;color:#c8d1d9;pointer-events:none}
+  #proc-panel .tt{color:#ff6b35;font-size:13px;font-weight:700;margin-bottom:6px;border-bottom:1px solid #1a1f2b;padding-bottom:6px}
+  #proc-panel .kpi{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap}
+  #proc-panel .kpi span{background:#0d1117;border:1px solid #1a1f2b;border-radius:4px;padding:2px 6px;font-size:10px;color:#ff6b35}
+  #proc-panel .step{margin:3px 0;padding:2px 0;border-bottom:1px solid #ffffff06}
+  #proc-panel .step .n{color:#ff6b35;font-weight:700;margin-right:4px}
+  #proc-panel .dsc{font-size:9px;color:#8b949e;margin:2px 0 6px 14px;line-height:1.5}
+  #proc-panel .sec{margin-top:6px;padding-top:4px;border-top:1px solid #1a1f2b;font-size:10px}
+</style>
+</head>
+<body>
+<a id="back" href="/factory-3d.html">← 返回产线总览</a>
+<div id="title-bar">I-201 自动耦合测试</div>
+<div id="status">● 耦合对准中</div>
+
+<div id="proc-panel">
+<div class="tt">I-201 自动耦合测试</div>
+<div class="kpi"><span>±0.5μm</span><span>≤8s/通道</span><span>×14台</span></div>
+<div class="step"><span class="n">场景</span></div>
+<div class="dsc">14台自动耦合台并行 · 6轴精密位移 · 激光器+光功率计闭环 · UV预固化</div>
+<div class="step"><span class="n">流程</span></div>
+<div class="dsc">① 上料 → ② 粗对准 (±50μm) → ③ 精对准 (±0.5μm) → ④ 光功率峰值搜索 → ⑤ UV点固化 → ⑥ 下料</div>
+<div class="sec"><b style="color:#ff6b35">精度要求</b></div>
+<div class="dsc">对准 ±0.5μm · 角度 ±0.01° · 插损 ≤3dB · 回损 ≥40dB</div>
+<div class="sec"><b style="color:#ff4444">质量门</b></div>
+<div class="dsc">IL≤3dB · RL≥40dB · PDL≤0.3dB</div>
+<div class="sec"><b style="color:#f0a500">异常处理</b></div>
+<div class="dsc">E1 超时>15s → 跳过重试 · E2 功率不达标 → 标记NG</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+if(typeof THREE=="undefined")return;
+var W=window.innerWidth,H=window.innerHeight;
+var stEl=document.getElementById("status"),tEl=document.getElementById("title-bar");
+var params=new URLSearchParams(window.location.search);
+tEl.textContent=(params.get('id')||'I-201')+' '+(params.get('name')||'自动耦合测试');
+var scene=new THREE.Scene();scene.background=new THREE.Color(0x0a0a14);
+var camera=new THREE.PerspectiveCamera(50,W/H,.5,25);
+camera.position.set(4,3,6);camera.lookAt(0,0,0);
+var renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(W,H);renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0x667788,1));
+var sun=new THREE.DirectionalLight(0xffffff,1.5);
+sun.position.set(5,8,3);sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
+scene.add(sun);scene.add(new THREE.DirectionalLight(0x8899aa,.4).position.set(-3,3,-2));
+
+var fm=new THREE.Mesh(new THREE.PlaneGeometry(10,8),new THREE.MeshStandardMaterial({color:0x1a1a2e,roughness:.7}));
+fm.rotation.x=-Math.PI/2;fm.receiveShadow=true;scene.add(fm);
+scene.add(new THREE.GridHelper(10,10,0x222233,0x111122).position.set(0,.005,0));
+
+var Q={metal:new THREE.MeshStandardMaterial({color:0x556677,metalness:.6,roughness:.3}),
+  stage:new THREE.MeshStandardMaterial({color:0x334455,metalness:.7,roughness:.2}),
+  lens:new THREE.MeshStandardMaterial({color:0x4488cc,metalness:.2,roughness:.1,emissive:0x112244,emissiveIntensity:.2}),
+  fiber:new THREE.MeshBasicMaterial({color:0xff6600}),
+  laser:new THREE.MeshBasicMaterial({color:0xff0000})};
+function S(m,x,y,z){m.position.set(x,y,z);return m}
+function B(w,h,d,m){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m)}
+function C(r,rt,h,s,m){return new THREE.Mesh(new THREE.CylinderGeometry(r,rt,h,s),m)}
+
+// Base platform
+var base=new THREE.Group();
+base.add(S(B(3,.2,2,Q.metal),0,.1,0));
+// XYZ stage
+var stage=new THREE.Group();
+stage.add(S(B(1.5,.15,1.5,Q.stage),0,.2,0));
+stage.add(S(B(.8,.1,.8,new THREE.MeshStandardMaterial({color:0x445566,metalness:.8})),0,.27,0));
+stage.position.set(0,.2,0);base.add(stage);
+
+// Left: laser source
+var laser=new THREE.Group();
+laser.add(S(B(.5,.4,.5,Q.metal),0,.4,0));
+laser.add(S(C(.1,.1,.3,8,Q.laser),0,.6,0)); // beam
+laser.add(S(new THREE.Mesh(new THREE.SphereGeometry(.05),Q.laser),0,.7,0)); // dot
+laser.position.set(-.8,.3,0);base.add(laser);
+
+// Right: detector
+var det=new THREE.Group();
+det.add(S(B(.5,.4,.5,Q.metal),0,.4,0));
+det.add(S(C(.08,.08,.2,8,new THREE.MeshBasicMaterial({color:0x00ff88})),0,.5,0));
+det.position.set(.8,.3,0);base.add(det);
+
+// Fiber alignment fixture
+var fixture=new THREE.Group();
+fixture.add(S(B(.4,.05,.4,Q.stage),0,.35,0));
+fixture.add(S(C(.06,.06,.5,12,Q.fiber),0,.35,0)); // fiber
+// Ferrule
+fixture.add(S(C(.04,.04,.15,12,new THREE.MeshStandardMaterial({color:0xcccccc,metalness:.7})),0,.45,0));
+fixture.position.set(0,.35,0);base.add(fixture);
+
+// Alignment beam visualization
+var beamGeo=new THREE.CylinderGeometry(.01,.01,1.6,8);
+var beam=new THREE.Mesh(beamGeo,new THREE.MeshBasicMaterial({color:0xff0000,transparent:true,opacity:.4}));
+beam.rotation.z=Math.PI/2;beam.position.set(0,.5,0);base.add(beam);
+
+// Camera for alignment monitoring
+var cam=new THREE.Group();
+cam.add(S(B(.3,.2,.2,Q.metal),0,.1,0));
+cam.add(S(C(.06,.06,.15,8,Q.lens),0,.2,0));
+cam.position.set(0,.7,.6);base.add(cam);
+
+base.position.set(0,0,0);scene.add(base);
+
+// Labels
+function L(t,x,y,z,c){var cv=document.createElement('canvas');cv.width=256;cv.height=48;var cx=cv.getContext('2d');cx.fillStyle=c||'#fff';cx.font='bold 16px sans-serif';cx.textAlign='center';cx.fillText(t,128,24);var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;var p=new THREE.Mesh(new THREE.PlaneGeometry(2,.4),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));p.position.set(x,y,z);p.renderOrder=999;return p}
+scene.add(L('激光源',-.8,.05,.8,'#ff4444'));
+scene.add(L('探测器',.8,.05,.8,'#00ff88'));
+scene.add(L('6轴对准台',0,.05,.8,'#ff6b35'));
+
+// Camera
+var ct=.5,cp=.6,cd=8,lt=new THREE.Vector3(0,.3,0),dr=false,pn=false,px=0,py=0;
+function uc(){camera.position.set(lt.x+cd*Math.sin(cp)*Math.cos(ct),lt.y+cd*Math.cos(cp),lt.z+cd*Math.sin(cp)*Math.sin(ct));camera.lookAt(lt)}
+var el=renderer.domElement;
+el.addEventListener("mousedown",function(e){if(e.button===0){dr=true;px=e.clientX;py=e.clientY}if(e.button===1){pn=true;px=e.clientX;py=e.clientY;e.preventDefault()}});
+el.addEventListener("mousemove",function(e){if(dr){ct+=(e.clientX-px)*.005;cp=Math.max(.15,Math.min(1.5,cp-(e.clientY-py)*.005));px=e.clientX;py=e.clientY;uc()}if(pn){var r=new THREE.Vector3();camera.getWorldDirection(r);var u=new THREE.Vector3(0,1,0);var l=new THREE.Vector3().crossVectors(u,r).normalize();var wu=new THREE.Vector3().crossVectors(r,l).normalize();lt.x+=l.x*(e.clientX-px)*.02+wu.x*(e.clientY-py)*.02;lt.y+=l.y*(e.clientX-px)*.02+wu.y*(e.clientY-py)*.02;lt.z+=l.z*(e.clientX-px)*.02+wu.z*(e.clientY-py)*.02;px=e.clientX;py=e.clientY;uc()}});
+el.addEventListener("mouseup",function(){dr=false;pn=false});
+el.addEventListener("wheel",function(e){e.preventDefault();cd=Math.max(3,Math.min(18,cd+e.deltaY*.03));uc()},{passive:false});
+
+// Animation — alignment oscillation
+var time=0,phase=0,pht=0;
+var phases=['粗对准 ±50μm','精对准 ±5μm','峰值搜索 0.1μm','光功率锁定','UV点固化','下料'];
+function animate(){
+  requestAnimationFrame(animate);time+=.016;pht+=.016;
+  if(pht>3){pht=0;phase=(phase+1)%phases.length;stEl.textContent='● '+phases[phase]}
+  var a=Math.sin(time*2)*.03; // alignment wobble
+  fixture.position.x=a;
+  beam.scale.x=1+Math.abs(a)*20;
+  beam.material.opacity=.3+Math.abs(a)*5;
+  laser.children[1].material.color.setHSL(.02,1,.5+Math.abs(a)*3);
+  det.children[1].material.color.setHSL(.35,1,.5+Math.abs(a)*3);
+
+  renderer.render(scene,camera);
+}
+uc();animate();
+window.addEventListener("resize",function(){W=window.innerWidth;H=window.innerHeight;renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix()});
+})();
+</script>
+</body>
+</html>
