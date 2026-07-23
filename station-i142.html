@@ -58,6 +58,12 @@ function mk(geo,mat){var m=new THREE.Mesh(geo,mat);m.castShadow=true;m.receiveSh
 function set(m,x,y,z){m.position.set(x,y,z);return m;}
 function mkNS(geo,mat){return new THREE.Mesh(geo,mat);}
 
+// Add coordinate label to module group
+function addModLabel(g){
+  var s=mkl("("+g.position.x.toFixed(2)+","+g.position.z.toFixed(2)+")","#aaccff",new THREE.Vector3(0,.04,0));
+  s.scale.set(.45,.13,1);g.add(s);
+}
+
 var Q={};
 Q.floor=new THREE.MeshStandardMaterial({color:0x3a4050,roughness:.15,metalness:.8});
 Q.white=new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.2});
@@ -130,6 +136,7 @@ for(var i=0;i<4;i++){
   var m=new THREE.Group();m.position.set(-.85+(i-1.5)*.1,-.39,.8+(Math.random()-.5)*.1);
   scene.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),i%2?Q.modY:Q.modG),0,.01,0));
+  addModLabel(m);
   modsL.push(m);
 }
 
@@ -364,6 +371,7 @@ function addPlacedMod(){
   m.position.set(.85+(Math.random()-.5)*.1,-.39,.8+(Math.random()-.5)*.1);
   scene.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
+  addModLabel(m);
   modsR.push(m);
 }
 
