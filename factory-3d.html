@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.7.0 · 2026-07-23 09:00</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.7.1 · 2026-07-23 09:05</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -415,7 +415,7 @@ function buildFactory(){
       s.userData={...s.userData,...st,zoneId:z.id,zoneName:z.name};
       scene.add(s);stationObjects.push(s);
       scene.add(createCoordSprite(sx,sz,z.color).sprite);
-      scene.add(createTextLabel(st.label,sx,.025,sz));
+      scene.add(createTextLabel(st.id+' '+st.label,sx,.025,sz));
     });
     // Zone corner coordinates (4 corners)
     const zx=z.pos.x,zz=z.pos.z,zw=z.size.w,zd=z.size.d;
