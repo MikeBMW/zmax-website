@@ -82,6 +82,11 @@ Q.tableLeg=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.3,metalness
 var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
 fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
 
+// Ground coordinate grid
+var grid=new THREE.GridHelper(8,16,0x334455,0x222a33);
+grid.position.y=-.71;grid.material.opacity=.35;grid.material.transparent=true;
+scene.add(grid);
+
 // World origin marker
 var originG=new THREE.Group();scene.add(originG);
 var axisLen=.25;
@@ -226,6 +231,11 @@ function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.heig
 scene.add(mkl("老化箱","#ff8844",new THREE.Vector3(0,RACK_H-.1,-1.4)));
 scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.8)));
 scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.8)));
+
+// Floor coordinate labels
+for(var i=-3;i<=3;i++){
+  if(i!==0){scene.add(mkl(i+"","#556677",new THREE.Vector3(i,-.69,0)));scene.add(mkl(i+"","#556677",new THREE.Vector3(0,-.69,i)));}
+}
 
 // ==== ANIMATION (Z-axis: tables at z=0.8, rack at z=-1.4) ====
 var POS_TABLE=0.8, POS_RACK=-0.3, POS_CENTER=0; // robot z positions (rack approach: stay back to avoid collision)
