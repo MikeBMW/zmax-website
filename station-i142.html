@@ -97,6 +97,15 @@ var axisLen=.25;
 });
 originG.add(set(mkNS(new THREE.SphereGeometry(.025,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.8})),0,0,0));
 
+// Robot cruise waypoints on floor (y just above floor at -0.72)
+var wpPts=[{z:0,label:"中心",c:0x00d4aa},{z:0.8,label:"入料",c:0x6699cc},{z:-0.3,label:"老化箱",c:0xff8844}];
+wpPts.forEach(function(w){
+  var ring=mk(new THREE.TorusGeometry(.08,.012,16,32),new THREE.MeshStandardMaterial({color:w.c,emissive:w.c,emissiveIntensity:1.2,roughness:.1}));
+  ring.rotation.x=-Math.PI/2;ring.position.set(0,-.71,w.z);ring.castShadow=false;ring.receiveShadow=false;
+  scene.add(ring);
+  scene.add(mkl(w.label,"#ffffff",new THREE.Vector3(0,-.6,w.z)));
+});
+
 // ==== TABLES ====
 function mkTable(gx,gz){
   var t=new THREE.Group();t.position.set(gx,-.72,gz);scene.add(t);
