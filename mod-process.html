@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-MAX 模块组装区 场景描述文档</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
+  h1{color:#58a6ff;font-size:28px;border-bottom:2px solid #58a6ff44;padding-bottom:12px;margin-bottom:20px}
+  h2{color:#58a6ff;font-size:20px;margin:28px 0 12px;border-left:3px solid #58a6ff;padding-left:10px}
+  h3{color:#79b8ff;font-size:16px;margin:18px 0 8px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:10px}
+  th{background:#0d1117;color:#58a6ff;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
+  td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
+  tr:nth-child(even){background:#0a0e14}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+  .kpi span{background:#0d1117;border:1px solid #58a6ff44;border-radius:6px;padding:6px 14px;color:#58a6ff;font-weight:700}
+  .note{background:#0d1117;border-left:3px solid #58a6ff;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
+  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .phase h3{margin-top:0;color:#58a6ff}
+  .btn{display:inline-block;background:#58a6ff;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 8px 0 0;text-decoration:none}
+  a{color:#58a6ff}
+  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}}
+</style>
+</head>
+<body>
+<h1>Z-MAX 模块组装区 全场景描述文档</h1>
+<div class="kpi"><span>4 工位</span><span>自动组装线(规划中)</span><span>EEPROM校验</span><span>老化墙</span></div>
+<button class="btn" onclick="window.print()">📄 导出 PDF</button>
+<button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
+<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#58a6ff;border:1px solid #58a6ff44">← 3D工厂</a>
+
+<h2>1. 定位与范围</h2>
+<h3>1.1 模块组装区定义</h3>
+<table>
+<tr><th style="width:120px">项</th><th>说明</th></tr>
+<tr><td>全称</td><td>Module Assembly / 模块组装区</td></tr>
+<tr><td>物料组成</td><td>OE光引擎组件 + PCB + 外壳 + 标签</td></tr>
+<tr><td>上游</td><td>OE光引擎区 → 模块组装区</td></tr>
+<tr><td>下游</td><td>模块组装区 → 成品 → 仓库物流区</td></tr>
+<tr><td>阶段产出</td><td>完整光模块成品(QSFP-DD/OSFP)</td></tr>
+</table>
+
+<h2>2. 详细工序</h2>
+
+<div class="phase">
+<h3>2.1 模块组装线 (I140)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
+<tr><td>I140</td><td>模块组装线</td><td>By Lot</td><td>自动(规划)</td><td>OE组件+PCB+外壳</td><td>组装后模块</td><td>TBD</td><td>TBD</td></tr>
+</table>
+<div class="note">自动组装线规划中。包括：PCB焊接(SMT 260°C回流焊)、外壳装配(QSFP-DD/OSFP 0.3N·m)、散热片贴合、标签激光打标。当前阶段为手动组装过渡。</div>
+</div>
+
+<div class="phase">
+<h3>2.2 EEPROM CHECK (I141)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
+<tr><td>I141</td><td>EEPROM CHECK</td><td>By SN</td><td>自动</td><td>组装后模块</td><td>参数写入后模块</td><td>≤2s</td><td>零误码</td></tr>
+</table>
+<div class="note">EEPROM参数校验与写入。包括：模块类型码、序列号、制造日期、校准参数(温度补偿表、功率校准表)、阈值告警值。I2C接口通信，校验和验证。兼容SFF-8636/SFF-8679协议。</div>
+</div>
+
+<div class="phase">
+<h3>2.3 老化墙 (I142)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
+<tr><td><a href="/station-i142.html?id=I-142&name=老化墙" style="color:#58a6ff">I142</a></td><td>老化墙</td><td>By Lot</td><td>自动</td><td>EEPROM后模块</td><td>老化后模块</td><td>24h/批</td><td>±1°C</td></tr>
+</table>
+<div class="note">模块级老化筛选。85°C通电老化24小时，在线监控光功率/电流/温度。Z700轮式机器人自动上下料。筛选早期失效模块，确保出厂可靠性。符合Telcordia GR-468标准。</div>
+</div>
+
+<div class="phase">
+<h3>2.4 模块内包装 (I143)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
+<tr><td>I143</td><td>模块内包装</td><td>By Lot</td><td>手动</td><td>老化后模块</td><td>内包装后模块</td><td>≤5s</td><td>ESD<100V</td></tr>
+</table>
+<div class="note">ESD防护包装。包括：防静电托盘、干燥剂+湿度指示卡、真空包装、标签打印。出货前最后一道工序，100%确认。</div>
+</div>
+
+<h2>3. 附录：MOD 全工序表</h2>
+<table>
+<tr><th>序号</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>设备</th></tr>
+<tr><td>1</td><td>I140</td><td>模块组装线</td><td>By Lot</td><td>自动(规划)</td><td>TBD</td><td>TBD</td><td>自动组装线</td></tr>
+<tr><td>2</td><td>I141</td><td>EEPROM CHECK</td><td>By SN</td><td>自动</td><td>≤2s</td><td>零误码</td><td>EEPROM编程器</td></tr>
+<tr><td>3</td><td>I142</td><td>老化墙</td><td>By Lot</td><td>自动</td><td>24h/批</td><td>±1°C</td><td>Z700机器人+老化柜</td></tr>
+<tr><td>4</td><td>I143</td><td>模块内包装</td><td>By Lot</td><td>手动</td><td>≤5s</td><td>ESD<100V</td><td>真空包装机</td></tr>
+</table>
+
+<script>
+function exportWord(){
+  var html=document.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'application/msword'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Z-MAX_模块组装区_场景描述.doc';
+  a.click();
+}
+</script>
+</body>
+</html>

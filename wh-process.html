@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-MAX 仓库物流区 场景描述文档</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
+  h1{color:#3fb950;font-size:28px;border-bottom:2px solid #3fb95044;padding-bottom:12px;margin-bottom:20px}
+  h2{color:#3fb950;font-size:20px;margin:28px 0 12px;border-left:3px solid #3fb950;padding-left:10px}
+  h3{color:#56d364;font-size:16px;margin:18px 0 8px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:10px}
+  th{background:#0d1117;color:#3fb950;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
+  td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
+  tr:nth-child(even){background:#0a0e14}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+  .kpi span{background:#0d1117;border:1px solid #3fb95044;border-radius:6px;padding:6px 14px;color:#3fb950;font-weight:700}
+  .note{background:#0d1117;border-left:3px solid #3fb950;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
+  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .phase h3{margin-top:0;color:#3fb950}
+  .btn{display:inline-block;background:#3fb950;color:#06080d;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 8px 0 0;text-decoration:none}
+  a{color:#3fb950}
+  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}}
+</style>
+</head>
+<body>
+<h1>Z-MAX 仓库物流区 全场景描述文档</h1>
+<div class="kpi"><span>5 工位</span><span>IQC来料→入库→AGV配送→成品入库→出货</span></div>
+<button class="btn" onclick="window.print()">📄 导出 PDF</button>
+<button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
+<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#3fb950;border:1px solid #3fb95044">← 3D工厂</a>
+
+<h2>1. 定位与范围</h2>
+<h3>1.1 仓库物流区定义</h3>
+<table>
+<tr><th style="width:120px">项</th><th>说明</th></tr>
+<tr><td>全称</td><td>Warehouse & Logistics / 仓库物流区</td></tr>
+<tr><td>功能</td><td>原材料接收→存储→AGV配送产线→成品入库→出货</td></tr>
+<tr><td>环境</td><td>恒温23°C±2°C · 湿度<60%RH · ESD防护 · 万级洁净</td></tr>
+<tr><td>覆盖范围</td><td>全厂物料流转 · 从IQC到出货闭环</td></tr>
+</table>
+
+<h2>2. 详细工序</h2>
+
+<div class="phase">
+<h3>2.1 IQC来料检 (I144)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>标准</th><th>工具</th><th>输入</th><th>输出</th><th>节拍</th></tr>
+<tr><td>I144</td><td>IQC来料检</td><td>AQL 0.65 Level II</td><td>千分尺·影像仪·显微镜</td><td>供应商来料</td><td>合格/不合格批次</td><td>≤30s/批</td></tr>
+</table>
+<div class="note">抽样检验方案：AQL 0.65(正常检验)Level II。检验项目：外观(破损/污染/氧化)、尺寸(千分尺/影像仪)、包装完整性、RoHS标识、供应商COA核对。不合格→隔离区→退货流程。</div>
+</div>
+
+<div class="phase">
+<h3>2.2 原料入库 (I145)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>系统</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th></tr>
+<tr><td>I145</td><td>原料入库</td><td>MES+WMS</td><td>扫码·FIFO</td><td>IQC合格批</td><td>入库定位</td><td>≤10s/箱</td></tr>
+</table>
+<div class="note">每箱/每盘扫码绑定库位 · FIFO先进先出控制 · 温湿度实时监控 · 有效期预警 · 物料追溯至供应商批次</div>
+</div>
+
+<div class="phase">
+<h3>2.3 AGV配送 (I146)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>设备</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th></tr>
+<tr><td>I146</td><td>AGV配送</td><td>AGV×4(A1-A4)</td><td>自动调度·路径规划</td><td>MES配送指令</td><td>产线工位补料</td><td>≤5min/趟</td></tr>
+</table>
+<div class="note">4台AGV各自负责COC/OE/MOD/WH区域 · 自动避障 · 准时率≥99% · 定位±10mm · 与MES联动按需配送</div>
+</div>
+
+<div class="phase">
+<h3>2.4 成品入库 (I147)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>条件</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th></tr>
+<tr><td>I147</td><td>成品入库</td><td>23°C±2°C·<60%RH</td><td>扫码·批次管理</td><td>合格成品</td><td>库存定位</td><td>≤10s/箱</td></tr>
+</table>
+<div class="note">成品存储温湿度管控 · ESD防护货架 · FIFO出货 · 批次追溯 · 保质期管理</div>
+</div>
+
+<div class="phase">
+<h3>2.5 出货 (I500)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
+<tr><td>I500</td><td>出货</td><td>MES闭环·物流对接</td><td>销售订单</td><td>发货确认</td><td>≤30s/单</td><td>零差错</td></tr>
+</table>
+<div class="note">拣货→复核→打包→贴标→物流交运 · MES全流程闭环 · 全程追踪 · 发货确认签字 · 这是500步SOP最终节点</div>
+</div>
+
+<h2>3. 附录：WH 全工序表</h2>
+<table>
+<tr><th>序号</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th></tr>
+<tr><td>1</td><td>I144</td><td>IQC来料检</td><td>By Lot</td><td>手动+量具</td><td>≤30s/批</td><td>AQL 0.65</td></tr>
+<tr><td>2</td><td>I145</td><td>原料入库</td><td>By Lot</td><td>扫码·自动</td><td>≤10s/箱</td><td>零差错</td></tr>
+<tr><td>3</td><td>I146</td><td>AGV配送</td><td>-</td><td>自动</td><td>≤5min/趟</td><td>±10mm</td></tr>
+<tr><td>4</td><td>I147</td><td>成品入库</td><td>By Lot</td><td>扫码·自动</td><td>≤10s/箱</td><td>温控±2°C</td></tr>
+<tr><td>5</td><td>I500</td><td>出货</td><td>By Lot</td><td>MES闭环</td><td>≤30s/单</td><td>零差错</td></tr>
+</table>
+
+<script>
+function exportWord(){
+  var html=document.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'application/msword'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Z-MAX_仓库物流区_场景描述.doc';
+  a.click();
+}
+</script>
+</body>
+</html>
