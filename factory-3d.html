@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.8 · 2026-07-23 12:40</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.9 · 2026-07-23 12:45</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -174,7 +174,7 @@ const ROBOT_DEFS=[
 ];
 
 // ═══════ THREE.JS ═══════
-const wrap=document.getElementById("view3d"),W=wrap.clientWidth,H=wrap.clientHeight;
+const wrap=document.getElementById("view3d"),W=view3d.clientWidth,H=view3d.clientHeight;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);
 scene.fog=new THREE.Fog(0x06080d,15,50);
 const camera=new THREE.PerspectiveCamera(50,W/H,.5,120);
@@ -588,9 +588,9 @@ function flyTo(zoneId){
 
 // ═══════ Mouse interaction ═══════
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
-wrap.addEventListener("mousemove",e=>{
-  mouse.x=(e.clientX/wrap.clientWidth)*2-1;
-  mouse.y=-(e.clientY/wrap.clientHeight)*2+1;
+view3d.addEventListener("mousemove",e=>{
+  mouse.x=(e.clientX/view3d.clientWidth)*2-1;
+  mouse.y=-(e.clientY/view3d.clientHeight)*2+1;
   const cc=document.getElementById("cursor-coord");
   raycaster.setFromCamera(mouse,camera);
   const hits=raycaster.intersectObject(floor);
@@ -628,13 +628,11 @@ function updateCam(){
   );
   camera.lookAt(lookTarget.x,lookTarget.y,lookTarget.z);
 }
-wrap.addEventListener("mousedown",e=>{
-  var el=e.target;
-  while(el){if(el.id==='panel'||el.classList.contains('zone-card'))return;el=el.parentElement}
-  if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}
+view3d.addEventListener("mousedown",e=>{
+if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}
   if(e.button===1){panning=true;prevMX=e.clientX;prevMY=e.clientY;e.preventDefault()}
 });
-wrap.addEventListener("mousemove",e=>{
+view3d.addEventListener("mousemove",e=>{
   if(dragging){
     camTheta+=(e.clientX-prevMX)*.005;
     camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.clientY-prevMY)*.005));
@@ -654,25 +652,25 @@ wrap.addEventListener("mousemove",e=>{
     updateCam();
   }
 });
-wrap.addEventListener("mouseup",()=>{dragging=false;panning=false});
-wrap.addEventListener("wheel",e=>{
+view3d.addEventListener("mouseup",()=>{dragging=false;panning=false});
+view3d.addEventListener("wheel",e=>{
   e.preventDefault();
   camDist=Math.max(5,Math.min(40,camDist+e.deltaY*.03));
   updateCam();
 },{passive:false});
-wrap.addEventListener("auxclick",e=>e.preventDefault());
+view3d.addEventListener("auxclick",e=>e.preventDefault());
 // Touch
-wrap.addEventListener("touchstart",e=>{
+view3d.addEventListener("touchstart",e=>{
   if(e.touches.length===1){dragging=true;prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY}
 });
-wrap.addEventListener("touchmove",e=>{
+view3d.addEventListener("touchmove",e=>{
   if(!dragging||e.touches.length!==1)return;
   camTheta+=(e.touches[0].clientX-prevMX)*.005;
   camPhi=Math.max(.15,Math.min(1.5,camPhi-(e.touches[0].clientY-prevMY)*.005));
   prevMX=e.touches[0].clientX;prevMY=e.touches[0].clientY;
   updateCam();
 });
-wrap.addEventListener("touchend",()=>dragging=false);
+view3d.addEventListener("touchend",()=>dragging=false);
 
 // ═══════ Animation ═══════
 let time=0;
@@ -732,8 +730,8 @@ buildFactory();
 updateCam();
 animate();
 window.addEventListener("resize",()=>{
-  renderer.setSize(wrap.clientWidth,wrap.clientHeight);
-  camera.aspect=wrap.clientWidth/wrap.clientHeight;camera.updateProjectionMatrix();
+  renderer.setSize(view3d.clientWidth,view3d.clientHeight);
+  camera.aspect=view3d.clientWidth/view3d.clientHeight;camera.updateProjectionMatrix();
 });
 </script>
 </body>
