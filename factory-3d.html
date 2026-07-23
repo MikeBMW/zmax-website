@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.7.8 · 2026-07-23 09:38</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.8.0 · 2026-07-23 10:00</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -161,10 +161,10 @@ let hoveredStation=null;
 
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
-  {name:"Z1",zone:"coc",x:-16.5,z:-9.3,patrol:[{x:-16.5,z:-9.3},{x:-14.5,z:-6.7},{x:-12.5,z:-9.3},{x:-10.5,z:-6.7},{x:-8.5,z:-9.3},{x:-6.5,z:-6.7}]},
-  {name:"Z2",zone:"oe", x:2.5,  z:-9.3,patrol:[{x:2.5,z:-9.3},{x:4.5,z:-6.7},{x:6.5,z:-9.3},{x:8.5,z:-6.7},{x:10.5,z:-9.3},{x:12.5,z:-6.7}]},
-  {name:"Z3",zone:"mod",x:2.5,  z:4.7, patrol:[{x:2.5,z:4.7},{x:4.5,z:7.3},{x:6.5,z:4.7},{x:8.5,z:7.3},{x:10.5,z:4.7},{x:12.5,z:7.3}]},
-  {name:"Z4",zone:"wh", x:-16.5,z:4.7, patrol:[{x:-16.5,z:4.7},{x:-14.5,z:7.3},{x:-12.5,z:4.7},{x:-10.5,z:7.3},{x:-8.5,z:4.7}]}
+  {name:"Z1",zone:"coc",x:-16.5,z:-9.3},
+  {name:"Z2",zone:"oe", x:2.5,  z:-9.3},
+  {name:"Z3",zone:"mod",x:2.5,  z:4.7},
+  {name:"Z4",zone:"wh", x:-16.5,z:4.7}
 ];
 
 // ═══════ THREE.JS ═══════
@@ -430,7 +430,7 @@ function buildFactory(){
   if(robotObjs.length===0){
     ROBOT_DEFS.forEach(rd=>{
       const r={obj:createRobot(rd.x,rd.z),pos:{x:rd.x,z:rd.z},target:{x:rd.x,z:rd.z},
-               patrol:rd.patrol,patrolIdx:0,zone:rd.zone,name:rd.name,coordSprite:null,nameSprite:null,
+               patrolIdx:0,zone:rd.zone,name:rd.name,coordSprite:null,nameSprite:null,
                dwell:0,workAnim:0};
       r.coordSprite=createCoordSprite(rd.x,rd.z,'#00d4aa');
       scene.add(r.obj);scene.add(r.coordSprite.sprite);
@@ -628,20 +628,21 @@ let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
   
-  // Robot movement — 4 robots, each patrols within its own zone
+  // Robot movement — sequential station visits within zone, no collision
   robotObjs.forEach(r=>{
-    const wp=r.patrol[r.patrolIdx];
-    const rdx=wp.x-r.pos.x,rdz=wp.z-r.pos.z;
+    const zoneStations=stationObjects.filter(s=>s.userData.zoneId===r.zone);
+    if(zoneStations.length===0)return;
+    const st=zoneStations[r.patrolIdx%zoneStations.length];
+    const tx=st.position.x,tz=st.position.z-1.2;  // offset in front of station
+    const rdx=tx-r.pos.x,rdz=tz-r.pos.z;
     if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08){
       if(r.dwell<180){r.dwell++;r.workAnim=Math.sin(r.dwell*.15)}
-      else{r.dwell=0;r.patrolIdx=(r.patrolIdx+1)%r.patrol.length}
+      else{r.dwell=0;r.patrolIdx=(r.patrolIdx+1)%zoneStations.length}
     }
     if(r.dwell===0){r.pos.x+=rdx*.03;r.pos.z+=rdz*.03}
-    r.obj.position.y=.05+Math.sin(time*2.5+r.pos.x)*.02+(r.dwell>0?.02:0);
     r.obj.position.set(r.pos.x,.05,r.pos.z);
-    r.obj.position.y+=Math.sin(time*2.5+r.pos.x)*.02;
+    r.obj.position.y+=Math.sin(time*2.5+r.pos.x)*.02+(r.dwell>0?.02:0);
     r.obj.rotation.y=Math.atan2(rdx,rdz);
-    // update coord sprite + name sprite with real-time position
     if(r.coordSprite){updateCoordSprite(r.coordSprite,r.pos.x,r.pos.z)};
     if(r.nameSprite){r.nameSprite.sprite.position.set(r.pos.x,1.6,r.pos.z)};
   });
