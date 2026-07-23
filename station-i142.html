@@ -82,6 +82,21 @@ Q.tableLeg=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.3,metalness
 var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
 fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
 
+// World origin marker
+var originG=new THREE.Group();scene.add(originG);
+var axisLen=.25;
+[['X',0xff4444,[axisLen,0,0],[0,0,-Math.PI/2]],
+ ['Y',0x44ff44,[0,axisLen,0],[0,0,0]],
+ ['Z',0x4444ff,[0,0,axisLen],[Math.PI/2,0,0]]].forEach(function(a){
+  var g=new THREE.Group();
+  var cyl=mk(new THREE.CylinderGeometry(.006,.006,axisLen,8),new THREE.MeshStandardMaterial({color:a[1],emissive:a[1],emissiveIntensity:.6}));
+  cyl.position.set(a[2][0]/2,a[2][1]/2,a[2][2]/2);
+  cyl.rotation.set(a[3][0],a[3][1],a[3][2]);
+  g.add(cyl);
+  originG.add(g);
+});
+originG.add(set(mkNS(new THREE.SphereGeometry(.025,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.8})),0,0,0));
+
 // ==== TABLES ====
 function mkTable(gx,gz){
   var t=new THREE.Group();t.position.set(gx,-.72,gz);scene.add(t);
