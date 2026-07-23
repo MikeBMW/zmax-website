@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Z-MAX · 3D 自主导航工厂</title>
+<style>
+:root{--bg:#06080d;--accent:#00d4aa;--danger:#ff4444;--warn:#d4a800;--blue:#58a6ff;--text:#c9d1d9;--sub:#8b949e;--card:#0d1117;--border:#1a1f2b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+canvas{display:block}
+
+/* 顶栏 */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:44px;background:linear-gradient(180deg,rgba(13,17,23,.98),rgba(10,10,15,.96));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:8px}
+#topbar .logo{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;letter-spacing:-.3px}
+#topbar .logo em{font-style:normal;color:var(--accent)}
+#topbar .spacer{flex:1}
+#topbar .stat{font-size:9px;color:var(--sub);background:var(--card);padding:3px 8px;border-radius:8px;display:flex;align-items:center;gap:4px}
+#topbar .stat .dot{width:6px;height:6px;border-radius:50%}
+#topbar .stat .dot.green{background:var(--accent)}
+#topbar .stat .dot.red{background:var(--danger)}
+#topbar a.btn{color:var(--sub);text-decoration:none;font-size:10px;padding:4px 10px;border:1px solid var(--border);border-radius:8px}
+
+/* 底部面板 */
+#panel{position:fixed;bottom:0;left:0;right:0;z-index:100;background:linear-gradient(0deg,rgba(13,17,23,.98),rgba(10,10,15,.95));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);padding:10px 12px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));max-height:45vh;overflow-y:auto;transition:transform .25s}
+#panel.collapsed{transform:translateY(calc(100% - 50px))}
+#panel .handle{width:32px;height:3px;background:var(--border);border-radius:2px;margin:0 auto 8px;cursor:pointer}
+
+#panel .section{margin-bottom:10px}
+#panel .section-title{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+#panel .mission-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--card);margin-bottom:4px;font-size:12px;cursor:pointer;border:1px solid transparent;transition:all .15s}
+#panel .mission-item:hover{border-color:var(--accent)44}
+#panel .mission-item .idx{width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+#panel .mission-item .idx.done{background:var(--accent)44;color:var(--accent)}
+#panel .mission-item .idx.active{background:var(--warn);color:#000;animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 12px var(--warn)}}
+#panel .mission-item .info{flex:1;min-width:0}
+#panel .mission-item .name{color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#panel .mission-item .zone{font-size:9px;color:var(--sub)}
+#panel .mission-item .status-tag{font-size:9px;padding:2px 6px;border-radius:4px;flex-shrink:0}
+#panel .mission-item .status-tag.pending{color:var(--sub);background:var(--card)}
+#panel .mission-item .status-tag.doing{color:var(--warn);background:var(--warn)22}
+#panel .mission-item .status-tag.done{color:var(--accent);background:var(--accent)22}
+
+#panel .btn-row{display:flex;gap:8px;margin-top:8px}
+#panel button{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;transition:all .15s;flex:1;display:flex;align-items:center;justify-content:center;gap:4px}
+#panel button:active{transform:scale(.96)}
+#panel button.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:600}
+#panel button.danger{border-color:var(--danger)44;color:var(--danger)}
+
+/* 提示 */
+#toast{position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:200;background:var(--card);border:1px solid var(--accent);color:var(--accent);padding:8px 16px;border-radius:20px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1}
+
+/* loading */
+#loading{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+#loading .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading .txt{color:var(--sub);font-size:11px}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><div class="txt">加载3D工厂...</div></div>
+
+<div id="topbar">
+  <span class="logo">Z-MAX · <em>自主导航工厂</em></span>
+  <span class="spacer"></span>
+  <span class="stat"><span class="dot green"></span>就绪</span>
+  <span class="stat" id="battery-stat">🔋 87%</span>
+  <a href="/" class="btn">← 主页</a>
+</div>
+
+<div id="toast"></div>
+
+<div id="panel">
+  <div class="handle" onclick="document.getElementById('panel').classList.toggle('collapsed')"></div>
+  <div class="section">
+    <div class="section-title">📋 任务队列 <span id="task-count" style="color:var(--accent)">(0)</span></div>
+    <div id="mission-list" style="max-height:180px;overflow-y:auto">
+      <div style="color:var(--sub);font-size:11px;text-align:center;padding:12px">点击工位添加到任务队列</div>
+    </div>
+    <div class="btn-row">
+      <button onclick="clearMissions()">🗑 清空</button>
+      <button class="primary" onclick="startMission()">▶ 执行任务</button>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── 场景 ──────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x06080d);
+scene.fog = new THREE.Fog(0x06080d, 30, 80);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 1, 150);
+camera.position.set(30, 35, 35);
+camera.lookAt(26, 0, -12);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(26, 0, -12);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI/2.4; controls.minDistance = 8; controls.maxDistance = 60;
+controls.update();
+
+// ── 灯光 ──────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x303050, 4));
+const sun = new THREE.DirectionalLight(0xffffff, 6);
+sun.position.set(40, 50, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.near=0.5;sun.shadow.camera.far=120;
+sun.shadow.camera.left=-50;sun.shadow.camera.right=50;
+sun.shadow.camera.top=30;sun.shadow.camera.bottom=-30;
+scene.add(sun);
+
+const hemi = new THREE.HemisphereLight(0x8899cc, 0x223344, 2);
+scene.add(hemi);
+
+// ── 地面 ──────────────────────────────────────
+const groundGeo = new THREE.PlaneGeometry(80, 60);
+const groundMat = new THREE.MeshStandardMaterial({color:0x0a0e14, roughness:0.6});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2; ground.position.set(30, -0.05, -14); ground.receiveShadow = true;
+scene.add(ground);
+
+// 网格
+const grid = new THREE.GridHelper(70, 70, 0x1a1f2b, 0x111518);
+grid.position.set(30, 0, -14);
+scene.add(grid);
+
+// 围墙
+function addWall(x, z, w, d, h) {
+  const g = new THREE.BoxGeometry(w, h, d);
+  const m = new THREE.MeshStandardMaterial({color:0x1a1f2b, roughness:0.5, metalness:0.3});
+  const wall = new THREE.Mesh(g, m);
+  wall.position.set(x, h/2, z);
+  wall.castShadow = true; wall.receiveShadow = true;
+  scene.add(wall);
+}
+addWall(30, 12, 64, 0.3, 2);
+addWall(30, -40, 64, 0.3, 2);
+addWall(-2, -14, 0.3, 56, 2);
+addWall(62, -14, 0.3, 56, 2);
+
+// ── 工厂数据 ──────────────────────────────────
+const ZONE_COLORS = {
+  'opt-ws':'#00d4aa','opt-db':'#58a6ff','opt-wb':'#d4a800',
+  'opt-cp':'#ff6b6b','opt-test':'#9b59b6','heat':'#e67e22','mod':'#7f8c8d'
+};
+
+// 每个工位的精确坐标 [x, z, name, zone_id, equipment]
+const STATIONS = [
+  // ── 光学车间 (0-18, 0-10) ──
+  [2, 1.5, 'COC生产区','opt-ws',''],
+  [2, 4, 'Submount打标-01','opt-ws','显微镜'],
+  [5, 1.5, 'COC共晶-01','opt-ws',''],
+  [5, 4, 'COC外观检查-01','opt-ws','显微镜'],
+  [8, 1.5, 'COC WB打线-01','opt-ws',''],
+  [8, 4, 'COC上料','opt-ws',''],
+  [11, 1.5, 'COC BI-01老化','opt-ws',''],
+  [11, 4, 'COC BI上下料','opt-ws','2台·显微镜'],
+  [14, 1.5, 'COC出货目检','opt-ws','显微镜'],
+  [14, 4, 'COC SN识别-01','opt-ws','自动显微镜×2'],
+  [2, 7, '打标外观检查清洁','opt-ws','显微镜'],
+  [5, 7, '进料检验','opt-ws','显微镜+治具'],
+  [8, 7, '下载FW','opt-ws','手动治具'],
+  [11, 7, '半自动点胶','opt-ws','2台点胶机'],
+  [14, 7, '手动贴装','opt-ws','治具×2·显微镜×2'],
+  [17, 4, 'UV固化','opt-ws',''],
+
+  // ── 光学贴片区 (20-32, 0-10) ──
+  [21, 2, '贴片备料','opt-db','治具×3·显微镜×3'],
+  [21, 5.5, '自动贴片固晶点胶','opt-db','自动化设备×4'],
+  [25, 2, '二次元检验','opt-db',''],
+  [25, 5.5, 'DA外观检','opt-db','显微镜×1'],
+  [29, 4, 'DA烘烤','opt-db','2台烘烤机柜'],
+
+  // ── 光学打线区 (34-48, 0-10) ──
+  [35, 2, '等离子清洗机','opt-wb',''],
+  [35, 5.5, 'WB打线','opt-wb',''],
+  [39, 2, 'COC绑定','opt-wb',''],
+  [39, 5.5, '自动光学检测','opt-wb','自动光学检测设备'],
+  [43, 2, 'DA外观检','opt-wb','显微镜×1'],
+  [43, 5.5, '二次元检验','opt-wb',''],
+  [47, 2, '自动贴片机','opt-wb',''],
+  [47, 5.5, '手动贴装','opt-wb','×4·显微镜×4·治具×4'],
+
+  // ── 光学耦合区 (0-18, -12 ~ -4) ──
+  [3, -10, '自动耦合测试台','opt-cp','14台'],
+  [9, -10, '分板站位','opt-cp','分板机×1'],
+  [15, -7, '目检','opt-cp','显微镜×1'],
+
+  // ── 光学测试区 (20-40, -12 ~ -4) ──
+  [21, -10, '耦合外观检测清洁','opt-test','显微镜'],
+  [24.5, -10, 'TXFA组装','opt-test','显微镜×3'],
+  [28, -10, 'MPD测试','opt-test','测试机台×2'],
+  [31.5, -10, 'TCT快速温变','opt-test','温变立柜×3'],
+  [21, -6, '耦合烘烤','opt-test',''],
+  [24.5, -6, '模块BI','opt-test','烤箱×2'],
+  [28, -6, '端面清洁','opt-test',''],
+  [31.5, -6, 'OE测试','opt-test','测试站×4'],
+  [35, -8, 'OE端面检测清洁','opt-test','测试站×3'],
+  [38, -8, 'OE出货检查','opt-test','×2'],
+  [38, -10, 'OE/TRX测试','opt-test',''],
+
+  // ── 热岛区 (42-50, -12 ~ -4) ──
+  [45, -8, '热岛立柜','heat','×4'],
+
+  // ── 模块车间 (0-20, -24 ~ -16) ──
+  [3, -22, '模块组装线','mod',''],
+  [9, -22, '自动组装线','mod','暂无'],
+  [15, -22, '模块内包装线','mod',''],
+  [18, -18, 'EEPROM CHECK','mod',''],
+];
+
+// 为每个工位生成唯一ID
+STATIONS.forEach((s, i) => { s.push('st'+i); }); // [x, z, name, zone, equip, id]
+
+// ── 构建3D场景 ──────────────────────────────
+const stationMeshes = []; // {mesh, station}
+const zonePlatforms = [];
+
+// 区域平台
+const ZONES_DEF = [
+  {id:'opt-ws', x:0, z:0, w:18, d:10, name:'光学车间'},
+  {id:'opt-db', x:20, z:0, w:12, d:10, name:'光学贴片区'},
+  {id:'opt-wb', x:34, z:0, w:14, d:10, name:'光学打线区'},
+  {id:'opt-cp', x:0, z:-12, w:18, d:8, name:'光学耦合区'},
+  {id:'opt-test', x:20, z:-12, w:20, d:8, name:'光学测试区'},
+  {id:'heat', x:42, z:-12, w:8, d:8, name:'热岛区'},
+  {id:'mod', x:0, z:-24, w:20, d:8, name:'模块车间'},
+];
+
+ZONES_DEF.forEach(z => {
+  const c = new THREE.Color(ZONE_COLORS[z.id]);
+  const h = z.id === 'heat' ? 2.5 : z.id === 'mod' ? 0.4 : 1.2;
+
+  // 平台
+  const geo = new THREE.BoxGeometry(z.w - 0.5, h, z.d - 0.5);
+  const mat = new THREE.MeshStandardMaterial({color:c, roughness:0.25, metalness:0.5});
+  const plat = new THREE.Mesh(geo, mat);
+  plat.position.set(z.x + z.w/2, h/2, z.z + z.d/2);
+  plat.castShadow = true; plat.receiveShadow = true;
+  plat.userData = {zone:z.id, name:z.name};
+  scene.add(plat);
+  zonePlatforms.push(plat);
+
+  // 边框发光
+  const edgeGeo = new THREE.EdgesGeometry(geo);
+  const edgeMat = new THREE.LineBasicMaterial({color:c, transparent:true, opacity:0.3});
+  plat.add(new THREE.LineSegments(edgeGeo, edgeMat));
+
+  // 区域名牌
+  createLabel(z.name, z.x + z.w/2, h + 1.2, z.z + 1, '#fff', 14);
+});
+
+// 工位设备模型
+function createStation(x, z, name, zoneId, equip, sid) {
+  const c = new THREE.Color(ZONE_COLORS[zoneId] || '#888');
+  const group = new THREE.Group();
+
+  // 设备台
+  const baseGeo = new THREE.BoxGeometry(0.8, 0.6, 1.2);
+  const baseMat = new THREE.MeshStandardMaterial({color:0x2a2a35, roughness:0.4, metalness:0.6});
+  const base = new THREE.Mesh(baseGeo, baseMat);
+  base.position.y = 0.3;
+  base.castShadow = true; base.receiveShadow = true;
+  group.add(base);
+
+  // 顶面操作区（发光）
+  const topGeo = new THREE.BoxGeometry(0.7, 0.05, 1.0);
+  const topMat = new THREE.MeshStandardMaterial({color:c, roughness:0.2, emissive:c, emissiveIntensity:0.5});
+  const top = new THREE.Mesh(topGeo, topMat);
+  top.position.y = 0.63;
+  group.add(top);
+
+  // 小设备/屏幕
+  if (equip && equip.includes('显微镜')) {
+    const scopeGeo = new THREE.CylinderGeometry(0.08, 0.12, 0.4, 8);
+    const scope = new THREE.Mesh(scopeGeo, new THREE.MeshStandardMaterial({color:0x555566, metalness:0.8}));
+    scope.position.set(0.25, 0.85, 0.3);
+    group.add(scope);
+  }
+
+  group.position.set(x, 0, z);
+  group.userData = {station:STATIONS.find(s => s[5] === sid), id:sid};
+  scene.add(group);
+
+  // 标签
+  const shortName = name.length > 6 ? name.slice(0,5)+'…' : name;
+  createLabel(shortName, x, 1.1, z, '#c9d1d9', 8);
+
+  stationMeshes.push({mesh:group, station:STATIONS.find(s => s[5] === sid)});
+}
+
+function createLabel(text, x, y, z, color, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.font = `bold ${size*3}px -apple-system,sans-serif`;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, 128, 40);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.minFilter = THREE.LinearFilter;
+  const spriteMat = new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false});
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.position.set(x, y, z);
+  sprite.scale.set(2.5, 0.6, 1);
+  scene.add(sprite);
+}
+
+STATIONS.forEach(s => createStation(s[0], s[1], s[2], s[3], s[4], s[5]));
+
+// ── 机器人 ────────────────────────────────────
+const robot = new THREE.Group();
+
+// 底盘
+const chassisGeo = new THREE.BoxGeometry(0.7, 0.2, 1.0);
+const chassisMat = new THREE.MeshStandardMaterial({color:0x1a1f2b, roughness:0.3, metalness:0.7});
+const chassis = new THREE.Mesh(chassisGeo, chassisMat);
+chassis.position.y = 0.15;
+chassis.castShadow = true;
+robot.add(chassis);
+
+// Z-MAX 标识条
+const stripeGeo = new THREE.BoxGeometry(0.5, 0.03, 0.7);
+const stripeMat = new THREE.MeshStandardMaterial({color:0x00d4aa, roughness:0.2, emissive:0x00d4aa, emissiveIntensity:0.6});
+const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+stripe.position.y = 0.26;
+robot.add(stripe);
+
+// 轮子
+for (let i = 0; i < 4; i++) {
+  const wheelGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.12, 8);
+  const wheel = new THREE.Mesh(wheelGeo, new THREE.MeshStandardMaterial({color:0x333, roughness:0.6}));
+  wheel.rotation.z = Math.PI/2;
+  wheel.position.set(i<2 ? -0.35 : 0.35, 0.1, i%2===0 ? 0.4 : -0.4);
+  wheel.castShadow = true;
+  robot.add(wheel);
+}
+
+// 立柱
+const pillarGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
+const pillar = new THREE.Mesh(pillarGeo, new THREE.MeshStandardMaterial({color:0x3a3a45, metalness:0.8}));
+pillar.position.y = 0.6;
+robot.add(pillar);
+
+// 机械臂 - 简化版（肩+肘+腕）
+const armParts = [];
+function addArmSegment(geo, y, rotZ) {
+  const seg = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:0x4a4a55, metalness:0.8}));
+  seg.position.y = y;
+  seg.rotation.z = rotZ || 0;
+  robot.add(seg);
+  armParts.push(seg);
+}
+addArmSegment(new THREE.BoxGeometry(0.12, 0.35, 0.1), 0.85, 0);
+addArmSegment(new THREE.BoxGeometry(0.1, 0.3, 0.08), 1.12, 0.3);
+addArmSegment(new THREE.BoxGeometry(0.06, 0.2, 0.06), 1.32, -0.2);
+
+// 末端执行器（夹爪）
+const gripperBase = new THREE.BoxGeometry(0.15, 0.05, 0.1);
+const gripper = new THREE.Mesh(gripperBase, new THREE.MeshStandardMaterial({color:0x00d4aa, roughness:0.3, emissive:0x00d4aa, emissiveIntensity:0.3}));
+gripper.position.set(0.1, 1.42, 0);
+robot.add(gripper);
+
+// 雷达传感器环
+const lidarGeo = new THREE.TorusGeometry(0.15, 0.03, 8, 16);
+const lidar = new THREE.Mesh(lidarGeo, new THREE.MeshStandardMaterial({color:0x00d4aa, emissive:0x00d4aa, emissiveIntensity:0.8}));
+lidar.rotation.x = Math.PI/2;
+lidar.position.y = 0.25;
+robot.add(lidar);
+
+robot.position.set(2, 0, -16);
+scene.add(robot);
+
+// 机器人目标指示器（地面投影）
+const indicatorGeo = new THREE.RingGeometry(0.25, 0.35, 32);
+const indicatorMat = new THREE.MeshBasicMaterial({color:0x00d4aa, side:THREE.DoubleSide, transparent:true, opacity:0.5});
+const indicator = new THREE.Mesh(indicatorGeo, indicatorMat);
+indicator.rotation.x = -Math.PI/2;
+indicator.position.y = 0.02;
+robot.add(indicator);
+
+// ── 导航网格 (1格=1m) ──────────────────────
+const GRID_W = 52, GRID_H = 34;
+const gridMap = new Array(GRID_H).fill(null).map(() => new Array(GRID_W).fill(0));
+
+// 标记障碍物（工位设备占用的格子）
+STATIONS.forEach(s => {
+  const gx = Math.round(s[0]);
+  const gz = Math.round(Math.abs(s[1] + 20));
+  for (let dx = -1; dx <= 1; dx++) {
+    for (let dz = -1; dz <= 1; dz++) {
+      const nx = gx + dx, nz = gz + dz;
+      if (nx >= 0 && nx < GRID_W && nz >= 0 && nz < GRID_H) gridMap[nz][nx] = 1;
+    }
+  }
+});
+
+// 标记围墙
+for (let i = 0; i < GRID_W; i++) { gridMap[0][i] = 1; gridMap[GRID_H-1][i] = 1; }
+for (let i = 0; i < GRID_H; i++) { gridMap[i][0] = 1; gridMap[i][GRID_W-1] = 1; }
+
+// A* 寻路
+function worldToGrid(wx, wz) {
+  return [Math.round(wx), Math.round(Math.abs(wz + 20))];
+}
+function gridToWorld(gx, gz) {
+  return [gx, -(gz - 20)];
+}
+
+function heuristic(a, b) { return Math.abs(a[0]-b[0]) + Math.abs(a[1]-b[1]); }
+
+function astar(start, goal) {
+  const open = [[...start, 0, heuristic(start, goal), null]];
+  const closed = new Set();
+  const key = (p) => p[0]*GRID_H + p[1];
+
+  while (open.length > 0) {
+    open.sort((a,b) => (a[2]+a[3]) - (b[2]+b[3]));
+    const cur = open.shift();
+    const ck = key(cur);
+    if (closed.has(ck)) continue;
+    closed.add(ck);
+
+    if (cur[0] === goal[0] && cur[1] === goal[1]) {
+      const path = [];
+      let node = cur;
+      while (node) { path.unshift([node[0], node[1]]); node = node[4]; }
+      return path;
+    }
+
+    for (const [dx, dz] of [[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]) {
+      const nx = cur[0] + dx, nz = cur[1] + dz;
+      if (nx < 0 || nx >= GRID_W || nz < 0 || nz >= GRID_H) continue;
+      if (gridMap[nz][nx] === 1) continue;
+      if (closed.has(key([nx,nz]))) continue;
+      const cost = dx !== 0 && dz !== 0 ? 1.4 : 1;
+      open.push([nx, nz, cur[2] + cost, heuristic([nx,nz], goal), cur]);
+    }
+  }
+  return null;
+}
+
+// ── 路径可视化 ────────────────────────────────
+let pathLine = null;
+function showPath(path) {
+  if (pathLine) scene.remove(pathLine);
+  if (!path || path.length < 2) return;
+  const points = path.map(p => {
+    const [wx, wz] = gridToWorld(p[0], p[1]);
+    return new THREE.Vector3(wx, 0.1, wz);
+  });
+  const geo = new THREE.BufferGeometry().setFromPoints(points);
+  const mat = new THREE.LineBasicMaterial({color:0x00d4aa, linewidth:1, transparent:true, opacity:0.6});
+  pathLine = new THREE.Line(geo, mat);
+  scene.add(pathLine);
+}
+
+// ── 机器人移动动画 ────────────────────────────
+let isMoving = false;
+let movePath = [];
+let moveIndex = 0;
+let moveTarget = null;
+
+function navigateTo(wx, wz, onArrive) {
+  const [sgx, sgz] = worldToGrid(robot.position.x, robot.position.z);
+  const [tgx, tgz] = worldToGrid(wx, wz);
+  const path = astar([sgx, sgz], [tgx, tgz]);
+  if (!path) { toast('无法到达目标'); return; }
+
+  showPath(path);
+  movePath = path.map(p => {
+    const [wpx, wpz] = gridToWorld(p[0], p[1]);
+    return {x:wpx, z:wpz};
+  });
+  moveIndex = 0;
+  moveTarget = {x:wx, z:wz, onArrive};
+  isMoving = true;
+
+  // 旋转机器人朝向第一个路径点
+  faceTarget(movePath[0].x, movePath[0].z);
+}
+
+function faceTarget(tx, tz) {
+  const angle = Math.atan2(tx - robot.position.x, tz - robot.position.z);
+  robot.rotation.y = angle;
+}
+
+// ── 任务系统 ──────────────────────────────────
+let missions = [];
+let currentMission = -1;
+
+window.clearMissions = function() {
+  missions = [];
+  currentMission = -1;
+  if (pathLine) { scene.remove(pathLine); pathLine = null; }
+  updateMissionUI();
+  toast('任务队列已清空');
+};
+
+window.startMission = function() {
+  if (missions.length === 0) { toast('请先添加任务'); return; }
+  if (isMoving) { toast('机器人正在移动'); return; }
+  currentMission = -1;
+  executeNextMission();
+};
+
+function executeNextMission() {
+  currentMission++;
+  if (currentMission >= missions.length) {
+    toast('✅ 全部任务完成');
+    currentMission = -1;
+    missions = [];
+    updateMissionUI();
+    return;
+  }
+  updateMissionUI();
+  const m = missions[currentMission];
+  toast(`🚀 前往: ${m.name}`);
+
+  // 导航到工位前方1.5m
+  const tx = m.x;
+  const tz = m.z + 1.5;
+  navigateTo(tx, tz, () => {
+    // 到达后执行操作动画
+    setTimeout(() => {
+      simulateOperation(m);
+    }, 500);
+  });
+}
+
+function simulateOperation(m) {
+  toast(`🔧 操作中: ${m.name}`);
+  // 闪烁工位
+  const sm = stationMeshes.find(s => s.station[5] === m.id);
+  if (sm) {
+    const origEmissive = sm.mesh.children[1]?.material.emissiveIntensity || 0.5;
+    let count = 0;
+    const flash = setInterval(() => {
+      if (sm.mesh.children[1]) {
+        sm.mesh.children[1].material.emissiveIntensity = count%2===0 ? 1.5 : origEmissive;
+      }
+      count++;
+      if (count >= 4) {
+        clearInterval(flash);
+        if (sm.mesh.children[1]) sm.mesh.children[1].material.emissiveIntensity = origEmissive;
+        toast(`✅ 完成: ${m.name}`);
+        setTimeout(() => executeNextMission(), 600);
+      }
+    }, 400);
+  }
+}
+
+function updateMissionUI() {
+  const list = document.getElementById('mission-list');
+  const count = document.getElementById('task-count');
+  if (missions.length === 0) {
+    list.innerHTML = '<div style="color:var(--sub);font-size:11px;text-align:center;padding:12px">点击工位添加到任务队列</div>';
+  } else {
+    list.innerHTML = missions.map((m, i) => {
+      let statusClass = 'pending', statusText = '等待';
+      if (i < currentMission) { statusClass = 'done'; statusText = '✓'; }
+      else if (i === currentMission) { statusClass = 'doing'; statusText = '执行中'; }
+      return `<div class="mission-item" onclick="removeMission(${i})">
+        <div class="idx ${statusClass}">${statusClass==='done'?'✓':i+1}</div>
+        <div class="info"><div class="name">${m.name}</div><div class="zone">${m.zone}</div></div>
+        <div class="status-tag ${statusClass}">${statusText}</div>
+      </div>`;
+    }).join('');
+  }
+  count.textContent = `(${missions.length})`;
+}
+
+window.removeMission = function(i) {
+  if (i === currentMission) return;
+  missions.splice(i, 1);
+  if (i < currentMission) currentMission--;
+  updateMissionUI();
+};
+
+// ── Toast ─────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => el.classList.remove('show'), 2000);
+}
+window.toast = toast;
+
+// ── 点击检测 ─────────────────────────────────
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+renderer.domElement.addEventListener('click', (e) => {
+  if (isMoving) { toast('机器人移动中，请等待'); return; }
+
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(stationMeshes.map(s => s.mesh), true);
+
+  if (intersects.length > 0) {
+    let obj = intersects[0].object;
+    while (obj && !obj.userData.station) obj = obj.parent;
+    if (obj && obj.userData.station) {
+      const st = obj.userData.station;
+      const zoneName = ZONES_DEF.find(z => z.id === st[3])?.name || st[3];
+
+      // 检查是否已在队列
+      if (missions.find(m => m.id === st[5])) {
+        toast('已在任务队列中');
+        return;
+      }
+
+      missions.push({
+        id: st[5], name: st[2], zone: zoneName, x: st[0], z: st[1], equip: st[4]
+      });
+      updateMissionUI();
+      toast(`📋 已添加: ${st[2]}`);
+
+      // 闪烁工位
+      if (obj.children[1]) {
+        const orig = obj.children[1].material.emissiveIntensity;
+        obj.children[1].material.emissiveIntensity = 2;
+        setTimeout(() => { if (obj.children[1]) obj.children[1].material.emissiveIntensity = orig; }, 300);
+      }
+    }
+  }
+});
+
+// ── 渲染循环 ─────────────────────────────────
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.1);
+  controls.update();
+
+  // 机器人移动
+  if (isMoving && movePath.length > 0 && moveIndex < movePath.length) {
+    const target = movePath[moveIndex];
+    const dx = target.x - robot.position.x;
+    const dz = target.z - robot.position.z;
+    const dist = Math.sqrt(dx*dx + dz*dz);
+    const speed = 3;
+
+    if (dist < 0.15) {
+      moveIndex++;
+      if (moveIndex >= movePath.length) {
+        isMoving = false;
+        robot.position.x = moveTarget.x;
+        robot.position.z = moveTarget.z + 1.5;
+        if (pathLine) { scene.remove(pathLine); pathLine = null; }
+        if (moveTarget.onArrive) moveTarget.onArrive();
+      }
+    } else {
+      robot.position.x += (dx/dist) * speed * dt;
+      robot.position.z += (dz/dist) * speed * dt;
+      faceTarget(target.x, target.z);
+    }
+  }
+
+  // 雷达旋转
+  lidar.rotation.z += dt * 2;
+
+  // 空闲时微小浮动
+  if (!isMoving) {
+    robot.position.y = Math.sin(Date.now() * 0.003) * 0.03;
+  } else {
+    robot.position.y = 0;
+  }
+
+  renderer.render(scene, camera);
+}
+
+// ── 启动 ─────────────────────────────────────
+setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// 暴露给全局
+window.scene = scene;
+window.camera = camera;
+window.controls = controls;
+window.robot = robot;
+</script>
+</body>
+</html>

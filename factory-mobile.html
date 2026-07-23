@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>光模块工厂 · 产线巡检</title>
+<style>
+:root{
+  --bg:#06080d;
+  --card:#0d1117;
+  --border:#1a1f2b;
+  --text:#c9d1d9;
+  --sub:#8b949e;
+  --accent:#00d4aa;
+  --blue:#58a6ff;
+  --gold:#d4a800;
+  --red:#ff6b6b;
+  --purple:#9b59b6;
+  --orange:#e67e22;
+  --gray:#7f8c8d;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro','PingFang SC','Microsoft YaHei',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  -webkit-user-select:none;
+  overflow-x:hidden;
+  padding-top:calc(56px + var(--safe-top));
+  padding-bottom:calc(80px + var(--safe-bottom));
+}
+
+/* 顶栏 */
+#header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:56px;padding-top:var(--safe-top);
+  background:linear-gradient(180deg,var(--bg),rgba(6,8,13,0.95));
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;padding-left:12px;padding-right:12px;
+}
+#header .icon{font-size:24px}
+#header .title{font-size:16px;font-weight:800;color:#fff;letter-spacing:-0.3px}
+#header .sub{font-size:10px;color:var(--sub);margin-left:4px}
+#header .spacer{flex:1}
+#header .view-btn{
+  padding:6px 10px;border-radius:16px;border:1px solid var(--border);
+  background:transparent;color:var(--sub);font-size:11px;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;gap:4px;
+}
+#header .view-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:600}
+
+/* 统计条 */
+#stats{
+  display:flex;gap:8px;padding:10px 12px;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+#stats::-webkit-scrollbar{display:none}
+#stats .stat{
+  flex-shrink:0;padding:8px 14px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  text-align:center;min-width:70px;
+}
+#stats .stat .num{font-size:20px;font-weight:800;line-height:1.2}
+#stats .stat .lab{font-size:9px;color:var(--sub);margin-top:2px}
+
+/* 地图画布 */
+#map-wrap{display:none;margin:8px 12px;border-radius:16px;overflow:hidden;border:1px solid var(--border);position:relative}
+#map-wrap.show{display:block}
+#map-wrap canvas{display:block;width:100%;height:auto;touch-action:manipulation}
+
+/* 区域卡片列表 */
+#zone-list{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+#zone-list.hide{display:none}
+
+.zone-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;transition:all .2s;cursor:pointer;
+}
+.zone-card:active{transform:scale(0.98)}
+.zone-card .zone-header{
+  display:flex;align-items:center;gap:10px;padding:14px 16px;
+}
+.zone-card .zone-dot{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.zone-card .zone-info{flex:1;min-width:0}
+.zone-card .zone-name{font-size:15px;font-weight:700;color:#fff}
+.zone-card .zone-meta{font-size:10px;color:var(--sub);margin-top:2px}
+.zone-card .zone-arrow{color:var(--sub);font-size:14px;transition:transform .2s}
+.zone-card.open .zone-arrow{transform:rotate(90deg)}
+
+.zone-card .zone-body{display:none;padding:0 16px 14px}
+.zone-card.open .zone-body{display:block}
+.zone-card .station-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid var(--border);
+  font-size:12px;
+}
+.zone-card .station-row:last-child{border-bottom:none}
+.zone-card .station-name{color:var(--text);font-weight:500}
+.zone-card .station-eq{font-size:10px;color:var(--sub);text-align:right;max-width:55%}
+
+/* 底部导航 */
+#bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  padding-bottom:var(--safe-bottom);
+  background:linear-gradient(0deg,var(--bg),rgba(6,8,13,0.97));
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;align-items:center;
+  height:64px;
+}
+#bottom-nav .nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:4px 12px;border:none;background:none;color:var(--sub);
+  font-size:9px;cursor:pointer;transition:color .15s;
+}
+#bottom-nav .nav-item .nav-icon{font-size:18px;line-height:1}
+#bottom-nav .nav-item.active{color:var(--accent)}
+
+/* 详情弹窗 */
+#detail-sheet{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--card);border-radius:20px 20px 0 0;
+  max-height:70vh;overflow-y:auto;transform:translateY(100%);
+  transition:transform .3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 -8px 40px rgba(0,0,0,0.5);
+  border-top:1px solid var(--border);
+  padding-bottom:calc(20px + var(--safe-bottom));
+}
+#detail-sheet.show{transform:translateY(0)}
+#detail-sheet .sheet-handle{
+  width:36px;height:4px;background:var(--border);border-radius:2px;
+  margin:10px auto;
+}
+#detail-sheet .sheet-title{
+  padding:8px 20px 16px;font-size:18px;font-weight:800;color:#fff;
+  display:flex;align-items:center;gap:8px;
+}
+#detail-sheet .sheet-dot{width:12px;height:12px;border-radius:3px}
+#detail-sheet .sheet-station{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;border-bottom:1px solid var(--border);font-size:13px;
+}
+#detail-sheet .sheet-station .eq-tag{
+  font-size:10px;color:var(--sub);background:rgba(255,255,255,0.04);
+  padding:2px 8px;border-radius:6px;max-width:55%;text-align:right;
+}
+#detail-backdrop{
+  position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.5);
+  display:none;
+}
+#detail-backdrop.show{display:block}
+
+/* 搜索 */
+#search{
+  margin:8px 12px;position:relative;
+}
+#search input{
+  width:100%;padding:10px 14px 10px 36px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:13px;outline:none;
+}
+#search input:focus{border-color:var(--accent)}
+#search .search-icon{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-size:14px;color:var(--sub);
+}
+
+/* 流程指示 */
+.flow-indicator{
+  display:flex;align-items:center;gap:4px;padding:1px 0;flex-wrap:wrap;
+}
+.flow-step{
+  padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;
+  white-space:nowrap;letter-spacing:-0.2px;
+}
+.flow-arrow{color:var(--sub);font-size:8px}
+
+@media(min-width:768px){
+  body{max-width:480px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+
+<!-- 顶栏 -->
+<div id="header">
+  <span class="icon">🏭</span>
+  <span class="title">光模块工厂</span>
+  <span class="sub">产线巡检</span>
+  <span class="spacer"></span>
+  <button class="view-btn active" id="btn-list" onclick="switchView('list')">📋 列表</button>
+  <button class="view-btn" id="btn-map" onclick="switchView('map')">🗺️ 地图</button>
+</div>
+
+<!-- 搜索 -->
+<div id="search">
+  <span class="search-icon">🔍</span>
+  <input type="text" placeholder="搜索工位或设备..." oninput="filterZones(this.value)">
+</div>
+
+<!-- 统计条 -->
+<div id="stats">
+  <div class="stat"><div class="num" style="color:#00d4aa">7</div><div class="lab">产线区域</div></div>
+  <div class="stat"><div class="num" style="color:#58a6ff">58</div><div class="lab">工位总数</div></div>
+  <div class="stat"><div class="num" style="color:#d4a800">15</div><div class="lab">耦合台</div></div>
+  <div class="stat"><div class="num" style="color:#ff6b6b">4</div><div class="lab">热岛立柜</div></div>
+</div>
+
+<!-- 2D 地图画布 -->
+<div id="map-wrap">
+  <canvas id="map-canvas"></canvas>
+</div>
+
+<!-- 区域卡片 -->
+<div id="zone-list"></div>
+
+<!-- 底部导航 -->
+<div id="bottom-nav">
+  <button class="nav-item active" id="nav-all" onclick="filterByZone('all')">
+    <span class="nav-icon">🏢</span>全部
+  </button>
+  <button class="nav-item" id="nav-opt" onclick="filterByZone('opt-ws')">
+    <span class="nav-icon">🔬</span>光学车间
+  </button>
+  <button class="nav-item" id="nav-test" onclick="filterByZone('opt-test')">
+    <span class="nav-icon">🧪</span>测试区
+  </button>
+  <button class="nav-item" id="nav-mod" onclick="filterByZone('mod')">
+    <span class="nav-icon">📦</span>模块
+  </button>
+</div>
+
+<!-- 详情弹窗 -->
+<div id="detail-backdrop" onclick="closeDetail()"></div>
+<div id="detail-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title" id="sheet-title"></div>
+  <div id="sheet-stations"></div>
+</div>
+
+<script>
+// ── 工厂数据 ──────────────────────────────────
+const ZONES = [
+  {
+    id:'opt-ws', name:'光学车间', icon:'🔬', color:'#00d4aa',
+    meta:'COC全流程 · 16工位', area:'18×10m',
+    stations:[
+      ['COC生产区',''],
+      ['Submount打标-01','显微镜'],
+      ['COC共晶-01',''],
+      ['COC外观检查清洁-01','显微镜'],
+      ['COC WB打线-01',''],
+      ['COC上料',''],
+      ['COC BI-01老化',''],
+      ['COC BI上下料','2台·显微镜'],
+      ['COC出货目检','显微镜'],
+      ['COC SN识别-01','自动显微镜×2'],
+      ['打标外观检查清洁','显微镜'],
+      ['进料检验','显微镜+治具'],
+      ['下载FW','手动治具'],
+      ['半自动点胶','2台点胶机'],
+      ['手动贴装','治具×2·显微镜×2'],
+      ['UV固化',''],
+    ],
+    flow:['进料','打标','共晶','打线','BI老化','目检','出货']
+  },
+  {
+    id:'opt-db', name:'光学贴片区', icon:'📐', color:'#58a6ff',
+    meta:'贴片固晶 · 5工位', area:'12×10m',
+    stations:[
+      ['贴片备料','治具×3·显微镜×3'],
+      ['自动贴片固晶点胶','自动化设备×4'],
+      ['二次元检验',''],
+      ['DA外观检','显微镜×1'],
+      ['DA烘烤','2台烘烤机柜'],
+    ],
+    flow:['备料','贴片固晶','检验','外观检','烘烤']
+  },
+  {
+    id:'opt-wb', name:'光学打线区', icon:'🔗', color:'#d4a800',
+    meta:'WB打线绑定 · 8工位', area:'14×10m',
+    stations:[
+      ['等离子清洗机',''],
+      ['WB打线',''],
+      ['COC绑定',''],
+      ['自动光学检测','自动光学检测设备'],
+      ['DA外观检','显微镜×1'],
+      ['二次元检验',''],
+      ['自动贴片机',''],
+      ['手动贴装','×4·显微镜×4·治具×4'],
+    ],
+    flow:['清洗','WB打线','绑定','AOI','贴片']
+  },
+  {
+    id:'opt-cp', name:'光学耦合区', icon:'🎯', color:'#ff6b6b',
+    meta:'15台机器 · 3工位', area:'18×8m',
+    stations:[
+      ['自动耦合测试台','14台'],
+      ['分板站位','分板机×1'],
+      ['目检','显微镜×1'],
+    ],
+    flow:['耦合测试','分板','目检']
+  },
+  {
+    id:'opt-test', name:'光学测试区', icon:'🧪', color:'#9b59b6',
+    meta:'OE全流程 · 11工位', area:'20×8m',
+    stations:[
+      ['耦合外观检测清洁','显微镜'],
+      ['TXFA组装','显微镜×3'],
+      ['MPD测试','测试机台×2'],
+      ['TCT快速温变','温变立柜×3'],
+      ['耦合烘烤',''],
+      ['模块BI','烤箱×2'],
+      ['端面清洁',''],
+      ['OE测试','测试站×4'],
+      ['OE端面检测清洁','测试站×3'],
+      ['OE出货检查','×2'],
+      ['OE/TRX测试',''],
+    ],
+    flow:['外观检测','组装','MPD','TCT','烘烤','BI','OE测试','出货']
+  },
+  {
+    id:'heat', name:'热岛区', icon:'🔥', color:'#e67e22',
+    meta:'4台立柜 · 1工位', area:'8×8m',
+    stations:[
+      ['热岛立柜','×4'],
+    ],
+    flow:['热岛测试']
+  },
+  {
+    id:'mod', name:'模块车间', icon:'📦', color:'#7f8c8d',
+    meta:'组装包装 · 4工位', area:'20×8m',
+    stations:[
+      ['模块组装线',''],
+      ['自动组装线','暂无'],
+      ['模块内包装线',''],
+      ['EEPROM CHECK',''],
+    ],
+    flow:['组装','内包装','EEPROM']
+  },
+];
+
+const COLORS = {
+  'opt-ws':'#00d4aa','opt-db':'#58a6ff','opt-wb':'#d4a800',
+  'opt-cp':'#ff6b6b','opt-test':'#9b59b6','heat':'#e67e22','mod':'#7f8c8d'
+};
+
+// ── 渲染卡片列表 ─────────────────────────────
+function renderZones(filter) {
+  const list = document.getElementById('zone-list');
+  let html = '';
+  ZONES.forEach(z => {
+    if (filter && filter !== 'all' && z.id !== filter) return;
+    html += `
+    <div class="zone-card" id="card-${z.id}" data-zone="${z.id}">
+      <div class="zone-header" onclick="toggleCard('${z.id}')">
+        <div class="zone-dot" style="background:${z.color}"></div>
+        <div class="zone-info">
+          <div class="zone-name">${z.icon} ${z.name}</div>
+          <div class="zone-meta">${z.meta} · ${z.area}</div>
+          <div class="flow-indicator" style="margin-top:4px">
+            ${z.flow.map((f,i) => 
+              (i>0?'<span class="flow-arrow">→</span>':'') +
+              '<span class="flow-step" style="background:'+z.color+'22;color:'+z.color+'">'+f+'</span>'
+            ).join('')}
+          </div>
+        </div>
+        <span class="zone-arrow">▶</span>
+      </div>
+      <div class="zone-body">
+        ${z.stations.map(s => `
+          <div class="station-row">
+            <span class="station-name">${s[0]}</span>
+            <span class="station-eq">${s[1]||'—'}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html;
+  if (filter && filter !== 'all') {
+    // 自动展开
+    setTimeout(() => {
+      const card = document.getElementById('card-'+filter);
+      if (card) { card.classList.add('open'); card.scrollIntoView({behavior:'smooth',block:'start'}); }
+    }, 100);
+  }
+}
+
+function toggleCard(id) {
+  document.getElementById('card-'+id).classList.toggle('open');
+}
+
+// ── 筛选 ─────────────────────────────────────
+function filterByZone(id) {
+  document.querySelectorAll('#bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('nav-'+id) || document.getElementById('nav-all');
+  if (btn) btn.classList.add('active');
+  renderZones(id === 'all' ? null : id);
+}
+
+function filterZones(query) {
+  if (!query) { renderZones(); return; }
+  const q = query.toLowerCase();
+  const list = document.getElementById('zone-list');
+  document.querySelectorAll('.zone-card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+// ── 2D 地图 ──────────────────────────────────
+function drawMap() {
+  const wrap = document.getElementById('map-wrap');
+  const canvas = document.getElementById('map-canvas');
+  const dpr = window.devicePixelRatio || 1;
+  const w = wrap.clientWidth;
+  const h = Math.round(w * 0.7);
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w+'px';
+  canvas.style.height = h+'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // 缩放因子
+  const mapW = 52, mapH = 34;
+  const scaleX = (w - 24) / mapW;
+  const scaleY = (h - 24) / mapH;
+  const scale = Math.min(scaleX, scaleY);
+  const ox = (w - mapW * scale) / 2;
+  const oy = (h - mapH * scale) / 2;
+
+  // 背景
+  ctx.fillStyle = '#0a0e14';
+  ctx.beginPath();ctx.roundRect(0,0,w,h,16);ctx.fill();
+
+  // 网格
+  ctx.strokeStyle = '#1a1f2b';ctx.lineWidth = 0.5;
+  for (let x = 0; x < mapW; x += 4) {
+    ctx.beginPath();ctx.moveTo(ox+x*scale, oy);ctx.lineTo(ox+x*scale, oy+mapH*scale);ctx.stroke();
+  }
+  for (let y = 0; y < mapH; y += 4) {
+    ctx.beginPath();ctx.moveTo(ox, oy+y*scale);ctx.lineTo(ox+mapW*scale, oy+y*scale);ctx.stroke();
+  }
+
+  // 区域方块（从上往下画，后面的在上面）
+  const sorted = [...ZONES].sort((a,b) => {
+    const ay = a.pos ? a.pos[1] : 0;
+    const by = b.pos ? b.pos[1] : 0;
+    return ay - by;
+  });
+
+  // 位置映射
+  const positions = {
+    'opt-ws':[0,0,18,10],
+    'opt-db':[20,0,12,10],
+    'opt-wb':[34,0,14,10],
+    'opt-cp':[0,12,18,8],
+    'opt-test':[20,12,20,8],
+    'heat':[42,12,8,8],
+    'mod':[0,22,20,8],
+  };
+
+  Object.entries(positions).forEach(([id, [px, py, sx, sy]]) => {
+    const x = ox + px * scale;
+    const y = oy + py * scale;
+    const wb = sx * scale;
+    const hb = sy * scale;
+
+    // 阴影
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();ctx.roundRect(x+2,y+2,wb,hb,6);ctx.fill();
+
+    // 主体
+    const c = COLORS[id];
+    ctx.fillStyle = c + '33';
+    ctx.beginPath();ctx.roundRect(x,y,wb,hb,6);ctx.fill();
+
+    // 边框
+    ctx.strokeStyle = c + '66';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();ctx.roundRect(x,y,wb,hb,6);ctx.stroke();
+
+    // 名称
+    const zone = ZONES.find(z => z.id === id);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.max(9, scale*0.7)}px -apple-system,sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(zone.name, x + wb/2, y + hb/2 + 4);
+
+    // 工位数
+    ctx.fillStyle = c;
+    ctx.font = `${Math.max(8, scale*0.55)}px -apple-system,sans-serif`;
+    ctx.fillText(zone.stations.length+'工位', x + wb/2, y + hb/2 + 16);
+  });
+
+  // 点击检测
+  canvas.onclick = function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    Object.entries(positions).forEach(([id, [px, py, sx, sy]]) => {
+      const x = ox + px * scale;
+      const y = oy + py * scale;
+      if (mx >= x && mx <= x + sx*scale && my >= y && my <= y + sy*scale) {
+        filterByZone(id);
+      }
+    });
+  };
+}
+
+// ── 视图切换 ─────────────────────────────────
+function switchView(view) {
+  document.getElementById('btn-list').classList.toggle('active', view === 'list');
+  document.getElementById('btn-map').classList.toggle('active', view === 'map');
+  document.getElementById('map-wrap').classList.toggle('show', view === 'map');
+  document.getElementById('zone-list').classList.toggle('hide', view === 'map');
+  if (view === 'map') setTimeout(drawMap, 50);
+}
+
+// ── 初始化 ──────────────────────────────────
+renderZones();
+window.addEventListener('resize', () => {
+  if (document.getElementById('map-wrap').classList.contains('show')) drawMap();
+});
+</script>
+</body>
+</html>

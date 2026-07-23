@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><title>Z-MAX · 具身智能工厂</title>
+<style>:root{--c:#00d4aa;--bg:#06080d;--card:rgba(13,17,23,.92);--bor:#1a1f2b;--sub:#8b949e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;color:#c9d1d9;height:100vh;height:100dvh}
+#wrap{display:flex;flex-direction:column;height:100%}
+#v-fps{flex:1;position:relative;overflow:hidden;min-height:0}
+#v-global{flex:1;position:relative;overflow:hidden;min-height:0;border-top:2px solid rgba(0,212,170,.3)}
+#v-fps canvas,#v-global canvas{display:block}
+.lbl{position:absolute;top:4px;left:6px;z-index:2;background:var(--card);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--bor);border-radius:4px;padding:2px 6px;font-size:8px;font-weight:700;pointer-events:none}
+#v-fps .lbl{color:var(--c)}#v-global .lbl{color:#58a6ff}
+#hud{position:fixed;top:0;left:0;right:0;z-index:20;pointer-events:none;display:flex;align-items:center;gap:4px;padding:4px 6px}
+#hud>*{pointer-events:auto}
+.hc{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--bor);border-radius:6px;padding:3px 6px;font-size:8px;font-weight:700;color:#fff;display:flex;align-items:center;gap:3px}
+.hc .d{width:4px;height:4px;border-radius:50%}
+.hb{background:var(--card);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--bor);border-radius:6px;padding:3px 6px;display:flex;align-items:center;gap:3px}
+.hb .bg{width:40px;height:3px;background:#1a1f2b;border-radius:2px;overflow:hidden}
+.hb .fg{height:100%;background:var(--c);border-radius:2px;transition:width .3s;width:0}
+.hb .n{font-size:8px;font-weight:700;color:var(--c)}
+.sp{flex:1}
+#btns{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:4px;padding-bottom:max(4px,env(safe-area-inset-bottom))}
+#btns button{padding:7px 12px;border-radius:8px;border:none;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:3px}
+#btns button:active{transform:scale(.94)}
+#btn-m{background:transparent;border:1px solid var(--bor);color:var(--sub)}
+#btn-sp{background:transparent;border:1px solid var(--bor);color:var(--sub)}
+#btn-au{background:var(--c);color:var(--bg)}
+#complete{position:fixed;inset:0;z-index:50;background:rgba(6,8,13,.97);display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+#complete.show{display:flex}
+#complete .ic{font-size:40px;animation:bounce .6s ease-out}
+@keyframes bounce{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+#complete h2{color:var(--c);font-size:16px;font-weight:900}
+#complete .st{color:var(--sub);font-size:9px;text-align:center;line-height:1.6}
+#complete button{background:var(--c);color:var(--bg);border:none;padding:8px 24px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer}
+#splash{position:fixed;inset:0;z-index:99;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px}
+#splash .bar{width:80px;height:3px;background:#1a1f2b;border-radius:2px;overflow:hidden}
+#splash .bar-f{height:100%;background:var(--c);animation:ld 1.5s ease-in-out infinite}
+@keyframes ld{0%{width:0}50%{width:90%}100%{width:0}}
+#splash .t{color:var(--sub);font-size:10px}
+#splash .err{color:#ff4444;font-size:9px;display:none}
+#splash button{background:var(--c);color:var(--bg);border:none;padding:11px 30px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;animation:pls2 2s ease-in-out infinite}
+#splash button:active{transform:scale(.94)}
+@keyframes pls2{0%,100%{box-shadow:0 0 12px var(--c)}50%{box-shadow:0 0 32px var(--c)}}
+@media(min-width:768px){
+  #v-fps{flex:5}#v-global{flex:3}
+  .lbl{font-size:9px;padding:3px 8px;top:6px;left:8px}
+  .hc{font-size:9px;padding:4px 8px}.hb{padding:4px 8px}
+  .hb .bg{width:50px}.hb .n{font-size:9px}
+  #btns button{font-size:11px;padding:8px 14px}
+}
+</style></head><body>
+
+<div id="splash"><div class="bar"><div class="bar-f"></div></div><div class="t">具身智能工厂 · 加载中</div><div class="err" id="err-msg">加载失败，请刷新</div><button id="btn-start" onclick="go()" style="display:none">▶ 进入工厂</button></div>
+
+<div id="wrap">
+  <div id="v-fps"><span class="lbl">🎯 第一人称</span></div>
+  <div id="v-global"><span class="lbl">🗺️ 全局俯视</span></div>
+</div>
+
+<div id="hud"><div class="hc"><span class="d" style="background:var(--c)"></span><span id="st-txt">待命</span></div><div class="hc" id="zn-chip" style="display:none"><span id="zn-txt"></span></div><span class="sp"></span><div class="hc">⭐ <span id="sc-num">0</span></div><div class="hb"><div class="bg"><div class="fg" id="bar-fg"></div></div><span class="n" id="bar-n">0/48</span></div></div>
+
+<div id="btns"><button id="btn-m" onclick="tglM()">🔊</button><button id="btn-sp" onclick="tglS()">1×</button><button id="btn-au" onclick="tglA()">⏸</button></div>
+
+<div id="complete"><div class="ic">🏆</div><h2>全流程自主完成</h2><div class="st" id="cs"></div><button onclick="rst()">🔄 重启</button></div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import*as T from'three';
+
+// ═══════════════════════════════════════
+// 音频
+// ═══════════════════════════════════════
+let ctx=null,mg=null,mu=true,tId=null;
+function ia(){try{if(!ctx){ctx=new(window.AudioContext||window.webkitAudioContext)();mg=ctx.createGain();mg.gain.value=.07;mg.connect(ctx.destination)}}catch(e){}}
+function mkO(f,t,g,ty){try{const o=ctx.createOscillator();o.type=ty||'sine';o.frequency.value=f;const ga=ctx.createGain();ga.gain.setValueAtTime(g,ctx.currentTime+t);ga.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.12);o.connect(ga);ga.connect(mg);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15)}catch(e){}}
+function mkN(t,g,d,fq){try{const b=ctx.createBuffer(1,ctx.sampleRate*d,ctx.sampleRate);const d2=b.getChannelData(0);for(let i=0;i<d2.length;i++)d2[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=b;const fl=ctx.createBiquadFilter();fl.type='bandpass';fl.frequency.value=fq||2000;fl.Q.value=.5;const ga=ctx.createGain();ga.gain.setValueAtTime(g,ctx.currentTime+t);ga.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+d);s.connect(fl);fl.connect(ga);ga.connect(mg);s.start(ctx.currentTime+t)}catch(e){}}
+function mLoop(){if(!mu||!ctx)return;try{const t=ctx.currentTime,iv=60/120;for(let i=0;i<4;i++){const bt=t+i*iv;mkO(55,bt,.3);mkO(110,bt,.18,'triangle');mkN(bt,.1,.05,1500)}for(let i=0;i<8;i++)mkN(t+i*iv/2,.025,.02,4000);mkN(t+1*iv,.08,.04,2500);mkN(t+3*iv,.08,.04,2500);[98,98,110,110,98,98,130.81,110].forEach((f,i)=>mkO(f,t+i*iv/2,.05,'triangle'));[523,659].forEach((f,i)=>mkO(f,t+i*2*iv,.015));tId=setTimeout(mLoop,iv*4*1000-50)}catch(e){}}
+function sMu(){if(tId)clearTimeout(tId);tId=null}
+window.tglM=function(){mu=!mu;document.getElementById('btn-m').textContent=mu?'🔊':'🔇';if(mu){ia();mLoop()}else sMu()}
+function sfx(tp){try{if(!ctx||!mu)return;const n=ctx.currentTime;if(tp==='op')[523,659].forEach((f,i)=>mkO(f,n+i*.06,.08));if(tp==='done')[523,659,784,1047].forEach((f,i)=>mkO(f,n+i*.08,.06))}catch(e){}}
+
+// ═══════════════════════════════════════
+// 场景
+// ═══════════════════════════════════════
+const S=new T.Scene();S.background=new T.Color(0x06080d);S.fog=new T.Fog(0x06080d,15,50);
+const EYE=1.2;const yO=new T.Object3D();const pO=new T.Object3D();yO.add(pO);S.add(yO);
+let yaw=0,pitch=0;
+
+S.add(new T.AmbientLight(0x303050,3));const sun=new T.DirectionalLight(0xffeedd,4);sun.position.set(40,50,10);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.near=.5;sun.shadow.camera.far=60;sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=22;sun.shadow.camera.bottom=-22;S.add(sun);S.add(new T.HemisphereLight(0x8899cc,0x223344,1.3));
+const gnd=new T.Mesh(new T.PlaneGeometry(68,48),new T.MeshStandardMaterial({color:0x0c1018,roughness:.5}));gnd.rotation.x=-Math.PI/2;gnd.position.set(28,-.05,-12);gnd.receiveShadow=true;S.add(gnd);
+S.add(new T.GridHelper(64,64,0x1a1f2b,0x111518).translateX(28).translateZ(-12));
+const WALLS=[];function wl(x,z,w,d,h,c){const g=new T.BoxGeometry(w,h||3,d||.5);const m=new T.MeshStandardMaterial({color:c||0x1f2530,roughness:.35,metalness:.5});const o=new T.Mesh(g,m);o.position.set(x,(h||3)/2,z);o.castShadow=true;o.receiveShadow=true;S.add(o);WALLS.push({x,z,hw:w/2,hd:(d||.5)/2})}
+wl(28,12.1,60,.5,3);wl(28,-36.3,60,.5,3);wl(-1.5,-12,.5,48,3);wl(57.5,-12,.5,48,3);
+for(let x=4;x<55;x+=6)for(let z=-30;z<8;z+=6){const l=new T.Mesh(new T.PlaneGeometry(2,.05),new T.MeshBasicMaterial({color:0x334455,side:T.DoubleSide,transparent:true,opacity:.2}));l.rotation.x=-Math.PI/2;l.position.set(x,5,z);S.add(l)}
+
+const ZC={'opt-ws':'#00d4aa','opt-db':'#58a6ff','opt-wb':'#d4a800','opt-cp':'#ff6b6b','opt-test':'#9b59b6','heat':'#e67e22','mod':'#7f8c8d'};
+const ZN={'opt-ws':'光学车间','opt-db':'贴片区','opt-wb':'打线区','opt-cp':'耦合区','opt-test':'测试区','heat':'热岛区','mod':'模块车间'};
+const STATIONS=[ [2,1.5,'COC生产区','opt-ws','prod'],[2,4,'Submount打标','opt-ws','mark'],[5,1.5,'COC共晶','opt-ws','heat'],[5,4,'COC外观检查','opt-ws','inspect'],[8,1.5,'COC WB打线','opt-ws','wire'],[8,4,'COC上料','opt-ws','load'],[11,1.5,'COC BI老化','opt-ws','bake'],[11,4,'COC BI上下料','opt-ws','load'],[14,1.5,'COC出货目检','opt-ws','inspect'],[14,4,'COC SN识别','opt-ws','scan'],[2,7,'打标外观检查','opt-ws','inspect'],[5,7,'进料检验','opt-ws','inspect'],[8,7,'下载FW','opt-ws','probe'],[11,7,'半自动点胶','opt-ws','dispense'],[14,7,'手动贴装','opt-ws','pickplace'],[17,4,'UV固化','opt-ws','uv'],[21,2,'贴片备料','opt-db','load'],[21,5.5,'贴片固晶点胶','opt-db','dispense'],[25,2,'二次元检验','opt-db','inspect'],[25,5.5,'DA外观检','opt-db','inspect'],[29,4,'DA烘烤','opt-db','bake'],[35,2,'等离子清洗','opt-wb','spray'],[35,5.5,'WB打线','opt-wb','wire'],[39,2,'COC绑定','opt-wb','bond'],[39,5.5,'AOI检测','opt-wb','scan'],[43,2,'DA外观检','opt-wb','inspect'],[43,5.5,'二次元检验','opt-wb','inspect'],[47,2,'自动贴片机','opt-wb','pickplace'],[47,5.5,'手动贴装','opt-wb','pickplace'],[3,-10,'自动耦合','opt-cp','align'],[9,-10,'分板站位','opt-cp','cut'],[15,-7,'目检','opt-cp','inspect'],[21,-10,'耦合外观检测','opt-test','inspect'],[24.5,-10,'TXFA组装','opt-test','assemble'],[28,-10,'MPD测试','opt-test','probe'],[31.5,-10,'TCT温变','opt-test','bake'],[21,-6,'耦合烘烤','opt-test','bake'],[24.5,-6,'模块BI','opt-test','bake'],[28,-6,'端面清洁','opt-test','spray'],[31.5,-6,'OE测试','opt-test','probe'],[35,-8,'OE端面检测','opt-test','scan'],[38,-8,'OE出货检查','opt-test','inspect'],[38,-10,'OE/TRX测试','opt-test','probe'],[45,-8,'热岛立柜','heat','bake'],[3,-22,'模块组装线','mod','assemble'],[9,-22,'自动组装线','mod','assemble'],[15,-22,'模块内包装线','mod','prod'],[18,-18,'EEPROM CHECK','mod','probe']];
+
+const sGrp=[],sCol=[];
+[{id:'opt-ws',x:0,z:0,w:18,d:10},{id:'opt-db',x:20,z:0,w:12,d:10},{id:'opt-wb',x:34,z:0,w:14,d:10},{id:'opt-cp',x:0,z:-12,w:18,d:8},{id:'opt-test',x:20,z:-12,w:20,d:8},{id:'heat',x:42,z:-12,w:8,d:8},{id:'mod',x:0,z:-24,w:20,d:8}].forEach(z=>{const c=new T.Color(ZC[z.id]);const h=z.id==='heat'?3:z.id==='mod'?.5:1.2;const geo=new T.BoxGeometry(z.w-.5,h,z.d-.5);const mat=new T.MeshStandardMaterial({color:c,roughness:.25,metalness:.5,emissive:c,emissiveIntensity:.06});const p=new T.Mesh(geo,mat);p.position.set(z.x+z.w/2,h/2,z.z+z.d/2);p.castShadow=true;p.receiveShadow=true;S.add(p);sCol.push({x:z.x,z:z.z,hw:z.w/2,hd:z.d/2});
+// 地面区域标签（全局俯视可见）
+const cnv=document.createElement('canvas');cnv.width=256;cnv.height=64;const cx=cnv.getContext('2d');cx.fillStyle='rgba(255,255,255,.7)';cx.font='bold 28px -apple-system,sans-serif';cx.textAlign='center';cx.fillText(ZN[z.id]||'',128,42);const tex=new T.CanvasTexture(cnv);tex.minFilter=T.LinearFilter;const sp=new T.Sprite(new T.SpriteMaterial({map:tex,transparent:true,depthTest:false}));sp.position.set(z.x+z.w/2,.15,z.z+z.d/2);sp.scale.set(z.w*.7,2.5,1);S.add(sp)});
+STATIONS.forEach((s,i)=>{const c=new T.Color(ZC[s[3]]);const g=new T.Group();const b=new T.Mesh(new T.BoxGeometry(.8,.6,1.2),new T.MeshStandardMaterial({color:0x2a2a35,roughness:.3,metalness:.6}));b.position.y=.3;b.castShadow=true;b.receiveShadow=true;g.add(b);const tp=new T.Mesh(new T.BoxGeometry(.7,.04,1.0),new T.MeshStandardMaterial({color:c,roughness:.2,emissive:c,emissiveIntensity:.35}));tp.position.y=.62;g.add(tp);g.position.set(s[0],0,s[1]);g.userData={i};S.add(g);sGrp.push(g)});
+
+// 机器人手臂（FPS）
+const arm=new T.Group();arm.position.set(.3,-.4,-.5);
+const aL=new T.Mesh(new T.BoxGeometry(.02,.12,.04),new T.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.4}));aL.position.set(.04,-.30,0);arm.add(aL);
+const aR=new T.Mesh(new T.BoxGeometry(.02,.12,.04),new T.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.4}));aR.position.set(-.04,-.30,0);arm.add(aR);
+
+// 全局标记
+const botG=new T.Group();botG.position.set(2,0,-15);S.add(botG);
+botG.add(new T.Mesh(new T.CylinderGeometry(.5,.6,1,8),new T.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.9})).translateY(.5));
+const rng=new T.Mesh(new T.TorusGeometry(.65,.08,8,16),new T.MeshBasicMaterial({color:0x00d4aa}));rng.rotation.x=-Math.PI/2;botG.add(rng);
+const arr=new T.Mesh(new T.ConeGeometry(.25,.6,6),new T.MeshBasicMaterial({color:0xffffff}));arr.position.set(0,.7,.55);arr.rotation.x=-Math.PI/2;botG.add(arr);
+let trail=[];let trailTimer=0;
+function addT(x,z){const d=new T.Mesh(new T.SphereGeometry(.18,4,4),new T.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.7}));d.position.set(x,.12,z);S.add(d);d.userData={life:1};trail.push(d);if(trail.length>100){const old=trail.shift();S.remove(old)}}
+function fadeTrail(dt){for(let i=trail.length-1;i>=0;i--){trail[i].userData.life-=dt*.15;trail[i].material.opacity=.7*trail[i].userData.life;if(trail[i].userData.life<=0){S.remove(trail[i]);trail.splice(i,1)}}}
+
+// 动作动画
+function createAnim(type,x,y,z,color){
+  const g=new T.Group();g.position.set(x,y+.7,z);
+  switch(type){
+  case'mark':g.add(new T.Mesh(new T.CylinderGeometry(.02,.02,.5,8),new T.MeshBasicMaterial({color:0xff4444,transparent:true,opacity:.7})).translateY(-.25));g.add(new T.Mesh(new T.SphereGeometry(.1,8,8),new T.MeshBasicMaterial({color:0xff8844,transparent:true,opacity:.5})).translateY(-.5));break;
+  case'heat':for(let i=0;i<5;i++)g.add(new T.Mesh(new T.SphereGeometry(.05+.015*i,4,4),new T.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:.35})).translateY(-.15-i*.06));break;
+  case'inspect':const ri=new T.Mesh(new T.TorusGeometry(.22,.03,8,16),new T.MeshBasicMaterial({color:0x58a6ff,transparent:true,opacity:.6}));ri.rotation.x=-Math.PI/2;ri.position.y=-.25;g.add(ri);break;
+  case'wire':g.add(new T.Mesh(new T.CylinderGeometry(.008,.008,.4,6),new T.MeshBasicMaterial({color:0xffd700})).translateY(-.2));break;
+  case'dispense':g.add(new T.Mesh(new T.SphereGeometry(.07,6,6),new T.MeshStandardMaterial({color:0x88ccff,emissive:0x4488cc,emissiveIntensity:.5})));break;
+  case'pickplace':const pt=new T.Mesh(new T.BoxGeometry(.12,.06,.08),new T.MeshStandardMaterial({color:0xcccccc,metalness:.6}));pt.position.y=.08;g.add(pt);break;
+  case'uv':g.add(new T.Mesh(new T.SphereGeometry(.25,8,8),new T.MeshBasicMaterial({color:0x9900ff,transparent:true,opacity:.35})).translateY(-.15));break;
+  case'bake':for(let i=0;i<3;i++){const r2=new T.Mesh(new T.RingGeometry(.12+.04*i,.16+.04*i,8),new T.MeshBasicMaterial({color:0xff4400,transparent:true,opacity:.25,side:T.DoubleSide}));r2.rotation.x=-Math.PI/2;r2.position.y=-.08+i*.05;g.add(r2)}break;
+  case'scan':const sc=new T.Mesh(new T.PlaneGeometry(.4,.25),new T.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.25,side:T.DoubleSide}));sc.rotation.x=-Math.PI/2;sc.position.y=-.25;g.add(sc);break;
+  case'spray':for(let i=0;i<6;i++)g.add(new T.Mesh(new T.SphereGeometry(.025,3,3),new T.MeshBasicMaterial({color:0xaaddff,transparent:true,opacity:.4})).translateY(Math.random()*-.4).translateX((Math.random()-.5)*.3).translateZ((Math.random()-.5)*.25));break;
+  case'align':for(let i=0;i<2;i++)g.add(new T.Mesh(new T.CylinderGeometry(.012,.012,.35,6),new T.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.4})).translateX((i-.5)*.15).translateY(-.15));break;
+  case'cut':g.add(new T.Mesh(new T.BoxGeometry(.35,.015,.04),new T.MeshBasicMaterial({color:0xffffff})).translateY(-.15));break;
+  case'bond':g.add(new T.Mesh(new T.SphereGeometry(.08,6,6),new T.MeshBasicMaterial({color:0xffd700,transparent:true,opacity:.5})).translateY(-.15));break;
+  case'probe':for(let i=0;i<3;i++)g.add(new T.Mesh(new T.CylinderGeometry(.012,.012,.35,6),new T.MeshBasicMaterial({color:0xffffff})).translateX((i-1)*.1).translateY(-.15));break;
+  case'assemble':for(let i=0;i<2;i++)g.add(new T.Mesh(new T.BoxGeometry(.1,.08,.06),new T.MeshStandardMaterial({color:0x888899,metalness:.5})).translateX((i-.5)*.12).translateY(.04));break;
+  case'load':g.add(new T.Mesh(new T.BoxGeometry(.25,.03,.15),new T.MeshStandardMaterial({color:0x555566})).translateY(.04));break;
+  default:g.add(new T.Mesh(new T.TorusGeometry(.12,.03,8,8),new T.MeshBasicMaterial({color:color,transparent:true,opacity:.5})).translateY(-.15));break;
+  }
+  S.add(g);return g;
+}
+function animAction(g,type){
+  const start=performance.now();
+  function step(){
+    const t=Math.min((performance.now()-start)/1000/1.1,1);
+    if(t>=1){S.remove(g);return}
+    switch(type){
+    case'mark':g.children[0].scale.y=.4+Math.sin(t*20)*.4;g.children[1].scale.setScalar(.7+Math.sin(t*12)*.4);break;
+    case'heat':g.children.forEach((c,i)=>{c.position.y=-.15-i*.06+Math.sin(t*8+i)*.03});break;
+    case'inspect':g.children[0].rotation.z+=.1;break;
+    case'wire':g.children[0].scale.y=.2+Math.sin(t*Math.PI)*.8;break;
+    case'dispense':g.children[0].position.y=.25-t*.4;g.children[0].scale.setScalar(1-t*.4);break;
+    case'pickplace':g.children[0].position.y=.08+Math.sin(t*Math.PI*2)*.1;g.children[0].position.x=Math.sin(t*Math.PI)*.15;break;
+    case'uv':g.children[0].scale.setScalar(.4+Math.sin(t*10)*.5);break;
+    case'bake':g.children.forEach((c,i)=>{c.position.y=-.08+i*.05+Math.sin(t*6+i)*.02});break;
+    case'scan':g.children[0].material.opacity=.1+.2*Math.abs(Math.sin(t*8));g.children[0].rotation.z+=.05;break;
+    case'spray':g.children.forEach(c=>{c.position.y-=.008;if(c.position.y<-.45)c.position.y=0});break;
+    case'align':g.children.forEach((c,i)=>{c.position.x=(i-.5)*.15+Math.sin(t*5)*.04;c.position.z=Math.cos(t*4+i)*.04});break;
+    case'cut':g.children[0].position.x=Math.sin(t*Math.PI*2)*.18;break;
+    case'bond':g.children[0].scale.setScalar(.7+Math.sin(t*6)*.4);break;
+    case'probe':g.children.forEach((c,i)=>{c.position.y=-.15-Math.abs(Math.sin(t*4+i))*.12});break;
+    case'assemble':g.children.forEach((c,i)=>{c.position.x=(i-.5)*.12+Math.sin(t*3)*(.08-.15*i)});break;
+    case'load':g.children[0].position.y=.04+Math.sin(t*Math.PI)*.12;break;
+    default:g.children[0].rotation.z+=.08;break;
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function playAnim(idx){
+  const s=STATIONS[idx];
+  const g=createAnim(s[4],s[0],0,s[1],ZC[s[3]]);
+  animAction(g,s[4]);
+}
+
+// 导航
+const GW=52,GH=34;const gmap=new Array(GH).fill(null).map(()=>new Array(GW).fill(0));
+STATIONS.forEach(s=>{const gx=Math.round(s[0]),gz=Math.round(Math.abs(s[1]+20));for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){const nx=gx+dx,nz=gz+dz;if(nx>=0&&nx<GW&&nz>=0&&nz<GH)gmap[nz][nx]=1}});
+for(let i=0;i<GW;i++){gmap[0][i]=1;gmap[GH-1][i]=1}for(let i=0;i<GH;i++){gmap[i][0]=1;gmap[i][GW-1]=1}
+function w2g(wx,wz){return[Math.round(wx),Math.round(Math.abs(wz+20))]}
+function g2w(gx,gz){return[gx,-(gz-20)]}
+function astar(s,g){
+  const o=[[...s,0,Math.abs(s[0]-g[0])+Math.abs(s[1]-g[1]),null]];const c=new Set();
+  while(o.length>0){o.sort((a,b)=>(a[2]+a[3])-(b[2]+b[3]));const u=o.shift(),k=u[0]*GH+u[1];if(c.has(k))continue;c.add(k);if(u[0]===g[0]&&u[1]===g[1]){const p=[];let n=u;while(n){p.unshift([n[0],n[1]]);n=n[4]}return p}for(const[dX,dZ]of[[0,1],[1,0],[0,-1],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]){const nx=u[0]+dX,nz=u[1]+dZ;if(nx<0||nx>=GW||nz<0||nz>=GH)continue;if(gmap[nz][nx]===1)continue;if(c.has(nx*GH+nz))continue;o.push([nx,nz,u[2]+(dX!==0&&dZ!==0?1.4:1),Math.abs(nx-g[0])+Math.abs(nz-g[1]),u])}}
+  return null;
+}
+
+// 状态
+let idx=-1,auto=true,moving=false,mPath=[],mStep=0,opTm=null,score=0,speed=1,pl=null,hl=null;
+let botTargetX=2,botTargetZ=-15;
+
+function upd(){
+  const t=STATIONS.length,d=idx+1;
+  document.getElementById('bar-fg').style.width=Math.round(d/t*100)+'%';
+  document.getElementById('bar-n').textContent=d+'/'+t;
+  document.getElementById('sc-num').textContent=score;
+  document.getElementById('st-txt').textContent=auto?'🟢 自主运行':moving?'🚶 移动中':'⏸ 暂停';
+  if(idx>=0&&idx<t){document.getElementById('zn-chip').style.display='';document.getElementById('zn-txt').textContent=ZN[STATIONS[idx][3]]||''}
+  else document.getElementById('zn-chip').style.display='none';
+}
+function hlS(i){if(hl)S.remove(hl);if(i<0||i>=STATIONS.length)return;const s=STATIONS[i];const rg=new T.TorusGeometry(.55,.06,8,16);hl=new T.Mesh(rg,new T.MeshBasicMaterial({color:ZC[s[3]],transparent:true,opacity:.8}));hl.rotation.x=-Math.PI/2;hl.position.set(s[0],1.0,s[1]);S.add(hl)}
+function shP(p){if(pl)S.remove(pl);if(!p||p.length<2)return;const pts=p.map(v=>{const[wX,wZ]=g2w(v[0],v[1]);return new T.Vector3(wX,.1,wZ)});const curve=new T.CatmullRomCurve3(pts);const tubeGeo=new T.TubeGeometry(curve,pts.length*2,.08,6,false);const tubeMat=new T.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.5});pl=new T.Mesh(tubeGeo,tubeMat);S.add(pl)}
+
+function nav(i){
+  const s=STATIONS[i];const[sgx,sgz]=w2g(yO.position.x,yO.position.z);
+  const[tgx,tgz]=w2g(s[0],s[1]+1.3);
+  const p=astar([sgx,sgz],[tgx,tgz]);
+  if(!p){arriveAtStation(i);return}
+  shP(p);mPath=p.map(v=>{const[wX,wZ]=g2w(v[0],v[1]);return{x:wX,z:wZ}});mStep=0;moving=true;hlS(i);upd();
+}
+
+function arriveAtStation(i){
+  const s=STATIONS[i];
+  yO.position.set(s[0],EYE,s[1]+1.3);botG.position.set(s[0],0,s[1]+1.3);
+  botTargetX=s[0];botTargetZ=s[1]+1.3;
+  const dx=s[0]-yO.position.x,dz=s[1]-yO.position.z;
+  yaw=Math.atan2(dx,dz);pitch=0;yO.rotation.y=yaw;pO.rotation.x=pitch;
+  botG.rotation.y=yaw;moving=false;
+  if(pl){S.remove(pl);pl=null}hlS(i);sfx('op');playAnim(i);score+=10;upd();
+  clearTimeout(opTm);opTm=setTimeout(()=>{idx++;if(idx>=STATIONS.length)fin();else if(auto)exec()},1200/speed);
+}
+
+function exec(){
+  if(idx>=STATIONS.length)return;
+  nav(idx);
+}
+
+function fin(){
+  auto=false;moving=false;sfx('done');
+  document.getElementById('btn-au').textContent='▶';document.getElementById('btn-au').style.background='var(--c)';document.getElementById('btn-au').style.color='var(--bg)';
+  if(hl){S.remove(hl);hl=null}if(pl){S.remove(pl);pl=null}
+  document.getElementById('cs').innerHTML=`自主完成 <b style="color:var(--c)">48</b> 工位<br>覆盖 <b style="color:#58a6ff">7</b> 大产线<br>评分 <b style="color:#d4a800">${score}</b>`;
+  document.getElementById('complete').classList.add('show');upd();
+}
+
+window.tglA=function(){auto=!auto;const b=document.getElementById('btn-au');if(auto){b.textContent='⏸';b.style.background='#1a1f2b';b.style.color='#fff';if(idx<0)idx=0;exec()}else{b.textContent='▶';b.style.background='var(--c)';b.style.color='var(--bg)';moving=false;mPath=[];clearTimeout(opTm);if(pl){S.remove(pl);pl=null}}upd()}
+window.tglS=function(){speed=speed===1?2:speed===2?3:1;document.getElementById('btn-sp').textContent=speed+'×'}
+window.rst=function(){document.getElementById('complete').classList.remove('show');idx=-1;auto=true;moving=false;mPath=[];score=0;clearTimeout(opTm);if(pl){S.remove(pl);pl=null}if(hl){S.remove(hl);hl=null}yO.position.set(2,EYE,-15);botG.position.set(2,0,-15);botG.rotation.y=0;botTargetX=2;botTargetZ=-15;trail.forEach(d=>S.remove(d));trail=[];yaw=0;pitch=0;yO.rotation.y=0;pO.rotation.x=0;upd();document.getElementById('bar-fg').style.width='0%';document.getElementById('bar-n').textContent='0/48';document.getElementById('btn-au').textContent='⏸';document.getElementById('btn-au').style.background='#1a1f2b';document.getElementById('btn-au').style.color='#fff';setTimeout(()=>{idx=0;exec()},400)}
+
+// 渲染器
+const dF=document.getElementById('v-fps'),dG=document.getElementById('v-global');
+const Rf=new T.WebGLRenderer({antialias:true});Rf.setPixelRatio(Math.min(devicePixelRatio,2));Rf.shadowMap.enabled=true;Rf.shadowMap.type=T.PCFSoftShadowMap;Rf.toneMapping=T.ACESFilmicToneMapping;Rf.toneMappingExposure=1.15;dF.appendChild(Rf.domElement);
+const Rg=new T.WebGLRenderer({antialias:true});Rg.setPixelRatio(Math.min(devicePixelRatio,1.5));Rg.toneMapping=T.ACESFilmicToneMapping;Rg.toneMappingExposure=1.3;dG.appendChild(Rg.domElement);
+const Cf=new T.PerspectiveCamera(72,1,.2,60);
+const Cg=new T.OrthographicCamera(-1,1,1,-1,1,80);Cg.up.set(0,0,-1);
+pO.add(Cf);Cf.position.set(0,0,0);Cf.up.set(0,1,0);
+let glX=2,glZ=-15,glZoom=16;
+
+function resize(){
+  const W=innerWidth,H=innerHeight;
+  const fH=Math.floor(H*.5),gH=H-fH;
+  Rf.setSize(W,fH);Cf.aspect=W/fH;Cf.updateProjectionMatrix();
+  Rg.setSize(W,gH);const a=W/gH;Cg.left=-glZoom*a;Cg.right=glZoom*a;Cg.top=glZoom;Cg.bottom=-glZoom;Cg.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);resize();
+
+// 输入
+const keys={};window.addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+let md=false;
+function onMD(){md=true}function onMU(){md=false}
+function onMM(e){if(!md||auto)return;yaw-=e.movementX*.003;pitch=Math.max(-1.2,Math.min(.5,pitch-e.movementY*.003));yO.rotation.y=yaw;pO.rotation.x=pitch}
+dF.addEventListener('mousedown',onMD);dF.addEventListener('mouseup',onMU);dF.addEventListener('mousemove',onMM);
+dG.addEventListener('mousedown',onMD);dG.addEventListener('mouseup',onMU);dG.addEventListener('mousemove',onMM);
+let tX=0,tY=0,tR=false;
+dF.addEventListener('touchstart',e=>{if(e.touches.length===1){tX=e.touches[0].clientX;tY=e.touches[0].clientY;tR=true}},{passive:false});
+dF.addEventListener('touchmove',e=>{if(!tR||auto||e.touches.length!==1)return;yaw-=(e.touches[0].clientX-tX)*.004;pitch=Math.max(-1.2,Math.min(.5,pitch-(e.touches[0].clientY-tY)*.004));yO.rotation.y=yaw;pO.rotation.x=pitch;tX=e.touches[0].clientX;tY=e.touches[0].clientY},{passive:false});
+dF.addEventListener('touchend',()=>{tR=false});
+
+// 渲染
+const clk=new T.Clock();
+function anim(){
+  requestAnimationFrame(anim);const dt=Math.min(clk.getDelta(),.1);
+  if(moving&&mPath.length>0&&mStep<mPath.length){
+    const tg=mPath[mStep],dx=tg.x-yO.position.x,dz=tg.z-yO.position.z,ds=Math.sqrt(dx*dx+dz*dz),sp=4*speed;
+    if(ds<.08){mStep++;if(mStep>=mPath.length){// 平滑减速到站
+      const s=STATIONS[idx];const tdx=s[0]-yO.position.x,tdz=s[1]+1.3-yO.position.z;const tds=Math.sqrt(tdx*tdx+tdz*tdz);
+      if(tds<.3){arriveAtStation(idx)}else{yO.position.x+=tdx/tds*sp*dt;yO.position.z+=tdz/tds*sp*dt;botG.position.set(yO.position.x,0,yO.position.z);botTargetX=yO.position.x;botTargetZ=yO.position.z;addT(yO.position.x,yO.position.z)}
+    }}else{
+      const f=Math.min(ds*.3,sp*dt);yO.position.x+=(dx/ds)*f;yO.position.z+=(dz/ds)*f;
+      botG.position.set(yO.position.x,0,yO.position.z);botTargetX=yO.position.x;botTargetZ=yO.position.z;
+      yaw+=((Math.atan2(dx,dz)-yaw)*Math.min(1,8*dt));yO.rotation.y=yaw;botG.rotation.y=yaw;
+      pitch=Math.max(-.2,Math.min(.06,pitch));pO.rotation.x=pitch;
+      yO.position.y=EYE+Math.sin(Date.now()*.005)*.015;
+      trailTimer+=dt;if(trailTimer>.08){addT(yO.position.x,yO.position.z);trailTimer=0}
+    }
+  }
+  fadeTrail(dt);
+  // 全局相机跟随
+  glX+=(botTargetX-glX)*4*dt;glZ+=(botTargetZ-glZ)*4*dt;
+  Cg.position.set(glX,26,glZ-1.5);Cg.lookAt(glX,0,glZ);
+  if(!moving){arm.position.y=-.4+Math.sin(Date.now()*.003)*.02}
+  Rf.render(S,Cf);Rg.render(S,Cg);
+}
+
+// 启动
+let ready=false;
+yO.position.set(2,EYE,-15);upd();document.getElementById('btn-au').style.background='#1a1f2b';document.getElementById('btn-au').style.color='#fff';
+anim();
+
+window.go=function(){
+  if(ready)return;ready=true;
+  document.getElementById('splash').style.display='none';
+  try{ia();mLoop()}catch(e){}
+  idx=0;exec();
+};
+
+// 预渲染一帧显示场景
+setTimeout(()=>{Rf.render(S,Cf);Rg.render(S,Cg);document.getElementById('splash').querySelector('.t').textContent='具身智能工厂 · 就绪';document.getElementById('btn-start').style.display=''},800);
+</script></body></html>
