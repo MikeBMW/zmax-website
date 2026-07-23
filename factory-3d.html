@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.12 · 2026-07-23 13:20</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.11.0 · 2026-07-23 14:00</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -144,12 +144,13 @@ const ZONES=[
   {id:"mod",name:"模块组装区",color:0x58a6ff,pos:{x:8,z:6},size:{w:14,d:8},gridCols:3,stations:[
     {id:"I140",label:"模块组装线",desc:"自动组装线(规划中)",specs:[["自动","组装"],["规划","待建"]]},
     {id:"I141",label:"EEPROM CHECK",desc:"EEPROM校验",specs:[["EEPROM","校验"],["参数","写入"]]},
-    {id:"I142",label:"模块内包装",desc:"内包装线",specs:[["内包","包装"],["ESD","防护"]]},
+    {id:"I142",label:"老化墙",desc:"模块老化测试墙",specs:[["老化","筛选"],["恒温","监控"]]},
+    {id:"I143",label:"模块内包装",desc:"内包装线",specs:[["内包","包装"],["ESD","防护"]]},
   ]},
   {id:"wh",name:"仓库物流区",color:0x3fb950,pos:{x:-11,z:6},size:{w:14,d:8},gridCols:3,stations:[
-    {id:"I143",label:"IQC来料检",desc:"AQL抽检",specs:[["AQL","标准"],["千分尺","量具"]]},
-    {id:"I144",label:"原料入库",desc:"扫码·FIFO",specs:[["MES","系统"],["条码","追溯"]]},
-    {id:"I145",label:"AGV配送",desc:"自动配送±10mm",specs:[["±10mm","定位"],["AGV","自动"]]},
+    {id:"I144",label:"IQC来料检",desc:"AQL抽检",specs:[["AQL","标准"],["千分尺","量具"]]},
+    {id:"I145",label:"原料入库",desc:"扫码·FIFO",specs:[["MES","系统"],["条码","追溯"]]},
+    {id:"I146",label:"AGV配送",desc:"自动配送±10mm",specs:[["±10mm","定位"],["AGV","自动"]]},
     {id:"I500",label:"成品入库",desc:"23°C·<60%RH",specs:[["温控","恒温"],["扫码","入库"]]},
     {id:"500",label:"出货",desc:"拣货·MES闭环",specs:[["按单","拣货"],["全程","追踪"]]},
   ]}
