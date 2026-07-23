@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-MAX COC基板区 场景描述文档</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
+  h1{color:#f0a500;font-size:28px;border-bottom:2px solid #f0a50044;padding-bottom:12px;margin-bottom:20px}
+  h2{color:#f0a500;font-size:20px;margin:28px 0 12px;border-left:3px solid #f0a500;padding-left:10px}
+  h3{color:#f5c040;font-size:16px;margin:18px 0 8px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:10px}
+  th{background:#0d1117;color:#f0a500;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
+  td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
+  tr:nth-child(even){background:#0a0e14}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+  .kpi span{background:#0d1117;border:1px solid #f0a50044;border-radius:6px;padding:6px 14px;color:#f0a500;font-weight:700}
+  .note{background:#0d1117;border-left:3px solid #f0a500;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
+  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .phase h3{margin-top:0;color:#f0a500}
+  .btn{display:inline-block;background:#f0a500;color:#06080d;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 8px 0 0;text-decoration:none}
+  .btn:hover{filter:brightness(1.2)}
+  a{color:#f0a500}
+  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}a{color:#000}}
+</style>
+</head>
+<body>
+<h1>Z-MAX COC基板区 全场景描述文档</h1>
+<div class="kpi">
+  <span>24 工位</span><span>5 大工序段</span><span>节拍 0.3s~48h</span><span>良率 ≥99.5%</span>
+</div>
+<button class="btn" onclick="window.print()">📄 导出 PDF</button>
+<button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
+<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#f0a500;border:1px solid #f0a50044">← 3D工厂</a>
+
+<h2>1. 定位与范围</h2>
+<h3>1.1 COC 定义</h3>
+<table>
+<tr><th style="width:120px">项</th><th>说明</th></tr>
+<tr><td>全称</td><td>Chip on Carrier · 芯片载板组件</td></tr>
+<tr><td>物料组成</td><td>LD芯片 + Sub mount载板</td></tr>
+<tr><td>结合方式</td><td>Sub mount 预制焊料 → 脉冲高温融化 → 贴芯片 → 冷却焊接；无胶水</td></tr>
+<tr><td>阶段产出</td><td>COC（芯片+载板焊接体）</td></tr>
+<tr><td>产线位置</td><td>储翰 COC 车间</td></tr>
+</table>
+
+<h3>1.2 数通 vs 电信 COC</h3>
+<table>
+<tr><th>对比项</th><th>数通</th><th>电信</th></tr>
+<tr><td>芯片类型</td><td>CW（连续光）</td><td>EML（电吸收调制）</td></tr>
+<tr><td>产品形态</td><td>平面封装 COC（进光模块）</td><td>TO-CAN 同轴封装</td></tr>
+<tr><td>物料</td><td>芯片 + Sub mount</td><td>芯片 + Sub mount + 电容/电阻</td></tr>
+<tr><td>产线</td><td>COC 车间</td><td>TO 车间</td></tr>
+</table>
+<div class="note">数通COC自动化程度高，适合Z100L/Z700机器人串线。共晶与WB料盒不同→串线方案须区分大/小料盒。</div>
+
+<h2>2. 总览</h2>
+<table>
+<tr><th>工序段</th><th>I-Step范围</th><th>工位数</th><th>核心设备</th><th>关键指标</th></tr>
+<tr><td>标刻段</td><td>I101-I104</td><td>4</td><td>激光打标机·显微镜·Plasma</td><td>码可读率100%</td></tr>
+<tr><td>固晶共晶段</td><td>I105-I110</td><td>6</td><td>固晶机×4·点胶机×2·UV固化·2D影像</td><td>±1μm·CPK≥1.67</td></tr>
+<tr><td>WB打线段</td><td>I111-I114</td><td>4</td><td>WB焊线机·AOI</td><td>拉力≥5g·检出≥99%</td></tr>
+<tr><td>共晶焊接段</td><td>I115-I118</td><td>4</td><td>共晶焊台×6·显微镜·扫码</td><td>空洞率<5%</td></tr>
+<tr><td>BI老化测试段</td><td>I119-I124</td><td>6</td><td>SPI烧录·BI老化柜·光谱仪</td><td>零失效·零缺陷</td></tr>
+</table>
+
+<h2>3. 详细工序</h2>
+
+<!-- 标刻段 -->
+<div class="phase">
+<h3>3.1 标刻段 (I101-I104)</h3>
+<p style="color:#8b949e;font-size:10px">准备原材料并做好身份标识。为后续生产准备LD芯片和SubMount载板：检查来料→分拣到Gel-Pak→Sub mount打标→等离子清洗。</p>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>人数</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>说明</th></tr>
+<tr>
+  <td>I101</td><td>进料检验</td><td>-</td><td>手动</td><td>1</td><td>6寸蓝膜</td><td>6寸蓝膜</td><td>12s</td><td>-</td><td style="font-size:9px;color:#8b949e">检查破损/污染/异常 · 显微镜50×</td>
+</tr>
+<tr>
+  <td>I102</td><td>贴片备料</td><td>-</td><td>手动</td><td>1</td><td>6寸蓝膜</td><td>Gel-Pak</td><td>0.3s</td><td>3s</td><td style="font-size:9px;color:#8b949e">LENS分晶0.29s · Submount分晶0.36s · 换载具为主</td>
+</tr>
+<tr>
+  <td>I103</td><td>Submount打标</td><td>By SN & Lot</td><td>自动</td><td>1</td><td>Gel-Pak</td><td>Gel-Pak</td><td>0.6s</td><td>4.6s</td><td style="font-size:9px;color:#8b949e">激光打标 · 产品编号/批次 · ECC200 2D码</td>
+</tr>
+<tr>
+  <td>I104</td><td>等离子清洗</td><td>-</td><td>手动</td><td>1</td><td>Gel-Pak</td><td>Gel-Pak</td><td>1.3s</td><td>0.8s</td><td style="font-size:9px;color:#8b949e">打标后目检+Ar/O2 Plasma · 接触角<10°</td>
+</tr>
+</table>
+<div class="note">蓝膜操作后续共晶会升级为调高/旋转/HM。Gel-Pak级周转可评估自动化。蓝膜精密取片短期不优先。</div>
+</div>
+
+<!-- 固晶共晶段 -->
+<div class="phase">
+<h3>3.2 固晶共晶段 (I105-I110)</h3>
+<p style="color:#8b949e;font-size:10px">把芯片焊接到载板上。Sub mount放工作台→高温融化预制焊料→贴LD芯片→冷却焊接。完成后芯片+载板=COC。</p>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>方式</th><th>设备</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
+<tr>
+  <td><a href="/robot.html?id=I-105&name=半自动点胶" style="color:#f0a500">I105</a></td><td>半自动点胶</td><td>半自动</td><td>2台点胶机</td><td>Gel-Pak</td><td>点胶后</td><td>≤3s</td><td>±0.1mg</td>
+</tr>
+<tr><td colspan="8" style="font-size:9px;color:#8b949e">导电胶/绝缘胶 · 螺旋阀 · 胶径±50μm · 自动视觉定位</td></tr>
+<tr>
+  <td>I106</td><td>自动固晶点胶</td><td>自动</td><td>4台固晶机</td><td>Gel-Pak</td><td>鱼骨治具</td><td>≤4s</td><td>±1μm</td>
+</tr>
+<tr><td colspan="8" style="font-size:9px;color:#8b949e">视觉对位 · 固晶+点胶一体 · XY偏移≤3μm · 共晶用大料盒</td></tr>
+<tr>
+  <td>I107</td><td>自动贴片点胶</td><td>自动</td><td>贴片机</td><td>Gel-Pak</td><td>鱼骨治具</td><td>≤5s</td><td>±1.5μm</td>
+</tr>
+<tr><td colspan="8" style="font-size:9px;color:#8b949e">多芯片顺序贴装 · 共面度≤10μm</td></tr>
+<tr>
+  <td>I108</td><td>自动贴片机</td><td>自动</td><td>高速贴片机</td><td>飞达</td><td>鱼骨治具</td><td>≤3s</td><td>±2μm</td>
+</tr>
+<tr><td colspan="8" style="font-size:9px;color:#8b949e">飞达供料 · 抛料率<0.1%</td></tr>
+<tr>
+  <td>I109</td><td>UV固化</td><td>自动</td><td>UV LED炉</td><td>鱼骨治具</td><td>鱼骨治具</td><td>≤8s/批</td><td>均匀±5%</td>
+</tr>
+<tr><td colspan="8" style="font-size:9px;color:#8b949e">365nm · 500mW/cm² · 传送带式 · 硬度≥80 Shore D</td></tr>
+<tr>
+  <td>I110</td><td>二次元检验</td><td>自动</td><td>2D影像仪</td><td>鱼骨治具</td><td>鱼骨治具</td><td>≤3s</td><td>±2μm</td>
+</tr>
+<tr><td colspan="8" style="font-size:9px;color:#8b949e">自动编程测量 · CPK≥1.67 · 关键尺寸100%检测</td></tr>
+</table>
+<div class="note">放芯片需调吸嘴高度/摄像头识别范围。共晶完成后→外观检查→Plasma之间可用机器人做大料盒取放与短距转运。</div>
+</div>
+
+<!-- WB打线段 -->
+<div class="phase">
+<h3>3.3 WB打线段 (I111-I114)</h3>
+<p style="color:#8b949e;font-size:10px">给芯片打金线(Wire Bond/焊线)。Plasma清洗除去表面污染物→Au 25μm金线超声焊接→AOI检查断线/偏移/塌线/焊接不良。</p>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度/质量门</th></tr>
+<tr>
+  <td>I111</td><td>WB打线</td><td>By Lot</td><td>手动</td><td>大料盒+小料盒</td><td>同左</td><td>2s</td><td>5.1s</td><td>拉力≥5g·±3μm</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">Au 25μm金线 · 超声焊接 · 球焊 · 约149条线/片 · 视觉疲劳痛点→关注AOI方案</td></tr>
+<tr>
+  <td>I112</td><td>COC WB打线</td><td>By Lot</td><td>手动</td><td>小料盒</td><td>小料盒</td><td>2s</td><td>5.1s</td><td>线弧±20μm</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">多芯片打线 · 在线AOI · 小料盒与共晶料盒不可混用</td></tr>
+<tr>
+  <td>I113</td><td>COC绑定</td><td>By Lot</td><td>自动</td><td>鱼骨治具</td><td>鱼骨治具</td><td>≤6s</td><td>≤6s</td><td>剪切≥20MPa</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">热压/超声 · 自动光学对位 · ±1μm</td></tr>
+<tr>
+  <td>I114</td><td>自动光学检测</td><td>By Lot</td><td>自动</td><td>鱼骨治具</td><td>鱼骨治具</td><td>≤2s</td><td>≤2s</td><td>检出率≥99%</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">多角度光源 · AI缺陷分类 · ±3μm分辨率 · 断线/偏移/塌线全检</td></tr>
+</table>
+<div class="note">痛点：焊线后全检约149条线，视觉疲劳导致下午产能腰斩。AOI工程方案可并行推进。小料盒取放+目检前后传递适合机器人操作。</div>
+</div>
+
+<!-- 共晶焊接段 -->
+<div class="phase">
+<h3>3.4 共晶焊接段 (I115-I118)</h3>
+<p style="color:#8b949e;font-size:10px">COC共晶焊接(AuSn 280°C)→外观检查→清洁→SN识别。这是COC区核心质量节点。</p>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>人数</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th></tr>
+<tr>
+  <td>I115</td><td>COC共晶</td><td>By Lot</td><td>手动</td><td>3(6台)</td><td>芯片蓝膜+SM Gel-Pak</td><td>大料盒</td><td>6.5s</td><td>36s</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">1人2机 · AuSn焊料 · 280°C脉冲高温 · N2保护 · 空洞率<5%</td></tr>
+<tr>
+  <td>I116</td><td>外观检查清洁</td><td>-</td><td>手动</td><td>-</td><td>大料盒</td><td>大料盒</td><td>10s</td><td>-</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">显微镜50× · 无尘布清洁 · 离子风机 · 无颗粒>10μm</td></tr>
+<tr>
+  <td>I117</td><td>打标外观检</td><td>-</td><td>手动</td><td>-</td><td>大料盒</td><td>大料盒</td><td>≤3s</td><td>-</td>
+</tr>
+<tr>
+  <td>I118</td><td>SN识别</td><td>-</td><td>手动</td><td>1</td><td>大料盒</td><td>大料盒</td><td>1s</td><td>4s</td>
+</tr>
+<tr><td colspan="9" style="font-size:9px;color:#8b949e">自动显微镜×2 · 2D码读取 · MES校验 · SN唯一性</td></tr>
+</table>
+</div>
+
+<!-- BI老化测试段 -->
+<div class="phase">
+<h3>3.5 BI老化测试段 (I119-I124)</h3>
+<p style="color:#8b949e;font-size:10px">Burn-In提前暴露潜在问题+SMSR光学性能测试。WB后COC从共晶鱼骨夹具取出→装BI专用鱼骨夹具→BI加电夹具(抽屉式)→通电老化→SMSR测试→下夹具回Gel-Pak→出货目检。</p>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>人数</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>说明</th></tr>
+<tr>
+  <td><a href="/robot.html?id=I-119&name=下载FW" style="color:#f0a500">I119</a></td><td>下载FW</td><td>By SN</td><td>自动</td><td>1</td><td>大料盒</td><td>大料盒</td><td>≤8s</td><td>≤8s</td><td style="font-size:9px;color:#8b949e">SPI Flash烧录 · CRC32回读</td>
+</tr>
+<tr>
+  <td><a href="/station-i120.html?id=I-120&name=COC上料" style="color:#f0a500">I120</a></td><td>COC上料</td><td>-</td><td>机器人</td><td>1</td><td>大料盒</td><td>BI鱼骨夹具</td><td>15s</td><td>-</td><td style="font-size:9px;color:#8b949e">换夹具·装BI加电夹具·Z700机器人</td>
+</tr>
+<tr>
+  <td><a href="/station-i142.html?id=I-121&name=COC BI老化" style="color:#f0a500">I121</a></td><td>COC BI老化</td><td>By SN</td><td>手动</td><td>2(3台)</td><td>BI鱼骨+加电夹具</td><td>BI鱼骨夹具</td><td>1.3s</td><td>4.4s</td><td style="font-size:9px;color:#8b949e">85°C 48h通电 · 抽屉夹具÷螺丝</td>
+</tr>
+<tr>
+  <td>I122</td><td>BI上下料</td><td>-</td><td>手动</td><td>1</td><td>BI鱼骨夹具</td><td>Gel-Pak</td><td>10s</td><td>-</td><td style="font-size:9px;color:#8b949e">SMSR测试 · 下夹具回盘装</td>
+</tr>
+<tr>
+  <td>I123</td><td>COC出货目检</td><td>By Lot</td><td>手动</td><td>1</td><td>Gel-Pak</td><td>Gel-Pak</td><td>15s</td><td>-</td><td style="font-size:9px;color:#8b949e">100%全检 · 零缺陷</td>
+</tr>
+<tr>
+  <td>I124</td><td>手动贴装×4</td><td>-</td><td>手动</td><td>-</td><td>Gel-Pak</td><td>Gel-Pak</td><td>≤10s</td><td>-</td><td style="font-size:9px;color:#8b949e">特殊模块 · 显微镜×4</td>
+</tr>
+</table>
+<div class="note">拧螺丝+抽屉加电夹具→短期机器人不可做。可做：BI上料前夹具转运·下夹具后Gel-Pak转运。换夹具本体是否可拆成只搬夹具不拧螺丝需再讨论。</div>
+</div>
+
+<h2>4. 自动化评估</h2>
+<table>
+<tr><th>对象</th><th>归属</th><th>可行性</th><th>说明</th></tr>
+<tr><td>共晶完成→外观检查→Plasma 料盒传递</td><td>搬运</td><td style="color:#00d4aa">高</td><td>单种主载具传递，动作单纯</td></tr>
+<tr><td>WB小料盒取放与目检前后传递</td><td>上料/下料/搬运</td><td style="color:#00d4aa">高</td><td>注意与共晶料盒不可混用</td></tr>
+<tr><td>WB目检→BI上料前夹具转运</td><td>搬运</td><td style="color:#00d4aa">高</td><td>—</td></tr>
+<tr><td>下夹具后Gel-Pak→出货工位</td><td>搬运</td><td style="color:#ffaa00">中</td><td>盘装形态</td></tr>
+<tr><td>过站扫码（By Lot/By SN）</td><td>过站</td><td style="color:#ffaa00">中</td><td>依赖MES/扫码接口</td></tr>
+<tr><td>共晶双料上料（蓝膜+Gel-Pak）</td><td>上料+操作</td><td style="color:#ff4444">低</td><td>精密+设备交互·调高/旋转/HMI</td></tr>
+<tr><td>BI加电夹具抽屉拧螺丝</td><td>上料+操作</td><td style="color:#ff4444">低</td><td>步骤多</td></tr>
+<tr><td>TX_WB/共晶后外观目检</td><td>AOI</td><td style="color:#00d4aa">可并行</td><td>智禾AOI方案已在验证</td></tr>
+</table>
+
+<h2>5. 附录：COC 全工序表</h2>
+<table>
+<tr><th>序号</th><th>大工序</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>人数</th><th>人节拍</th><th>机节拍</th></tr>
+<tr><td>1</td><td>标刻</td><td>I101</td><td>进料检验</td><td>-</td><td>手动</td><td>1</td><td>12s</td><td>-</td></tr>
+<tr><td>2</td><td>标刻</td><td>I102</td><td>贴片备料</td><td>-</td><td>手动</td><td>1</td><td>0.3s</td><td>3s</td></tr>
+<tr><td>3</td><td>标刻</td><td>I103</td><td>Submount打标</td><td>By SN&Lot</td><td>自动</td><td>1</td><td>0.6s</td><td>4.6s</td></tr>
+<tr><td>4</td><td>标刻</td><td>I104</td><td>等离子清洗</td><td>-</td><td>手动</td><td>1</td><td>1.3s</td><td>0.8s</td></tr>
+<tr><td>5</td><td>固晶</td><td>I105</td><td>半自动点胶</td><td>-</td><td>半自动</td><td>1</td><td>≤3s</td><td>-</td></tr>
+<tr><td>6</td><td>固晶</td><td>I106</td><td>自动固晶点胶</td><td>By Lot</td><td>自动</td><td>1</td><td>≤4s</td><td>≤4s</td></tr>
+<tr><td>7</td><td>固晶</td><td>I107</td><td>自动贴片点胶</td><td>By Lot</td><td>自动</td><td>1</td><td>≤5s</td><td>≤5s</td></tr>
+<tr><td>8</td><td>固晶</td><td>I108</td><td>自动贴片机</td><td>By Lot</td><td>自动</td><td>1</td><td>≤3s</td><td>≤3s</td></tr>
+<tr><td>9</td><td>固晶</td><td>I109</td><td>UV固化</td><td>By Lot</td><td>自动</td><td>-</td><td>-</td><td>≤8s/批</td></tr>
+<tr><td>10</td><td>固晶</td><td>I110</td><td>二次元检验</td><td>By Lot</td><td>自动</td><td>1</td><td>≤3s</td><td>≤3s</td></tr>
+<tr><td>11</td><td>WB</td><td>I111</td><td>WB打线</td><td>By Lot</td><td>手动</td><td>-</td><td>2s</td><td>5.1s</td></tr>
+<tr><td>12</td><td>WB</td><td>I112</td><td>COC WB打线</td><td>By Lot</td><td>手动</td><td>-</td><td>2s</td><td>5.1s</td></tr>
+<tr><td>13</td><td>WB</td><td>I113</td><td>COC绑定</td><td>By Lot</td><td>自动</td><td>1</td><td>≤6s</td><td>≤6s</td></tr>
+<tr><td>14</td><td>WB</td><td>I114</td><td>自动光学检测</td><td>By Lot</td><td>自动</td><td>1</td><td>≤2s</td><td>≤2s</td></tr>
+<tr><td>15</td><td>共晶</td><td>I115</td><td>COC共晶</td><td>By Lot</td><td>手动</td><td>3</td><td>6.5s</td><td>36s</td></tr>
+<tr><td>16</td><td>共晶</td><td>I116</td><td>外观检查清洁</td><td>-</td><td>手动</td><td>-</td><td>10s</td><td>-</td></tr>
+<tr><td>17</td><td>共晶</td><td>I117</td><td>打标外观检</td><td>-</td><td>手动</td><td>-</td><td>≤3s</td><td>-</td></tr>
+<tr><td>18</td><td>共晶</td><td>I118</td><td>SN识别</td><td>-</td><td>手动</td><td>1</td><td>1s</td><td>4s</td></tr>
+<tr><td>19</td><td>BI</td><td>I119</td><td>下载FW</td><td>By SN</td><td>自动</td><td>1</td><td>≤8s</td><td>≤8s</td></tr>
+<tr><td>20</td><td>BI</td><td>I120</td><td>COC上料</td><td>-</td><td>机器人</td><td>1</td><td>15s</td><td>-</td></tr>
+<tr><td>21</td><td>BI</td><td>I121</td><td>COC BI老化</td><td>By SN</td><td>手动</td><td>2</td><td>1.3s</td><td>4.4s</td></tr>
+<tr><td>22</td><td>BI</td><td>I122</td><td>BI上下料</td><td>-</td><td>手动</td><td>1</td><td>10s</td><td>-</td></tr>
+<tr><td>23</td><td>出货</td><td>I123</td><td>COC出货目检</td><td>By Lot</td><td>手动</td><td>1</td><td>15s</td><td>-</td></tr>
+<tr><td>24</td><td>出货</td><td>I124</td><td>手动贴装×4</td><td>-</td><td>手动</td><td>-</td><td>≤10s</td><td>-</td></tr>
+</table>
+
+<br>
+<script>
+function exportWord(){
+  var html=document.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'application/msword'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Z-MAX_COC基板区_场景描述.doc';
+  a.click();
+}
+</script>
+</body>
+</html>

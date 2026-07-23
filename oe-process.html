@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-MAX OE光引擎区 场景描述文档</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
+  h1{color:#ff6b35;font-size:28px;border-bottom:2px solid #ff6b3544;padding-bottom:12px;margin-bottom:20px}
+  h2{color:#ff6b35;font-size:20px;margin:28px 0 12px;border-left:3px solid #ff6b35;padding-left:10px}
+  h3{color:#ff8c55;font-size:16px;margin:18px 0 8px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:11px}
+  th{background:#0d1117;color:#ff6b35;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
+  td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
+  tr:nth-child(even){background:#0a0e14}
+  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+  .kpi span{background:#0d1117;border:1px solid #ff6b3544;border-radius:6px;padding:6px 14px;color:#ff6b35;font-weight:700}
+  .note{background:#0d1117;border-left:3px solid #f0a500;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
+  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 16px;margin:16px 0}
+  .phase h3{margin-top:0}
+  .tag{display:inline-block;background:#1a1f2b;color:#ff6b35;border-radius:3px;padding:1px 6px;font-size:9px;margin:0 2px}
+  .btn{display:inline-block;background:#ff6b35;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 0;text-decoration:none}
+  .btn:hover{filter:brightness(1.2)}
+  @media print{body{background:#fff;color:#000}table{font-size:9px}.btn{display:none}}
+</style>
+</head>
+<body>
+<h1>Z-MAX OE光引擎区 全场景描述文档</h1>
+<div class="kpi">
+  <span>15 工位</span><span>4 大工序段</span><span>≤8s/通道</span><span>良率≥99.5%</span>
+</div>
+<button class="btn" onclick="window.print()">📄 一键导出 PDF</button>
+<button class="btn" style="background:#00d4aa;margin-left:8px" onclick="exportWord()">📥 导出 Word</button>
+
+<h2>1. 定位与范围</h2>
+<h3>1.1 OE 定义</h3>
+<table>
+<tr><th style="width:120px">项</th><th>说明</th></tr>
+<tr><td>全称</td><td>Optical Engine / 光引擎</td></tr>
+<tr><td>物料组成</td><td>LD芯片+透镜+隔离器+光纤阵列+MPD+热沉</td></tr>
+<tr><td>结合方式</td><td>UV固化耦合 + 激光焊接 + 金丝键合</td></tr>
+<tr><td>阶段产出</td><td>耦合封装完成的光引擎组件(OSA)</td></tr>
+<tr><td>产线位置</td><td>储翰 OE 车间</td></tr>
+</table>
+
+<h3>1.2 数通 OE 特点</h3>
+<table>
+<tr><th>对比项</th><th>数通</th><th>电信</th></tr>
+<tr><td>封装形式</td><td>BOX/蝶形</td><td>TO-CAN/蝶形</td></tr>
+<tr><td>耦合精度</td><td>±0.5μm</td><td>±1μm</td></tr>
+<tr><td>通道数</td><td>单通道/4通道</td><td>单通道</td></tr>
+<tr><td>测试项</td><td>IL/RL/PDL/光谱/眼图</td><td>IL/RL/SMSR</td></tr>
+<tr><td>自动化</td><td>14台自动耦合 · AOI检测</td><td>半自动耦合</td></tr>
+</table>
+<div class="note">数通OE耦合是光模块核心工艺，精度要求高(±0.5μm)，适合Z700轮式机器人做治具传递与自动上下料。14台耦合台并行是产能瓶颈，需重点优化节拍。</div>
+
+<h2>2. 总览</h2>
+<div class="phase">
+<h3>OE 工序流程</h3>
+<p style="color:#8b949e;font-size:10px">分板 → 耦合对准 → UV固化 → 外观检查 → 烘烤固化 → TXFA组装 → 端面清洁 → MPD测试 → OE光测试 → TCT温变 → BI老化 → 热岛长烤 → 端面复检 → TRX测试 → 出货检查</p>
+</div>
+
+<h2>3. 详细工序</h2>
+
+<!-- 3.1 耦合段 -->
+<div class="phase">
+<h3>3.1 耦合段 (I125-I129)</h3>
+<p style="color:#8b949e;font-size:10px">即把透镜/光纤与LD芯片进行精密光学对准并固定。是整个OE段最核心的工艺。</p>
+
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr>
+  <td><a href="/station-i201.html?id=I-125&name=自动耦合测试" style="color:#ff6b35">I125</a></td>
+  <td>自动耦合测试</td><td>By Lot</td><td>自动</td><td>COC+透镜+光纤</td><td>耦合定位后组件</td><td>≤8s</td><td>≤8s/ch</td><td>±0.5μm</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">14台自动耦合台并行 · 6轴精密位移台 · 激光源+光功率计闭环反馈 · 峰值搜索算法 · UV预固化点固定 · IL≤3dB为合格</td></tr>
+<tr>
+  <td>I126</td><td>分板站位</td><td>By Lot</td><td>自动</td><td>拼板基板</td><td>单颗COC</td><td>≤15s</td><td>≤15s</td><td>±50μm</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">分板机自动切割 · 应力控制 · 上下料机械手 · 无裂纹要求 · 刀片寿命监控</td></tr>
+<tr>
+  <td>I127</td><td>耦合目检</td><td>无需过站</td><td>手动</td><td>耦合后组件</td><td>同左</td><td>≤3s</td><td>-</td><td>50×</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">显微镜50×检查 · 透镜偏移/倾斜/胶量 · 不合格→返修</td></tr>
+<tr>
+  <td>I128</td><td>耦合外观检测</td><td>无需过站</td><td>手动</td><td>耦合目检后</td><td>同左</td><td>≤5s</td><td>-</td><td>50×</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">胶量/气泡/溢胶检查 · 无气泡>50μm · 清洁确认</td></tr>
+<tr>
+  <td>I129</td><td>耦合烘烤</td><td>By Lot</td><td>自动</td><td>外观检查后组件</td><td>固化后组件</td><td>-</td><td>30min/批</td><td>±2°C</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">高温烘烤固化 · N2保护 · 温控精密 · 硬度达标(≥80 Shore D) · 批量处理</td></tr>
+</table>
+</div>
+
+<!-- 3.2 组装段 -->
+<div class="phase">
+<h3>3.2 组装段 (I130-I131)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr>
+  <td>I130</td><td>TXFA组装</td><td>By Lot</td><td>手动</td><td>耦合固化后组件</td><td>TXFA组件</td><td>≤10s</td><td>-</td><td>±5μm</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">显微镜×3辅助 · TOSA/ROSA组件装配 · 发射/接收对准 · 光路通光验证</td></tr>
+<tr>
+  <td>I131</td><td>端面清洁</td><td>无需过站</td><td>手动</td><td>TXFA组件</td><td>清洁后组件</td><td>≤5s</td><td>-</td><td>无颗粒>1μm</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">无尘纸+99.9%酒精 · 端检仪200×确认 · IEC 61300-3-35标准 · 无划痕/污染</td></tr>
+</table>
+</div>
+
+<!-- 3.3 测试段 -->
+<div class="phase">
+<h3>3.3 测试段 (I132-I134)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr>
+  <td>I132</td><td>MPD测试</td><td>By Lot</td><td>自动</td><td>清洁后组件</td><td>同左</td><td>≤5s</td><td>≤5s</td><td>±0.1μA</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">测试机台×2 · 监控PD响应度 · 暗电流Id<10nA · 响应度>0.8A/W</td></tr>
+<tr>
+  <td>I133</td><td>OE光测试</td><td>By Lot</td><td>自动</td><td>MPD测试后</td><td>同左</td><td>≤8s</td><td>≤8s</td><td>±0.1dB</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">测试站×4并行 · IL/RL/PDL/光谱/SMSR全参数 · 自动判定Pass/Fail · 数据上传MES</td></tr>
+<tr>
+  <td>I134</td><td>TCT快速温变</td><td>By Lot</td><td>自动</td><td>OE测试后</td><td>同左</td><td>-</td><td>2h/批</td><td>±1°C</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">温变立柜×3 · -40~125°C · 升降温≥15°C/min · 在线监控 · 无失效</td></tr>
+</table>
+</div>
+
+<!-- 3.4 可靠性段 -->
+<div class="phase">
+<h3>3.4 可靠性段 (I135-I138)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr>
+  <td>I135</td><td>模块BI</td><td>By Lot</td><td>手动</td><td>TCT后组件</td><td>同左</td><td>-</td><td>24h/批</td><td>±1°C</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">烤箱×2 · 85°C通电老化 · 在线参数监控 · 筛选早期失效 · 模块级BI</td></tr>
+<tr>
+  <td>I136</td><td>热岛立柜</td><td>By Lot</td><td>自动</td><td>BI后组件</td><td>同左</td><td>-</td><td>168h/批</td><td>±0.5°C</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">热岛立柜×4 · 恒温恒湿(85°C/85%RH) · Telcordia GR-468 · 长期可靠性筛选</td></tr>
+<tr>
+  <td>I137</td><td>端面检测清洁</td><td>By Lot</td><td>自动</td><td>热岛后组件</td><td>同左</td><td>≤8s</td><td>≤8s</td><td>±0.5μm</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">测试站×3 · 光纤端面200×自动检测 · IEC 61300-3-35 · 脏污自动清洁 · Pass/Fail判定</td></tr>
+<tr>
+  <td>I138</td><td>OE/TRX测试</td><td>By Lot</td><td>自动</td><td>端检后组件</td><td>同左</td><td>≤10s</td><td>≤10s</td><td>BER<1E-12</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">光模块收发全参数测试 · 眼图/误码率/灵敏度/过载 · 全温(-5~75°C)测试 · PRBS31</td></tr>
+</table>
+</div>
+
+<!-- 3.5 出货段 -->
+<div class="phase">
+<h3>3.5 出货段 (I139)</h3>
+<table>
+<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr>
+  <td>I139</td><td>OE出货检查</td><td>By Lot</td><td>自动+手动</td><td>TRX测试后</td><td>合格品</td><td>≤5s</td><td>≤5s</td><td>零缺陷</td>
+</tr>
+<tr><td colspan="9" style="color:#8b949e">2工位并行 · 100%全检 · MES数据闭环 · 合格证打印 · 批次追溯 · 出货包装</td></tr>
+</table>
+</div>
+
+<h2>4. 自动化评估</h2>
+<table>
+<tr><th>对象</th><th>归属</th><th>可行性</th><th>说明</th></tr>
+<tr><td>耦合台上料/下料</td><td>搬运</td><td style="color:#00d4aa">高</td><td>14台耦合台 · 治具标准化 · Z700双臂可做</td></tr>
+<tr><td>耦合→外观→烘烤 传递</td><td>搬运</td><td style="color:#00d4aa">高</td><td>单种载具传递 · 动作单纯</td></tr>
+<tr><td>测试站自动上下料</td><td>上料/下料</td><td style="color:#ffaa00">中</td><td>需改造测试夹具 · 接口标准化</td></tr>
+<tr><td>端面清洁自动化</td><td>操作</td><td style="color:#00d4aa">高</td><td>自动端检仪已有 · 机器人持模块操作</td></tr>
+<tr><td>TCT/BI/热岛 批量上下料</td><td>上料+下料</td><td style="color:#ff4444">低</td><td>柜门开启 · 批量托盘 · 温度高</td></tr>
+<tr><td>TXFA组装</td><td>组装</td><td style="color:#ff4444">低</td><td>精密对位 · 多品种 · 力反馈需求</td></tr>
+</table>
+
+<h2>5. 附录：OE 全工序表</h2>
+<table>
+<tr><th>序号</th><th>大工序</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>人节拍</th><th>机节拍</th></tr>
+<tr><td>1</td><td>耦合</td><td>I125</td><td>自动耦合测试</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>≤8s</td></tr>
+<tr><td>2</td><td>耦合</td><td>I126</td><td>分板站位</td><td>By Lot</td><td>自动</td><td>≤15s</td><td>≤15s</td></tr>
+<tr><td>3</td><td>耦合</td><td>I127</td><td>耦合目检</td><td>-</td><td>手动</td><td>≤3s</td><td>-</td></tr>
+<tr><td>4</td><td>耦合</td><td>I128</td><td>耦合外观检测</td><td>-</td><td>手动</td><td>≤5s</td><td>-</td></tr>
+<tr><td>5</td><td>耦合</td><td>I129</td><td>耦合烘烤</td><td>By Lot</td><td>自动</td><td>-</td><td>30min</td></tr>
+<tr><td>6</td><td>组装</td><td>I130</td><td>TXFA组装</td><td>By Lot</td><td>手动</td><td>≤10s</td><td>-</td></tr>
+<tr><td>7</td><td>组装</td><td>I131</td><td>端面清洁</td><td>-</td><td>手动</td><td>≤5s</td><td>-</td></tr>
+<tr><td>8</td><td>测试</td><td>I132</td><td>MPD测试</td><td>By Lot</td><td>自动</td><td>≤5s</td><td>≤5s</td></tr>
+<tr><td>9</td><td>测试</td><td>I133</td><td>OE测试</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>≤8s</td></tr>
+<tr><td>10</td><td>测试</td><td>I134</td><td>TCT快速温变</td><td>By Lot</td><td>自动</td><td>-</td><td>2h</td></tr>
+<tr><td>11</td><td>可靠性</td><td>I135</td><td>模块BI</td><td>By Lot</td><td>手动</td><td>-</td><td>24h</td></tr>
+<tr><td>12</td><td>可靠性</td><td>I136</td><td>热岛立柜</td><td>By Lot</td><td>自动</td><td>-</td><td>168h</td></tr>
+<tr><td>13</td><td>可靠性</td><td>I137</td><td>端面检测清洁</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>≤8s</td></tr>
+<tr><td>14</td><td>可靠性</td><td>I138</td><td>OE/TRX测试</td><td>By Lot</td><td>自动</td><td>≤10s</td><td>≤10s</td></tr>
+<tr><td>15</td><td>出货</td><td>I139</td><td>OE出货检查</td><td>By Lot</td><td>自动+手动</td><td>≤5s</td><td>≤5s</td></tr>
+</table>
+
+<br>
+<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#ff6b35;border:1px solid #ff6b3544">← 返回 3D 工厂</a>
+
+<script>
+function exportWord(){
+  var html=document.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'application/msword'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='Z-MAX_OE光引擎区_场景描述.doc';
+  a.click();
+}
+</script>
+</body>
+</html>
