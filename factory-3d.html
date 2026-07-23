@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.0 · 2026-07-23 11:30</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.1 · 2026-07-23 11:45</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -419,7 +419,7 @@ function buildFactory(){
   const lbcCx=lbcCv.getContext('2d');
   lbcCx.fillStyle='#ccccaa';lbcCx.font='bold 22px "PingFang SC","Microsoft YaHei",sans-serif';
   lbcCx.textAlign='center';lbcCx.textBaseline='middle';
-  lbcCx.fillText('线边仓',64,32);
+  lbcCx.fillText('线边仓1区',64,32);
   const lbcTx=new THREE.CanvasTexture(lbcCv);lbcTx.minFilter=THREE.LinearFilter;
   const lbcPlane=new THREE.Mesh(new THREE.PlaneGeometry(2.5,.8),
     new THREE.MeshBasicMaterial({map:lbcTx,transparent:true,depthTest:false,depthWrite:false}));
@@ -427,9 +427,30 @@ function buildFactory(){
   scene.add(lbcPlane);
   // 货架示意
   for(let si=0;si<3;si++){
-    const shelf=new THREE.Mesh(new THREE.BoxGeometry(1.8,.8,.3),
+    const shelf=new THREE.Mesh(new THREE.BoxGeometry(.4,1.5,1.8),
       new THREE.MeshStandardMaterial({color:0x776655,metalness:.3,roughness:.5}));
-    shelf.position.set(-2.5,.4,-9+si*2.2);
+    shelf.position.set(-3.3,.75,-9+si*2.2);
+    shelf.castShadow=true;scene.add(shelf);
+  }
+
+  // 线边仓2区 — OE区右侧物料缓冲区
+  const lbc2Wall=createWall(15.5,-7,2.5,10,0x668888);
+  lbc2Wall.userData={isZone:true,label:'线边仓2区'};
+  scene.add(lbc2Wall);
+  const lbc2Cv=document.createElement('canvas');lbc2Cv.width=160;lbc2Cv.height=64;
+  const lbc2Cx=lbc2Cv.getContext('2d');
+  lbc2Cx.fillStyle='#aacccc';lbc2Cx.font='bold 20px "PingFang SC","Microsoft YaHei",sans-serif';
+  lbc2Cx.textAlign='center';lbc2Cx.textBaseline='middle';
+  lbc2Cx.fillText('线边仓2区',80,32);
+  const lbc2Tx=new THREE.CanvasTexture(lbc2Cv);lbc2Tx.minFilter=THREE.LinearFilter;
+  const lbc2Plane=new THREE.Mesh(new THREE.PlaneGeometry(2.5,.8),
+    new THREE.MeshBasicMaterial({map:lbc2Tx,transparent:true,depthTest:false,depthWrite:false}));
+  lbc2Plane.rotation.x=-Math.PI/2;lbc2Plane.position.set(15.5,.025,-7);lbc2Plane.renderOrder=1001;
+  scene.add(lbc2Plane);
+  for(let si=0;si<3;si++){
+    const shelf=new THREE.Mesh(new THREE.BoxGeometry(.4,1.5,1.8),
+      new THREE.MeshStandardMaterial({color:0x556677,metalness:.3,roughness:.5}));
+    shelf.position.set(14.7,.75,-9+si*2.2);
     shelf.castShadow=true;scene.add(shelf);
   }
 
