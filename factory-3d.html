@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.7 · 2026-07-23 12:35</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.8 · 2026-07-23 12:40</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -77,7 +77,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 </div>
 <div id="main">
 <div id="view3d"><div id="info-popup"></div><div id="cursor-coord"></div></div>
-<div id="panel" onmousedown="event.stopPropagation()" onmousemove="event.stopPropagation()">
+<div id="panel">
   <h3>🏭 工厂区域</h3>
   <div id="zones-list"></div>
   <h3>🤖 设备清单</h3>
@@ -628,10 +628,9 @@ function updateCam(){
   );
   camera.lookAt(lookTarget.x,lookTarget.y,lookTarget.z);
 }
-document.getElementById("panel").addEventListener("mousedown",e=>{e.stopPropagation()});
-document.getElementById("panel").addEventListener("mousemove",e=>{e.stopPropagation()});
 wrap.addEventListener("mousedown",e=>{
-  if(e.target.closest('#panel'))return;
+  var el=e.target;
+  while(el){if(el.id==='panel'||el.classList.contains('zone-card'))return;el=el.parentElement}
   if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}
   if(e.button===1){panning=true;prevMX=e.clientX;prevMY=e.clientY;e.preventDefault()}
 });
