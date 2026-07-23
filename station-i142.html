@@ -10,6 +10,10 @@
   canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
   #info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#888;font-size:11px;opacity:.5;z-index:10;pointer-events:none;white-space:nowrap}
 #coord{position:absolute;top:52px;right:16px;z-index:10;color:#00d4aa;font-size:11px;font-family:monospace;background:rgba(10,10,26,.85);padding:6px 14px;border-radius:8px;pointer-events:none;text-align:right;line-height:1.65}
+#obj-list{position:absolute;top:130px;right:8px;z-index:10;color:#8899aa;font-size:10px;font-family:monospace;background:rgba(10,10,26,.8);padding:6px 10px;border-radius:6px;pointer-events:none;max-height:calc(100vh - 150px);overflow-y:auto;line-height:1.5;min-width:160px}
+#obj-list b{color:#00d4aa;font-size:10px}
+#obj-list .mod{color:#aaccff}
+#obj-list .wp{color:#ffaa44}
   #status{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;font-weight:bold;z-index:10;pointer-events:none;white-space:nowrap;background:rgba(10,10,26,.75);padding:5px 16px;border-radius:16px}
 #back{position:absolute;top:12px;left:15px;z-index:10;color:#00d4aa;font-size:12px;cursor:pointer;background:rgba(10,10,26,.75);padding:6px 14px;border-radius:20px;border:1px solid #00d4aa44;text-decoration:none}
 #title-bar{position:absolute;top:0;left:0;right:0;color:#fff;font-size:20px;font-weight:800;z-index:11;pointer-events:none;text-align:center;background:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,0));padding:16px 18px 30px;letter-spacing:2px}
@@ -19,6 +23,7 @@
 <a id="back" href="/factory-3d.html">← 返回产线总览</a>
 <div id="title-bar">I-142 老化墙</div>
 <div id="coord">X:0.00 Y:-0.65 Z:0.00<br>L:0.00 0.10 -0.20<br>R:0.00 -0.10 0.20</div>
+<div id="obj-list"></div>
 <div id="status">● 老化测试中</div>
 <div id="info">Z轴往复 v2 · 自主导航Z700 · 拖拽旋转 | 滚轮缩放</div>
 
@@ -26,7 +31,7 @@
 <script>
 (function(){
 if(typeof THREE==="undefined")return;
-var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status"),tEl=document.getElementById("title-bar"),cEl=document.getElementById("coord");
+var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status"),tEl=document.getElementById("title-bar"),cEl=document.getElementById("coord"),oEl=document.getElementById("obj-list");
 var params=new URLSearchParams(window.location.search);
 var stId=params.get('id')||'I-142';
 var stName=params.get('name')||'老化墙';
@@ -356,6 +361,15 @@ function loop(){
   cEl.innerHTML="X:"+wp.x.toFixed(2)+" Y:"+wp.y.toFixed(2)+" Z:"+wp.z.toFixed(2)+
     "<br>L:"+shL.rotation.x.toFixed(2)+" "+uaL.rotation.z.toFixed(2)+" "+elL.rotation.z.toFixed(2)+
     "<br>R:"+shR.rotation.x.toFixed(2)+" "+uaR.rotation.z.toFixed(2)+" "+elR.rotation.z.toFixed(2);
+  // Object position list
+  var ol="<b>━━ 机器人 ━━</b><br>  "+wp.x.toFixed(2)+" "+wp.y.toFixed(2)+" "+wp.z.toFixed(2);
+  ol+="<br><b>━━ 入料台 ━━</b><br>  -0.85 -0.72 0.80";
+  ol+="<br><b>━━ 出料台 ━━</b><br>  0.85 -0.72 0.80";
+  ol+="<br><b>━━ 老化箱 ━━</b><br>  0.00 -0.70 -1.40";
+  ol+="<br><b>━━ 巡航点 ━━</b><br><span class=wp>  中心  0.00 -0.71 0.00</span><br><span class=wp>  入料  0.00 -0.71 0.80</span><br><span class=wp>  老化  0.00 -0.71 -0.30</span>";
+  if(modsL.length){ol+="<br><b>━━ 左光模块 ━━</b>";for(var i=0;i<modsL.length;i++){var mp=modsL[i].position;ol+="<br><span class=mod>  L"+(i+1)+" "+mp.x.toFixed(2)+" "+mp.y.toFixed(2)+" "+mp.z.toFixed(2)+"</span>";}}
+  if(modsR&&modsR.length){ol+="<br><b>━━ 右光模块 ━━</b>";for(var i=0;i<modsR.length;i++){var mp=modsR[i].position;ol+="<br><span class=mod>  R"+(i+1)+" "+mp.x.toFixed(2)+" "+mp.y.toFixed(2)+" "+mp.z.toFixed(2)+"</span>";}}
+  oEl.innerHTML=ol;
   ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
 
   var p=new THREE.Vector3().setFromSpherical(sph).add(target);
