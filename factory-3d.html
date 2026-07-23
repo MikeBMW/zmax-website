@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.9.0 · 2026-07-23 10:30</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.9.1 · 2026-07-23 10:45</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -161,16 +161,16 @@ let hoveredStation=null;
 
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
-  {name:"Z1",zone:"coc",x:-16.5,z:-9.3,patrolMinX:-16.5,patrolMaxX:-5.5,patrolZ:-9.3,row:0},
-  {name:"Z2",zone:"coc",x:-16.5,z:-7.1,patrolMinX:-16.5,patrolMaxX:-5.5,patrolZ:-7.1,row:1},
-  {name:"Z3",zone:"coc",x:-16.5,z:-4.9,patrolMinX:-16.5,patrolMaxX:-5.5,patrolZ:-4.9,row:2},
-  {name:"Z4",zone:"coc",x:-16.5,z:-2.7,patrolMinX:-16.5,patrolMaxX:-7.7,patrolZ:-2.7,row:3},
-  {name:"R1",zone:"oe",x:2.5,z:-9.3,patrolMinX:2.5,patrolMaxX:13.5,patrolZ:-9.3,row:0},
-  {name:"R2",zone:"oe",x:2.5,z:-7.1,patrolMinX:2.5,patrolMaxX:13.5,patrolZ:-7.1,row:1},
-  {name:"R3",zone:"oe",x:2.5,z:-4.9,patrolMinX:2.5,patrolMaxX:13.5,patrolZ:-4.9,row:2},
-  {name:"M1",zone:"mod",x:2.5,z:4.7,patrolMinX:2.5,patrolMaxX:13.5,patrolZ:4.7,row:0},
-  {name:"W1",zone:"wh",x:-16.5,z:4.7,patrolMinX:-16.5,patrolMaxX:-5.5,patrolZ:4.7,row:0},
-  {name:"W2",zone:"wh",x:-16.5,z:6.9,patrolMinX:-16.5,patrolMaxX:-11.0,patrolZ:6.9,row:1},
+  {name:"Z1",zone:"coc",x:-16.5,z:-9.3,rowZ:-10.5},
+  {name:"Z2",zone:"coc",x:-16.5,z:-7.1,rowZ:-8.3},
+  {name:"Z3",zone:"coc",x:-16.5,z:-4.9,rowZ:-6.1},
+  {name:"Z4",zone:"coc",x:-16.5,z:-2.7,rowZ:-3.9},
+  {name:"R1",zone:"oe",x:2.5,z:-9.3,rowZ:-10.5},
+  {name:"R2",zone:"oe",x:2.5,z:-7.1,rowZ:-8.3},
+  {name:"R3",zone:"oe",x:2.5,z:-4.9,rowZ:-6.1},
+  {name:"M1",zone:"mod",x:2.5,z:4.7,rowZ:3.5},
+  {name:"W1",zone:"wh",x:-16.5,z:4.7,rowZ:3.5},
+  {name:"W2",zone:"wh",x:-16.5,z:6.9,rowZ:5.7},
 ];
 
 // ═══════ THREE.JS ═══════
@@ -436,9 +436,8 @@ function buildFactory(){
   if(robotObjs.length===0){
     ROBOT_DEFS.forEach(rd=>{
       const r={obj:createRobot(rd.x,rd.z),pos:{x:rd.x,z:rd.z},
-               patrolMinX:rd.patrolMinX,patrolMaxX:rd.patrolMaxX,patrolZ:rd.patrolZ,
-               patrolDir:1,zone:rd.zone,name:rd.name,coordSprite:null,nameSprite:null,
-               dwell:0,workAnim:0};
+               rowZ:rd.rowZ,stepIdx:0,zone:rd.zone,name:rd.name,
+               coordSprite:null,nameSprite:null,dwell:0,workAnim:0};
       r.coordSprite=createCoordSprite(rd.x,rd.z,'#00d4aa');
       scene.add(r.obj);scene.add(r.coordSprite.sprite);
       // name label above robot
@@ -635,16 +634,20 @@ let time=0;
 function animate(){
   requestAnimationFrame(animate);time+=.016;
   
-  // Robot movement — horizontal back-and-forth per row, 10 robots
+  // Robot movement — visit each station in row, left to right, loop
   robotObjs.forEach(r=>{
-    const tx=r.patrolDir>0?r.patrolMaxX:r.patrolMinX;
-    const rdx=tx-r.pos.x;
-    if(Math.abs(rdx)<.08){
-      if(r.dwell<120){r.dwell++;r.workAnim=Math.sin(r.dwell*.15)}
-      else{r.dwell=0;r.patrolDir*=-1}
+    const rowStations=stationObjects.filter(s=>
+      s.userData.zoneId===r.zone&&Math.abs(s.position.z-r.rowZ)<1.5
+    ).sort((a,b)=>a.position.x-b.position.x);
+    if(rowStations.length===0)return;
+    const st=rowStations[r.stepIdx%rowStations.length];
+    const tx=st.position.x,tz=r.rowZ+1.2;
+    const rdx=tx-r.pos.x,rdz=tz-r.pos.z;
+    if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08){
+      if(r.dwell<150){r.dwell++;r.workAnim=Math.sin(r.dwell*.15)}
+      else{r.dwell=0;r.stepIdx=(r.stepIdx+1)%rowStations.length}
     }
-    if(r.dwell===0){r.pos.x+=rdx*.025}
-    r.pos.z=r.patrolZ;
+    if(r.dwell===0){r.pos.x+=rdx*.025;r.pos.z+=rdz*.025}
     r.obj.position.set(r.pos.x,.05,r.pos.z);
     r.obj.position.y+=Math.sin(time*2.5+r.pos.x)*.02+(r.dwell>0?.02:0);
     r.obj.rotation.y=rdx>0?Math.PI/2:-Math.PI/2;
