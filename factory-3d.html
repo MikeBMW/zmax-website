@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.10 · 2026-07-23 13:00</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.10.12 · 2026-07-23 13:20</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -536,7 +536,7 @@ function buildZonesList(){
   ZONES.forEach(z=>{
     const clr='#'+z.color.toString(16).padStart(6,'0');
     const steps=z.stations.map(s=>
-      '<span class="process-step">'+
+      '<span class="process-step" onclick="event.stopPropagation();openStation(\''+s.id+'\')" style="cursor:pointer">'+
         '<div class="st-id">'+s.id+'</div>'+
         '<div class="st-label">'+s.label+'</div>'+
       '</span>'
@@ -555,6 +555,10 @@ function buildZonesList(){
   document.getElementById("zones-list").innerHTML=h;
 }
 
+function openStation(sid){
+  const links={'I119':'/robot.html'};
+  if(links[sid]){window.location.href=links[sid]}
+}
 function toggleZone(zoneId){
   const card=document.getElementById('zone-'+zoneId);
   card.classList.toggle('expanded');
@@ -605,6 +609,10 @@ wrap.addEventListener("click",e=>{
     while(obj&&!obj.userData.isStation)obj=obj.parent;
     if(obj&&obj.userData.isStation){
       const d=obj.userData;
+      if(d.id==='I119'){
+        window.location.href='/robot.html';
+        return;
+      }
       const popup=document.getElementById("info-popup");
       popup.innerHTML=`<div class="name">${d.id} ${d.label}</div>
         <div class="desc">${d.desc||""} · ${d.zoneName||""}</div>
