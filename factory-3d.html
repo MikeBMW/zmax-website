@@ -77,7 +77,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 </div>
 <div id="main">
 <div id="view3d"><div id="info-popup"></div><div id="cursor-coord"></div></div>
-<div id="panel">
+<div id="panel" onmousedown="event.stopPropagation()" onmousemove="event.stopPropagation()">
   <h3>🏭 工厂区域</h3>
   <div id="zones-list"></div>
   <h3>🤖 设备清单</h3>
@@ -628,8 +628,10 @@ function updateCam(){
   );
   camera.lookAt(lookTarget.x,lookTarget.y,lookTarget.z);
 }
+document.getElementById("panel").addEventListener("mousedown",e=>{e.stopPropagation()});
+document.getElementById("panel").addEventListener("mousemove",e=>{e.stopPropagation()});
 wrap.addEventListener("mousedown",e=>{
-  if(e.target.closest('#side'))return;
+  if(e.target.closest('#panel'))return;
   if(e.button===0){dragging=true;prevMX=e.clientX;prevMY=e.clientY}
   if(e.button===1){panning=true;prevMX=e.clientX;prevMY=e.clientY;e.preventDefault()}
 });
