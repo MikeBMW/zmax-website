@@ -10,28 +10,34 @@
   h1{color:#ff6b35;font-size:28px;border-bottom:2px solid #ff6b3544;padding-bottom:12px;margin-bottom:20px}
   h2{color:#ff6b35;font-size:20px;margin:28px 0 12px;border-left:3px solid #ff6b35;padding-left:10px}
   h3{color:#ff8c55;font-size:16px;margin:18px 0 8px}
-  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:11px}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:10px}
   th{background:#0d1117;color:#ff6b35;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
   td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
   tr:nth-child(even){background:#0a0e14}
   .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
   .kpi span{background:#0d1117;border:1px solid #ff6b3544;border-radius:6px;padding:6px 14px;color:#ff6b35;font-weight:700}
   .note{background:#0d1117;border-left:3px solid #f0a500;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
-  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 16px;margin:16px 0}
-  .phase h3{margin-top:0}
+  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .phase h3{margin-top:0;color:#ff6b35}
   .tag{display:inline-block;background:#1a1f2b;color:#ff6b35;border-radius:3px;padding:1px 6px;font-size:9px;margin:0 2px}
-  .btn{display:inline-block;background:#ff6b35;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 0;text-decoration:none}
+  .btn{display:inline-block;background:#ff6b35;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 8px 0 0;text-decoration:none}
   .btn:hover{filter:brightness(1.2)}
-  @media print{body{background:#fff;color:#000}table{font-size:9px}.btn{display:none}}
+  .flow-chart{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:16px;margin:12px 0;font-family:monospace;font-size:11px;line-height:2;color:#c8d1d9;overflow-x:auto;white-space:pre}
+  .layout-box{border:1px solid #1a1f2b;background:#0d1117;border-radius:8px;padding:14px 18px;margin:12px 0}
+  .layout-box table{border:none;margin:4px 0}
+  .layout-box td{border:none;padding:3px 6px;font-size:10px}
+  a{color:#ff6b35}
+  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}a{color:#000}.flow-chart{background:#fff;border-color:#ccc}}
 </style>
 </head>
 <body>
 <h1>Z-MAX OE光引擎区 全场景描述文档</h1>
 <div class="kpi">
-  <span>15 工位</span><span>4 大工序段</span><span>≤8s/通道</span><span>良率≥99.5%</span>
+  <span>15 工位</span><span>5 大阶段</span><span>I125~I139</span><span>良率 ≥99.5%</span>
 </div>
-<button class="btn" onclick="window.print()">📄 一键导出 PDF</button>
-<button class="btn" style="background:#00d4aa;margin-left:8px" onclick="exportWord()">📥 导出 Word</button>
+<button class="btn" onclick="window.print()">📄 导出 PDF</button>
+<button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
+<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#ff6b35;border:1px solid #ff6b3544">← 3D工厂</a>
 
 <h2>1. 定位与范围</h2>
 <h3>1.1 OE 定义</h3>
@@ -55,118 +61,170 @@
 </table>
 <div class="note">数通OE耦合是光模块核心工艺，精度要求高(±0.5μm)，适合Z700轮式机器人做治具传递与自动上下料。14台耦合台并行是产能瓶颈，需重点优化节拍。</div>
 
-<h2>2. 总览</h2>
-<div class="phase">
-<h3>OE 工序流程</h3>
-<p style="color:#8b949e;font-size:10px">分板 → 耦合对准 → UV固化 → 外观检查 → 烘烤固化 → TXFA组装 → 端面清洁 → MPD测试 → OE光测试 → TCT温变 → BI老化 → 热岛长烤 → 端面复检 → TRX测试 → 出货检查</p>
+<h2>2. 整体布局</h2>
+<div class="layout-box">
+<pre style="font-family:monospace;font-size:10px;line-height:1.6;color:#c8d1d9">
+┌──────────────────────────────────────────────────────────────────┐
+│  OE光引擎区 · 15个工位                                          │
+├─────────────────────────────────┬────────────────────────────────┤
+│  测试验证区（I125~I133）       │  可靠性试验区（I134~I139）     │
+│  9个工位                       │  6个工位                       │
+└─────────────────────────────────┴────────────────────────────────┘
+</pre>
 </div>
 
-<h2>3. 详细工序</h2>
-
-<!-- 3.1 耦合段 -->
 <div class="phase">
-<h3>3.1 耦合段 (I125-I129)</h3>
-<p style="color:#8b949e;font-size:10px">即把透镜/光纤与LD芯片进行精密光学对准并固定。是整个OE段最核心的工艺。</p>
+<h3>逻辑流总览</h3>
+<div class="flow-chart">
+分板站位 → 耦合目检 → 自动耦合测试 → 耦合外观检测 → 耦合烘烤 → TXFA组装
+   → 端面清洁 → MPD测试 → OE测试 → TCT快速温变 → 模块BI → 热岛立柜
+   → 端面检测清洁 → OE/TRX测试 → OE出货检查
+</div>
+<p style="color:#8b949e;font-size:10px">OE光引擎区是从「耦合后」到「出货前」的完整工序闭环。分为测试验证区（工序性能验证）和可靠性试验区（极限环境筛选）两大板块。每个工位的测试结果作为"过站"条件，只有当前工位合格才放行至下一工位。</p>
+</div>
 
+<h2>3. 分阶段详细流程</h2>
+
+<!-- Phase 1: 耦合后检测 -->
+<div class="phase">
+<h3>第一阶段：耦合后检测（I125 ~ I128）</h3>
+<p style="color:#8b949e;font-size:10px">光路耦合完成后，先分板→再目检→自动测试→外观检测，逐站确认耦合质量。</p>
 <table>
-<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr><th>工位</th><th>编号</th><th>功能</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
 <tr>
-  <td><a href="/station-i201.html?id=I-125&name=自动耦合测试" style="color:#ff6b35">I125</a></td>
-  <td>自动耦合测试</td><td>By Lot</td><td>自动</td><td>COC+透镜+光纤</td><td>耦合定位后组件</td><td>≤8s</td><td>≤8s/ch</td><td>±0.5μm</td>
+  <td><a href="/station-i201.html?id=I-125&name=分板站位">分板站位</a></td>
+  <td>I125</td><td>PCB拼板分割，将光引擎与主板分离</td>
+  <td>By Lot</td><td>自动</td><td>≤15s</td><td>±50μm</td><td>无裂纹</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">14台自动耦合台并行 · 6轴精密位移台 · 激光源+光功率计闭环反馈 · 峰值搜索算法 · UV预固化点固定 · IL≤3dB为合格</td></tr>
+<tr><td colspan="8" style="color:#8b949e">分板机自动切割 · 应力控制 · 上下料机械手 · 无裂纹要求 · 刀片寿命监控</td></tr>
 <tr>
-  <td>I126</td><td>分板站位</td><td>By Lot</td><td>自动</td><td>拼板基板</td><td>单颗COC</td><td>≤15s</td><td>≤15s</td><td>±50μm</td>
+  <td>耦合目检</td><td>I126</td><td>人工/自动检查光路耦合是否有明显缺陷</td>
+  <td>-</td><td>手动</td><td>≤3s</td><td>50×</td><td>外观OK</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">分板机自动切割 · 应力控制 · 上下料机械手 · 无裂纹要求 · 刀片寿命监控</td></tr>
+<tr><td colspan="8" style="color:#8b949e">显微镜50×检查 · 透镜偏移/倾斜/胶量 · 不合格→返修</td></tr>
 <tr>
-  <td>I127</td><td>耦合目检</td><td>无需过站</td><td>手动</td><td>耦合后组件</td><td>同左</td><td>≤3s</td><td>-</td><td>50×</td>
+  <td><a href="/station-i201.html?id=I-127&name=自动耦合测试">自动耦合测试</a></td>
+  <td>I127</td><td>验证光路耦合效率是否达标，核心性能验证</td>
+  <td>By Lot</td><td>自动</td><td>≤8s/ch</td><td>±0.5μm</td><td>IL≤3dB RL≥40dB</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">显微镜50×检查 · 透镜偏移/倾斜/胶量 · 不合格→返修</td></tr>
+<tr><td colspan="8" style="color:#8b949e">14台自动耦合台并行 · 6轴精密位移台 · 激光源+光功率计闭环反馈 · 峰值搜索算法 · UV预固化点固定</td></tr>
 <tr>
-  <td>I128</td><td>耦合外观检测</td><td>无需过站</td><td>手动</td><td>耦合目检后</td><td>同左</td><td>≤5s</td><td>-</td><td>50×</td>
+  <td>耦合外观检测</td><td>I128</td><td>检查耦合区域外观，确认无脏污、崩边、胶水溢出</td>
+  <td>-</td><td>手动</td><td>≤5s</td><td>50×</td><td>无气泡&gt;50μm</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">胶量/气泡/溢胶检查 · 无气泡>50μm · 清洁确认</td></tr>
-<tr>
-  <td>I129</td><td>耦合烘烤</td><td>By Lot</td><td>自动</td><td>外观检查后组件</td><td>固化后组件</td><td>-</td><td>30min/批</td><td>±2°C</td>
-</tr>
-<tr><td colspan="9" style="color:#8b949e">高温烘烤固化 · N2保护 · 温控精密 · 硬度达标(≥80 Shore D) · 批量处理</td></tr>
+<tr><td colspan="8" style="color:#8b949e">胶量/气泡/溢胶检查 · 无气泡>50μm · 清洁确认</td></tr>
 </table>
+<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>光路耦合完成后，先目检→再自动测试→确认良品后进入下一工序。「目检+测试」形成验证组合，减少等待。</p>
 </div>
 
-<!-- 3.2 组装段 -->
+<!-- Phase 2: 烘烤与组装 -->
 <div class="phase">
-<h3>3.2 组装段 (I130-I131)</h3>
+<h3>第二阶段：烘烤与组装（I129 ~ I130）</h3>
+<p style="color:#8b949e;font-size:10px">耦合合格后通过烘烤固定光学结构，再完成TXFA组件组装。</p>
 <table>
-<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr><th>工位</th><th>编号</th><th>功能</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
 <tr>
-  <td>I130</td><td>TXFA组装</td><td>By Lot</td><td>手动</td><td>耦合固化后组件</td><td>TXFA组件</td><td>≤10s</td><td>-</td><td>±5μm</td>
+  <td>耦合烘烤</td><td>I129</td><td>对耦合后的光引擎进行加热固化，稳定胶水强度</td>
+  <td>By Lot</td><td>自动</td><td>30min/批</td><td>±2°C</td><td>硬度≥80 Shore D</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">显微镜×3辅助 · TOSA/ROSA组件装配 · 发射/接收对准 · 光路通光验证</td></tr>
+<tr><td colspan="8" style="color:#8b949e">高温烘烤固化 · N₂保护 · 温控精密 · 批量处理</td></tr>
 <tr>
-  <td>I131</td><td>端面清洁</td><td>无需过站</td><td>手动</td><td>TXFA组件</td><td>清洁后组件</td><td>≤5s</td><td>-</td><td>无颗粒>1μm</td>
+  <td>TXFA组装</td><td>I130</td><td>组装TXFA（Transmitter Fiber Array，发射端光纤阵列）</td>
+  <td>By Lot</td><td>手动</td><td>≤10s</td><td>±5μm</td><td>光路通光验证</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">无尘纸+99.9%酒精 · 端检仪200×确认 · IEC 61300-3-35标准 · 无划痕/污染</td></tr>
+<tr><td colspan="8" style="color:#8b949e">显微镜×3辅助 · TOSA/ROSA组件装配 · 发射/接收对准</td></tr>
 </table>
+<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>「外观+烘烤」形成固定组合——外观检测后立即烘烤固化光学结构，再完成TXFA组件组装。</p>
 </div>
 
-<!-- 3.3 测试段 -->
+<!-- Phase 3: 端面与光电性能测试 -->
 <div class="phase">
-<h3>3.3 测试段 (I132-I134)</h3>
+<h3>第三阶段：端面与光电性能测试（I131 ~ I133）</h3>
+<p style="color:#8b949e;font-size:10px">端面清洁→光电性能测试→确认光学参数达标。</p>
 <table>
-<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr><th>工位</th><th>编号</th><th>功能</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
 <tr>
-  <td>I132</td><td>MPD测试</td><td>By Lot</td><td>自动</td><td>清洁后组件</td><td>同左</td><td>≤5s</td><td>≤5s</td><td>±0.1μA</td>
+  <td>端面清洁</td><td>I131</td><td>清洁光口/电口端面，避免金手指或光口污染</td>
+  <td>-</td><td>手动</td><td>≤5s</td><td>无颗粒&gt;1μm</td><td>IEC 61300-3-35</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">测试机台×2 · 监控PD响应度 · 暗电流Id<10nA · 响应度>0.8A/W</td></tr>
+<tr><td colspan="8" style="color:#8b949e">无尘纸+99.9%酒精 · 端检仪200×确认 · 无划痕/污染</td></tr>
 <tr>
-  <td>I133</td><td>OE光测试</td><td>By Lot</td><td>自动</td><td>MPD测试后</td><td>同左</td><td>≤8s</td><td>≤8s</td><td>±0.1dB</td>
+  <td>MPD测试</td><td>I132</td><td>测试MPD（Monitor Photodiode，监控光电二极管）性能</td>
+  <td>By Lot</td><td>自动</td><td>≤5s</td><td>±0.1μA</td><td>Id&lt;10nA 响应度&gt;0.8A/W</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">测试站×4并行 · IL/RL/PDL/光谱/SMSR全参数 · 自动判定Pass/Fail · 数据上传MES</td></tr>
+<tr><td colspan="8" style="color:#8b949e">测试机台×2 · 监控PD响应度 · 暗电流检测</td></tr>
 <tr>
-  <td>I134</td><td>TCT快速温变</td><td>By Lot</td><td>自动</td><td>OE测试后</td><td>同左</td><td>-</td><td>2h/批</td><td>±1°C</td>
+  <td>OE测试</td><td>I133</td><td>OE光引擎整体光电性能测试，验证光-电转换功能</td>
+  <td>By Lot</td><td>自动</td><td>≤8s</td><td>±0.1dB</td><td>全参数达标</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">温变立柜×3 · -40~125°C · 升降温≥15°C/min · 在线监控 · 无失效</td></tr>
+<tr><td colspan="8" style="color:#8b949e">测试站×4并行 · IL/RL/PDL/光谱/SMSR全参数 · 自动判定Pass/Fail · 数据上传MES</td></tr>
 </table>
+<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>「清洁+MPD」形成组合——端面清洁后立即进行光电性能测试，确认光学参数达标。</p>
 </div>
 
-<!-- 3.4 可靠性段 -->
+<!-- Phase 4: 可靠性验证 -->
 <div class="phase">
-<h3>3.4 可靠性段 (I135-I138)</h3>
+<h3>第四阶段：可靠性验证（I134 ~ I136）</h3>
+<p style="color:#8b949e;font-size:10px">模拟极端环境，确保光引擎能承受现场温度变化和长期工作。这是产品质量保证的关键环节。</p>
 <table>
-<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr><th>工位</th><th>编号</th><th>功能</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
 <tr>
-  <td>I135</td><td>模块BI</td><td>By Lot</td><td>手动</td><td>TCT后组件</td><td>同左</td><td>-</td><td>24h/批</td><td>±1°C</td>
+  <td>TCT快速温变</td><td>I134</td><td>TCT（Temperature Cycling Test）快速温度循环测试，验证高低温循环可靠性</td>
+  <td>By Lot</td><td>自动</td><td>2h/批</td><td>±1°C</td><td>无失效</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">烤箱×2 · 85°C通电老化 · 在线参数监控 · 筛选早期失效 · 模块级BI</td></tr>
+<tr><td colspan="8" style="color:#8b949e">温变立柜×3 · -40~125°C · 升降温≥15°C/min · 在线监控</td></tr>
 <tr>
-  <td>I136</td><td>热岛立柜</td><td>By Lot</td><td>自动</td><td>BI后组件</td><td>同左</td><td>-</td><td>168h/批</td><td>±0.5°C</td>
+  <td>模块BI</td><td>I135</td><td>BI（Burn-In）模块级老化测试，筛选早期失效</td>
+  <td>By Lot</td><td>手动</td><td>24h/批</td><td>±1°C</td><td>参数稳定</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">热岛立柜×4 · 恒温恒湿(85°C/85%RH) · Telcordia GR-468 · 长期可靠性筛选</td></tr>
+<tr><td colspan="8" style="color:#8b949e">烤箱×2 · 85°C通电老化 · 在线参数监控 · 筛选早期失效 · 模块级BI</td></tr>
 <tr>
-  <td>I137</td><td>端面检测清洁</td><td>By Lot</td><td>自动</td><td>热岛后组件</td><td>同左</td><td>≤8s</td><td>≤8s</td><td>±0.5μm</td>
+  <td>热岛立柜</td><td>I136</td><td>高温环境下长时间老化测试，验证模块在极限温度下的可靠性</td>
+  <td>By Lot</td><td>自动</td><td>168h/批</td><td>±0.5°C</td><td>Telcordia GR-468</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">测试站×3 · 光纤端面200×自动检测 · IEC 61300-3-35 · 脏污自动清洁 · Pass/Fail判定</td></tr>
-<tr>
-  <td>I138</td><td>OE/TRX测试</td><td>By Lot</td><td>自动</td><td>端检后组件</td><td>同左</td><td>≤10s</td><td>≤10s</td><td>BER<1E-12</td>
-</tr>
-<tr><td colspan="9" style="color:#8b949e">光模块收发全参数测试 · 眼图/误码率/灵敏度/过载 · 全温(-5~75°C)测试 · PRBS31</td></tr>
+<tr><td colspan="8" style="color:#8b949e">热岛立柜×4 · 恒温恒湿(85°C/85%RH) · Telcordia GR-468 · 长期可靠性筛选</td></tr>
 </table>
+<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>「TCT+BI+热岛」三连可靠性验证——快速温变→通电老化→长期湿热，逐级加严筛选早期失效产品。</p>
 </div>
 
-<!-- 3.5 出货段 -->
+<!-- Phase 5: 最终检测与出货 -->
 <div class="phase">
-<h3>3.5 出货段 (I139)</h3>
+<h3>第五阶段：最终检测与出货（I137 ~ I139）</h3>
+<p style="color:#8b949e;font-size:10px">可靠性测试完成后→最终性能验证→出货检验。层层筛选确保良品出货。</p>
 <table>
-<tr><th>I-Step</th><th>工序</th><th>过站模式</th><th>方式</th><th>输入</th><th>输出</th><th>人节拍</th><th>机节拍</th><th>精度</th></tr>
+<tr><th>工位</th><th>编号</th><th>功能</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
 <tr>
-  <td>I139</td><td>OE出货检查</td><td>By Lot</td><td>自动+手动</td><td>TRX测试后</td><td>合格品</td><td>≤5s</td><td>≤5s</td><td>零缺陷</td>
+  <td>端面检测清洁</td><td>I137</td><td>最终端面检查和清洁，确保金手指/光口无污染</td>
+  <td>By Lot</td><td>自动</td><td>≤8s</td><td>±0.5μm</td><td>IEC 61300-3-35</td>
 </tr>
-<tr><td colspan="9" style="color:#8b949e">2工位并行 · 100%全检 · MES数据闭环 · 合格证打印 · 批次追溯 · 出货包装</td></tr>
+<tr><td colspan="8" style="color:#8b949e">测试站×3 · 光纤端面200×自动检测 · IEC 61300-3-35 · 脏污自动清洁 · Pass/Fail判定</td></tr>
+<tr>
+  <td>OE/TRX测试</td><td>I138</td><td>验证光引擎和收发器（TRX）最终性能，包含发射光功率、接收灵敏度等</td>
+  <td>By Lot</td><td>自动</td><td>≤10s</td><td>BER&lt;1E-12</td><td>全温全参数</td>
+</tr>
+<tr><td colspan="8" style="color:#8b949e">光模块收发全参数测试 · 眼图/误码率/灵敏度/过载 · 全温(-5~75°C)测试 · PRBS31</td></tr>
+<tr>
+  <td>OE出货检查</td><td>I139</td><td>出货前的最终检验（OQC），确认外观、标签、包装全部合格</td>
+  <td>By Lot</td><td>自动+手动</td><td>≤5s</td><td>零缺陷</td><td>合格证打印</td>
+</tr>
+<tr><td colspan="8" style="color:#8b949e">2工位并行 · 100%全检 · MES数据闭环 · 合格证打印 · 批次追溯 · 出货包装</td></tr>
 </table>
+<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>端面检测清洁→OE/TRX测试→出货检查，层层把关，只有全部合格才放行出货。</p>
 </div>
 
-<h2>4. 自动化评估</h2>
+<h2>4. 流程逻辑总结</h2>
+<table>
+<tr><th style="width:120px">维度</th><th>说明</th></tr>
+<tr><td>整体流程</td><td>OE光引擎区是从「耦合后」到「出货前」的完整工序闭环</td></tr>
+<tr><td>测试验证区（I125~I133）</td><td>逐工位完成光学参数和电学性能验证</td></tr>
+<tr><td>可靠性试验区（I134~I136）</td><td>模拟温变、老化、高热等极限工况，筛选产品早期失效</td></tr>
+<tr><td>最终检测区（I137~I139）</td><td>逐工位完成最终性能验证和出货检验</td></tr>
+<tr><td>关键特点</td><td>两两搭配：「目检+测试」「外观+烘烤」「清洁+MPD」「TCT+BI+热岛」形成「验证+处理」组合，减少等待</td></tr>
+<tr><td>出货把关</td><td>端面检测清洁→OE/TRX测试→出货检查，层层筛选</td></tr>
+<tr><td>信息流</td><td>每个工位的测试结果作为「过站」条件，只有当前工位合格才放行至下一工位</td></tr>
+</table>
+
+<h2>5. 自动化评估</h2>
 <table>
 <tr><th>对象</th><th>归属</th><th>可行性</th><th>说明</th></tr>
 <tr><td>耦合台上料/下料</td><td>搬运</td><td style="color:#00d4aa">高</td><td>14台耦合台 · 治具标准化 · Z700双臂可做</td></tr>
@@ -177,24 +235,24 @@
 <tr><td>TXFA组装</td><td>组装</td><td style="color:#ff4444">低</td><td>精密对位 · 多品种 · 力反馈需求</td></tr>
 </table>
 
-<h2>5. 附录：OE 全工序表</h2>
+<h2>6. 附录：OE 全工序表</h2>
 <table>
-<tr><th>序号</th><th>大工序</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>人节拍</th><th>机节拍</th></tr>
-<tr><td>1</td><td>耦合</td><td>I125</td><td>自动耦合测试</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>≤8s</td></tr>
-<tr><td>2</td><td>耦合</td><td>I126</td><td>分板站位</td><td>By Lot</td><td>自动</td><td>≤15s</td><td>≤15s</td></tr>
-<tr><td>3</td><td>耦合</td><td>I127</td><td>耦合目检</td><td>-</td><td>手动</td><td>≤3s</td><td>-</td></tr>
-<tr><td>4</td><td>耦合</td><td>I128</td><td>耦合外观检测</td><td>-</td><td>手动</td><td>≤5s</td><td>-</td></tr>
-<tr><td>5</td><td>耦合</td><td>I129</td><td>耦合烘烤</td><td>By Lot</td><td>自动</td><td>-</td><td>30min</td></tr>
-<tr><td>6</td><td>组装</td><td>I130</td><td>TXFA组装</td><td>By Lot</td><td>手动</td><td>≤10s</td><td>-</td></tr>
-<tr><td>7</td><td>组装</td><td>I131</td><td>端面清洁</td><td>-</td><td>手动</td><td>≤5s</td><td>-</td></tr>
-<tr><td>8</td><td>测试</td><td>I132</td><td>MPD测试</td><td>By Lot</td><td>自动</td><td>≤5s</td><td>≤5s</td></tr>
-<tr><td>9</td><td>测试</td><td>I133</td><td>OE测试</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>≤8s</td></tr>
-<tr><td>10</td><td>测试</td><td>I134</td><td>TCT快速温变</td><td>By Lot</td><td>自动</td><td>-</td><td>2h</td></tr>
-<tr><td>11</td><td>可靠性</td><td>I135</td><td>模块BI</td><td>By Lot</td><td>手动</td><td>-</td><td>24h</td></tr>
-<tr><td>12</td><td>可靠性</td><td>I136</td><td>热岛立柜</td><td>By Lot</td><td>自动</td><td>-</td><td>168h</td></tr>
-<tr><td>13</td><td>可靠性</td><td>I137</td><td>端面检测清洁</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>≤8s</td></tr>
-<tr><td>14</td><td>可靠性</td><td>I138</td><td>OE/TRX测试</td><td>By Lot</td><td>自动</td><td>≤10s</td><td>≤10s</td></tr>
-<tr><td>15</td><td>出货</td><td>I139</td><td>OE出货检查</td><td>By Lot</td><td>自动+手动</td><td>≤5s</td><td>≤5s</td></tr>
+<tr><th>序号</th><th>大阶段</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
+<tr><td>1</td><td>耦合后检测</td><td>I125</td><td>分板站位</td><td>By Lot</td><td>自动</td><td>≤15s</td><td>±50μm</td><td>无裂纹</td></tr>
+<tr><td>2</td><td>耦合后检测</td><td>I126</td><td>耦合目检</td><td>-</td><td>手动</td><td>≤3s</td><td>50×</td><td>外观OK</td></tr>
+<tr><td>3</td><td>耦合后检测</td><td>I127</td><td>自动耦合测试</td><td>By Lot</td><td>自动</td><td>≤8s/ch</td><td>±0.5μm</td><td>IL≤3dB</td></tr>
+<tr><td>4</td><td>耦合后检测</td><td>I128</td><td>耦合外观检测</td><td>-</td><td>手动</td><td>≤5s</td><td>50×</td><td>无气泡>50μm</td></tr>
+<tr><td>5</td><td>烘烤与组装</td><td>I129</td><td>耦合烘烤</td><td>By Lot</td><td>自动</td><td>30min/批</td><td>±2°C</td><td>硬度达标</td></tr>
+<tr><td>6</td><td>烘烤与组装</td><td>I130</td><td>TXFA组装</td><td>By Lot</td><td>手动</td><td>≤10s</td><td>±5μm</td><td>光路通光</td></tr>
+<tr><td>7</td><td>端面与光电测试</td><td>I131</td><td>端面清洁</td><td>-</td><td>手动</td><td>≤5s</td><td>无颗粒>1μm</td><td>IEC61300</td></tr>
+<tr><td>8</td><td>端面与光电测试</td><td>I132</td><td>MPD测试</td><td>By Lot</td><td>自动</td><td>≤5s</td><td>±0.1μA</td><td>Id&lt;10nA</td></tr>
+<tr><td>9</td><td>端面与光电测试</td><td>I133</td><td>OE测试</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>±0.1dB</td><td>全参数达标</td></tr>
+<tr><td>10</td><td>可靠性验证</td><td>I134</td><td>TCT快速温变</td><td>By Lot</td><td>自动</td><td>2h/批</td><td>±1°C</td><td>无失效</td></tr>
+<tr><td>11</td><td>可靠性验证</td><td>I135</td><td>模块BI</td><td>By Lot</td><td>手动</td><td>24h/批</td><td>±1°C</td><td>参数稳定</td></tr>
+<tr><td>12</td><td>可靠性验证</td><td>I136</td><td>热岛立柜</td><td>By Lot</td><td>自动</td><td>168h/批</td><td>±0.5°C</td><td>Telcordia</td></tr>
+<tr><td>13</td><td>最终检测</td><td>I137</td><td>端面检测清洁</td><td>By Lot</td><td>自动</td><td>≤8s</td><td>±0.5μm</td><td>IEC61300</td></tr>
+<tr><td>14</td><td>最终检测</td><td>I138</td><td>OE/TRX测试</td><td>By Lot</td><td>自动</td><td>≤10s</td><td>BER&lt;1E-12</td><td>全温全参数</td></tr>
+<tr><td>15</td><td>最终检测</td><td>I139</td><td>OE出货检查</td><td>By Lot</td><td>自动+手动</td><td>≤5s</td><td>零缺陷</td><td>合格证打印</td></tr>
 </table>
 
 <br>
