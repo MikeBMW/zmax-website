@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.6.0 · 2026-07-23 08:00</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.6.1 · 2026-07-23 08:10</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -237,6 +237,19 @@ function createWall(x,z,w,d,color){
 }
 
 // ═══════ Station machine — close to rail ═══════
+function createTextLabel(text,x,y,z){
+  const cv=document.createElement('canvas');cv.width=256;cv.height=48;
+  const cx=cv.getContext('2d');
+  cx.fillStyle='#ffffff';cx.font='bold 20px "PingFang SC","Microsoft YaHei",sans-serif';
+  cx.textAlign='center';cx.textBaseline='middle';
+  cx.fillText(text,128,24);
+  const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(3,.6),
+    new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+  plane.position.set(x,y,z);plane.renderOrder=1001;
+  return plane;
+}
+
 function createStation(x,z,color,label,specs){
   const g=new THREE.Group();
   // Heavy base
@@ -402,6 +415,7 @@ function buildFactory(){
       s.userData={...s.userData,...st,zoneId:z.id,zoneName:z.name};
       scene.add(s);stationObjects.push(s);
       scene.add(createCoordSprite(sx,sz,z.color).sprite);
+      scene.add(createTextLabel(st.label,sx,.85,sz));
     });
     // Zone corner coordinates (4 corners)
     const zx=z.pos.x,zz=z.pos.z,zw=z.size.w,zd=z.size.d;
