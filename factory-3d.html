@@ -67,7 +67,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.9.2 · 2026-07-23 11:00</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.9.3 · 2026-07-23 11:10</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -551,7 +551,7 @@ wrap.addEventListener("mousemove",e=>{
   const cc=document.getElementById("cursor-coord");
   raycaster.setFromCamera(mouse,camera);
   const hits=raycaster.intersectObject(floor);
-  if(hits.length){const p=hits[0].point;cc.textContent='('+(p.x+18).toFixed(1)+','+(-p.z+12).toFixed(1)+')';cc.style.display='block';cc.style.left=(e.clientX+14)+'px';cc.style.top=(e.clientY-24)+'px'}
+  if(hits.length){const p=hits[0].point;cc.textContent='('+((p.x+18)*10).toFixed(0)+','+((-p.z+12)*10).toFixed(0)+')';cc.style.display='block';cc.style.left=(e.clientX+14)+'px';cc.style.top=(e.clientY-24)+'px'}
   else{cc.style.display='none'}
 });
 wrap.addEventListener("click",e=>{
@@ -657,10 +657,10 @@ function animate(){
   
   // AGV movement — 4台各自区内巡逻
   const AGV_PATROLS=[
-    [{x:-6,z:-8},{x:2,z:-8}],                        // 青A1: COC下边 (120,200)↔(200,200)
+    [{x:-5,z:-8},{x:2,z:-8}],                        // 青A1: (130,200)↔(200,200)
     [{x:10,z:-6},{x:10,z:-2},{x:10,z:2.5}],           // 黄A2: OE右边界 (280,180)(280,140)(280,90)
     [{x:-6,z:6},{x:2,z:6},{x:0,z:6}],               // 粉A3: MOD上边界 (120,60)(200,60)(180,60)
-    [{x:-7,z:2.5},{x:-7,z:-4.5},{x:-5.5,z:-4.5},{x:-5.5,z:2.5}], // 橙A4: (110,95)(110,165)(125,165)(110,165)
+    [{x:-7,z:2.5},{x:-7,z:-2.5},{x:-5.5,z:-2.5},{x:-5.5,z:2.5}], // 橙A4 (110,95)(110,145)(125,145)(125,95): (110,95)(110,165)(125,165)(110,165)
   ];
   agvObjs.forEach((a,i)=>{
     const path=AGV_PATROLS[i];
