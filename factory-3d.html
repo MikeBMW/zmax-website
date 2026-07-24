@@ -576,7 +576,7 @@ function buildFactory(){
     agvObjs.push(r3agv);
     // M1 follower AGVs — 2台黄色小车跟在M1后面
     const m1a={obj:createAGV(2.5,4.7,0xffdd00,0xffffff),pos:{x:2.5,z:4.7},
-               name:'M1a',nameSprite:null,isFollower:true,followRobot:'M1',followOffset:{x:0,z:1.2}};
+               name:'M1a',nameSprite:null,isFollower:true,followRobot:'M1',followDist:1.2};
     scene.add(m1a.obj);
     const m1anCv=document.createElement('canvas');m1anCv.width=64;m1anCv.height=32;
     const m1anCx=m1anCv.getContext('2d');
@@ -591,7 +591,7 @@ function buildFactory(){
     scene.add(m1anPlane);
     agvObjs.push(m1a);
     const m1b={obj:createAGV(2.5,4.7,0xffdd00,0xffffff),pos:{x:2.5,z:4.7},
-               name:'M1b',nameSprite:null,isFollower:true,followRobot:'M1',followOffset:{x:0,z:1.8}};
+               name:'M1b',nameSprite:null,isFollower:true,followRobot:'M1',followDist:1.8};
     scene.add(m1b.obj);
     const m1bnCv=document.createElement('canvas');m1bnCv.width=64;m1bnCv.height=32;
     const m1bnCx=m1bnCv.getContext('2d');
@@ -815,14 +815,14 @@ function animate(){
       if(st.length===0)return;
       const curSt=st[r1.stepIdx%st.length];
       const rdx=curSt.position.x-r1.pos.x;
-      // AGV跟在机器人后面，偏移方向与运动方向相反
-      let ox=0,oz=1.2; // 默认后方偏移
-      if(a.followOffset){ox=a.followOffset.x;oz=a.followOffset.z}
-      else if(Math.abs(rdx)>.05){ox=rdx>0?-0.8:0.8;oz=0} // 横向移动时在侧面
+      // AGV串行跟在机器人正后方
+      const dist=a.followDist||1.2;
+      let ox=0,oz=dist;
+      if(Math.abs(rdx)>.05){ox=rdx>0?-dist:dist;oz=0} // 横向移动时后方=x方向偏移
       a.target={x:r1.pos.x+ox,z:r1.pos.z+oz};
       const adx=a.target.x-a.pos.x,adz=a.target.z-a.pos.z;
       a.pos.x+=adx*.04;a.pos.z+=adz*.04;
-      a.obj.position.set(a.pos.x,.03,a.pos.z);
+      a.obj.position.set(a.pos.x,.05,a.pos.z);
       if(a.nameSprite){a.nameSprite.sprite.position.set(a.pos.x,.6,a.pos.z)};
       if(Math.abs(adx)>.05)a.obj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
       else if(Math.abs(adz)>.05)a.obj.rotation.y=adz>0?0:Math.PI;
