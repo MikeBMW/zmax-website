@@ -500,12 +500,6 @@ function buildFactory(){
     new THREE.MeshBasicMaterial({map:lbc2Tx,transparent:true,depthTest:false,depthWrite:false}));
   lbc2Plane.rotation.x=-Math.PI/2;lbc2Plane.position.set(15.5,.025,-7);lbc2Plane.renderOrder=1001;
   scene.add(lbc2Plane);
-  for(let si=0;si<3;si++){
-    const shelf=new THREE.Mesh(new THREE.BoxGeometry(.4,1.5,1.8),
-      new THREE.MeshStandardMaterial({color:0x556677,metalness:.3,roughness:.5}));
-    shelf.position.set(14.7,.75,-9+si*2.2);
-    shelf.castShadow=true;scene.add(shelf);
-  }
 
   // Stations — grid layout per zone
   ZONES.forEach(z=>{
