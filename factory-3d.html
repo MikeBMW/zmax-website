@@ -576,7 +576,7 @@ function buildFactory(){
     agvObjs.push(r3agv);
     // M1 follower AGVs — 2台黄色小车跟在M1后面
     const m1a={obj:createAGV(2.5,4.7,0xffdd00,0xffffff),pos:{x:2.5,z:4.7},
-               name:'M1a',nameSprite:null,isFollower:true,followRobot:'M1',followOffset:{x:-0.6,z:1.2}};
+               name:'M1a',nameSprite:null,isFollower:true,followRobot:'M1',followOffset:{x:0,z:1.2}};
     scene.add(m1a.obj);
     const m1anCv=document.createElement('canvas');m1anCv.width=64;m1anCv.height=32;
     const m1anCx=m1anCv.getContext('2d');
@@ -591,7 +591,7 @@ function buildFactory(){
     scene.add(m1anPlane);
     agvObjs.push(m1a);
     const m1b={obj:createAGV(2.5,4.7,0xffdd00,0xffffff),pos:{x:2.5,z:4.7},
-               name:'M1b',nameSprite:null,isFollower:true,followRobot:'M1',followOffset:{x:0.6,z:1.2}};
+               name:'M1b',nameSprite:null,isFollower:true,followRobot:'M1',followOffset:{x:0,z:1.8}};
     scene.add(m1b.obj);
     const m1bnCv=document.createElement('canvas');m1bnCv.width=64;m1bnCv.height=32;
     const m1bnCx=m1bnCv.getContext('2d');
