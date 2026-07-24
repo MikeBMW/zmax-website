@@ -272,6 +272,21 @@ function createStation(x,z,color,label,specs){
   g.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.15,.02),new THREE.MeshBasicMaterial({color:0x002233}))).position.set(0,.58,.26);
   // Status light
   g.add(new THREE.Mesh(new THREE.SphereGeometry(.04),new THREE.MeshBasicMaterial({color}))).position.set(.28,.78,.2);
+  // ═══ Loading ears (上下料耳朵) — 设备两侧伸出的上下料平台 ═══
+  // Left ear (上料侧) — 原料进入
+  const earMat=new THREE.MeshStandardMaterial({color:0x556677,metalness:.5,roughness:.3});
+  const earGlow=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.3});
+  const leftEar=new THREE.Mesh(new THREE.BoxGeometry(.35,.06,.25),earMat);
+  leftEar.position.set(-.55,.28,.1);leftEar.castShadow=true;g.add(leftEar);
+  // Left ear indicator
+  const leftDot=new THREE.Mesh(new THREE.SphereGeometry(.025),earGlow);
+  leftDot.position.set(-.7,.32,.1);g.add(leftDot);
+  // Right ear (下料侧) — 成品输出
+  const rightEar=new THREE.Mesh(new THREE.BoxGeometry(.35,.06,.25),earMat);
+  rightEar.position.set(.55,.28,.1);rightEar.castShadow=true;g.add(rightEar);
+  // Right ear indicator
+  const rightDot=new THREE.Mesh(new THREE.SphereGeometry(.025),earGlow);
+  rightDot.position.set(.7,.32,.1);g.add(rightDot);
   // Connector to rail
   const conn=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.5,6),new THREE.MeshStandardMaterial({color:0x3a4050}));
   conn.rotation.x=Math.PI/2;conn.position.set(0,.06,.9);g.add(conn);
@@ -346,56 +361,6 @@ function createAGV(x,z,bodyColor,stripeColor){
   }
   g.position.set(x,.03,z);
   g.userData={isAGV:true};
-  return g;
-}
-
-// ═══════ Material Cage ═══════
-function createCage(x,z,label,side){
-  // side: 'left'=上料侧, 'right'=下料侧
-  const g=new THREE.Group();
-  const frameMat=new THREE.MeshStandardMaterial({color:0x667788,metalness:.7,roughness:.3});
-  const barMat=new THREE.MeshStandardMaterial({color:0x8899aa,metalness:.5,roughness:.4});
-  const trayMat=new THREE.MeshStandardMaterial({color:0x445566,metalness:.3,roughness:.6});
-  // Outer frame — 4 vertical posts + top/bottom bars
-  const postGeo=new THREE.BoxGeometry(.06,.9,.06);
-  [[-.5,0,-.35],[.5,0,-.35],[-.5,0,.35],[.5,0,.35]].forEach(function(p){
-    const post=new THREE.Mesh(postGeo,frameMat);
-    post.position.set(p[0],.45,p[2]);post.castShadow=true;g.add(post);
-  });
-  // Top & bottom horizontal bars (left/right/front/back edges)
-  [[-.5,.85,-.35,.5],[.5,.85,-.35,.5],[-.5,.85,-.35,.35],[.5,.85,-.35,.35],
-   [-.5,.05,-.35,.5],[.5,.05,-.35,.5],[-.5,.05,-.35,.35],[.5,.05,-.35,.35]
-  ].forEach(function(b){
-    const bar=new THREE.Mesh(new THREE.BoxGeometry(b[3]-b[0],.04,.04),frameMat);
-    bar.position.set((b[0]+b[3])/2,b[1],b[2]);bar.castShadow=true;g.add(bar);
-  });
-  // Shelf trays — 3 layers of horizontal料条
-  for(var l=0;l<3;l++){
-    var sy=.15+l*.22;
-    var shelf=new THREE.Mesh(new THREE.BoxGeometry(.9,.02,.6),trayMat);
-    shelf.position.set(0,sy,0);shelf.castShadow=true;shelf.receiveShadow=true;g.add(shelf);
-    // Tray slots on shelf
-    for(var s=-1;s<=1;s+=2){
-      var slot=new THREE.Mesh(new THREE.BoxGeometry(.08,.015,.5),barMat);
-      slot.position.set(s*.25,sy+.01,0);g.add(slot);
-    }
-  }
-  // Front open — no front bars (robot access side)
-  // Side label
-  const cv=document.createElement('canvas');cv.width=128;cv.height=64;
-  const cx=cv.getContext('2d');
-  cx.fillStyle='#ffffff';cx.font='bold 16px "PingFang SC","Microsoft YaHei",sans-serif';
-  cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText(label||'料笼',64,20);
-  cx.fillStyle='#8899aa';cx.font='12px monospace';
-  cx.fillText(side==='left'?'上料':'下料',64,44);
-  const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
-  const lbl=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
-    new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
-  lbl.position.set(0,.95,0);lbl.renderOrder=1001;
-  g.add(lbl);
-  g.position.set(x,.02,z);
-  g.userData={isCage:true,side:side,label:label};
   return g;
 }
 
@@ -527,15 +492,6 @@ function buildFactory(){
     corners.forEach(cn=>{scene.add(createCoordSprite(cn.x,cn.z,z.color).sprite)});
   });
 
-  // ═══ OE区料笼 — 主要生产设备旁的上下料点 ═══
-  // 上料笼 (左侧) — 耦合测试/烘烤前
-  scene.add(createCage(1.2,-11,'I127耦合上料','left'));
-  scene.add(createCage(1.2,-8.5,'I130组装上料','left'));
-  scene.add(createCage(1.2,-6.3,'I133测试上料','left'));
-  // 下料笼 (右侧) — 耦合测试/烘烤后
-  scene.add(createCage(15,-11,'I127耦合下料','right'));
-  scene.add(createCage(15,-8.5,'I129烘烤下料','right'));
-  scene.add(createCage(15,-6.3,'I133测试下料','right'));
 
   // Robots — 4 robots, one per zone, patrol within zone only
   if(robotObjs.length===0){
