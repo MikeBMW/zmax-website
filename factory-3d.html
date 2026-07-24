@@ -526,6 +526,22 @@ function buildFactory(){
       scene.add(nPlane);
       agvObjs.push(a);
     });
+    // R1 follower AGV — 跟在R1机器人后面的跟随小车
+    const r1agv={obj:createAGV(2.5,-9.3,0x00d4aa,0xffffff),pos:{x:2.5,z:-9.3},
+                 name:'R1',nameSprite:null,isFollower:true,followRobot:'R1'};
+    scene.add(r1agv.obj);
+    const r1nCv=document.createElement('canvas');r1nCv.width=64;r1nCv.height=32;
+    const r1nCx=r1nCv.getContext('2d');
+    r1nCx.fillStyle='#00d4aa';r1nCx.font='bold 14px monospace';
+    r1nCx.textAlign='center';r1nCx.textBaseline='middle';
+    r1nCx.fillText('R1',32,16);
+    const r1nTx=new THREE.CanvasTexture(r1nCv);r1nTx.minFilter=THREE.LinearFilter;
+    const r1nPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
+      new THREE.MeshBasicMaterial({map:r1nTx,transparent:true,depthTest:false,depthWrite:false}));
+    r1nPlane.position.set(2.5,.6,-9.3);r1nPlane.renderOrder=1000;
+    r1agv.nameSprite={sprite:r1nPlane,canvas:r1nCv,ctx:r1nCx,texture:r1nTx};
+    scene.add(r1nPlane);
+    agvObjs.push(r1agv);
   }
   agvPos={x:0,z:-6};agvTarget={x:0,z:-6};
 
@@ -717,23 +733,46 @@ function animate(){
     if(r.nameSprite){r.nameSprite.sprite.position.set(r.pos.x,1.6,r.pos.z)};
   });
   
-  // AGV movement — 4台各自区内巡逻
+  // AGV movement — 4台各自区内巡逻 + R1跟随AGV
   const AGV_PATROLS=[
     [{x:-3,z:-4},{x:-3,z:-9},{x:1.5,z:-10}],         // 青A1: (150,160)→(150,210)→(195,220)
     [{x:15.5,z:-5},{x:15.5,z:-2},{x:14,z:-2},{x:14,z:3}], // 黄A2: (335,170)(335,140)(320,140)(320,90)
     [{x:-6,z:6},{x:2,z:6},{x:0,z:6}],               // 粉A3: MOD上边界 (120,60)(200,60)(180,60)
-    [{x:14,z:-4},{x:2,z:-2.5},{x:4.5,z:-2.5},{x:-5.5,z:2.5}], // 橙A4 (320,160)(200,145)(225,145)(125,95) (110,95)(110,145)(125,145)(125,95): (110,95)(110,165)(125,165)(110,165)
+    [{x:14,z:-4},{x:2,z:-2.5},{x:4.5,z:-2.5},{x:-5.5,z:2.5}], // 橙A4
   ];
   agvObjs.forEach((a,i)=>{
-    const path=AGV_PATROLS[i];
-    const idx=Math.floor(time*0.25)%path.length;
-    a.target=path[idx];
-    const adx=a.target.x-a.pos.x,adz=a.target.z-a.pos.z;
-    a.pos.x+=adx*.03;a.pos.z+=adz*.03;
-    a.obj.position.set(a.pos.x,.03,a.pos.z);
-    if(a.nameSprite){a.nameSprite.sprite.position.set(a.pos.x,.6,a.pos.z)};
-    if(Math.abs(adx)>.05) a.obj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
-    else if(Math.abs(adz)>.05) a.obj.rotation.y=adz>0?0:Math.PI;
+    if(a.isFollower){
+      // R1跟随AGV — 跟在R1机器人后面
+      const r1=robotObjs.find(function(r){return r.name===a.followRobot});
+      if(!r1)return;
+      // 计算R1运动方向，AGV跟在后面偏离0.8单位
+      const st=stationObjects.filter(function(s){
+        return s.userData.zoneId===r1.zone&&Math.abs(s.position.z-r1.rowZ)<1.5;
+      }).sort(function(a,b){return a.position.x-b.position.x});
+      if(st.length===0)return;
+      const curSt=st[r1.stepIdx%st.length];
+      const rdx=curSt.position.x-r1.pos.x;
+      // AGV跟在R1后面，偏移方向与R1运动方向相反
+      let ox=0,oz=1.2; // 默认后方偏移
+      if(Math.abs(rdx)>.05){ox=rdx>0?-0.8:0.8;oz=0} // 横向移动时在侧面
+      a.target={x:r1.pos.x+ox,z:r1.pos.z+oz};
+      const adx=a.target.x-a.pos.x,adz=a.target.z-a.pos.z;
+      a.pos.x+=adx*.04;a.pos.z+=adz*.04;
+      a.obj.position.set(a.pos.x,.03,a.pos.z);
+      if(a.nameSprite){a.nameSprite.sprite.position.set(a.pos.x,.6,a.pos.z)};
+      if(Math.abs(adx)>.05)a.obj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
+      else if(Math.abs(adz)>.05)a.obj.rotation.y=adz>0?0:Math.PI;
+    }else{
+      const path=AGV_PATROLS[i];
+      const idx=Math.floor(time*0.25)%path.length;
+      a.target=path[idx];
+      const adx=a.target.x-a.pos.x,adz=a.target.z-a.pos.z;
+      a.pos.x+=adx*.03;a.pos.z+=adz*.03;
+      a.obj.position.set(a.pos.x,.03,a.pos.z);
+      if(a.nameSprite){a.nameSprite.sprite.position.set(a.pos.x,.6,a.pos.z)};
+      if(Math.abs(adx)>.05) a.obj.rotation.y=adx>0?Math.PI/2:-Math.PI/2;
+      else if(Math.abs(adz)>.05) a.obj.rotation.y=adz>0?0:Math.PI;
+    }
   });
   
   // Station lights
