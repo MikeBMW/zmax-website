@@ -52,7 +52,7 @@
 <tr><td>操作人数</td><td>共 85 人（含14台耦合台8人 + 8台FA耦合8人）</td></tr>
 <tr><td>物料流转</td><td>线边仓发料经人工小推车（单次约200个模块/车）配送至各工位，工位间使用物料周转盘（28×41cm，承载24个模块/盘）流转</td></tr>
 </table>
-<div class="note">OE区是光引擎制造的<b>核心工艺段</b>，从来料准备到烘烤固化，涵盖耦合、等离子清洗、FVI高倍目检、TX/RX FA双端耦合等关键工序。当前为全人工+半自动模式，机器人方案旨在实现<b>料笼搬运、料笼搬运、Z700 料盘/Tray盘整理和检查、Z700 AGV小车领航协作</b>等功能。</div>
+<div class="note">OE区是光引擎制造的<b>核心工艺段</b>，从来料准备到烘烤固化，涵盖耦合、等离子清洗、FVI高倍目检、TX/RX FA双端耦合等关键工序。当前为全人工+半自动模式，机器人方案旨在实现<b>料笼搬运、料笼搬运、Z100L 料盘/Tray盘整理和检查、Z100L AGV小车领航协作</b>等功能。</div>
 
 <h2>2. 整体布局</h2>
 <div class="phase">
@@ -145,7 +145,7 @@
 <li><b>Z100L</b> 搬运料笼至AGV，AGV从线边仓运送料笼（≤50kg）至产线入口，Z100L搬运至缓存仓L1</li>
 <li><b>Z700 AOI</b> 自动扫描料盘上每颗模块外观，缺陷标记并MES实时上传</li>
 <li><b>Z700 AOI</b> 端面自动检测，单次约200个模块+AI判定Pass/Fail</li>
-<li>Z700 RFID扫描，MES自动记录过站数据</li>
+<li>Z100L RFID扫描，MES自动记录过站数据</li>
 </ul></div>
 </div>
 
@@ -158,9 +158,9 @@
 <li>2人组装后目检 + 2人吸波材料贴装，重复性手工劳动</li>
 </ul></div>
 <div class="col robot"><h4>🤖 机器人方案</h4><ul>
-<li><b>Z700</b> 固定单臂自动上下清洗机，料盘和设备间循环操作</li>
-<li><b>Z700+Z700</b> 协作：Z700从缓存仓取料盘配送至工位，Z700精密插拔组装</li>
-<li><b>Z700</b> 激光打标+标签贴附一体化，SN自动校验</li>
+<li><b>Z100L</b> 固定单臂自动上下清洗机，料盘和设备间循环操作</li>
+<li><b>Z100L+Z100L</b> 协作：Z100L从缓存仓取料盘配送至工位，Z100L精密插拔组装</li>
+<li><b>Z100L</b> 激光打标+标签贴附一体化，SN自动校验</li>
 <li><b>Z700 AOI</b> 目检工序自动化，全检替代人工抽检</li>
 </ul></div>
 </div>
@@ -174,10 +174,10 @@
 <li>1人操作Plasma清洗机</li>
 </ul></div>
 <div class="col robot"><h4>🤖 机器人方案</h4><ul>
-<li><b>Z700</b> 将Tray盘批量送入TCT柜，高温耐受设计</li>
+<li><b>Z100L</b> 将Tray盘批量送入TCT柜，高温耐受设计</li>
 <li><b>Z700 AOI</b> 替代FVI人工目检——3D相机+AI，缺陷检出率>99.5%</li>
-<li><b>Z700</b> 分晶机自动上下料，MES自动分BIN记录</li>
-<li><b>Z700</b> Plasma清洗自动上下料</li>
+<li><b>Z100L</b> 分晶机自动上下料，MES自动分BIN记录</li>
+<li><b>Z100L</b> Plasma清洗自动上下料</li>
 </ul></div>
 </div>
 
@@ -191,10 +191,10 @@
 <li>4人FVI二次目检，单次约100个模块，2人Plasma清洗</li>
 </ul></div>
 <div class="col robot"><h4>🤖 机器人方案</h4><ul>
-<li><b>Z700</b> 从L2缓存仓配送料盘至14台耦合台群</li>
-<li><b>Z700×14</b> 每台耦合台配1台Z700，±0.05mm精密插拔</li>
+<li><b>Z100L</b> 从L2缓存仓配送料盘至14台耦合台群</li>
+<li><b>Z100L×14</b> 每台耦合台配1台Z100L，±0.05mm精密插拔</li>
 <li><b>Z700 AOI</b> 在线替代耦合后目检，实时反馈耦合质量</li>
-<li><b>Z700</b> 将耦合完成的Tray盘搬运至烘烤炉，批量上下料</li>
+<li><b>Z100L</b> 将耦合完成的Tray盘搬运至烘烤炉，批量上下料</li>
 <li><b>Z700 AOI</b> 替代FVI二次目检，烘烤后全检</li>
 </ul></div>
 </div>
@@ -208,10 +208,10 @@
 <li>大量重复性精细手工劳动，节拍瓶颈在耦合和补胶</li>
 </ul></div>
 <div class="col robot"><h4>🤖 机器人方案</h4><ul>
-<li><b>Z700</b> 端面清洁自动化——持模块至端检仪，自动清洁+验证</li>
-<li><b>Z700</b> 从L3缓存仓配送料盘至8台FA耦合台</li>
-<li><b>Z700×8</b> 每台FA耦合台配1台Z700，双端精密插拔</li>
-<li><b>Z700</b> Tray盘搬运：耦合、烘烤、Plasma、补胶、烘烤全流程传递</li>
+<li><b>Z100L</b> 端面清洁自动化——持模块至端检仪，自动清洁+验证</li>
+<li><b>Z100L</b> 从L3缓存仓配送料盘至8台FA耦合台</li>
+<li><b>Z100L×8</b> 每台FA耦合台配1台Z100L，双端精密插拔</li>
+<li><b>Z100L</b> Tray盘搬运：耦合、烘烤、Plasma、补胶、烘烤全流程传递</li>
 </ul></div>
 </div>
 
@@ -219,25 +219,25 @@
 <table>
 <tr><th>层级</th><th>容器</th><th>重量</th><th>机器人</th><th>场景</th></tr>
 <tr><td>L1·料笼</td><td>大型笼箱，内装6~20盘料盘</td><td>15~50kg</td><td style="color:#58a6ff">Z100L 专用</td><td>COC来料→缓存仓L1，空笼回收</td></tr>
-<tr><td>L2·料盘</td><td></td><td>0.5~2kg</td><td style="color:#f0a500">Z700 姿态调整<br>Z700 搬运</td><td>缓存仓L1~L3→各工位→成品归仓</td></tr>
-<tr><td>L3·Tray盘</td><td>耐高温工装托盘（铝合金/陶瓷）<br>用于烘烤/TCT/老化等热工艺</td><td>1~5kg</td><td style="color:#ff6b35">Z700 全流程</td><td>检查(AOI)→调整(位姿修正)→搬运(工位间传递)→热工艺上下柜</td></tr>
+<tr><td>L2·料盘</td><td></td><td>0.5~2kg</td><td style="color:#f0a500">Z100L 姿态调整<br>Z100L 搬运</td><td>缓存仓L1~L3→各工位→成品归仓</td></tr>
+<tr><td>L3·Tray盘</td><td>耐高温工装托盘（铝合金/陶瓷）<br>用于烘烤/TCT/老化等热工艺</td><td>1~5kg</td><td style="color:#ff6b35">Z100L 全流程</td><td>检查(AOI)→调整(位姿修正)→搬运(工位间传递)→热工艺上下柜</td></tr>
 </table>
 
-<div class="note"><b>核心规则：</b>Z100L 只拖动料笼（太重，15~50kg），不碰料盘/Tray盘/器件。Z700 固定单臂只做插拔（±0.05mm），不移动。Z700 操作Tray盘+料盘，可检查（AOI）、调整（位姿修正）、搬运（工位间传递），但不拖动料笼。</div>
+<div class="note"><b>核心规则：</b>Z100L 只拖动料笼（太重，15~50kg），不碰料盘/Tray盘/器件。Z100L 固定单臂只做插拔（±0.05mm），不移动。Z100L 操作Tray盘+料盘，可检查（AOI）、调整（位姿修正）、搬运（工位间传递），但不拖动料笼。</div>
 
 <h2>6. 自动化评估</h2>
 <table>
 <tr><th>工序段</th><th>当前人数</th><th>替换方案</th><th>可行性</th><th>节拍提升</th></tr>
 <tr><td>来料目检（I126-I127）</td><td>6人</td><td>AOI ×2</td><td style="color:#00d4aa">高</td><td>3s→15s/个</td></tr>
-<tr><td>Adapter组装（I129）</td><td>4人</td><td>×4 + Z700配送</td><td style="color:#ffaa00">中</td><td>10s→15s/个</td></tr>
+<tr><td>Adapter组装（I129）</td><td>4人</td><td>×4 + Z100L配送</td><td style="color:#ffaa00">中</td><td>10s→15s/个</td></tr>
 <tr><td>TCT上下料（I134）</td><td>1人</td><td>Tray盘批量</td><td style="color:#00d4aa">高</td><td>批量自动化</td></tr>
 <tr><td>FVI目检（I135+I141）</td><td>8人</td><td>AOI ×2</td><td style="color:#00d4aa">高</td><td>缺陷检出率↑0.5%</td></tr>
-<tr><td>耦合上下料（I138）</td><td>8人</td><td>×14 + Z700配送</td><td style="color:#00d4aa">高</td><td>24h无人值守</td></tr>
-<tr><td>FA耦合上下料（I145）</td><td>8人</td><td>×8 + Z700配送</td><td style="color:#00d4aa">高</td><td>24h无人值守</td></tr>
+<tr><td>耦合上下料（I138）</td><td>8人</td><td>×14 + Z100L配送</td><td style="color:#00d4aa">高</td><td>24h无人值守</td></tr>
+<tr><td>FA耦合上下料（I145）</td><td>8人</td><td>×8 + Z100L配送</td><td style="color:#00d4aa">高</td><td>24h无人值守</td></tr>
 <tr><td>烘烤上下料（I140+I147+I150）</td><td>6人</td><td>Tray盘批量</td><td style="color:#ffaa00">中</td><td>批量自动化</td></tr>
 <tr><td>FA补胶（I149）</td><td>4人</td><td>点胶</td><td style="color:#ff4444">低</td><td>需精密力控</td></tr>
 <tr><td>全料笼流转</td><td>2人</td><td>Z100L×2</td><td style="color:#00d4aa">高</td><td>全程无人</td></tr>
-<tr><td><b>合计</b></td><td><b>47人</b></td><td><b>Z700+Z700+Z100L</b></td><td>-</td><td><b>节省≥70%人力</b></td></tr>
+<tr><td><b>合计</b></td><td><b>47人</b></td><td><b>Z100L+Z100L+Z100L</b></td><td>-</td><td><b>节省≥70%人力</b></td></tr>
 </table>
 
 <h2>7. 附录：OE 全工序表</h2>
@@ -256,14 +256,14 @@
 <tr><td>11</td><td>I135</td><td>FVI高倍目检1</td><td>单次约100个模块</td><td>4</td><td>📥料盘</td><td>AOI</td></tr>
 <tr><td>12</td><td>I136</td><td>分晶</td><td>自动</td><td>2</td><td>📥料盘</td><td></td></tr>
 <tr><td>13</td><td>I137</td><td>Plasma清洗1</td><td>自动</td><td>1</td><td>📥料盘</td><td></td></tr>
-<tr><td>14</td><td>I138</td><td>TX LD Lens耦合</td><td>自动·14台</td><td>8</td><td>📥料盘</td><td>×14+Z700</td></tr>
+<tr><td>14</td><td>I138</td><td>TX LD Lens耦合</td><td>自动·14台</td><td>8</td><td>📥料盘</td><td>×14+Z100L</td></tr>
 <tr><td>15</td><td>I139</td><td>TX耦合后目检</td><td>人工·50×</td><td>3</td><td>📥料盘</td><td>AOI</td></tr>
 <tr><td>16</td><td>I140</td><td>烘烤①</td><td>自动·85°C</td><td>2</td><td>🔥Tray盘</td><td>上下料</td></tr>
 <tr><td>17</td><td>I141</td><td>FVI高倍目检2</td><td>单次约100个模块</td><td>4</td><td>📥料盘</td><td>AOI</td></tr>
 <tr><td>18</td><td>I142</td><td>Plasma清洗2</td><td>自动</td><td>2</td><td>📥料盘</td><td></td></tr>
 <tr><td>19</td><td>I143</td><td>TX FA清洁</td><td>手动</td><td>2</td><td>📥料盘</td><td></td></tr>
 <tr><td>20</td><td>I144</td><td>TRX FA清洗</td><td>自动</td><td>2</td><td>📥料盘</td><td></td></tr>
-<tr><td>21</td><td>I145</td><td>TX/RX FA耦合</td><td>自动·8台</td><td>8</td><td>📥料盘</td><td>×8+Z700</td></tr>
+<tr><td>21</td><td>I145</td><td>TX/RX FA耦合</td><td>自动·8台</td><td>8</td><td>📥料盘</td><td>×8+Z100L</td></tr>
 <tr><td>22</td><td>I146</td><td>TRX FA 目检</td><td>单次约100个模块</td><td>4</td><td>📥料盘</td><td>AOI</td></tr>
 <tr><td>23</td><td>I147</td><td>烘烤②</td><td>自动·85°C</td><td>2</td><td>🔥Tray盘</td><td>上下料</td></tr>
 <tr><td>24</td><td>I148</td><td>Plasma清洗3</td><td>自动</td><td>2</td><td>📥料盘</td><td></td></tr>
