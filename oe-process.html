@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Z-MAX OE光引擎区 场景描述文档</title>
+<title>OE光引擎区 场景描述文档</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
@@ -35,7 +35,7 @@
 </style>
 </head>
 <body>
-<h1>Z-MAX OE光引擎区 全场景描述文档</h1>
+<h1>OE光引擎区 全场景描述文档</h1>
 <div class="kpi">
   <span>26 工位</span><span>6 大阶段</span><span>I125~I150</span><span>产线: OSFP224 2×DR4 Gen2</span>
 </div>
@@ -52,7 +52,7 @@
 <tr><td>操作人数</td><td>共 85 人（含14台耦合台8人 + 8台FA耦合8人）</td></tr>
 <tr><td>物料流转</td><td>线边仓 → 人工小推车（200支/车）→ 各工位 → 物料周转盘（28×41，24支/盘）</td></tr>
 </table>
-<div class="note">OE区是光引擎制造的<b>核心工艺段</b>，从来料准备到烘烤固化，涵盖耦合、等离子清洗、FVI高倍目检、TX/RX FA双端耦合等关键工序。当前为全人工+半自动模式，Z-MAX机器人方案旨在实现<b>料笼→Z100L、料盘插拔→Z700F、Tray盘全流程→Z700</b>的无人化升级。</div>
+<div class="note">OE区是光引擎制造的<b>核心工艺段</b>，从来料准备到烘烤固化，涵盖耦合、等离子清洗、FVI高倍目检、TX/RX FA双端耦合等关键工序。当前为全人工+半自动模式，机器人方案旨在实现<b>Z100L 料笼搬运、Z700 料笼搬运、料盘/Tray盘整理和检查、AGV小车领航协作</b>等功能。</div>
 
 <h2>2. 整体布局</h2>
 <div class="phase">
@@ -131,7 +131,7 @@
 </div>
 
 <h2>4. 当前人工场景 vs 机器人方案</h2>
-<div class="note">以下对比基于储翰产线2025年实地调研数据。当前100%依赖人工+小推车+物料周转盘，Z-MAX三级机器人体系可实现<b>料笼搬运无人化、料盘插拔自动化、Tray盘热工艺全流程机器人操作</b>。</div>
+<div class="note">以下对比基于储翰产线2025年实地调研数据。当前100%依赖人工+小推车+物料周转盘，三级机器人体系可实现<b>料笼搬运无人化、料盘插拔自动化、Tray盘热工艺全流程机器人操作</b>。</div>
 
 <h3>4.1 来料段</h3>
 <div class="compare">
@@ -280,7 +280,7 @@ function exportWord(){
   var blob=new Blob([html],{type:'application/msword'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='Z-MAX_OE光引擎区_场景描述.doc';
+  a.download='OE光引擎区_场景描述.doc';
   a.click();
 }
 </script>
