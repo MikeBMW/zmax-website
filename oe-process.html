@@ -31,7 +31,7 @@
   .compare .col li:last-child{border:none}
   .flow-simple{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-family:monospace;font-size:10px;line-height:2.2;color:#c8d1d9;white-space:pre}
   a{color:#ff6b35}
-  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}a{color:#000}}
+  @media print{body{background:#fff!important;color:#000!important}body *{color:#000!important;background:#fff!important;border-color:#ccc!important;text-shadow:none!important;box-shadow:none!important}.btn{display:none}a{color:#000!important;text-decoration:underline}h1,h2,h3{color:#000!important;border-color:#000!important}.phase,.note,.robot-card,.layout-box,.flow-diagram,.flow-simple{background:#fff!important;border:1px solid #ccc!important}.note{border-left:3px solid #000!important}table{font-size:8px}th{background:#eee!important;color:#000!important;border-color:#000!important}td{border-color:#000!important}tr:nth-child(even){background:#f5f5f5!important}.compare .col{background:#fff!important;border:1px solid #ccc!important}.kpi span{background:#eee!important;color:#000!important;border-color:#000!important}}
 </style>
 </head>
 <body>
@@ -277,6 +277,12 @@
 <script>
 function exportWord(){
   var html=document.documentElement.outerHTML;
+  // Remove all color/background styles for clean Word export
+  html=html.replace(/color:#[0-9a-fA-F]+/g,'color:#000');
+  html=html.replace(/background:#[0-9a-fA-F]+/g,'background:#fff');
+  html=html.replace(/background:rgba\([^)]+\)/g,'background:#fff');
+  html=html.replace(/border:[^;]*#[0-9a-fA-F]+[^;]*/g,'border:1px solid #ccc');
+  html=html.replace(/emissive[^;"]*/g,'');
   var blob=new Blob([html],{type:'application/msword'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
