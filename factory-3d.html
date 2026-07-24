@@ -117,8 +117,8 @@ const ZONES=[
     {id:"I116",label:"外观检查清洁",desc:"精度 目检50× | 节拍 ≤5s | 质量门 无颗粒>10μm | 良率 ≥99.9% | 📥料盘→Z700F",specs:[["显微镜","目检"],["清洁","无尘"]]},
     {id:"I117",label:"打标外观检",desc:"精度 目检50× | 节拍 ≤3s | 质量门 码可读+外观 | 良率 ≥99.9% | 📥料盘→Z700 AOI检查",specs:[["外观","检查"],["显微镜","目检"]]},
     {id:"I118",label:"SN识别",desc:"精度 识别≥99.9% | 节拍 ≤1s | 质量门 SN唯一性 | 良率 ≥99.9% | 📥料盘→Z700F",specs:[["自动","识别"],["×2","并行"]]},
-    {id:"I119",label:"下载FW",desc:"精度 逐字节比对 | 节拍 ≤8s | 质量门 CRC32+回读 | 良率 ≥99.8% | 📥料盘→Z700F",specs:[["FW","烧录"],["治具","手动"]]},
-    {id:"I120",label:"COC上料",desc:"精度 ±0.1mm定位 | 节拍 ≤5s | 质量门 到位双确认 | 良率 ≥99.9% | 📦料笼→Z100L搬运",specs:[["上料","自动"],["MES","追溯"]]},
+    {id:"I119",label:"COC上料",desc:"精度 ±0.1mm定位 | 节拍 ≤5s | 质量门 到位双确认 | 良率 ≥99.9% | 📦料笼→Z100L搬运",specs:[["上料","自动"],["MES","追溯"]]},
+    {id:"I120",label:"AOI",desc:"精度 ±3μm | 节拍 ≤2s | 质量门 缺陷检出≥99% | 良率 ≥99.9% | 📥料盘→Z700 AOI检查",specs:[["AOI","自动"],["光学","检测"]]},
     {id:"I121",label:"COC BI老化",desc:"精度 ±1°C温控 | 节拍 48h/批 | 质量门 零失效 | 良率 ≥99.5% | 🔥Tray盘→Z700",specs:[["85°C","老化"],["BI","筛选"]]},
     {id:"I122",label:"BI上下料",desc:"精度 目检50× | 节拍 ≤5s | 质量门 参数无漂移 | 良率 ≥99.9% | 🔥Tray盘→Z700",specs:[["×2","并行"],["显微镜","目检"]]},
     {id:"I123",label:"COC出货目检",desc:"精度 目检50× | 节拍 ≤5s | 质量门 零缺陷 | 良率 100% | 📥料盘→Z700 AOI检查",specs:[["显微镜","目检"],["出货","终检"]]},
@@ -171,7 +171,7 @@ const ZONES=[
     {id:"I166",label:"外观全检(出货)",desc:"出货前全检 · 4人 · 24支/盘 | 📥料盘→Z700 AOI检查",specs:[["全检","人工"]]},
     {id:"I167",label:"出货确认绑批",desc:"SHIPCHK出货确认 · 2人 · 24支/盘 | 📦料笼→Z100L搬运",specs:[["出货","自动"]]},
     {id:"I168",label:"来料检验",desc:"来料检验 · 2人 · 24支/盘 | 📥料盘→Z700 AOI检查",specs:[["IQC","人工"]]},
-    {id:"I169",label:"组装",desc:"模块组装 · 4人 · 24支/盘 | 📥料盘→Z700F·Z700搬运",specs:[["组装","手动"]]},
+    {id:"I169",label:"下载FW",desc:"精度 逐字节比对 | 节拍 ≤8s | 质量门 CRC32+回读 | 良率 ≥99.8% | 📥料盘→Z700F",specs:[["FW","烧录"],["治具","手动"]]},
     {id:"I170",label:"Quick check",desc:"快速检测 · 6人 · 24支/盘 | 📥料盘→Z700F插拔",specs:[["QC","自动"]]},
     {id:"I171",label:"Burn-In",desc:"老化测试 · 2人 · 24支/盘 | 🔥Tray盘→Z700",specs:[["BI","自动"]]},
     {id:"I172",label:"TCT高低温循环",desc:"TCT高低温循环 · 2人 · 24支/盘 | 🔥Tray盘→Z700",specs:[["TCT","自动"]]},
@@ -530,7 +530,7 @@ function buildFactory(){
   }
 
   // ═══ Z700F 固定单臂机器人 — I119下载FW工位旁 ═══
-  const z700f=new THREE.Group();z700f.name='Z700F@I119';
+  const z700f=new THREE.Group();z700f.name='Z700F@I169';
   const fMat=new THREE.MeshStandardMaterial({color:0x99aabb,metalness:.3,roughness:.3});
   const fAc=new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.4});
   // 固定底座
@@ -740,7 +740,7 @@ function buildZonesList(){
 }
 
 function openStation(sid){
-  const links={'I119':'/robot.html','I120':'/station-i120.html','I121':'/station-i142.html','I125':'/station-i201.html','I142':'/station-i142.html','I201':'/station-i201.html'};
+  const links={'I169':'/robot.html','I120':'/station-i120.html','I121':'/station-i142.html','I125':'/station-i201.html','I142':'/station-i142.html','I201':'/station-i201.html'};
   const st=ZONES.flatMap(function(z){return z.stations}).find(function(s){return s.id===sid});
   const name=st?st.label:'';
   const did=sid.replace('I','I-');
