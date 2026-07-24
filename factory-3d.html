@@ -891,10 +891,13 @@ function animate(){
     ).sort((a,b)=>a.position.x-b.position.x);
     if(rowStations.length===0)return;
     const st=rowStations[r.stepIdx%rowStations.length];
-    const tx=st.position.x,tz=r.rowZ+1.2;
+    let tx=st.position.x,tz=r.rowZ+1.2;
+    // Z4 AOI at I120: move closer to equipment
+    if(r.name==='Z4 AOI'&&st.userData.id==='I120'){tz=r.rowZ+.3}
     const rdx=tx-r.pos.x,rdz=tz-r.pos.z;
     if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08){
-      if(r.dwell<150){r.dwell++;r.workAnim=Math.sin(r.dwell*.15)}
+      const dwellTime=r.name==='Z4 AOI'&&st.userData.id==='I120'?180:150;
+      if(r.dwell<dwellTime){r.dwell++;r.workAnim=Math.sin(r.dwell*.15)}
       else{r.dwell=0;r.stepIdx=(r.stepIdx+1)%rowStations.length}
     }
     if(r.dwell===0){r.pos.x+=rdx*.025;r.pos.z+=rdz*.025}
