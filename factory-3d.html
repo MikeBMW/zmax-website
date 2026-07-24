@@ -746,7 +746,7 @@ function buildZonesList(){
 }
 
 function openStation(sid){
-  const links={'I169':'/robot.html','I120':'/station-i120.html','I121':'/station-i142.html','I125':'/station-i201.html','I142':'/station-i142.html','I201':'/station-i201.html'};
+  const links={'I119':'/robot.html','I120':'/station-i120.html','I121':'/station-i142.html','I125':'/station-i201.html','I142':'/station-i142.html','I162':'/robot2.html','I169':'/robot.html','I201':'/station-i201.html'};
   const st=ZONES.flatMap(function(z){return z.stations}).find(function(s){return s.id===sid});
   const name=st?st.label:'';
   const did=sid.replace('I','I-');
