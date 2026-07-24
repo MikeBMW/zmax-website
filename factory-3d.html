@@ -623,6 +623,24 @@ function buildFactory(){
       scene.add(pl);
       agvObjs.push(w2agv);
     });
+    // W1 follower AGVs — 3台绿色小车串行跟在W1后面
+    [{d:1.2},{d:1.8},{d:2.4}].forEach(function(f,i){
+      const w1agv={obj:createAGV(-16.5,4.7,0x3fb950,0xffffff),pos:{x:-16.5,z:4.7},
+                   name:'W1'+(i+1),nameSprite:null,isFollower:true,followRobot:'W1',followDist:f.d};
+      scene.add(w1agv.obj);
+      const cv=document.createElement('canvas');cv.width=64;cv.height=32;
+      const cx=cv.getContext('2d');
+      cx.fillStyle='#3fb950';cx.font='bold 14px monospace';
+      cx.textAlign='center';cx.textBaseline='middle';
+      cx.fillText('W1',32,16);
+      const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+      const pl=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
+        new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+      pl.position.set(-16.5,.6,4.7);pl.renderOrder=1000;
+      w1agv.nameSprite={sprite:pl,canvas:cv,ctx:cx,texture:tx};
+      scene.add(pl);
+      agvObjs.push(w1agv);
+    });
   }
   agvPos={x:0,z:-6};agvTarget={x:0,z:-6};
 
