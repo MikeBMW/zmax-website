@@ -605,6 +605,24 @@ function buildFactory(){
     m1b.nameSprite={sprite:m1bnPlane,canvas:m1bnCv,ctx:m1bnCx,texture:m1bnTx};
     scene.add(m1bnPlane);
     agvObjs.push(m1b);
+    // W2 follower AGVs — 3台绿色小车串行跟在W2后面
+    [{d:1.2},{d:1.8},{d:2.4}].forEach(function(f,i){
+      const w2agv={obj:createAGV(-16.5,6.9,0x3fb950,0xffffff),pos:{x:-16.5,z:6.9},
+                   name:'W2'+(i+1),nameSprite:null,isFollower:true,followRobot:'W2',followDist:f.d};
+      scene.add(w2agv.obj);
+      const cv=document.createElement('canvas');cv.width=64;cv.height=32;
+      const cx=cv.getContext('2d');
+      cx.fillStyle='#3fb950';cx.font='bold 14px monospace';
+      cx.textAlign='center';cx.textBaseline='middle';
+      cx.fillText('W2',32,16);
+      const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+      const pl=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
+        new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
+      pl.position.set(-16.5,.6,6.9);pl.renderOrder=1000;
+      w2agv.nameSprite={sprite:pl,canvas:cv,ctx:cx,texture:tx};
+      scene.add(pl);
+      agvObjs.push(w2agv);
+    });
   }
   agvPos={x:0,z:-6};agvTarget={x:0,z:-6};
 
