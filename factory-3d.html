@@ -199,9 +199,6 @@ let hoveredStation=null;
 
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
-  {name:"Z1",zone:"coc",x:-16.5,z:-9.3,rowZ:-10.5},
-  {name:"Z2",zone:"coc",x:-16.5,z:-7.1,rowZ:-8.3},
-  {name:"Z3",zone:"coc",x:-16.5,z:-4.9,rowZ:-6.1},
   {name:"Z4",zone:"coc",x:-16.5,z:-2.7,rowZ:-3.9},
   {name:"R1",zone:"oe",x:2.5,z:-11.5,rowZ:-11.5},
   {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3},
@@ -531,6 +528,34 @@ function buildFactory(){
       robotObjs.push(r);
     });
   }
+
+  // ═══ Z700F 固定单臂机器人 — I119下载FW工位旁 ═══
+  const z700f=new THREE.Group();z700f.name='Z700F@I119';
+  const fMat=new THREE.MeshStandardMaterial({color:0x99aabb,metalness:.3,roughness:.3});
+  const fAc=new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.4});
+  // 固定底座
+  const fBase=new THREE.Mesh(new THREE.CylinderGeometry(.25,.3,.2,16),fMat);
+  fBase.position.y=.1;fBase.castShadow=true;z700f.add(fBase);
+  // 立柱
+  const fPillar=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.9,12),fMat);
+  fPillar.position.y=.65;fPillar.castShadow=true;z700f.add(fPillar);
+  // 单臂（水平伸出）
+  const fArm=new THREE.Mesh(new THREE.BoxGeometry(.5,.06,.06),fAc);
+  fArm.position.set(.25,.9,0);fArm.castShadow=true;z700f.add(fArm);
+  // 夹爪
+  const fGrip=new THREE.Mesh(new THREE.BoxGeometry(.08,.04,.15),fAc);
+  fGrip.position.set(.52,.88,0);z700f.add(fGrip);
+  // 标签
+  const fCv=document.createElement('canvas');fCv.width=128;fCv.height=32;
+  const fCx=fCv.getContext('2d');
+  fCx.fillStyle='#f0a500';fCx.font='bold 16px monospace';fCx.textAlign='center';fCx.textBaseline='middle';
+  fCx.fillText('Z700F',64,16);
+  const fTx=new THREE.CanvasTexture(fCv);fTx.minFilter=THREE.LinearFilter;
+  const fLbl=new THREE.Mesh(new THREE.PlaneGeometry(1,.25),
+    new THREE.MeshBasicMaterial({map:fTx,transparent:true,depthTest:false,depthWrite:false}));
+  fLbl.position.set(0,1.25,0);fLbl.renderOrder=1001;z700f.add(fLbl);
+  z700f.position.set(-17,-.02,-4.5);
+  scene.add(z700f);
 
   // AGVs — 4台高对比色往返4区（当前1台展开）
   const AGV_DEFS=[
