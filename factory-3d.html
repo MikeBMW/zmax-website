@@ -567,6 +567,29 @@ function buildFactory(){
   fcLbl.rotation.x=-Math.PI/2;fcLbl.position.set(-17.5,.02,-3.8);fcLbl.renderOrder=1001;
   scene.add(fcLbl);
 
+  // ═══ Z700F @I169 — 下载FW工位旁 ═══
+  const z700f2=new THREE.Group();z700f2.name='Z700F@I169';
+  const f2Mat=new THREE.MeshStandardMaterial({color:0x99aabb,metalness:.3,roughness:.3});
+  const f2Ac=new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.4});
+  const f2Base=new THREE.Mesh(new THREE.CylinderGeometry(.25,.3,.2,16),f2Mat);
+  f2Base.position.y=.1;f2Base.castShadow=true;z700f2.add(f2Base);
+  const f2Pillar=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.9,12),f2Mat);
+  f2Pillar.position.y=.65;f2Pillar.castShadow=true;z700f2.add(f2Pillar);
+  const f2Arm=new THREE.Mesh(new THREE.BoxGeometry(.5,.06,.06),f2Ac);
+  f2Arm.position.set(.25,.9,0);f2Arm.castShadow=true;z700f2.add(f2Arm);
+  const f2Grip=new THREE.Mesh(new THREE.BoxGeometry(.08,.04,.15),f2Ac);
+  f2Grip.position.set(.52,.88,0);z700f2.add(f2Grip);
+  const f2Cv=document.createElement('canvas');f2Cv.width=128;f2Cv.height=32;
+  const f2Cx=f2Cv.getContext('2d');
+  f2Cx.fillStyle='#f0a500';f2Cx.font='bold 16px monospace';f2Cx.textAlign='center';f2Cx.textBaseline='middle';
+  f2Cx.fillText('Z700F',64,16);
+  const f2Tx=new THREE.CanvasTexture(f2Cv);f2Tx.minFilter=THREE.LinearFilter;
+  const f2Lbl=new THREE.Mesh(new THREE.PlaneGeometry(1,.25),
+    new THREE.MeshBasicMaterial({map:f2Tx,transparent:true,depthTest:false,depthWrite:false}));
+  f2Lbl.position.set(0,1.25,0);f2Lbl.renderOrder=1001;z700f2.add(f2Lbl);
+  z700f2.position.set(11,-.02,7.1);
+  scene.add(z700f2);
+
   // AGVs — 4台高对比色往返4区（当前1台展开）
   const AGV_DEFS=[
     {x:-3,z:-6,c:0x00ffcc,s:0xffffff,n:'A1',zone:'coc'},  // 亮青

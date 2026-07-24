@@ -9,21 +9,19 @@
   html,body{width:100%;height:100%;background:#151a24;overflow:hidden;font-family:Arial,sans-serif}
   canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
   #info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#888;font-size:11px;opacity:.5;z-index:10;pointer-events:none;white-space:nowrap}
-#coord{position:absolute;top:52px;right:16px;z-index:10;color:#00d4aa;font-size:11px;font-family:monospace;background:rgba(10,10,26,.85);padding:6px 14px;border-radius:8px;pointer-events:none;text-align:right;line-height:1.65}
-#obj-list{position:absolute;top:130px;right:8px;z-index:10;color:#8899aa;font-size:10px;font-family:monospace;background:rgba(10,10,26,.8);padding:6px 10px;border-radius:6px;pointer-events:none;max-height:calc(100vh - 150px);overflow-y:auto;line-height:1.5;min-width:160px}
-#obj-list b{color:#00d4aa;font-size:10px}
-#obj-list .mod{color:#aaccff}
-#obj-list .wp{color:#ffaa44}
   #status{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;font-weight:bold;z-index:10;pointer-events:none;white-space:nowrap;background:rgba(10,10,26,.75);padding:5px 16px;border-radius:16px}
 #back{position:absolute;top:12px;left:15px;z-index:10;color:#fff;font-size:13px;font-weight:700;cursor:pointer;background:rgba(0,212,170,.15);padding:8px 16px;border-radius:20px;border:1px solid #00d4aa66;text-decoration:none}
 #title-bar{position:absolute;top:0;left:0;right:0;color:#fff;font-size:20px;font-weight:800;z-index:11;pointer-events:none;text-align:center;background:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,0));padding:16px 18px 30px;letter-spacing:2px}
+#steps{position:absolute;top:50px;right:12px;z-index:10;background:rgba(10,10,26,.85);border:1px solid #00d4aa33;border-radius:10px;padding:12px 14px;max-width:220px;font-size:11px;color:#c8d1d9;pointer-events:none}
+#steps .title{color:#00d4aa;font-size:13px;font-weight:700;margin-bottom:8px;border-bottom:1px solid #1a1f2b;padding-bottom:6px}
+#steps .step{margin:4px 0;padding:3px 0;border-bottom:1px solid #ffffff08}
+#steps .step .n{color:#00d4aa;font-weight:700;margin-right:6px}
+#steps .step .d{color:#8b949e;font-size:10px}
 </style>
 </head>
 <body>
 <a id="back" href="/factory-3d.html">← 返回产线总览</a>
-<div id="title-bar">I-142 老化墙</div>
-<div id="coord">X:0.00 Y:-0.65 Z:0.00<br>L:0.00 0.10 -0.20<br>R:0.00 -0.10 0.20</div>
-<div id="obj-list"></div>
+<div id="title-bar">I-120 COC上料</div>
 <div id="status">● 老化测试中</div>
 <div id="info">Z轴往复 v2 · 自主导航Z700 · 拖拽旋转 | 滚轮缩放</div>
 
@@ -31,10 +29,10 @@
 <script>
 (function(){
 if(typeof THREE==="undefined")return;
-var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status"),tEl=document.getElementById("title-bar"),cEl=document.getElementById("coord"),oEl=document.getElementById("obj-list");
+var W=window.innerWidth,H=window.innerHeight,sEl=document.getElementById("status"),tEl=document.getElementById("title-bar");
 var params=new URLSearchParams(window.location.search);
-var stId=params.get('id')||'I-142';
-var stName=params.get('name')||'老化墙';
+var stId=params.get('id')||'I-120';
+var stName=params.get('name')||'COC上料';
 tEl.textContent=stId+' '+stName;
 document.title='Z-MAX '+stId+' '+stName;
 var scene=new THREE.Scene();scene.background=new THREE.Color(0x0a0a14);
@@ -63,12 +61,6 @@ function mk(geo,mat){var m=new THREE.Mesh(geo,mat);m.castShadow=true;m.receiveSh
 function set(m,x,y,z){m.position.set(x,y,z);return m;}
 function mkNS(geo,mat){return new THREE.Mesh(geo,mat);}
 
-// Add coordinate label to module group
-function addModLabel(g){
-  var s=mkl("("+g.position.x.toFixed(2)+","+g.position.z.toFixed(2)+")","#aaccff",new THREE.Vector3(0,.04,0));
-  s.scale.set(.45,.13,1);g.add(s);
-}
-
 var Q={};
 Q.floor=new THREE.MeshStandardMaterial({color:0x3a4050,roughness:.15,metalness:.8});
 Q.white=new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.2});
@@ -93,35 +85,6 @@ Q.tableLeg=new THREE.MeshStandardMaterial({color:0x4a5058,roughness:.3,metalness
 var fm=mk(new THREE.CircleGeometry(4.5,64),Q.floor);fm.receiveShadow=true;
 fm.position.set(0,-.72,0);fm.rotation.x=-Math.PI/2;scene.add(fm);
 
-// Ground coordinate grid
-var grid=new THREE.GridHelper(8,16,0x334455,0x222a33);
-grid.position.y=-.71;grid.material.opacity=.35;grid.material.transparent=true;
-scene.add(grid);
-
-// World origin marker
-var originG=new THREE.Group();scene.add(originG);
-var axisLen=.25;
-[['X',0xff4444,[axisLen,0,0],[0,0,-Math.PI/2]],
- ['Y',0x44ff44,[0,axisLen,0],[0,0,0]],
- ['Z',0x4444ff,[0,0,axisLen],[Math.PI/2,0,0]]].forEach(function(a){
-  var g=new THREE.Group();
-  var cyl=mk(new THREE.CylinderGeometry(.006,.006,axisLen,8),new THREE.MeshStandardMaterial({color:a[1],emissive:a[1],emissiveIntensity:.6}));
-  cyl.position.set(a[2][0]/2,a[2][1]/2,a[2][2]/2);
-  cyl.rotation.set(a[3][0],a[3][1],a[3][2]);
-  g.add(cyl);
-  originG.add(g);
-});
-originG.add(set(mkNS(new THREE.SphereGeometry(.025,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.8})),0,0,0));
-
-// Robot cruise waypoints on floor (y just above floor at -0.72)
-var wpPts=[{z:0,label:"中心",c:0x00d4aa},{z:0.8,label:"入料",c:0x6699cc},{z:-0.3,label:"老化箱",c:0xff8844}];
-wpPts.forEach(function(w){
-  var ring=mk(new THREE.TorusGeometry(.08,.012,16,32),new THREE.MeshStandardMaterial({color:w.c,emissive:w.c,emissiveIntensity:1.2,roughness:.1}));
-  ring.rotation.x=-Math.PI/2;ring.position.set(0,-.71,w.z);ring.castShadow=false;ring.receiveShadow=false;
-  scene.add(ring);
-  scene.add(mkl(w.label,"#ffffff",new THREE.Vector3(0,-.6,w.z)));
-});
-
 // ==== TABLES ====
 function mkTable(gx,gz){
   var t=new THREE.Group();t.position.set(gx,-.72,gz);scene.add(t);
@@ -141,7 +104,6 @@ for(var i=0;i<4;i++){
   var m=new THREE.Group();m.position.set(-.85+(i-1.5)*.1,-.39,.8+(Math.random()-.5)*.1);
   scene.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),i%2?Q.modY:Q.modG),0,.01,0));
-  addModLabel(m);
   modsL.push(m);
 }
 
@@ -243,11 +205,6 @@ function mkl(t,c,p){var cv=document.createElement("canvas");cv.width=256;cv.heig
 scene.add(mkl("老化箱","#ff8844",new THREE.Vector3(0,RACK_H-.1,-1.4)));
 scene.add(mkl("入料台","#6699cc",new THREE.Vector3(-.85,.1,.8)));
 scene.add(mkl("出料台","#66cc66",new THREE.Vector3(.85,.1,.8)));
-
-// Floor coordinate labels
-for(var i=-3;i<=3;i++){
-  if(i!==0){scene.add(mkl(i+"","#556677",new THREE.Vector3(i,-.69,0)));scene.add(mkl(i+"","#556677",new THREE.Vector3(0,-.69,i)));}
-}
 
 // ==== ANIMATION (Z-axis: tables at z=0.8, rack at z=-1.4) ====
 var POS_TABLE=0.8, POS_RACK=-0.3, POS_CENTER=0; // robot z positions (rack approach: stay back to avoid collision)
@@ -357,19 +314,6 @@ function loop(){
 
   var phNames=["⬆入料台","↓取料","⬇老化箱","⇅插拔","⬆出料台","↓放料","⬇返回","·待机"];
   sEl.textContent="● 第"+(layerIdx+1)+"/"+LAYERS+"层 "+phNames[phase]+" | 待取:"+modsL.length;
-  var wp=robot.position;
-  cEl.innerHTML="X:"+wp.x.toFixed(2)+" Y:"+wp.y.toFixed(2)+" Z:"+wp.z.toFixed(2)+
-    "<br>L:"+shL.rotation.x.toFixed(2)+" "+uaL.rotation.z.toFixed(2)+" "+elL.rotation.z.toFixed(2)+
-    "<br>R:"+shR.rotation.x.toFixed(2)+" "+uaR.rotation.z.toFixed(2)+" "+elR.rotation.z.toFixed(2);
-  // Object position list
-  var ol="<b>━━ 机器人 ━━</b><br>  "+wp.x.toFixed(2)+" "+wp.y.toFixed(2)+" "+wp.z.toFixed(2);
-  ol+="<br><b>━━ 入料台 ━━</b><br>  -0.85 -0.72 0.80";
-  ol+="<br><b>━━ 出料台 ━━</b><br>  0.85 -0.72 0.80";
-  ol+="<br><b>━━ 老化箱 ━━</b><br>  0.00 -0.70 -1.40";
-  ol+="<br><b>━━ 巡航点 ━━</b><br><span class=wp>  中心  0.00 -0.71 0.00</span><br><span class=wp>  入料  0.00 -0.71 0.80</span><br><span class=wp>  老化  0.00 -0.71 -0.30</span>";
-  if(modsL.length){ol+="<br><b>━━ 左光模块 ━━</b>";for(var i=0;i<modsL.length;i++){var mp=modsL[i].position;ol+="<br><span class=mod>  L"+(i+1)+" "+mp.x.toFixed(2)+" "+mp.y.toFixed(2)+" "+mp.z.toFixed(2)+"</span>";}}
-  if(modsR&&modsR.length){ol+="<br><b>━━ 右光模块 ━━</b>";for(var i=0;i<modsR.length;i++){var mp=modsR[i].position;ol+="<br><span class=mod>  R"+(i+1)+" "+mp.x.toFixed(2)+" "+mp.y.toFixed(2)+" "+mp.z.toFixed(2)+"</span>";}}
-  oEl.innerHTML=ol;
   ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.003)*.3;
 
   var p=new THREE.Vector3().setFromSpherical(sph).add(target);
@@ -385,12 +329,51 @@ function addPlacedMod(){
   m.position.set(.85+(Math.random()-.5)*.1,-.39,.8+(Math.random()-.5)*.1);
   scene.add(m);
   m.add(set(mk(new THREE.BoxGeometry(.04,.016,.07),Q.modG),0,.01,0));
-  addModLabel(m);
   modsR.push(m);
 }
 
 loop();
 })();
 </script>
+<div id="steps">
+<div class="title">I-119 下载FW 工序</div>
+<div class="step"><span class="n">①</span> 上电检测 <span class="d">3.3V/1.8V</span></div>
+<div class="step"><span class="n">②</span> SPI 通信握手 <span class="d">10MHz</span></div>
+<div class="step"><span class="n">③</span> Flash 擦除 <span class="d">Sector 0-7</span></div>
+<div class="step"><span class="n">④</span> FW 镜像加载 <span class="d">CRC32 校验</span></div>
+<div class="step"><span class="n">⑤</span> 写入 Bootloader <span class="d">0x0000-0x0FFF</span></div>
+<div class="step"><span class="n">⑥</span> 写入 App 固件 <span class="d">0x1000-0xFFFF</span></div>
+<div class="step"><span class="n">⑦</span> 写入校准参数 <span class="d">EEPROM</span></div>
+<div class="step"><span class="n">⑧</span> 校验回读 <span class="d">逐字节比对</span></div>
+<div class="step"><span class="n">⑨</span> 重启验证 <span class="d">Watchdog</span></div>
+<div class="step"><span class="n">⑩</span> SN 烧录 <span class="d">OTP 区域</span></div>
+</div>
+
 </body>
-</html>
+</html>scene.add(addL('← I-119 来料',-4,.05,2.2,'#00ff88'));
+scene.add(addL('治具切换柜 →',3.5,.05,-1.2,'#ffaa00'));
+// ── Fixture Switch Cabinet (治具切换柜) ──
+var fswitch=new THREE.Group();
+fswitch.add(set(mkBox(1.8,.9,.7,new THREE.MeshStandardMaterial({color:0x556677,metalness:.4,roughness:.3})),0,.45,0));
+fswitch.add(set(mkBox(1.5,.5,.02,new THREE.MeshStandardMaterial({color:0x334466,metalness:.2,emissive:0x112233,emissiveIntensity:.2})),0,.55,.36));
+fswitch.add(set(mkBox(.8,.15,.02,new THREE.MeshStandardMaterial({color:0x223344,metalness:.5})),0,.8,.36));
+for(var li=0;li<3;li++){
+  fswitch.add(set(new THREE.Mesh(new THREE.SphereGeometry(.025),
+    new THREE.MeshBasicMaterial({color:li===0?0x00ff88:li===1?0xffaa00:0xff4444})),-.3+li*.3,.88,.38));
+}
+// Different fishbone on this cabinet (empty, waiting for transfer)
+var fish2=new THREE.Group();
+fish2.add(set(mkBox(1.2,.04,.08,new THREE.MeshStandardMaterial({color:0xbbbbbb,metalness:.5})),0,.95,0));
+for(var fi=-.5;fi<=.5;fi+=.1)fish2.add(set(mkBox(.04,.06,.25,new THREE.MeshStandardMaterial({color:0xdddddd,metalness:.4})),fi,.95,0));
+fswitch.add(fish2);
+// Label
+var fl2=document.createElement('canvas');fl2.width=256;fl2.height=32;
+var fc2=fl2.getContext('2d');fc2.fillStyle='#ffaa00';fc2.font='bold 14px monospace';
+fc2.textAlign='center';fc2.fillText('治具切换柜',128,20);
+var ft2=new THREE.CanvasTexture(fl2);ft2.minFilter=THREE.LinearFilter;
+var fp2=new THREE.Mesh(new THREE.PlaneGeometry(1.6,.2),new THREE.MeshBasicMaterial({map:ft2,transparent:true,depthTest:false,depthWrite:false}));
+fp2.position.set(0,.65,.37);fp2.renderOrder=999;fswitch.add(fp2);
+
+fswitch.position.set(3.5,0,-.5);scene.add(fswitch);
+
+// ── Labels ──
