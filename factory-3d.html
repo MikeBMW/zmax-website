@@ -206,7 +206,7 @@ const ROBOT_DEFS=[
   {name:"R1",zone:"oe",x:2.5,z:-11.5,rowZ:-11.5},
   {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3},
   {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1},
-  {name:"M1",zone:"mod",x:2.5,z:4.7,rowZ:3.5},
+  {name:"M1",zone:"mod",x:2.5,z:3.7,rowZ:2.5},
   {name:"W1",zone:"wh",x:-16.5,z:4.2,rowZ:3.5},
   {name:"W2",zone:"wh",x:-16.5,z:6.3,rowZ:5.7},
 ];
@@ -607,7 +607,7 @@ function buildFactory(){
     scene.add(r3nPlane);
     agvObjs.push(r3agv);
     // M1 follower AGVs — 2台黄色小车跟在M1后面
-    const m1a={obj:createAGV(2.5,4,0xffdd00,0xffffff),pos:{x:2.5,z:4},
+    const m1a={obj:createAGV(2.5,3,0xffdd00,0xffffff),pos:{x:2.5,z:3},
                name:'M1a',nameSprite:null,isFollower:true,followRobot:'M1',followDist:1.2};
     scene.add(m1a.obj);
     const m1anCv=document.createElement('canvas');m1anCv.width=64;m1anCv.height=32;
@@ -618,11 +618,11 @@ function buildFactory(){
     const m1anTx=new THREE.CanvasTexture(m1anCv);m1anTx.minFilter=THREE.LinearFilter;
     const m1anPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
       new THREE.MeshBasicMaterial({map:m1anTx,transparent:true,depthTest:false,depthWrite:false}));
-    m1anPlane.position.set(2.5,.6,4);m1anPlane.renderOrder=1000;
+    m1anPlane.position.set(2.5,.6,3);m1anPlane.renderOrder=1000;
     m1a.nameSprite={sprite:m1anPlane,canvas:m1anCv,ctx:m1anCx,texture:m1anTx};
     scene.add(m1anPlane);
     agvObjs.push(m1a);
-    const m1b={obj:createAGV(2.5,4,0xffdd00,0xffffff),pos:{x:2.5,z:4},
+    const m1b={obj:createAGV(2.5,3,0xffdd00,0xffffff),pos:{x:2.5,z:3},
                name:'M1b',nameSprite:null,isFollower:true,followRobot:'M1',followDist:1.8};
     scene.add(m1b.obj);
     const m1bnCv=document.createElement('canvas');m1bnCv.width=64;m1bnCv.height=32;
@@ -633,7 +633,7 @@ function buildFactory(){
     const m1bnTx=new THREE.CanvasTexture(m1bnCv);m1bnTx.minFilter=THREE.LinearFilter;
     const m1bnPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
       new THREE.MeshBasicMaterial({map:m1bnTx,transparent:true,depthTest:false,depthWrite:false}));
-    m1bnPlane.position.set(2.5,.6,4);m1bnPlane.renderOrder=1000;
+    m1bnPlane.position.set(2.5,.6,3);m1bnPlane.renderOrder=1000;
     m1b.nameSprite={sprite:m1bnPlane,canvas:m1bnCv,ctx:m1bnCx,texture:m1bnTx};
     scene.add(m1bnPlane);
     agvObjs.push(m1b);
