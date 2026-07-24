@@ -200,7 +200,6 @@ let hoveredStation=null;
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
   {name:"Z4",zone:"coc",x:-16.5,z:-2.7,rowZ:-3.9},
-  {name:"R1",zone:"oe",x:2.5,z:-11.5,rowZ:-11.5},
   {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3},
   {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1},
   {name:"M1",zone:"mod",x:2.5,z:3.7,rowZ:2.5},
@@ -616,22 +615,6 @@ function buildFactory(){
       scene.add(nPlane);
       agvObjs.push(a);
     });
-    // R1 follower AGV — 跟在R1机器人后面的跟随小车
-    const r1agv={obj:createAGV(2.5,-11.5,0x00d4aa,0xffffff),pos:{x:2.5,z:-11.5},
-                 name:'R1',nameSprite:null,isFollower:true,followRobot:'R1'};
-    scene.add(r1agv.obj);
-    const r1nCv=document.createElement('canvas');r1nCv.width=64;r1nCv.height=32;
-    const r1nCx=r1nCv.getContext('2d');
-    r1nCx.fillStyle='#00d4aa';r1nCx.font='bold 14px monospace';
-    r1nCx.textAlign='center';r1nCx.textBaseline='middle';
-    r1nCx.fillText('R1',32,16);
-    const r1nTx=new THREE.CanvasTexture(r1nCv);r1nTx.minFilter=THREE.LinearFilter;
-    const r1nPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
-      new THREE.MeshBasicMaterial({map:r1nTx,transparent:true,depthTest:false,depthWrite:false}));
-    r1nPlane.position.set(2.5,.6,-11.5);r1nPlane.renderOrder=1000;
-    r1agv.nameSprite={sprite:r1nPlane,canvas:r1nCv,ctx:r1nCx,texture:r1nTx};
-    scene.add(r1nPlane);
-    agvObjs.push(r1agv);
     // R2 follower AGV
     const r2agv={obj:createAGV(2.5,-9.3,0xffaa00,0xffffff),pos:{x:2.5,z:-7.1},
                  name:'R2',nameSprite:null,isFollower:true,followRobot:'R2'};
