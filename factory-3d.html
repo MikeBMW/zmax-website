@@ -554,8 +554,18 @@ function buildFactory(){
   const fLbl=new THREE.Mesh(new THREE.PlaneGeometry(1,.25),
     new THREE.MeshBasicMaterial({map:fTx,transparent:true,depthTest:false,depthWrite:false}));
   fLbl.position.set(0,1.25,0);fLbl.renderOrder=1001;z700f.add(fLbl);
-  z700f.position.set(-17,-.02,-4.5);
+  z700f.position.set(-17.5,-.02,-3.5);
   scene.add(z700f);
+  // Z700F坐标标签 (显示坐标)
+  const fcCv=document.createElement('canvas');fcCv.width=160;fcCv.height=32;
+  const fcCx=fcCv.getContext('2d');
+  fcCx.fillStyle='#f0a500';fcCx.font='bold 12px monospace';fcCx.textAlign='center';fcCx.textBaseline='middle';
+  fcCx.fillText('Z700F (5,155)',80,16);
+  const fcTx=new THREE.CanvasTexture(fcCv);fcTx.minFilter=THREE.LinearFilter;
+  const fcLbl=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.25),
+    new THREE.MeshBasicMaterial({map:fcTx,transparent:true,depthTest:false,depthWrite:false}));
+  fcLbl.rotation.x=-Math.PI/2;fcLbl.position.set(-17.5,.02,-3.5);fcLbl.renderOrder=1001;
+  scene.add(fcLbl);
 
   // AGVs — 4台高对比色往返4区（当前1台展开）
   const AGV_DEFS=[
