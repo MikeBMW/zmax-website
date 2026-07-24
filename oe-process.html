@@ -26,8 +26,25 @@
   .layout-box{border:1px solid #1a1f2b;background:#0d1117;border-radius:8px;padding:14px 18px;margin:12px 0}
   .layout-box table{border:none;margin:4px 0}
   .layout-box td{border:none;padding:3px 6px;font-size:10px}
+  /* flow diagram */
+  .flow-diagram{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:16px 8px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;margin:12px 0;overflow-x:auto}
+  .flow-node{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:80px}
+  .flow-node .icon{font-size:28px;margin-bottom:4px}
+  .flow-node .label{font-size:9px;color:#c8d1d9;line-height:1.3}
+  .flow-node .sub{font-size:8px;color:#8b949e}
+  .flow-arrow{font-size:18px;color:#ff6b35;font-weight:bold;flex-shrink:0}
+  .flow-arrow.down{font-size:18px}
+  /* robot cards */
+  .robot-card{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
+  .robot-card h3{margin-top:0}
+  .robot-card.z100{border-color:#58a6ff44}
+  .robot-card.z100 h3{color:#58a6ff}
+  .robot-card.z700f{border-color:#f0a50044}
+  .robot-card.z700f h3{color:#f0a500}
+  .robot-card.z700{border-color:#ff6b3544}
+  .robot-card.z700 h3{color:#ff6b35}
   a{color:#ff6b35}
-  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}a{color:#000}.flow-chart{background:#fff;border-color:#ccc}}
+  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}a{color:#000}.flow-chart,.flow-diagram{background:#fff;border-color:#ccc}}
 </style>
 </head>
 <body>
@@ -59,7 +76,7 @@
 <tr><td>测试项</td><td>IL/RL/PDL/光谱/眼图</td><td>IL/RL/SMSR</td></tr>
 <tr><td>自动化</td><td>14台自动耦合 · AOI检测</td><td>半自动耦合</td></tr>
 </table>
-<div class="note">数通OE耦合是光模块核心工艺，精度要求高(±0.5μm)，适合Z700轮式机器人做治具传递与自动上下料。14台耦合台并行是产能瓶颈，需重点优化节拍。</div>
+<div class="note">数通OE耦合是光模块核心工艺。Z100（双臂移动）负责基础搬运上下料，Z700（双臂移动·全流程）实现跨区域自主作业。14台耦合台并行是产能瓶颈，需重点优化节拍。</div>
 
 <h2>2. 整体布局</h2>
 <div class="layout-box">
@@ -85,7 +102,6 @@
 
 <h2>3. 分阶段详细流程</h2>
 
-<!-- Phase 1: 耦合后检测 -->
 <div class="phase">
 <h3>第一阶段：耦合后检测（I125 ~ I128）</h3>
 <p style="color:#8b949e;font-size:10px">光路耦合完成后，先分板→再目检→自动测试→外观检测，逐站确认耦合质量。</p>
@@ -110,14 +126,13 @@
 <tr><td colspan="8" style="color:#8b949e">14台自动耦合台并行 · 6轴精密位移台 · 激光源+光功率计闭环反馈 · 峰值搜索算法 · UV预固化点固定</td></tr>
 <tr>
   <td>耦合外观检测</td><td>I128</td><td>检查耦合区域外观，确认无脏污、崩边、胶水溢出</td>
-  <td>-</td><td>手动</td><td>≤5s</td><td>50×</td><td>无气泡&gt;50μm</td>
+  <td>-</td><td>手动</td><td>≤5s</td><td>50×</td><td>无气泡>50μm</td>
 </tr>
 <tr><td colspan="8" style="color:#8b949e">胶量/气泡/溢胶检查 · 无气泡>50μm · 清洁确认</td></tr>
 </table>
-<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>光路耦合完成后，先目检→再自动测试→确认良品后进入下一工序。「目检+测试」形成验证组合，减少等待。</p>
+<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>光路耦合完成后，先目检→再自动测试→确认良品后进入下一工序。</p>
 </div>
 
-<!-- Phase 2: 烘烤与组装 -->
 <div class="phase">
 <h3>第二阶段：烘烤与组装（I129 ~ I130）</h3>
 <p style="color:#8b949e;font-size:10px">耦合合格后通过烘烤固定光学结构，再完成TXFA组件组装。</p>
@@ -134,10 +149,8 @@
 </tr>
 <tr><td colspan="8" style="color:#8b949e">显微镜×3辅助 · TOSA/ROSA组件装配 · 发射/接收对准</td></tr>
 </table>
-<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>「外观+烘烤」形成固定组合——外观检测后立即烘烤固化光学结构，再完成TXFA组件组装。</p>
 </div>
 
-<!-- Phase 3: 端面与光电性能测试 -->
 <div class="phase">
 <h3>第三阶段：端面与光电性能测试（I131 ~ I133）</h3>
 <p style="color:#8b949e;font-size:10px">端面清洁→光电性能测试→确认光学参数达标。</p>
@@ -145,7 +158,7 @@
 <tr><th>工位</th><th>编号</th><th>功能</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>质量门</th></tr>
 <tr>
   <td>端面清洁</td><td>I131</td><td>清洁光口/电口端面，避免金手指或光口污染</td>
-  <td>-</td><td>手动</td><td>≤5s</td><td>无颗粒&gt;1μm</td><td>IEC 61300-3-35</td>
+  <td>-</td><td>手动</td><td>≤5s</td><td>无颗粒>1μm</td><td>IEC 61300-3-35</td>
 </tr>
 <tr><td colspan="8" style="color:#8b949e">无尘纸+99.9%酒精 · 端检仪200×确认 · 无划痕/污染</td></tr>
 <tr>
@@ -159,10 +172,8 @@
 </tr>
 <tr><td colspan="8" style="color:#8b949e">测试站×4并行 · IL/RL/PDL/光谱/SMSR全参数 · 自动判定Pass/Fail · 数据上传MES</td></tr>
 </table>
-<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>「清洁+MPD」形成组合——端面清洁后立即进行光电性能测试，确认光学参数达标。</p>
 </div>
 
-<!-- Phase 4: 可靠性验证 -->
 <div class="phase">
 <h3>第四阶段：可靠性验证（I134 ~ I136）</h3>
 <p style="color:#8b949e;font-size:10px">模拟极端环境，确保光引擎能承受现场温度变化和长期工作。这是产品质量保证的关键环节。</p>
@@ -184,10 +195,8 @@
 </tr>
 <tr><td colspan="8" style="color:#8b949e">热岛立柜×4 · 恒温恒湿(85°C/85%RH) · Telcordia GR-468 · 长期可靠性筛选</td></tr>
 </table>
-<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>「TCT+BI+热岛」三连可靠性验证——快速温变→通电老化→长期湿热，逐级加严筛选早期失效产品。</p>
 </div>
 
-<!-- Phase 5: 最终检测与出货 -->
 <div class="phase">
 <h3>第五阶段：最终检测与出货（I137 ~ I139）</h3>
 <p style="color:#8b949e;font-size:10px">可靠性测试完成后→最终性能验证→出货检验。层层筛选确保良品出货。</p>
@@ -209,7 +218,6 @@
 </tr>
 <tr><td colspan="8" style="color:#8b949e">2工位并行 · 100%全检 · MES数据闭环 · 合格证打印 · 批次追溯 · 出货包装</td></tr>
 </table>
-<p style="color:#8b949e;font-size:10px;margin-top:8px"><b>逻辑：</b>端面检测清洁→OE/TRX测试→出货检查，层层把关，只有全部合格才放行出货。</p>
 </div>
 
 <h2>4. 流程逻辑总结</h2>
@@ -220,99 +228,177 @@
 <tr><td>可靠性试验区（I134~I136）</td><td>模拟温变、老化、高热等极限工况，筛选产品早期失效</td></tr>
 <tr><td>最终检测区（I137~I139）</td><td>逐工位完成最终性能验证和出货检验</td></tr>
 <tr><td>关键特点</td><td>两两搭配：「目检+测试」「外观+烘烤」「清洁+MPD」「TCT+BI+热岛」形成「验证+处理」组合，减少等待</td></tr>
-<tr><td>出货把关</td><td>端面检测清洁→OE/TRX测试→出货检查，层层筛选</td></tr>
 <tr><td>信息流</td><td>每个工位的测试结果作为「过站」条件，只有当前工位合格才放行至下一工位</td></tr>
 </table>
 
+<!-- ══════════ SECTION 5: 智能料箱处理系统 ══════════ -->
 <h2>5. 智能料箱处理系统</h2>
-<div class="note">在OE光引擎这类精密制造区，料箱的处理方式直接决定了产线的效率和良率。现代光模块产线已普遍采用<b>全流程自动化+智能化调度</b>的模式来处理料箱，其核心是<b>减少人工干预，实现物料搬运和上下料的无人化</b>。</div>
+<div class="note">在OE光引擎这类精密制造区，料箱的处理方式直接决定了产线的效率和良率。现代光模块产线已普遍采用<b>全流程自动化+智能化调度</b>的模式，核心是<b>减少人工干预，实现物料搬运与上下料的无人化</b>。Z-MAX 提供了三级机器人体系：<b>Z100（双臂移动·基础搬运）→ Z700F（固定单臂·插拔工位）→ Z700（双臂移动·全流程自主）</b>，配合 AGV 与 MES 构成完整闭环。</div>
 
-<h3>5.1 自动化上下料：从"人找料"到"料找人"</h3>
-<p style="color:#c8d1d9;font-size:10px">光模块的上下料环节已高度自动化。设备集成自动上下料模块，利用<b>多层料仓</b>与<b>多PCS料盘结构</b>，实现一次上料后的批量、持续生产。料箱通过输送线、提升机等设备，被精准分配到各个工位。</p>
-<table>
-<tr><th style="width:120px">要素</th><th>说明</th></tr>
-<tr><td>料仓结构</td><td>多层抽屉式料仓，每层承载标准料盘（Tray），单次上料可支持 2~8 小时连续生产</td></tr>
-<tr><td>料盘规格</td><td>多PCS料盘（JEDEC标准），每盘承载 20~100 颗光引擎，兼容不同封装尺寸</td></tr>
-<tr><td>取放精度</td><td>±50μm 料盘定位，视觉引导吸嘴/夹爪取放，兼容不同器件外形</td></tr>
-<tr><td>换料节拍</td><td>空满料盘交换 &lt;15s，不停机换料</td></tr>
-<tr><td>缓存策略</td><td>工位旁设置 3~5 层线边缓存仓，缓冲上下游节拍差异</td></tr>
-</table>
-
+<!-- Robot Flow Diagram -->
 <div class="phase">
-<h3>5.2 Z100 · 基础上下料机器人</h3>
-<p style="color:#c8d1d9;font-size:10px">Z100 是产线的基础上下料执行单元，核心能力为<b>料盘→设备→料盘</b>的标准取放循环。</p>
+<h3>5.1 料箱流转总图</h3>
+<div class="flow-diagram">
+  <div class="flow-node"><div class="icon">📦</div><div class="label">COC来料</div><div class="sub">料笼/Tray盘</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🤖</div><div class="label" style="color:#58a6ff">Z100</div><div class="sub">双臂搬运</div><div class="sub">料箱→缓存仓</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🗄️</div><div class="label">线边缓存仓</div><div class="sub">L1~L5 多层</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🤖</div><div class="label" style="color:#f0a500">Z700F</div><div class="sub">固定单臂</div><div class="sub">工位插拔</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">⚙️</div><div class="label">加工设备</div><div class="sub">耦合/测试/烘烤</div></div>
+</div>
+<div class="flow-diagram" style="margin-top:4px">
+  <div class="flow-node"><div class="icon">⚙️</div><div class="label">加工完成</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🤖</div><div class="label" style="color:#f0a500">Z700F</div><div class="sub">下料插拔</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🗄️</div><div class="label">缓存仓</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🤖</div><div class="label" style="color:#ff6b35">Z700</div><div class="sub">双臂搬运</div><div class="sub">跨工位传递</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">🚚</div><div class="label">AGV A2</div><div class="sub">跨区转运</div></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node"><div class="icon">📤</div><div class="label">下一区</div><div class="sub">MOD/出货</div></div>
+</div>
+<p style="color:#8b949e;font-size:10px;margin-top:8px;text-align:center">
+<b>MES 统一调度</b> —— 料箱 RFID 全链路追溯 · 缓存仓料位实时感知 · 机器人动态任务分发
+</p>
+</div>
+
+<!-- Z100 -->
+<div class="robot-card z100">
+<h3>5.2 Z100 · 双臂移动搬运机器人（基础型）</h3>
+<p style="color:#8b949e;font-size:10px">Z100 是产线的<b>基础物流单元</b>——双臂移动底盘，负责料箱/料笼/料盘在缓存仓与工位群之间的搬运上下料。不执行工位级插拔操作，专注于<b>大规模物料流转</b>。</p>
 <table>
 <tr><th style="width:120px">能力</th><th>参数</th></tr>
-<tr><td>核心功能</td><td>料箱取料 → 设备上料 → 成品下料 → 料箱归位</td></tr>
-<tr><td>负载</td><td>≤3kg（单颗光引擎 ~50g，整盘 ~5kg 可分批）</td></tr>
-<tr><td>重复定位</td><td>±0.1mm</td></tr>
-<tr><td>视觉引导</td><td>2D相机料盘定位 + 凹槽识别，兼容多规格Tray</td></tr>
-<tr><td>对接设备</td><td>耦合台、测试站、烘烤炉——标准料盘接口</td></tr>
+<tr><td>核心功能</td><td>缓存仓取料 → 搬运至工位群入口 → 成品归位缓存仓（料箱/Tray/料笼级搬运）</td></tr>
+<tr><td>手臂配置</td><td><b>双臂 · 移动底盘</b>（可同时取+放，双臂协同搬运）</td></tr>
+<tr><td>移动能力</td><td>轮式移动底盘 · 固定路线导航 · 磁轨/二维码引导</td></tr>
+<tr><td>负载</td><td>≤3kg × 2臂（单颗光引擎 ~50g，整盘 ~5kg 双臂协同搬运）</td></tr>
+<tr><td>重复定位</td><td>±0.1mm（取放精度）</td></tr>
+<tr><td>视觉系统</td><td>2D相机料盘定位 + 凹槽识别 · 兼容多规格 Tray盘、料笼、料箱</td></tr>
+<tr><td>对接设备</td><td>缓存仓（L1~L5）、线边料架、AGV对接位——标准料盘接口</td></tr>
 <tr><td>安全机制</td><td>力矩传感器防碰撞 · 光栅安全区域 · ESD接地 &lt;100V</td></tr>
-<tr><td>典型节拍</td><td>取料 3s + 上料 5s + 下料 3s + 归位 4s = <b>单循环 ≤15s</b></td></tr>
-<tr><td>部署密度</td><td>每 3~5 台设备配 1 台 Z100，负责该设备群的上下料</td></tr>
+<tr><td>典型节拍</td><td>取料 3s + 搬运 8s + 上料 5s + 归位 4s = <b>单循环 ≤20s</b></td></tr>
+<tr><td>部署密度</td><td>每区 2~3 台 Z100，负责该设备群的料箱出入库</td></tr>
+<tr><td>适用场景</td><td>COC来料接收 · 缓存仓补料 · 成品归仓 · 批量换Tray · 料笼转运</td></tr>
 </table>
 </div>
 
-<div class="phase">
-<h3>5.3 Z700 · 具身智能上下料+搬运一体化机器人</h3>
-<p style="color:#c8d1d9;font-size:10px">Z700 是 OE 区的<b>核心物流执行单元</b>，在 Z100 的上下料能力基础上，增加了<b>工位间搬运与智能调度</b>能力。双臂设计使其可同时处理「取+放」操作，大幅提升节拍。</p>
+<!-- Z700F -->
+<div class="robot-card z700f">
+<h3>5.3 Z700F · 固定单臂插拔机器人（工位型）</h3>
+<p style="color:#8b949e;font-size:10px">Z700F 是<b>工位级精密执行单元</b>——固定底座+单臂，专精于<b>单工位的上下料插拔</b>操作。部署在设备旁，负责将料盘上的器件精准插入设备夹具、测试完成后拔出归位。</p>
 <table>
-<tr><th style="width:120px">能力维度</th><th>Z100（基础型）</th><th style="color:#ff6b35">Z700（升级型）</th></tr>
-<tr><td>核心功能</td><td>固定工位上下料</td><td style="color:#ff6b35">上下料 + 工位间搬运 + 跨区传递</td></tr>
-<tr><td>手臂配置</td><td>单臂</td><td style="color:#ff6b35">双臂（可同时取+放）</td></tr>
-<tr><td>移动能力</td><td>固定底座</td><td style="color:#ff6b35">轮式自主导航（AMR底盘）</td></tr>
-<tr><td>负载</td><td>≤3kg</td><td style="color:#ff6b35">≤5kg × 2臂</td></tr>
-<tr><td>视觉系统</td><td>2D 料盘定位</td><td style="color:#ff6b35">3D 结构光 + RGB-D，料箱/料盘/散料全场景识别</td></tr>
-<tr><td>料箱对接</td><td>固定料仓位</td><td style="color:#ff6b35">多层缓存仓 + 线边料架 + AGV对接位，自主导航至任意料箱点</td></tr>
-<tr><td>调度对接</td><td>PLC I/O 信号</td><td style="color:#ff6b35">MES HTTP/WebSocket 实时任务接收 + 状态反馈</td></tr>
-<tr><td>典型应用</td><td>单台耦合测试站上下料</td><td style="color:#ff6b35">14台耦合台群的物料配送 + 耦合→外观→烘烤工位间传递</td></tr>
-<tr><td>覆盖范围</td><td>1台设备</td><td style="color:#ff6b35">整个OE区（I125~I139），15个工位全覆盖</td></tr>
+<tr><th style="width:120px">能力</th><th>参数</th></tr>
+<tr><td>核心功能</td><td>料盘取件 → 精准插入设备夹具 → 测试完成拔出 → 放回料盘</td></tr>
+<tr><td>手臂配置</td><td><b>单臂 · 固定底座</b>（专注单工位精密插拔）</td></tr>
+<tr><td>移动能力</td><td><b>无</b>——固定安装在设备旁，不移动</td></tr>
+<tr><td>负载</td><td>≤2kg（单颗器件级操作）</td></tr>
+<tr><td>重复定位</td><td><b>±0.05mm</b>（高精度插拔，适配耦合台/测试站夹具）</td></tr>
+<tr><td>视觉系统</td><td>2D相机 + 激光测距 · 夹具凹槽识别 · 插拔深度闭环控制</td></tr>
+<tr><td>对接设备</td><td>耦合台、MPD测试站、OE测试站、端检仪——标准夹具接口</td></tr>
+<tr><td>安全机制</td><td>力传感器插拔力度监控 · 异常阻力自动回退 · ESD接地 &lt;50V</td></tr>
+<tr><td>典型节拍</td><td>取件 2s + 插入 3s + 测试等待 + 拔出 2s + 归位 2s = <b>操作 ≤10s</b></td></tr>
+<tr><td>部署密度</td><td><b>每台关键设备配 1 台 Z700F</b>（耦合台×14 → Z700F×14）</td></tr>
+<tr><td>适用场景</td><td>自动耦合台上下料 · MPD/OE测试站插拔 · 端检仪器件取放</td></tr>
 </table>
 </div>
 
-<h3>5.4 智能物流搬运：AGV/AMR</h3>
+<!-- Z700 -->
+<div class="robot-card z700">
+<h3>5.4 Z700 · 双臂移动全流程机器人（旗舰型）</h3>
+<p style="color:#8b949e;font-size:10px">Z700 是 OE 区的<b>核心全流程执行单元</b>——双臂+AMR底盘+3D视觉+AI调度。兼具 Z100 的搬运能力与 Z700F 的精密操作，同时具备<b>自主导航、跨区域运行、AOI检测、多品种泛化</b>能力，可独立完成从取料到出货的全流程闭环。</p>
+<table>
+<tr><th style="width:120px">能力维度</th><th>参数</th></tr>
+<tr><td>核心功能</td><td>上下料 + 工位间搬运 + 跨区传递 + AOI检测 + 全流程闭环作业</td></tr>
+<tr><td>手臂配置</td><td><b>双臂 · AMR移动底盘</b>（可同时取+放，双臂独立协同）</td></tr>
+<tr><td>移动能力</td><td><b>轮式自主导航</b>——SLAM建图 · 动态路径规划 · 自主避障 · 跨区域运行</td></tr>
+<tr><td>自主安全</td><td>360°激光雷达 + 3D深度相机 · 人员检测自动减速/停止 · 安全PLC双回路</td></tr>
+<tr><td>负载</td><td>≤5kg × 2臂（可搬运整盘Tray + 料笼 + 料箱）</td></tr>
+<tr><td>视觉系统</td><td><b>3D结构光 + RGB-D + 2D AOI相机</b>——料箱/料盘/散料/料笼全场景识别；<b>AOI在线质量检测</b>（外观缺陷/脏污/崩边自动识别）</td></tr>
+<tr><td>料箱对接</td><td>多层缓存仓 + 线边料架 + AGV对接位 + 料笼堆垛——自主导航至任意料箱点，泛化多品种（Tray盘、料笼、散料盒）</td></tr>
+<tr><td>调度对接</td><td>MES HTTP/WebSocket 实时任务接收 + 状态反馈 + 路径上报</td></tr>
+<tr><td>典型应用</td><td>14台耦合台群的物料配送 + 耦合→外观→烘烤→测试→老化 全流程工位间传递 + AOI在线质检</td></tr>
+<tr><td>覆盖范围</td><td><b>整个OE区（I125~I139）15工位全覆盖 + 跨区至MOD/WH</b></td></tr>
+<tr><td>AGV对接</td><td>与AGV A2 料箱交接——Z700从AGV接收来料/将成品交付AGV转运至下一区</td></tr>
+<tr><td>多品种泛化</td><td>统一抓取接口适配 Tray盘（JEDEC标准）、料笼（EU箱）、散料盒——AI视觉自主识别品类，无需换夹具</td></tr>
+</table>
+</div>
+
+<!-- 三级对比表 -->
+<div class="phase">
+<h3>5.5 三级机器人能力对比</h3>
+<table>
+<tr><th style="width:100px">能力维度</th><th style="color:#58a6ff">Z100（基础型）</th><th style="color:#f0a500">Z700F（工位型）</th><th style="color:#ff6b35">Z700（旗舰型）</th></tr>
+<tr><td>角色定位</td><td>物流搬运工</td><td>精密操作工</td><td>全流程工长</td></tr>
+<tr><td>手臂</td><td>双臂</td><td>单臂</td><td>双臂</td></tr>
+<tr><td>底盘</td><td>移动</td><td>固定</td><td>移动（AMR）</td></tr>
+<tr><td>核心作业</td><td>料箱→缓存仓 搬运</td><td>缓存仓→设备 插拔</td><td>取料→搬运→插拔→检测→归仓 全流程</td></tr>
+<tr><td>负载</td><td>≤3kg × 2</td><td>≤2kg</td><td>≤5kg × 2</td></tr>
+<tr><td>定位精度</td><td>±0.1mm</td><td>±0.05mm</td><td>±0.05mm</td></tr>
+<tr><td>自主导航</td><td>固定路线（磁轨）</td><td>无</td><td>SLAM自主导航</td></tr>
+<tr><td>自主安全</td><td>光栅+力矩</td><td>力传感器</td><td>激光雷达+3D相机+PLC双回路</td></tr>
+<tr><td>视觉</td><td>2D料盘定位</td><td>2D+激光测距</td><td>3D结构光+RGB-D+AOI</td></tr>
+<tr><td>AOI检测</td><td>-</td><td>-</td><td>✓ 在线外观缺陷检测</td></tr>
+<tr><td>多品种泛化</td><td>Tray盘</td><td>Tray盘（单规格）</td><td>Tray盘+料笼+散料盒（AI识别）</td></tr>
+<tr><td>AGV对接</td><td>固定交接位</td><td>-</td><td>自主导航至AGV · 料箱交接</td></tr>
+<tr><td>跨区运行</td><td>单区内</td><td>单工位</td><td>跨区（OE→MOD→WH）</td></tr>
+<tr><td>MES对接</td><td>PLC I/O</td><td>PLC I/O</td><td>HTTP/WebSocket 实时</td></tr>
+<tr><td>覆盖工位</td><td>3~5台设备</td><td>1台设备</td><td>15工位（全区）</td></tr>
+</table>
+</div>
+
+<!-- AGV/AMR -->
+<h3>5.6 智能物流搬运：AGV / AMR</h3>
 <table>
 <tr><th style="width:120px">载体</th><th>功能</th><th>覆盖</th></tr>
-<tr><td>AGV A2</td><td>OE区边界巡逻 + 料箱转运，按MES指令从线边仓取料送至工位群入口</td><td>OE区右边界</td></tr>
+<tr><td>AGV A2</td><td>OE区边界巡逻 + 料箱跨区转运 · 按MES指令从线边仓取料送至工位群入口 · 与Z700料箱交接</td><td>OE区右边界</td></tr>
 <tr><td>AMR（规划中）</td><td>自主避障、动态路径规划，替代固定磁轨AGV，支持产线布局灵活调整</td><td>全车间</td></tr>
 <tr><td>输送线</td><td>连接烘烤炉→测试站→老化柜的固定料箱通道，与机器人协同形成混合物流网络</td><td>设备间固定链路</td></tr>
 </table>
 
-<h3>5.5 多层料仓与线边缓存</h3>
+<!-- 多层缓存 -->
+<h3>5.7 多层料仓与线边缓存</h3>
 <table>
-<tr><th style="width:120px">缓存层</th><th>位置</th><th>容量</th><th>用途</th></tr>
-<tr><td>L1 入口缓存</td><td>OE区入口（分板站旁）</td><td>8层 × 20盘</td><td>接收COC区来料，等待分板</td></tr>
-<tr><td>L2 耦合缓存</td><td>耦合台群旁</td><td>5层 × 10盘</td><td>分板后待耦合器件，缓冲14台耦合台并行需求</td></tr>
-<tr><td>L3 测试缓存</td><td>测试站群旁</td><td>3层 × 8盘</td><td>耦合完成待测试，缓冲耦合→测试节拍差异（耦合 8s vs 测试 8s，但并行数不同）</td></tr>
-<tr><td>L4 可靠性缓存</td><td>TCT/BI/热岛入口</td><td>6层 × 30盘</td><td>批量老化，168h长周期需大容量缓存</td></tr>
-<tr><td>L5 出货缓存</td><td>出货检查站旁</td><td>2层 × 5盘</td><td>待OQC终检，接近出货的小批量缓存</td></tr>
+<tr><th style="width:100px">缓存层</th><th>位置</th><th>容量</th><th>用途</th><th>对接机器人</th></tr>
+<tr><td>L1 入口缓存</td><td>OE区入口（分板站旁）</td><td>8层 × 20盘</td><td>接收COC区来料，等待分板</td><td>Z100 卸料 · Z700 取料</td></tr>
+<tr><td>L2 耦合缓存</td><td>耦合台群旁</td><td>5层 × 10盘</td><td>分板后待耦合器件，缓冲14台耦合台并行需求</td><td>Z700 配送 · Z700F×14 取料</td></tr>
+<tr><td>L3 测试缓存</td><td>测试站群旁</td><td>3层 × 8盘</td><td>耦合完成待测试，缓冲耦合→测试节拍差异</td><td>Z700 配送 · Z700F 取料</td></tr>
+<tr><td>L4 可靠性缓存</td><td>TCT/BI/热岛入口</td><td>6层 × 30盘</td><td>批量老化，168h长周期需大容量缓存</td><td>Z700 批量上下盘</td></tr>
+<tr><td>L5 出货缓存</td><td>出货检查站旁</td><td>2层 × 5盘</td><td>待OQC终检，接近出货的小批量缓存</td><td>Z700 → AGV 交接</td></tr>
 </table>
 
-<h3>5.6 MES 智能调度与追溯</h3>
-<p style="color:#c8d1d9;font-size:10px">所有环节由统一的<b>制造执行系统（MES）</b>指挥。MES根据生产计划和实时产线状态，智能调度AGV、Z100/Z700机器人、输送线等执行单元。</p>
+<!-- MES -->
+<h3>5.8 MES 智能调度与追溯</h3>
 <table>
 <tr><th style="width:120px">系统能力</th><th>说明</th></tr>
-<tr><td>任务分发</td><td>MES → Z700/WiFi：取料任务 {料箱ID, 起点缓存层, 终点工位, 优先级}</td></tr>
+<tr><td>任务分发</td><td>MES → Z700/WiFi：取料任务 {料箱ID, RFID, 起点缓存层, 终点工位, 优先级, 品种}</td></tr>
 <tr><td>料箱追踪</td><td>每个料箱贴 RFID 标签 + 二维码，出入缓存仓自动扫码，全生命周期可追溯</td></tr>
-<tr><td>物料追溯</td><td>单颗器件级追溯：从COC基板ID → 耦合参数 → 测试数据 → 出货批次，全链路绑定</td></tr>
-<tr><td>动态调度</td><td>设备故障/节拍波动时自动重新分配料箱路线，Z700 接收实时改派指令</td></tr>
-<tr><td>状态看板</td><td>产线数字孪生大屏：实时显示每台Z700位置、每个缓存仓料位、每台设备状态</td></tr>
-<tr><td>异常处理</td><td>料箱卡料/空仓/定位失败 → MES 告警 → 人工介入或自动重试（最多3次）</td></tr>
+<tr><td>物料追溯</td><td>单颗器件级追溯：从COC基板ID → 耦合参数 → AOI结果 → 测试数据 → 出货批次，全链路绑定</td></tr>
+<tr><td>动态调度</td><td>设备故障/节拍波动时自动重新分配料箱路线，Z700/Z100 接收实时改派指令</td></tr>
+<tr><td>状态看板</td><td>产线数字孪生大屏：实时显示每台Z100/Z700F/Z700位置、每个缓存仓料位、每台设备状态</td></tr>
+<tr><td>异常处理</td><td>料箱卡料/空仓/定位失败 → MES 告警 → Z700 AOI复检 → 人工介入或自动重试（最多3次）</td></tr>
 </table>
 
-<div class="note">OE光引擎区的料箱处理，是一个由<b>Z100基础上下料</b> + <b>Z700具身智能搬运</b> + <b>AGV/AMR物流</b> + <b>多层缓存仓</b> + <b>MES调度系统</b> 协同构成的完整闭环，旨在实现高效、精准、可追溯的物料流转。Z100 确保单站料不中断，Z700 打通工位间壁垒，MES 统一调度全局最优。</div>
+<div class="note">OE光引擎区的料箱处理，是一个由<b>Z100（双臂移动·基础搬运）→ Z700F（固定单臂·工位插拔）→ Z700（双臂移动·全流程自主）</b>三级体系 + <b>AGV/AMR物流</b> + <b>多层缓存仓</b> + <b>MES调度系统</b> 协同构成的完整闭环。Z100 管"大料流转"，Z700F 管"精密插拔"，Z700 管"全流程闭环"——三级分工，MES 统一调度全局最优。</div>
 
 <h2>6. 自动化评估</h2>
 <table>
-<tr><th>对象</th><th>归属</th><th>可行性</th><th>说明</th></tr>
-<tr><td>耦合台上料/下料</td><td>上下料</td><td style="color:#00d4aa">高</td><td>Z100/Z700 标准取放循环 · 14台耦合台 · 治具标准化</td></tr>
-<tr><td>耦合→外观→烘烤 传递</td><td>搬运</td><td style="color:#00d4aa">高</td><td>Z700 双臂取放+轮式搬运 · 单种载具传递 · 动作单纯</td></tr>
-<tr><td>测试站自动上下料</td><td>上下料</td><td style="color:#ffaa00">中</td><td>Z100 可对接，需改造测试夹具 · 接口标准化</td></tr>
-<tr><td>端面清洁自动化</td><td>操作</td><td style="color:#00d4aa">高</td><td>自动端检仪已有 · Z100/Z700 持模块操作</td></tr>
-<tr><td>TCT/BI/热岛 批量上下料</td><td>上下料+搬运</td><td style="color:#ffaa00">中</td><td>Z700 可做托盘级搬运 · 柜门自动开启需改造 · 高温区耐热设计</td></tr>
-<tr><td>TXFA组装</td><td>组装</td><td style="color:#ff4444">低</td><td>精密对位 · 多品种 · 力反馈需求，暂由人工完成</td></tr>
-<tr><td>全料箱流转</td><td>物流调度</td><td style="color:#00d4aa">高</td><td>Z700 + AGV + MES 完整闭环，已在3D产线仿真验证</td></tr>
+<tr><th>对象</th><th>归属</th><th>执行单元</th><th>可行性</th><th>说明</th></tr>
+<tr><td>COC来料→缓存仓</td><td>搬运</td><td>Z100</td><td style="color:#00d4aa">高</td><td>双臂移动搬运 · 料箱/Tray/料笼标准接口</td></tr>
+<tr><td>缓存仓→耦合台 供料</td><td>搬运</td><td>Z700</td><td style="color:#00d4aa">高</td><td>自主导航至L2缓存 · 双臂取放 · 配送到14台耦合台群</td></tr>
+<tr><td>耦合台上下料插拔</td><td>精密插拔</td><td>Z700F</td><td style="color:#00d4aa">高</td><td>±0.05mm定位 · 14台耦合台各配1台 · 夹具标准化</td></tr>
+<tr><td>耦合→外观→烘烤 传递</td><td>搬运</td><td>Z700</td><td style="color:#00d4aa">高</td><td>双臂取放+AMR搬运 · 单种载具传递 · 全流程闭环</td></tr>
+<tr><td>AOI在线质检</td><td>检测</td><td>Z700</td><td style="color:#00d4aa">高</td><td>RGB-D+AOI相机 · 外观缺陷/脏污/崩边自动识别</td></tr>
+<tr><td>测试站上下料插拔</td><td>精密插拔</td><td>Z700F</td><td style="color:#ffaa00">中</td><td>需改造测试夹具 · 接口标准化后适配</td></tr>
+<tr><td>端面清洁自动化</td><td>操作</td><td>Z700F</td><td style="color:#00d4aa">高</td><td>自动端检仪已有 · 固定单臂持模块操作</td></tr>
+<tr><td>TCT/BI/热岛 批量上下料</td><td>搬运</td><td>Z700</td><td style="color:#ffaa00">中</td><td>托盘级搬运 · 柜门自动开启需改造 · 高温区耐热设计</td></tr>
+<tr><td>TXFA组装</td><td>组装</td><td>人工</td><td style="color:#ff4444">低</td><td>精密对位 · 多品种 · 力反馈需求，暂由人工完成</td></tr>
+<tr><td>料箱→AGV 跨区交接</td><td>物流</td><td>Z700 ↔ AGV A2</td><td style="color:#00d4aa">高</td><td>Z700自主导航对接AGV · 料箱自动交接 · MES调度</td></tr>
+<tr><td>多品种泛化切换</td><td>调度</td><td>Z700 AI视觉</td><td style="color:#00d4aa">高</td><td>AI识别Tray盘/料笼/散料盒 · 无需换夹具 · 秒级切换</td></tr>
 </table>
 
 <h2>7. 附录：OE 全工序表</h2>
