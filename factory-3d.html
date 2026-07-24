@@ -542,6 +542,38 @@ function buildFactory(){
     r1agv.nameSprite={sprite:r1nPlane,canvas:r1nCv,ctx:r1nCx,texture:r1nTx};
     scene.add(r1nPlane);
     agvObjs.push(r1agv);
+    // R2 follower AGV
+    const r2agv={obj:createAGV(2.5,-7.1,0xffaa00,0xffffff),pos:{x:2.5,z:-7.1},
+                 name:'R2',nameSprite:null,isFollower:true,followRobot:'R2'};
+    scene.add(r2agv.obj);
+    const r2nCv=document.createElement('canvas');r2nCv.width=64;r2nCv.height=32;
+    const r2nCx=r2nCv.getContext('2d');
+    r2nCx.fillStyle='#ffaa00';r2nCx.font='bold 14px monospace';
+    r2nCx.textAlign='center';r2nCx.textBaseline='middle';
+    r2nCx.fillText('R2',32,16);
+    const r2nTx=new THREE.CanvasTexture(r2nCv);r2nTx.minFilter=THREE.LinearFilter;
+    const r2nPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
+      new THREE.MeshBasicMaterial({map:r2nTx,transparent:true,depthTest:false,depthWrite:false}));
+    r2nPlane.position.set(2.5,.6,-7.1);r2nPlane.renderOrder=1000;
+    r2agv.nameSprite={sprite:r2nPlane,canvas:r2nCv,ctx:r2nCx,texture:r2nTx};
+    scene.add(r2nPlane);
+    agvObjs.push(r2agv);
+    // R3 follower AGV
+    const r3agv={obj:createAGV(2.5,-4.9,0xff6b35,0xffffff),pos:{x:2.5,z:-4.9},
+                 name:'R3',nameSprite:null,isFollower:true,followRobot:'R3'};
+    scene.add(r3agv.obj);
+    const r3nCv=document.createElement('canvas');r3nCv.width=64;r3nCv.height=32;
+    const r3nCx=r3nCv.getContext('2d');
+    r3nCx.fillStyle='#ff6b35';r3nCx.font='bold 14px monospace';
+    r3nCx.textAlign='center';r3nCx.textBaseline='middle';
+    r3nCx.fillText('R3',32,16);
+    const r3nTx=new THREE.CanvasTexture(r3nCv);r3nTx.minFilter=THREE.LinearFilter;
+    const r3nPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
+      new THREE.MeshBasicMaterial({map:r3nTx,transparent:true,depthTest:false,depthWrite:false}));
+    r3nPlane.position.set(2.5,.6,-4.9);r3nPlane.renderOrder=1000;
+    r3agv.nameSprite={sprite:r3nPlane,canvas:r3nCv,ctx:r3nCx,texture:r3nTx};
+    scene.add(r3nPlane);
+    agvObjs.push(r3agv);
   }
   agvPos={x:0,z:-6};agvTarget={x:0,z:-6};
 
