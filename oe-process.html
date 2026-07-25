@@ -37,7 +37,7 @@
 <body>
 <h1>OE光引擎区 全场景描述文档</h1>
 <div class="kpi">
-  <span>72 工位</span><span>I125~I196</span><span>产线: 800G DR8 · 料号260-B4103</span><span>总人工: 1874s</span>
+  <span>72 工位</span><span>I125~I196</span><span>800G DR8 · 260-B4103</span><span>总人工: 1874s</span>
 </div>
 <button class="btn" onclick="window.print()">📄 导出 PDF</button>
 <button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
@@ -47,97 +47,103 @@
 <table>
 <tr><th style="width:120px">项</th><th>说明</th></tr>
 <tr><td>产线型号</td><td>800G DR8 (料号: 260-B4103) · 72步完整工艺</td></tr>
-<tr><td>OE工位</td><td>72 站（I125~I196），前段46步+后段26步</td></tr>
-<tr><td>总人工节拍</td><td>1874s = 31.2min</td></tr>
-<tr><td>前段工序</td><td>物料准备 → DA1~DA4 → WB金线键合 → PEI Cover → 隔离器 → 激光分板 → LD耦合前目检</td></tr>
-<tr><td>后段工序</td><td>LD AA耦合 → Mpd测试 → TRX FA耦合 → 端面清洁×4 → 测试 → 出货检查</td></tr>
-<tr><td>机器人</td><td>Z100L AOI(26站) + 上下料(8站) + 搬运(3站) · 不配(35站)</td></tr>
+<tr><td>OE工位</td><td>72 站（I125~I196），每个大工站下列出完整子工序</td></tr>
+<tr><td>总人工节拍</td><td>1874s = 31.2min（含15% Buffer）</td></tr>
+<tr><td>机器人</td><td>Z100L AOI目检(26站) + 上下料(8站) + 搬运(3站) · 不配(35站)</td></tr>
+</table>
+<div class="note">子工序用→分隔，便于识别上下料、料笼操作、目检等关键操作点。机器人分配：目检 Z100L AOI，上下料 Z100L，料笼/搬运 Z100L，自动设备不配。</div>
+
+<h2>2. 操作识别</h2>
+<table>
+<tr><th>操作类型</th><th>涉及工站序号</th><th>数量</th></tr>
+<tr><td style="color:#58a6ff">含料笼操作</td><td>8/31/35/43…</td><td>4</td></tr>
+<tr><td style="color:#f0a500">含上下料操作</td><td>3/4/5/8/9/12/13/14…</td><td>32</td></tr>
 </table>
 
-<h2>2. 机器人分工</h2>
+<h2>3. 机器人分工</h2>
 <table>
-<tr><th>角色</th><th>工位</th><th>数</th></tr>
+<tr><th>角色</th><th>工位序号</th><th>数</th></tr>
 <tr><td style="color:#58a6ff">Z100L 料笼/搬运</td><td>1/71/72</td><td>3</td></tr>
 <tr><td style="color:#00d4aa">Z100L AOI 目检</td><td>2/7/8/10/11/13/15/18…68</td><td>26</td></tr>
 <tr><td style="color:#58a6ff">Z100L 上下料</td><td>43/47/55/59/61/62/64/66</td><td>8</td></tr>
 <tr><td style="color:#8b949e">不配机器人</td><td>3/4/5/6/9/12/14/16…70</td><td>35</td></tr>
 </table>
 
-<h2>3. 附录：OE 全工序表（72站）</h2>
+<h2>4. OE 全工序表（72站 · 含完整子工序）</h2>
 <table>
-<tr><th>序号</th><th>工序</th><th>人工节拍</th><th>机器人</th></tr>
-<tr><td>1</td><td>生产前物料准备</td><td>5.8s</td><td style="color:#58a6ff">Z100L 料笼</td></tr>
-<tr><td>2</td><td>进料检验&贴标签</td><td>39.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>3</td><td>连板FW烧录/IPSN写入</td><td>7.2s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>4</td><td>Plasma清洗-热沉(24h)</td><td>4.9s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>5</td><td>热沉点胶</td><td>0.90s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>6</td><td>热沉贴装&固化</td><td>113.04s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>7</td><td>外观检查</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>8</td><td>UV固化&检外观</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>9</td><td>热沉烘烤1(150°0.5H)</td><td>1.27s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>10</td><td>烘烤后目检</td><td>10.93s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>11</td><td>DA芯片来料目检</td><td>11.73s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>12</td><td>DA1垫块贴装</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>13</td><td>DA1自动二次元&目检</td><td>13.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>14</td><td>DA烘烤-1(150°1.5H)</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>15</td><td>烘烤后目检</td><td>10.4s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>16</td><td>DA2芯片贴装</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>17</td><td>COC SN与PCBA绑定</td><td>7.73s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>18</td><td>DA2自动二次元&目检</td><td>13.5s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>19</td><td>DA烘烤-2(150°1.5H)</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>20</td><td>烘烤后目检</td><td>10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>21</td><td>DA3芯片贴装</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>22</td><td>DA3自动二次元&目检</td><td>13.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>23</td><td>DA烘烤-3(150°1.5H)</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>24</td><td>烘烤后目检</td><td>10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>25</td><td>Plasma清洗-WB(1H)</td><td>1.82s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>26</td><td>首件 水滴角</td><td>36.0s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>27</td><td>走动 多工位</td><td>—</td><td style="color:#8b949e">—</td></tr>
-<tr><td>28</td><td>WB金线键合&目检</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>29</td><td>首件 推拉力</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>30</td><td>Plasma清洗-Cover(4h)</td><td>0.23s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>31</td><td>PEI Cover组装</td><td>75.72s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>32</td><td>PEI Cover烘烤</td><td>2.9s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>33</td><td>烘烤后目检</td><td>10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>34</td><td>Plasma清洗-隔离器(24h)</td><td>0.29s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>35</td><td>隔离器贴装</td><td>161.49s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>36</td><td>隔离器烘烤</td><td>2.9s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>37</td><td>烘烤后目检</td><td>9.6s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>38</td><td>DA4芯片贴装</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>39</td><td>红外测量</td><td>23.4s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>40</td><td>DA4自动二次元&目检</td><td>13.32s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>41</td><td>DA烘烤-4(150°1H)</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>42</td><td>烘烤后目检</td><td>11.3s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>43</td><td>激光分板/目检</td><td>20.78s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>44</td><td>保护治具组装</td><td>43.27s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>45</td><td>Plasma清洗-LD lens</td><td>0.81s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>46</td><td>LD耦合前目检</td><td>34.69s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>47</td><td>LD Lens AA耦合</td><td>21.04s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>48</td><td>LD耦合后目检</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>49</td><td>LD耦合后烘烤</td><td>2.2s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>50</td><td>Mpd_test_bake</td><td>21.93s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>51</td><td>TRX FA组装/面清洁</td><td>67.1s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>52</td><td>Plasma清洗-FA</td><td>0.8s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>53</td><td>Plasma清洗-PCBA</td><td>0.8s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>54</td><td>TRX耦合前目检</td><td>35.1s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>55</td><td>TRX FA AA耦合</td><td>134.0s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>56</td><td>TRX耦合后目检</td><td>28.75s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>57</td><td>TRX耦合后烘烤</td><td>2.5s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>58</td><td>TRX烘烤后目检</td><td>10.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>59</td><td>端面清洁-1</td><td>91.08s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>60</td><td>TRX Test</td><td>69s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>61</td><td>TCT-12hrs</td><td>4.60s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>62</td><td>端面清洁-2</td><td>181.0s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>63</td><td>OE Test</td><td>69s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>64</td><td>端面清洁-3</td><td>91.08s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>65</td><td>TX ORL test</td><td>66s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>66</td><td>端面清洁-4</td><td>91.08s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
-<tr><td>67</td><td>拆保护治具</td><td>26.42s</td><td style="color:#8b949e">—</td></tr>
-<tr><td>68</td><td>出货检查</td><td>58.65s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
-<tr><td>69</td><td>XMES过站汇总</td><td>—</td><td style="color:#8b949e">—</td></tr>
-<tr><td>70</td><td>线平衡损失</td><td>—</td><td style="color:#8b949e">—</td></tr>
-<tr><td>71</td><td>MES+搬运损失</td><td>30.0s</td><td style="color:#58a6ff">Z100L 搬运</td></tr>
-<tr><td>72</td><td>MES+搬运损失</td><td>30.0s</td><td style="color:#58a6ff">Z100L 搬运</td></tr>
+<tr><th>序号</th><th>大工站</th><th>子工序（→分隔）</th><th>人工</th><th>机器人</th></tr>
+<tr><td>1</td><td>生产前物料准备</td><td style="font-size:9px">物料清点→打叉板分类</td><td>5.8s</td><td style="color:#58a6ff">Z100L 料笼</td></tr>
+<tr><td>2</td><td>进料检验&贴标签</td><td style="font-size:9px">IPSN绑定→拆包→显微镜检→打印标签→贴标签→遮挡Mark点</td><td>39.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>3</td><td>连板FW烧录/IPSN写入</td><td style="font-size:9px">拿取扫码→上治具压紧→启动→运行→下料装盒</td><td>7.2s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>4</td><td>Plasma清洗-热沉(24h)</td><td style="font-size:9px">物料准备→摆治具→走动→开门放料→运行comon→下料</td><td>4.9s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>5</td><td>热沉点胶</td><td style="font-size:9px">上料启动→自动点胶黑胶→下料</td><td>0.90s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>6</td><td>热沉贴装&固化</td><td style="font-size:9px">取保护治具→PCBA放入→锁紧→调整位置→盖上盖→走动→锁4颗螺丝→翻转→手动点胶UVT79</td><td>113.04s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>7</td><td>外观检查</td><td style="font-size:9px">检查胶量</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>8</td><td>UV固化&检外观</td><td style="font-size:9px">UV上料→运行T79→下料→拆4颗螺丝→开上盖→开卡扣→取物料检外观→装料笼→过站</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>9</td><td>热沉烘烤1(150°0.5H)</td><td style="font-size:9px">走动烤箱→上料→烘烤0.5H+升降温→走动工位→走动烤箱→下料</td><td>1.27s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>10</td><td>烘烤后目检</td><td style="font-size:9px">目检→烘烤目检过站</td><td>10.93s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>11</td><td>DA芯片来料目检</td><td style="font-size:9px">PD全检→TIA全检→COC全检→FD Lens全检→PIC全检→SUB抽5%→RX FA抽5%</td><td>11.73s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>12</td><td>DA1垫块贴装</td><td style="font-size:9px">上料启动→进料连板识别→DA贴片PIC/TX FA/COC→出料退盒→下料</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>13</td><td>DA1自动二次元&目检</td><td style="font-size:9px">上下料+选程序→位置测量100%→打X板13%→显微镜全检→过站</td><td>13.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>14</td><td>DA烘烤-1(150°1.5H)</td><td style="font-size:9px">走动→选程序上料→烘烤+冷却→下料</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>15</td><td>烘烤后目检</td><td style="font-size:9px">显微镜全检→烘烤目检过站</td><td>10.4s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>16</td><td>DA2芯片贴装</td><td style="font-size:9px">上料启动→进料连板识别→DA贴片TIA/PD/COC/PIC→出料退盒→下料</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>17</td><td>COC SN与PCBA绑定</td><td style="font-size:9px">走动→上料→程序运行→下料→走动→过站导出上传</td><td>7.73s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>18</td><td>DA2自动二次元&目检</td><td style="font-size:9px">上下料+选程序→位置测量100%→打X板→显微镜全检→过站</td><td>13.5s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>19</td><td>DA烘烤-2(150°1.5H)</td><td style="font-size:9px">走动→选程序上料→烘烤+冷却→下料</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>20</td><td>烘烤后目检</td><td style="font-size:9px">目检→烘烤目检过站</td><td>10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>21</td><td>DA3芯片贴装</td><td style="font-size:9px">上料启动→进料连板识别→DA贴片Lens×4+电阻×2→出料退盒→下料</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>22</td><td>DA3自动二次元&目检</td><td style="font-size:9px">上下料+选程序→位置测量→打X板→显微镜全检→过站</td><td>13.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>23</td><td>DA烘烤-3(150°1.5H)</td><td style="font-size:9px">走动→选程序上料→烘烤+冷却→下料</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>24</td><td>烘烤后目检</td><td style="font-size:9px">目检→烘烤目检过站</td><td>10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>25</td><td>Plasma清洗-WB(1H)</td><td style="font-size:9px">走动→上料→运行SUB-1→下料→走动</td><td>1.82s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>26</td><td>首件 水滴角</td><td style="font-size:9px">检水滴角→走动多工位</td><td>36.0s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>27</td><td>走动 多工位</td><td style="font-size:9px">多工位走动</td><td>—</td><td style="color:#8b949e">—</td></tr>
+<tr><td>28</td><td>WB金线键合&目检</td><td style="font-size:9px">上料→进连板→预热→运行193根金线→出连板→返工5%→下料→显微镜全检→过站</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>29</td><td>首件 推拉力</td><td style="font-size:9px">推拉力×3pcs</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>30</td><td>Plasma清洗-Cover(4h)</td><td style="font-size:9px">走动→上料→启动→运行comon→下料→走动</td><td>0.23s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>31</td><td>PEI Cover组装</td><td style="font-size:9px">料笼取连扳→手动点胶3处→cover安装→目检→装回料笼→过站</td><td>75.72s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>32</td><td>PEI Cover烘烤</td><td style="font-size:9px">走动→选程序上料→烘烤SN-614 1H→下料</td><td>2.9s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>33</td><td>烘烤后目检</td><td style="font-size:9px">烘烤后目检→过站</td><td>10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>34</td><td>Plasma清洗-隔离器(24h)</td><td style="font-size:9px">走动→上料→启动→运行SUB→下料→走动</td><td>0.29s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>35</td><td>隔离器贴装</td><td style="font-size:9px">物料摆PCBA→料笼取料→点胶左→装隔离器左→UV固化左→目检左→点胶右→装隔离器右→UV固化右→目检右→装回料笼→过站</td><td>161.49s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>36</td><td>隔离器烘烤</td><td style="font-size:9px">走动→选程序上料→烘烤T-55 1H→下料</td><td>2.9s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>37</td><td>烘烤后目检</td><td style="font-size:9px">目检→过站→走动</td><td>9.6s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>38</td><td>DA4芯片贴装</td><td style="font-size:9px">上料启动→进料连板识别→DA贴片FD Lens×2+RX FA×2→出料退盒→下料</td><td>0.96s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>39</td><td>红外测量</td><td style="font-size:9px">走动→抽检100%→走动</td><td>23.4s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>40</td><td>DA4自动二次元&目检</td><td style="font-size:9px">上下料+选程序→位置测量→打X板→显微镜全检→过站</td><td>13.32s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>41</td><td>DA烘烤-4(150°1H)</td><td style="font-size:9px">走动→选程序上料→烘烤+冷却→下料</td><td>2.7s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>42</td><td>烘烤后目检</td><td style="font-size:9px">目检→过站→走动</td><td>11.3s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>43</td><td>激光分板/目检</td><td style="font-size:9px">料笼取连扳→分载板→入保护治具→上料→分板→下料→去废料→目检→放料盒→过站</td><td>20.78s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>44</td><td>保护治具组装</td><td style="font-size:9px">取底盖入OE→盖上盖→打螺丝×4→放托盘</td><td>43.27s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>45</td><td>Plasma清洗-LD lens</td><td style="font-size:9px">上料→选程序→运行comon→下料→走动</td><td>0.81s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>46</td><td>LD耦合前目检</td><td style="font-size:9px">显微镜目检→走动</td><td>34.69s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>47</td><td>LD Lens AA耦合</td><td style="font-size:9px">取料上设备→接电启动→耦合运行→取下放置</td><td>21.04s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>48</td><td>LD耦合后目检</td><td style="font-size:9px">走动→显微镜目检</td><td>—</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>49</td><td>LD耦合后烘烤</td><td style="font-size:9px">走动→选程序上料→烘烤→取料盘</td><td>2.2s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>50</td><td>Mpd_test_bake</td><td style="font-size:9px">物料摆烤台→预热→烤台50°→入保护治具→上电→运行→取下</td><td>21.93s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>51</td><td>TRX FA组装/面清洁</td><td style="font-size:9px">取光纤防尘盖→装Jumper→盖上盖→撕保护纸→TX/RX清洁检查→放物料</td><td>67.1s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>52</td><td>Plasma清洗-FA</td><td style="font-size:9px">走动→上料→选程序→运行comon→下料</td><td>0.8s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>53</td><td>Plasma清洗-PCBA</td><td style="font-size:9px">走动→上料→选程序→运行comon→下料</td><td>0.8s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>54</td><td>TRX耦合前目检</td><td style="font-size:9px">走动→TX FA目检→走动</td><td>35.1s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>55</td><td>TRX FA AA耦合</td><td style="font-size:9px">取料上设备→接电启动→试运行→看端面×2→TX RX上料→装TX FA→运行→点胶T410→运行→装左RX FA→运行→点胶→运行→装右RX FA→运行→点胶→运行→取下</td><td>134.0s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>56</td><td>TRX耦合后目检</td><td style="font-size:9px">走动→显微镜目检</td><td>28.75s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>57</td><td>TRX耦合后烘烤</td><td style="font-size:9px">走动→选程序上料→烘烤→取料盘</td><td>2.5s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>58</td><td>TRX烘烤后目检</td><td style="font-size:9px">目检→走动</td><td>10.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>59</td><td>端面清洁-1</td><td style="font-size:9px">拿料看端面→酒精棉签擦拭×2→吹端面→仪器看端面×2→放物料</td><td>91.08s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>60</td><td>TRX Test</td><td style="font-size:9px">烤台50°预热→金手指接电→查端面×2→启动→运行→取下放物料</td><td>69s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>61</td><td>TCT-12hrs</td><td style="font-size:9px">进站→走动TCT→上料→TCT 12hrs→登记→走动工位→走动TCT→取料→走动工位→过站</td><td>4.60s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>62</td><td>端面清洁-2</td><td style="font-size:9px">端面清洁-2</td><td>181.0s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>63</td><td>OE Test</td><td style="font-size:9px">烤台50°预热→金手指接电→查端面×2→启动→运行→取下放物料</td><td>69s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>64</td><td>端面清洁-3</td><td style="font-size:9px">端面清洁-3</td><td>91.08s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>65</td><td>TX ORL test</td><td style="font-size:9px">金手指接电→查端面×2→启动→运行→取下放物料</td><td>66s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>66</td><td>端面清洁-4</td><td style="font-size:9px">端面清洁-4</td><td>91.08s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>67</td><td>拆保护治具</td><td style="font-size:9px">物料摆放→取螺丝→取下OE放托盘→放治具上下盖</td><td>26.42s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>68</td><td>出货检查</td><td style="font-size:9px">出货目检→过站登记</td><td>58.65s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>69</td><td>XMES过站汇总</td><td style="font-size:9px">手动扫码过站</td><td>—</td><td style="color:#8b949e">—</td></tr>
+<tr><td>70</td><td>线平衡损失</td><td style="font-size:9px">—</td><td>—</td><td style="color:#8b949e">—</td></tr>
+<tr><td>71</td><td>MES+搬运损失</td><td style="font-size:9px">搬运损失</td><td>30.0s</td><td style="color:#58a6ff">Z100L 搬运</td></tr>
+<tr><td>72</td><td>MES+搬运损失</td><td style="font-size:9px">搬运损失</td><td>30.0s</td><td style="color:#58a6ff">Z100L 搬运</td></tr>
 </table>
 
 <br>
