@@ -494,7 +494,7 @@ function buildFactory(){
       s.userData={...s.userData,...st,zoneId:z.id,zoneName:z.name};
       scene.add(s);stationObjects.push(s);
       scene.add(createCoordSprite(sx,sz,z.color).sprite);
-      scene.add(createTextLabel(st.id+' '+st.label,sx,.025,sz));
+      scene.add(createTextLabel((i+1)+' '+st.label,sx,.025,sz));
     });
     // Zone corner coordinates (4 corners)
     const zx=z.pos.x,zz=z.pos.z,zw=z.size.w,zd=z.size.d;
@@ -751,11 +751,13 @@ function openStation(sid){
   const st=ZONES.flatMap(function(z){return z.stations}).find(function(s){return s.id===sid});
   const name=st?st.label:'';
   const did=sid.replace('I','I-');
+  const zone=ZONES.find(function(z){return z.stations.some(function(s){return s.id===sid})});
+  const seq=zone?zone.stations.findIndex(function(s){return s.id===sid})+1:sid;
   if(links[sid]){
     window.location.href=links[sid]+'?id='+encodeURIComponent(did)+'&name='+encodeURIComponent(name);
   }else{
     var p=document.getElementById('info-popup');
-    p.innerHTML='<div class="name">'+did+' '+name+'</div><div class="desc">'+(st?st.desc:'')+'</div>';
+    p.innerHTML='<div class="name">'+seq+' '+name+'</div><div class="desc">'+(st?st.desc:'')+'</div>';
     p.style.display='block';setTimeout(function(){p.style.display='none'},5000);
   }
 }
