@@ -37,7 +37,7 @@
 <body>
 <h1>OE光引擎区 全场景描述文档</h1>
 <div class="kpi">
-  <span>26 工位</span><span>8 大阶段</span><span>1~26</span><span>产线: 800G DR8</span>
+  <span>26 工位</span><span>8 大阶段</span><span>1~26</span><span>产线: 800G DR8 · 料号260-B4103</span>
 </div>
 <button class="btn" onclick="window.print()">📄 导出 PDF</button>
 <button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
@@ -46,174 +46,167 @@
 <h2>1. 定位与范围</h2>
 <table>
 <tr><th style="width:120px">项</th><th>说明</th></tr>
-<tr><td>产线型号</td><td>800G DR8 (料号: 260-B4103) · 72步完整工艺流程</td></tr>
-<tr><td>OE工位数量</td><td>26 站（1~26），覆盖 OE-前段 42步和 OE-后段核心工序</td></tr>
-<tr><td>物料载体</td><td>料笼（料盘载体） 料盘（模块载体） Tray盘（热工艺工装载体）</td></tr>
-<tr><td>操作人数</td><td>约 46 人（DA贴片/耦合/WB/组装等）</td></tr>
-<tr><td>物料流转</td><td>连板(panel)经料笼在工位间流转，工位内料盘/Tray盘传递</td></tr>
-<tr><td>前段工艺</td><td>物料准备 → Plasma清洗 → DA1~DA4贴片 → WB金线键合 → PEI Cover → 隔离器 → 激光分板</td></tr>
-<tr><td>后段工艺(部分)</td><td>LD Lens AA耦合 → Mpd测试 → TRX FA组装/清洁 → TRX FA AA耦合(后段详见MOD区)</td></tr>
+<tr><td>产线型号</td><td>800G DR8 (料号: 260-B4103) · 72步完整工艺</td></tr>
+<tr><td>OE工位</td><td>26 站（1~26），覆盖来料准备→LD AA耦合→TRX FA组装</td></tr>
+<tr><td>物料载体</td><td>料笼（连板panel载体） 料盘（模块载体） Tray盘（热工艺工装）</td></tr>
+<tr><td>机器人配置</td><td>Z100L 料笼搬运 + Z100L AOI目检 + Z100L上下料 · 自动设备工位不配机器人</td></tr>
+<tr><td>核心工艺</td><td>DA1~DA4贴片 → WB金线键合(193根) → PEI Cover → 隔离器 → 激光分板 → LD AA耦合</td></tr>
 </table>
-<div class="note">OE区是800G DR8光引擎制造的<b>核心工艺段</b>。采用COC(chip-on-carrier)工艺路线，经过4次DA贴片(PIC/TIA/PD/COC/FD Lens等)、WB金线键合(193根金线)、PEI Cover封装、隔离器安装、激光分板等关键工序。前段42步覆盖从物料准备到LD耦合前目检，后段23步覆盖AA耦合到出货检查。</div>
+<div class="note">OE区是800G DR8光引擎制造核心工艺段。采用COC(chip-on-carrier)工艺，经4次DA贴片、WB金线键合、Cover封装、隔离器安装、激光分板、LD Lens AA耦合。机器人配置原则：目检工位 Z100L AOI，上下料工位 Z100L，料笼工位 Z100L搬运，自动设备工位不配机器人。</div>
 
 <h2>2. 工序流程总览</h2>
 <div class="phase">
 <h3>工序流程总览（26工位 · 8大阶段）</h3>
 <div class="flow-simple">
-【来料准备段】物料准备 → Plasma清洗 → 进料检验贴标 → FW烧录/IPSN写入
-【热沉段】Plasma清洗热沉(24h) → 热沉点胶 → 热沉贴装&固化 → 热沉烘烤+目检
-【DA1段】DA来料目检 → DA1垫块贴装 → DA1二次元+目检 → DA烘烤-1+目检
-【DA2段】DA2芯片贴装 → COC SN绑定+DA2二次元 → DA烘烤-2+目检
-【DA3段】DA3芯片贴装 → DA3二次元+烘烤+目检
-【WB+封装段】Plasma-WB+WB键合 → PEI Cover组装+烘烤 → 隔离器贴装+烘烤
-【DA4+分板段】DA4芯片+红外测量 → DA4二次元+烘烤+目检 → 激光分板+保护治具
-【耦合前段】Plasma-LD+耦合前目检 → LD Lens AA耦合(6台并行) → Mpd_test+TRX FA
+【来料准备段 1~3】物料准备 → 进料检验&贴标签 → FW烧录/IPSN写入
+【热沉段 4~7】Plasma清洗热沉 → 热沉点胶 → 热沉贴装&固化 → 热沉烘烤+目检
+【DA1段 8~11】DA来料目检 → DA1垫块贴装 → DA1二次元&目检 → DA烘烤-1+目检
+【DA2段 12~15】DA2芯片贴装 → COC SN绑定 → DA2二次元&目检 → DA烘烤-2+目检
+【DA3段 16~17】DA3芯片贴装 → DA3二次元&烘烤+目检
+【WB+封装段 18~20】Plasma-WB+WB键合&目检 → PEI Cover组装+烘烤+目检 → 隔离器贴装+烘烤+目检
+【DA4+分板段 21~23】DA4芯片+红外测量 → DA4二次元&烘烤+目检 → 激光分板+保护治具
+【耦合段 24~26】Plasma-LD+耦合前目检 → LD Lens AA耦合 → Mpd_test+TRX FA组装
 </div>
 </div>
 
 <h2>3. 分阶段详细流程</h2>
 
 <div class="phase">
-<h3>来料准备段（1 ~ 4）</h3>
-<p style="color:#8b949e;font-size:10px">从线边仓接收COC来料(连板panel形式)，完成物料清点、Plasma清洗、进料检验及FW烧录。</p>
+<h3>来料准备段（1 ~ 3）</h3>
+<p style="color:#8b949e;font-size:10px">线边仓来料接收(连板panel)，物料清点、进料检验贴标、FW烧录。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>1</td><td>生产前物料准备</td><td>手动</td><td>1</td><td>料笼</td><td>≤5.8s</td><td>批次/数量/料号核对</td></tr>
-<tr><td>2</td><td>Plasma清洗-多工序</td><td>自动·多腔体</td><td>1</td><td>料盘</td><td>≤28.3s</td><td>去除有机物/微粒</td></tr>
-<tr><td>3</td><td>进料检验&贴标签</td><td>手动·IPSN绑定</td><td>1</td><td>料盘</td><td>≤39.9s</td><td>SN唯一性/码可读</td></tr>
-<tr><td>4</td><td>连板FW烧录/IPSN写入</td><td>自动·上治具</td><td>1</td><td>料盘</td><td>≤11.3s</td><td>FW校验通过</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>1</td><td>生产前物料准备</td><td>手动</td><td>1</td><td>≤5.8s</td><td style="color:#58a6ff">Z100L 料笼</td><td>批次/数量/料号核对</td></tr>
+<tr><td>2</td><td>进料检验&贴标签</td><td>手动+显微镜</td><td>1</td><td>≤39.9s</td><td style="color:#00d4aa">Z100L AOI</td><td>SN唯一性/码可读</td></tr>
+<tr><td>3</td><td>连板FW烧录/IPSN写入</td><td>自动</td><td>1</td><td>≤11.3s</td><td style="color:#8b949e">—</td><td>FW校验通过</td></tr>
 </table>
 </div>
 
 <div class="phase">
-<h3>热沉段（5 ~ 8）</h3>
-<p style="color:#8b949e;font-size:10px">Plasma清洗热沉(24h有效期)，热沉自动点胶，精密贴装&UV固化，150°C/0.5H烘烤固化。</p>
+<h3>热沉段（4 ~ 7）</h3>
+<p style="color:#8b949e;font-size:10px">Plasma清洗热沉(24h有效期)，自动点胶，精密贴装&UV固化，150°C/0.5H烘烤+目检。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>5</td><td>Plasma清洗-热沉(24h)</td><td>自动·comon程序</td><td>1</td><td>Tray盘</td><td>≤4.9s</td><td>24h有效期内使用</td></tr>
-<tr><td>6</td><td>热沉点胶</td><td>自动·黑胶点胶</td><td>1</td><td>料盘</td><td>≤34.1s</td><td>胶量/位置精度</td></tr>
-<tr><td>7</td><td>热沉贴装&固化</td><td>手动·UV固化</td><td>2</td><td>料盘</td><td>≤113s</td><td>定位/锁紧/UV固化</td></tr>
-<tr><td>8</td><td>热沉烘烤1+目检</td><td>自动·150°C/0.5H</td><td>2</td><td>Tray盘</td><td>≤4.4s烘烤</td><td>胶量外观检查</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>4</td><td>Plasma清洗-热沉(24h)</td><td>自动·comon</td><td>1</td><td>≤4.9s</td><td style="color:#8b949e">—</td><td>24h有效期内使用</td></tr>
+<tr><td>5</td><td>热沉点胶</td><td>自动·黑胶</td><td>1</td><td>≤34.1s</td><td style="color:#8b949e">—</td><td>胶量/位置精度</td></tr>
+<tr><td>6</td><td>热沉贴装&固化</td><td>手动+UV固化</td><td>2</td><td>≤113s</td><td style="color:#8b949e">—</td><td>定位/锁紧/UV固化</td></tr>
+<tr><td>7</td><td>热沉烘烤1+目检</td><td>自动·150°C/0.5H</td><td>2</td><td>≤10.9s</td><td style="color:#00d4aa">Z100L AOI</td><td>烘烤固化+外观检查</td></tr>
 </table>
 </div>
 
 <div class="phase">
-<h3>DA1段（9 ~ 12）</h3>
-<p style="color:#8b949e;font-size:10px">DA芯片来料100%目检，第一次DA贴片(PIC/TX FA/COC垫块)，自动二次元位置测量，150°C/1.5H烘烤。</p>
+<h3>DA1段（8 ~ 11）</h3>
+<p style="color:#8b949e;font-size:10px">DA芯片来料100%目检，DA1垫块贴片(PIC/TX FA/COC)，自动二次元测量，150°C/1.5H烘烤+目检。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>9</td><td>DA芯片来料目检</td><td>人工·显微镜</td><td>1</td><td>料盘</td><td>≤11.7s</td><td>PD/TIA/COC/PIC全检</td></tr>
-<tr><td>10</td><td>DA1 垫块贴装</td><td>自动·DA贴片</td><td>1</td><td>料盘</td><td>≤55.4s</td><td>PIC+TX FA+COC对位</td></tr>
-<tr><td>11</td><td>DA1二次元+目检</td><td>自动·位置测量</td><td>1</td><td>料盘</td><td>≤25s</td><td>100%位置测量+目检</td></tr>
-<tr><td>12</td><td>DA烘烤-1+目检</td><td>自动·150°C/1.5H</td><td>1</td><td>Tray盘</td><td>≤12.1s烘烤</td><td>烘烤后显微镜目检</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>8</td><td>DA芯片来料目检</td><td>人工·显微镜</td><td>1</td><td>≤11.7s</td><td style="color:#00d4aa">Z100L AOI</td><td>PD/TIA/COC/PIC全检</td></tr>
+<tr><td>9</td><td>DA1 垫块贴装</td><td>自动·DA贴片</td><td>1</td><td>≤55.4s</td><td style="color:#8b949e">—</td><td>PIC+TX FA+COC对位</td></tr>
+<tr><td>10</td><td>DA1二次元&目检</td><td>自动+显微镜</td><td>1</td><td>≤25s</td><td style="color:#00d4aa">Z100L AOI</td><td>100%位置测量+目检</td></tr>
+<tr><td>11</td><td>DA烘烤-1+目检</td><td>自动·150°C/1.5H</td><td>1</td><td>≤10.9s</td><td style="color:#00d4aa">Z100L AOI</td><td>烘烤后显微镜目检</td></tr>
 </table>
 </div>
 
 <div class="phase">
-<h3>DA2段（13 ~ 15）</h3>
-<p style="color:#8b949e;font-size:10px">第二次DA贴片(TIA×2/PD×2/COC×2/PIC)，COC SN与PCBA SN绑定，二次元测量，150°C/1.5H二次烘烤。</p>
+<h3>DA2段（12 ~ 15）</h3>
+<p style="color:#8b949e;font-size:10px">DA2贴片(TIA×2/PD×2/COC×2/PIC)，COC SN与PCBA绑定，二次元测量+目检，二次烘烤。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>13</td><td>DA2 芯片贴装</td><td>自动·DA贴片</td><td>2</td><td>料盘</td><td>≤93.9s</td><td>TIA+PD+COC+PIC全贴</td></tr>
-<tr><td>14</td><td>COC SN绑定+DA2二次元</td><td>手动+自动</td><td>2</td><td>料盘</td><td>≤148.1s</td><td>SN绑定+100%测量</td></tr>
-<tr><td>15</td><td>DA烘烤-2+目检</td><td>自动·150°C/1.5H</td><td>1</td><td>Tray盘</td><td>≤12.1s烘烤</td><td>烘烤后目检</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>12</td><td>DA2 芯片贴装</td><td>自动·DA贴片</td><td>2</td><td>≤93.9s</td><td style="color:#8b949e">—</td><td>TIA+PD+COC+PIC全贴</td></tr>
+<tr><td>13</td><td>COC SN与PCBA绑定</td><td>手动+自动</td><td>1</td><td>≤13.1s</td><td style="color:#8b949e">—</td><td>SN绑定+MES追溯</td></tr>
+<tr><td>14</td><td>DA2二次元&目检</td><td>自动+显微镜</td><td>2</td><td>≤148.1s</td><td style="color:#00d4aa">Z100L AOI</td><td>100%测量+目检</td></tr>
+<tr><td>15</td><td>DA烘烤-2+目检</td><td>自动·150°C/1.5H</td><td>1</td><td>≤10.9s</td><td style="color:#00d4aa">Z100L AOI</td><td>烘烤后目检</td></tr>
 </table>
 </div>
 
 <div class="phase">
 <h3>DA3段（16 ~ 17）</h3>
-<p style="color:#8b949e;font-size:10px">第三次DA贴片(Lens小垫块×4+电阻×2)，二次元测量，150°C/1.5H三次烘烤+目检。</p>
+<p style="color:#8b949e;font-size:10px">DA3贴片(Lens小垫块×4+电阻×2)，二次元测量+150°C/1.5H烘烤+目检。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>16</td><td>DA3 芯片贴装</td><td>自动·DA贴片</td><td>2</td><td>料盘</td><td>≤76.8s</td><td>Lens×4+电阻×2</td></tr>
-<tr><td>17</td><td>DA3二次元+烘烤+目检</td><td>自动+手动</td><td>1</td><td>Tray盘</td><td>≤61.4s</td><td>测量+烘烤+目检</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>16</td><td>DA3 芯片贴装</td><td>自动·DA贴片</td><td>2</td><td>≤76.8s</td><td style="color:#8b949e">—</td><td>Lens×4+电阻×2</td></tr>
+<tr><td>17</td><td>DA3二次元&烘烤+目检</td><td>自动+显微镜</td><td>1</td><td>≤61.4s</td><td style="color:#00d4aa">Z100L AOI</td><td>测量+烘烤+目检</td></tr>
 </table>
 </div>
 
 <div class="phase">
 <h3>WB+封装段（18 ~ 20）</h3>
-<p style="color:#8b949e;font-size:10px">Plasma清洗后WB金线键合(193根金线/颗)，PEI Cover点胶组装&烘烤，隔离器双端贴装&烘烤。</p>
+<p style="color:#8b949e;font-size:10px">Plasma清洗后WB金线键合(193根/颗)，PEI Cover点胶组装&烘烤，隔离器双端贴装&烘烤，全程目检。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>18</td><td>Plasma-WB+WB键合目检</td><td>自动·金线键合</td><td>1</td><td>料盘</td><td>≤77s</td><td>193根金线·推拉力测试</td></tr>
-<tr><td>19</td><td>PEI Cover组装+烘烤</td><td>手动·UV+热固化</td><td>2</td><td>料盘</td><td>≤75.7s</td><td>3处点胶+cover安装</td></tr>
-<tr><td>20</td><td>隔离器贴装+烘烤</td><td>手动·双端贴装</td><td>3</td><td>料盘</td><td>≤161.5s</td><td>左右隔离器+UV固化</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>18</td><td>Plasma-WB+WB键合&目检</td><td>自动·金线键合</td><td>1</td><td>≤77s</td><td style="color:#00d4aa">Z100L AOI</td><td>193根金线·推拉力测试</td></tr>
+<tr><td>19</td><td>PEI Cover组装+烘烤+目检</td><td>手动+UV+烘烤</td><td>2</td><td>≤75.7s</td><td style="color:#00d4aa">Z100L AOI</td><td>3处点胶+cover+烘烤</td></tr>
+<tr><td>20</td><td>隔离器贴装+烘烤+目检</td><td>手动+UV+烘烤</td><td>3</td><td>≤161.5s</td><td style="color:#00d4aa">Z100L AOI</td><td>左右隔离器+UV+烘烤</td></tr>
 </table>
 </div>
 
 <div class="phase">
 <h3>DA4+分板段（21 ~ 23）</h3>
-<p style="color:#8b949e;font-size:10px">第四次DA贴片(FD Lens×2+RX FA×2)，红外测量抽检，二次元测量+150°C/1H烘烤，激光分板+保护治具组装。</p>
+<p style="color:#8b949e;font-size:10px">DA4贴片(FD Lens×2+RX FA×2)+红外测量，二次元测量+150°C/1H烘烤+目检，激光分板+保护治具组装。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>21</td><td>DA4芯片+红外测量</td><td>自动·DA贴片</td><td>1</td><td>料盘</td><td>≤72.8s</td><td>FD Lens+RX FA+红外</td></tr>
-<tr><td>22</td><td>DA4二次元+烘烤+目检</td><td>自动+手动</td><td>1</td><td>Tray盘</td><td>≤26.4s</td><td>测量+150°C/1H烘烤</td></tr>
-<tr><td>23</td><td>激光分板+保护治具</td><td>自动·激光+手动</td><td>1</td><td>料盘</td><td>≤43.3s</td><td>分板精度+治具组装</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>21</td><td>DA4芯片+红外测量</td><td>自动·DA贴片</td><td>1</td><td>≤72.8s</td><td style="color:#8b949e">—</td><td>FD Lens+RX FA+红外</td></tr>
+<tr><td>22</td><td>DA4二次元&烘烤+目检</td><td>自动+显微镜</td><td>1</td><td>≤26.4s</td><td style="color:#00d4aa">Z100L AOI</td><td>测量+150°C/1H烘烤</td></tr>
+<tr><td>23</td><td>激光分板+保护治具</td><td>激光+手动</td><td>1</td><td>≤43.3s</td><td style="color:#58a6ff">Z100L 上下料</td><td>分板精度+治具组装</td></tr>
 </table>
 </div>
 
 <div class="phase">
-<h3>耦合前段（24 ~ 26）</h3>
-<p style="color:#8b949e;font-size:10px">Plasma清洗LD lens+耦合前目检，LD Lens AA自动对准耦合(6台并行)，Mpd烤台测试+TRX FA组装准备。TRX FA AA耦合等后段工序详见MOD区。</p>
+<h3>耦合段（24 ~ 26）</h3>
+<p style="color:#8b949e;font-size:10px">Plasma清洗LD lens+耦合前目检，LD Lens AA自动对准耦合(6台并行)+目检+烘烤，Mpd烤台测试+TRX FA组装准备。</p>
 <table>
-<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th></tr>
-<tr><td>24</td><td>Plasma-LD+耦合前目检</td><td>自动+人工</td><td>1</td><td>料盘</td><td>≤34.7s</td><td>Plasma清洗+显微镜目检</td></tr>
-<tr><td>25</td><td>LD Lens AA耦合</td><td>自动·6台并行</td><td>6</td><td>料盘</td><td>≤270.6s/ch</td><td>AA自动对准±0.5μm</td></tr>
-<tr><td>26</td><td>Mpd_test+TRX FA</td><td>自动+手动</td><td>3</td><td>料盘</td><td>≤65.6s</td><td>烤台测试+FA组装清洁</td></tr>
+<tr><th>序号</th><th>工位</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th><th>质量门</th></tr>
+<tr><td>24</td><td>Plasma-LD+耦合前目检</td><td>自动+显微镜</td><td>1</td><td>≤34.7s</td><td style="color:#00d4aa">Z100L AOI</td><td>Plasma清洗+目检</td></tr>
+<tr><td>25</td><td>LD Lens AA耦合</td><td>自动·6台并行</td><td>6</td><td>≤541.2s</td><td style="color:#58a6ff">Z100L 上下料</td><td>AA对准+目检+烘烤</td></tr>
+<tr><td>26</td><td>Mpd_test+TRX FA组装</td><td>自动+手动</td><td>3</td><td>≤67.1s</td><td style="color:#00d4aa">Z100L AOI</td><td>烤台测试+FA组装目检</td></tr>
 </table>
 </div>
 
-<h2>4. 关键工艺参数</h2>
+<h2>4. 机器人分工汇总</h2>
 <table>
-<tr><th>工艺环节</th><th>关键参数</th><th>说明</th></tr>
-<tr><td>DA1~DA4贴片</td><td>精度 ±5μm</td><td>四次DA贴片: PIC/TX FA/COC → TIA/PD/COC/PIC → Lens/电阻 → FD Lens/RX FA</td></tr>
-<tr><td>DA烘烤</td><td>150°C / 1~1.5H</td><td>每次DA后烘烤固化，N₂保护气氛</td></tr>
-<tr><td>WB金线键合</td><td>193根金线/颗</td><td>Plasma清洗后1H内完成，推拉力首件验证</td></tr>
-<tr><td>PEI Cover</td><td>3处点胶+UV固化</td><td>烘烤1H+0.5H升降温</td></tr>
-<tr><td>隔离器</td><td>双端手动贴装</td><td>左右各1颗，UV固化+1H烘烤</td></tr>
-<tr><td>激光分板</td><td>连板→单颗分离</td><td>分板后保护治具组装(4颗螺丝固定)</td></tr>
-<tr><td>LD Lens AA耦合</td><td>6台并行·±0.5μm</td><td>自动对准+耦合程序运行，单通道≤270.6s</td></tr>
-<tr><td>Mpd_test</td><td>50°C烤台测试</td><td>预热+上电+程序运行</td></tr>
+<tr><th>角色</th><th>工位</th><th>数量</th><th>说明</th></tr>
+<tr><td style="color:#58a6ff">Z100L 料笼搬运</td><td>1 生产前物料准备</td><td>1</td><td>线边仓→产线入口，料笼流转</td></tr>
+<tr><td style="color:#00d4aa">Z100L AOI 目检</td><td>2/7/8/10/11/14/15/17/18/19/20/22/24/26</td><td>14</td><td>显微镜目检/二次元目检工位，AI辅助判定</td></tr>
+<tr><td style="color:#58a6ff">Z100L 上下料</td><td>23 激光分板+治具 / 25 LD AA耦合</td><td>2</td><td>设备上下料+治具组装辅助</td></tr>
+<tr><td style="color:#8b949e">不配机器人</td><td>3/4/5/6/9/12/13/16/21</td><td>9</td><td>全自动设备(Plasma/DA/烘烤/FW烧录/SN绑定)</td></tr>
 </table>
 
-<h2>5. 物料容器与机器人分工</h2>
+<h2>5. 物料容器</h2>
 <table>
-<tr><th>层级</th><th>容器</th><th>说明</th><th>机器人</th><th>场景</th></tr>
-<tr><td>L1·料笼</td><td>大型笼箱</td><td>内装连板panel，工位间流转</td><td style="color:#58a6ff">Z100L 专用</td><td>COC来料→缓存仓，空笼回收</td></tr>
-<tr><td>L2·料盘</td><td>防静电托盘</td><td>承载单颗/多颗模块</td><td style="color:#f0a500">Z100L 操作<br>Z100L 搬运</td><td>工位间传递，AOI检查</td></tr>
-<tr><td>L3·Tray盘</td><td>耐高温工装托盘</td><td>铝合金/陶瓷，用于烘烤/Plasma等热工艺</td><td style="color:#ff6b35">Z100L 全流程</td><td>热工艺上下柜，工位间传递</td></tr>
+<tr><th>层级</th><th>容器</th><th>说明</th><th>机器人</th></tr>
+<tr><td>L1·料笼</td><td>大型笼箱</td><td>内装连板panel，工位间流转</td><td style="color:#58a6ff">Z100L</td></tr>
+<tr><td>L2·料盘</td><td>防静电托盘</td><td>承载单颗/多颗模块</td><td style="color:#58a6ff">Z100L</td></tr>
+<tr><td>L3·Tray盘</td><td>耐高温工装托盘</td><td>铝合金/陶瓷，热工艺专用</td><td style="color:#58a6ff">Z100L</td></tr>
 </table>
-<div class="note">核心规则：Z100L拖动料笼(批量流转)，Z100L操作料盘/Tray盘(精密上下料/AOI检查/位姿调整)。Z100L不拖动料笼，Z100L不碰料盘/Tray盘/器件。</div>
 
 <h2>6. 附录：OE 全工序表</h2>
 <table>
-<tr><th>序号</th><th>I-Step</th><th>工序</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th></tr>
-<tr><td>1</td><td>1</td><td>生产前物料准备</td><td>手动</td><td>1</td><td>📦料笼</td><td>≤5.8s</td></tr>
-<tr><td>2</td><td>2</td><td>Plasma清洗-多工序</td><td>自动</td><td>1</td><td>📥料盘</td><td>≤28.3s</td></tr>
-<tr><td>3</td><td>3</td><td>进料检验&贴标签</td><td>手动</td><td>1</td><td>📥料盘</td><td>≤39.9s</td></tr>
-<tr><td>4</td><td>4</td><td>连板FW烧录/IPSN写入</td><td>自动</td><td>1</td><td>📥料盘</td><td>≤11.3s</td></tr>
-<tr><td>5</td><td>5</td><td>Plasma清洗-热沉(24h)</td><td>自动</td><td>1</td><td>🔥Tray盘</td><td>≤4.9s</td></tr>
-<tr><td>6</td><td>6</td><td>热沉点胶</td><td>自动</td><td>1</td><td>📥料盘</td><td>≤34.1s</td></tr>
-<tr><td>7</td><td>7</td><td>热沉贴装&固化</td><td>手动+UV</td><td>2</td><td>📥料盘</td><td>≤113s</td></tr>
-<tr><td>8</td><td>8</td><td>热沉烘烤1+目检</td><td>自动</td><td>2</td><td>🔥Tray盘</td><td>≤4.4s</td></tr>
-<tr><td>9</td><td>9</td><td>DA芯片来料目检</td><td>人工·显微镜</td><td>1</td><td>📥料盘</td><td>≤11.7s</td></tr>
-<tr><td>10</td><td>10</td><td>DA1垫块贴装</td><td>自动·DA</td><td>1</td><td>📥料盘</td><td>≤55.4s</td></tr>
-<tr><td>11</td><td>11</td><td>DA1二次元+目检</td><td>自动+人工</td><td>1</td><td>📥料盘</td><td>≤25s</td></tr>
-<tr><td>12</td><td>12</td><td>DA烘烤-1+目检</td><td>自动</td><td>1</td><td>🔥Tray盘</td><td>≤12.1s</td></tr>
-<tr><td>13</td><td>13</td><td>DA2芯片贴装</td><td>自动·DA</td><td>2</td><td>📥料盘</td><td>≤93.9s</td></tr>
-<tr><td>14</td><td>14</td><td>COC SN绑定+DA2二次元</td><td>手动+自动</td><td>2</td><td>📥料盘</td><td>≤148.1s</td></tr>
-<tr><td>15</td><td>15</td><td>DA烘烤-2+目检</td><td>自动</td><td>1</td><td>🔥Tray盘</td><td>≤12.1s</td></tr>
-<tr><td>16</td><td>16</td><td>DA3芯片贴装</td><td>自动·DA</td><td>2</td><td>📥料盘</td><td>≤76.8s</td></tr>
-<tr><td>17</td><td>17</td><td>DA3二次元+烘烤+目检</td><td>自动+人工</td><td>1</td><td>🔥Tray盘</td><td>≤61.4s</td></tr>
-<tr><td>18</td><td>18</td><td>Plasma-WB+WB键合目检</td><td>自动·WB</td><td>1</td><td>📥料盘</td><td>≤77s</td></tr>
-<tr><td>19</td><td>19</td><td>PEI Cover组装+烘烤</td><td>手动+UV</td><td>2</td><td>📥料盘</td><td>≤75.7s</td></tr>
-<tr><td>20</td><td>20</td><td>隔离器贴装+烘烤</td><td>手动+UV</td><td>3</td><td>📥料盘</td><td>≤161.5s</td></tr>
-<tr><td>21</td><td>21</td><td>DA4芯片+红外测量</td><td>自动·DA</td><td>1</td><td>📥料盘</td><td>≤72.8s</td></tr>
-<tr><td>22</td><td>22</td><td>DA4二次元+烘烤+目检</td><td>自动+人工</td><td>1</td><td>🔥Tray盘</td><td>≤26.4s</td></tr>
-<tr><td>23</td><td>23</td><td>激光分板+保护治具</td><td>自动+手动</td><td>1</td><td>📥料盘</td><td>≤43.3s</td></tr>
-<tr><td>24</td><td>24</td><td>Plasma-LD+耦合前目检</td><td>自动+人工</td><td>1</td><td>📥料盘</td><td>≤34.7s</td></tr>
-<tr><td>25</td><td>25</td><td>LD Lens AA耦合</td><td>自动·6台并行</td><td>6</td><td>📥料盘</td><td>≤270.6s/ch</td></tr>
-<tr><td>26</td><td>26</td><td>Mpd_test+TRX FA</td><td>自动+手动</td><td>3</td><td>📥料盘</td><td>≤65.6s</td></tr>
+<tr><th>序号</th><th>工序</th><th>方式</th><th>人</th><th>节拍</th><th>机器人</th></tr>
+<tr><td>1</td><td>生产前物料准备</td><td>手动</td><td>1</td><td>≤5.8s</td><td style="color:#58a6ff">Z100L 料笼</td></tr>
+<tr><td>2</td><td>进料检验&贴标签</td><td>手动+显微镜</td><td>1</td><td>≤39.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>3</td><td>连板FW烧录/IPSN写入</td><td>自动</td><td>1</td><td>≤11.3s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>4</td><td>Plasma清洗-热沉(24h)</td><td>自动</td><td>1</td><td>≤4.9s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>5</td><td>热沉点胶</td><td>自动</td><td>1</td><td>≤34.1s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>6</td><td>热沉贴装&固化</td><td>手动+UV</td><td>2</td><td>≤113s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>7</td><td>热沉烘烤1+目检</td><td>自动+目检</td><td>2</td><td>≤10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>8</td><td>DA芯片来料目检</td><td>显微镜</td><td>1</td><td>≤11.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>9</td><td>DA1 垫块贴装</td><td>自动·DA</td><td>1</td><td>≤55.4s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>10</td><td>DA1二次元&目检</td><td>自动+目检</td><td>1</td><td>≤25s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>11</td><td>DA烘烤-1+目检</td><td>自动+目检</td><td>1</td><td>≤10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>12</td><td>DA2 芯片贴装</td><td>自动·DA</td><td>2</td><td>≤93.9s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>13</td><td>COC SN与PCBA绑定</td><td>手动+自动</td><td>1</td><td>≤13.1s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>14</td><td>DA2二次元&目检</td><td>自动+目检</td><td>2</td><td>≤148.1s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>15</td><td>DA烘烤-2+目检</td><td>自动+目检</td><td>1</td><td>≤10.9s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>16</td><td>DA3 芯片贴装</td><td>自动·DA</td><td>2</td><td>≤76.8s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>17</td><td>DA3二次元&烘烤+目检</td><td>自动+目检</td><td>1</td><td>≤61.4s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>18</td><td>Plasma-WB+WB键合&目检</td><td>自动·WB</td><td>1</td><td>≤77s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>19</td><td>PEI Cover组装+烘烤+目检</td><td>手动+烘烤</td><td>2</td><td>≤75.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>20</td><td>隔离器贴装+烘烤+目检</td><td>手动+烘烤</td><td>3</td><td>≤161.5s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>21</td><td>DA4芯片+红外测量</td><td>自动·DA</td><td>1</td><td>≤72.8s</td><td style="color:#8b949e">—</td></tr>
+<tr><td>22</td><td>DA4二次元&烘烤+目检</td><td>自动+目检</td><td>1</td><td>≤26.4s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>23</td><td>激光分板+保护治具</td><td>激光+手动</td><td>1</td><td>≤43.3s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>24</td><td>Plasma-LD+耦合前目检</td><td>自动+目检</td><td>1</td><td>≤34.7s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
+<tr><td>25</td><td>LD Lens AA耦合</td><td>自动·6台</td><td>6</td><td>≤541.2s</td><td style="color:#58a6ff">Z100L 上下料</td></tr>
+<tr><td>26</td><td>Mpd_test+TRX FA组装</td><td>自动+手动</td><td>3</td><td>≤67.1s</td><td style="color:#00d4aa">Z100L AOI</td></tr>
 </table>
 
 <br>
