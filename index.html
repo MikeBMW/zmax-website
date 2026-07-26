@@ -78,11 +78,31 @@
   .fade-up:nth-child(4){animation-delay:.45s}
 
   @media(max-width:768px){
+    .hero{padding:60px 16px;min-height:auto}
     .hero h1{font-size:40px}
+    .hero .sub{font-size:15px}
     .cards{grid-template-columns:1fr}
     .cap-grid{grid-template-columns:1fr}
-    .kpi-strip{gap:30px}
+    .kpi-strip{gap:20px;padding:40px 16px}
+    .kpi-num{font-size:32px}
+    section{padding:50px 16px}
     .pipe-arrow{transform:rotate(90deg)}
+    .hero-cta{flex-direction:column;align-items:center;gap:12px}
+    .btn{padding:14px 28px;font-size:16px;min-width:200px;text-align:center}
+
+    /* 手机版 footer — 大字，易点 */
+    footer{padding:24px 16px 40px}
+    footer p{line-height:2.4}
+    footer a{font-size:16px;display:inline-block;padding:6px 10px;margin:2px 4px;border-radius:6px}
+    footer a[href*="dds-editor"]{background:#00d4aa22;color:#00d4aa;font-weight:700}
+    footer a[href*="docx"]{background:#00d4aa22;color:#00d4aa;font-weight:700}
+    footer a[href*="drawio"]{background:#1a1f2b}
+
+    /* PPTX/DOCX 主操作条 — 固定在页面上方 */
+    .mobile-actions{display:flex;gap:8px;padding:10px 16px;background:#0d1117;border-bottom:1px solid #1a1f2b;position:sticky;top:0;z-index:50;flex-wrap:wrap}
+    .mobile-actions a{flex:1;min-width:100px;padding:10px 0;text-align:center;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none}
+    .mobile-act-pptx{background:#00d4aa;color:#06080d}
+    .mobile-act-word{background:#1a1f2b;color:#c8d1d9;border:1px solid #00d4aa44}
   }
 </style>
 <script src="/dds-global.js"></script>
@@ -99,6 +119,12 @@
 <div id="login-err" style="color:#ff4444;font-size:11px;min-height:20px;margin-bottom:12px"></div>
 <button onclick="doLogin()" style="width:100%;padding:12px;background:#00d4aa;color:#06080d;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">🔐 登 录</button>
 </div></div>
+
+<!-- ═══════ 手机快捷操作条 ═══════ -->
+<div class="mobile-actions">
+  <a href="/dds-editor.html" class="mobile-act-pptx">📊 在线PPT · 编辑数据</a>
+  <a href="/Z700-立项申请书.docx" class="mobile-act-word">📝 Word文档</a>
+</div>
 
 <!-- ═══════ HERO ═══════ -->
 <header class="hero">
