@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Z-MAX 光模块工厂 · 3D 产线</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;touch-action:pan-x pan-y pinch-zoom}
+canvas{display:block}
+
+/* 顶栏 */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:44px;background:linear-gradient(180deg,rgba(13,17,23,0.97),rgba(10,10,15,0.95));backdrop-filter:blur(10px);display:flex;align-items:center;padding:0 12px;gap:10px;border-bottom:1px solid #1a1f2b}
+#topbar .logo{font-size:15px;font-weight:800;color:#00d4aa;white-space:nowrap}
+#topbar .ver{font-size:9px;color:#8b949e}
+#topbar .spacer{flex:1}
+#topbar .btn{padding:5px 12px;border-radius:6px;border:1px solid #1a1f2b;background:transparent;color:#c9d1d9;font-size:11px;cursor:pointer;transition:all .15s}
+#topbar .btn:hover{background:#131726;border-color:#00d4aa55}
+#topbar .btn.active{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
+
+/* 底部图例 */
+#legend{position:fixed;bottom:12px;left:12px;z-index:100;display:flex;flex-wrap:wrap;gap:6px}
+#legend .lg{display:flex;align-items:center;gap:4px;background:rgba(13,17,23,0.9);padding:4px 8px;border-radius:6px;font-size:10px;color:#c9d1d9;cursor:pointer;transition:all .15s;border:1px solid transparent}
+#legend .lg:hover{border-color:#ffffff33}
+#legend .lg .dot{width:8px;height:8px;border-radius:2px}
+
+/* 弹窗 */
+#info{position:fixed;right:12px;top:56px;z-index:100;width:280px;max-height:70vh;overflow-y:auto;background:rgba(13,17,23,0.96);backdrop-filter:blur(16px);border:1px solid #1a1f2b;border-radius:12px;padding:16px;display:none}
+#info h3{color:#00d4aa;font-size:14px;margin-bottom:8px}
+#info .stat{font-size:11px;color:#8b949e;margin:3px 0}
+#info .stat span{color:#c9d1d9}
+#info .station{display:flex;align-items:center;gap:6px;padding:4px 0;font-size:10px;color:#c9d1d9;border-bottom:1px solid #1a1f2b22}
+#info .station .eq{font-size:9px;color:#8b949e;margin-left:auto}
+#info .close{position:absolute;top:8px;right:8px;width:24px;height:24px;border:none;background:#1a1f2b;color:#8b949e;border-radius:6px;cursor:pointer;font-size:14px;line-height:24px;text-align:center}
+
+@media(max-width:640px){
+  #info{right:4px;left:4px;width:auto;top:50px}
+  #legend{bottom:6px;left:6px;gap:4px}
+  #legend .lg{padding:3px 6px;font-size:9px}
+  #topbar{height:40px;padding:0 8px}
+  #topbar .logo{font-size:13px}
+}
+
+/* loading */
+#loading{position:fixed;inset:0;z-index:999;background:#06080d;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+#loading .spinner{width:32px;height:32px;border:3px solid #1a1f2b;border-top-color:#00d4aa;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading .txt{color:#8b949e;font-size:12px}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><div class="txt">加载3D工厂...</div></div>
+
+<div id="topbar">
+  <span class="logo">🏭 光模块工厂</span>
+  <span class="ver">v1.0</span>
+  <span class="spacer"></span>
+  <a href="/" class="btn">← 主页</a>
+  <button class="btn active" id="btn-top" onclick="setView('top')">俯视</button>
+  <button class="btn" id="btn-iso" onclick="setView('iso')">等轴</button>
+  <button class="btn" id="btn-walk" onclick="setView('walk')">漫游</button>
+</div>
+
+<div id="legend"></div>
+
+<div id="info">
+  <button class="close" onclick="document.getElementById('info').style.display='none'">✕</button>
+  <h3 id="info-title"></h3>
+  <div id="info-body"></div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+// ── 工厂数据 ──────────────────────────────────
+const ZONES = [
+  {
+    id:'opt-ws', name:'光学车间', color:0x00d4aa, pos:[0,0], size:[18,10],
+    stations:[
+      ['COC生产区',''],
+      ['Submount打标-01','显微镜'],
+      ['COC共晶-01',''],
+      ['COC外观检查清洁-01','显微镜'],
+      ['COC WB打线-01',''],
+      ['COC上料',''],
+      ['COC BI-01老化',''],
+      ['COC BI上下料','2台·显微镜'],
+      ['COC出货目检','显微镜'],
+      ['COC SN识别-01','自动显微镜×2'],
+      ['打标外观检查清洁','显微镜'],
+      ['进料检验','显微镜+手动治具'],
+      ['下载FW','手动治具'],
+      ['半自动点胶','2台点胶机'],
+      ['手动贴装','手动治具×2·显微镜×2'],
+      ['UV固化',''],
+    ]
+  },
+  {
+    id:'opt-db', name:'光学贴片区', color:0x58a6ff, pos:[20,0], size:[12,10],
+    stations:[
+      ['贴片备料','手动治具×3·显微镜×3'],
+      ['自动贴片固晶点胶','自动化设备×4'],
+      ['二次元检验',''],
+      ['DA外观检','显微镜×1'],
+      ['DA烘烤','2台烘烤机柜'],
+    ]
+  },
+  {
+    id:'opt-wb', name:'光学打线区', color:0xd4a800, pos:[34,0], size:[14,10],
+    stations:[
+      ['等离子清洗机',''],
+      ['WB打线',''],
+      ['COC绑定',''],
+      ['自动光学检测','自动光学检测设备'],
+      ['DA外观检','显微镜×1'],
+      ['二次元检验',''],
+      ['自动贴片机',''],
+      ['手动贴装','×4·显微镜×4·治具×4'],
+    ]
+  },
+  {
+    id:'opt-cp', name:'光学耦合区', color:0xff6b6b, pos:[0,-12], size:[18,8],
+    stations:[
+      ['自动耦合测试台','14台'],
+      ['分板站位','分板机×1'],
+      ['目检','显微镜×1'],
+    ]
+  },
+  {
+    id:'opt-test', name:'光学测试区', color:0x9b59b6, pos:[20,-12], size:[20,8],
+    stations:[
+      ['耦合外观检测清洁','显微镜'],
+      ['TXFA组装','显微镜×3'],
+      ['MPD测试','测试机台×2'],
+      ['TCT快速温变','温变立柜×3'],
+      ['耦合烘烤',''],
+      ['模块BI','烤箱×2'],
+      ['端面清洁',''],
+      ['OE测试','测试站×4'],
+      ['OE端面检测清洁','测试站×3'],
+      ['OE出货检查','×2'],
+      ['OE/TRX测试',''],
+    ]
+  },
+  {
+    id:'heat', name:'热岛区', color:0xe67e22, pos:[42,-12], size:[8,8],
+    stations:[
+      ['热岛立柜','×4'],
+    ]
+  },
+  {
+    id:'mod', name:'模块车间', color:0x7f8c8d, pos:[0,-22], size:[20,8],
+    stations:[
+      ['模块组装线',''],
+      ['自动组装线','暂无'],
+      ['模块内包装线',''],
+      ['EEPROM CHECK',''],
+    ]
+  },
+];
+
+// ── Three.js 初始化 ──────────────────────────
+const W = window.innerWidth, H = window.innerHeight;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x06080d);
+scene.fog = new THREE.Fog(0x06080d, 40, 120);
+
+const camera = new THREE.PerspectiveCamera(50, W/H, 1, 200);
+camera.position.set(25, 40, 35);
+camera.lookAt(20, 0, -8);
+
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(W, H);
+labelRenderer.domElement.style.position = 'fixed';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(labelRenderer.domElement);
+
+// 灯光
+const ambient = new THREE.AmbientLight(0x404060, 3);
+scene.add(ambient);
+const sun = new THREE.DirectionalLight(0xffffff, 5);
+sun.position.set(30, 40, 20);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.near = 0.5;
+sun.shadow.camera.far = 150;
+sun.shadow.camera.left = -60;
+sun.shadow.camera.right = 60;
+sun.shadow.camera.top = 40;
+sun.shadow.camera.bottom = -40;
+scene.add(sun);
+
+// OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(22, 0, -8);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI/2.2;
+controls.minDistance = 8;
+controls.maxDistance = 80;
+controls.update();
+
+// ── 地面 ──────────────────────────────────────
+const groundGeo = new THREE.PlaneGeometry(80, 60);
+const groundMat = new THREE.MeshStandardMaterial({color:0x0a0d14, roughness:0.7});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2;
+ground.position.set(25, -0.1, -12);
+ground.receiveShadow = true;
+scene.add(ground);
+
+// 网格线
+const gridHelper = new THREE.PolarGridHelper(35, 64, 32, 128, 0x1a1f2b, 0x1a1f2b);
+gridHelper.position.y = 0;
+scene.add(gridHelper);
+
+// ── 构建工厂区域 ──────────────────────────────
+const zoneMeshes = [];
+const legendDiv = document.getElementById('legend');
+
+ZONES.forEach((z, i) => {
+  const {pos, size, color, name, id, stations} = z;
+  const [px, pz] = pos;
+  const [sx, sz] = size;
+  const h = 1.2 + stations.length * 0.08;
+
+  // 基座
+  const baseGeo = new THREE.BoxGeometry(sx - 0.5, h, sz - 0.5);
+  const baseMat = new THREE.MeshStandardMaterial({color, roughness:0.3, metalness:0.4});
+  const base = new THREE.Mesh(baseGeo, baseMat);
+  base.position.set(px + sx/2, h/2, pz + sz/2);
+  base.castShadow = true;
+  base.receiveShadow = true;
+  base.userData = {zone:z, type:'zone'};
+  scene.add(base);
+  zoneMeshes.push(base);
+
+  // 顶面高光线框
+  const edgeGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(sx - 0.5, h, sz - 0.5));
+  const edgeMat = new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:0.15});
+  const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+  base.add(edge);
+
+  // 设备小方块
+  const cols = Math.ceil(Math.sqrt(stations.length));
+  const rows = Math.ceil(stations.length / cols);
+  const cw = (sx - 2) / cols;
+  const rh = (sz - 2) / rows;
+
+  stations.forEach((st, si) => {
+    const col = si % cols;
+    const row = Math.floor(si / cols);
+    const ex = px + 1 + col * cw + cw/2;
+    const ez = pz + 1 + row * rh + rh/2;
+
+    // 设备台
+    const eqGeo = new THREE.BoxGeometry(cw * 0.6, 0.25, rh * 0.5);
+    const eqMat = new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.5, emissive:color, emissiveIntensity:0.15});
+    const eq = new THREE.Mesh(eqGeo, eqMat);
+    eq.position.set(ex, h + 0.15, ez);
+    eq.castShadow = true;
+    eq.receiveShadow = true;
+    eq.userData = {zone:z, station:st, type:'equipment'};
+    scene.add(eq);
+
+    // 标签（大区只标名）
+    if (stations.length <= 6 || si % 3 === 0) {
+      const div = document.createElement('div');
+      div.textContent = st[0];
+      div.style.cssText = 'font-size:8px;color:#c9d1d9;background:rgba(6,8,13,0.8);padding:1px 4px;border-radius:3px;white-space:nowrap;pointer-events:none';
+      const label = new CSS2DObject(div);
+      label.position.set(ex, h + 0.6, ez);
+      scene.add(label);
+    }
+  });
+
+  // 大标签（悬浮在区域上方）
+  const nameDiv = document.createElement('div');
+  nameDiv.textContent = name;
+  nameDiv.style.cssText = 'font-size:13px;font-weight:700;color:#fff;text-shadow:0 0 8px rgba(0,0,0,0.8);white-space:nowrap;pointer-events:none';
+  const nameLabel = new CSS2DObject(nameDiv);
+  nameLabel.position.set(px + sx/2, h + 1.5, pz + sz/2 - sz/2 + 0.6);
+  nameLabel.userData = {zone:z};
+  scene.add(nameLabel);
+
+  // 图例
+  const lg = document.createElement('div');
+  lg.className = 'lg';
+  lg.innerHTML = `<span class="dot" style="background:#${color.toString(16).padStart(6,'0')}"></span>${name}`;
+  lg.onclick = () => focusZone(z);
+  legendDiv.appendChild(lg);
+});
+
+// ── 粒子流（模拟产线流动） ────────────────────
+const particlesGeo = new THREE.BufferGeometry();
+const particlesCount = 200;
+const particlesPos = new Float32Array(particlesCount * 3);
+const particlesColors = new Float32Array(particlesCount * 3);
+for (let i = 0; i < particlesCount; i++) {
+  const zi = Math.floor(Math.random() * ZONES.length);
+  const z = ZONES[zi];
+  particlesPos[i*3] = z.pos[0] + Math.random() * z.size[0];
+  particlesPos[i*3+1] = 1 + Math.random() * 3;
+  particlesPos[i*3+2] = z.pos[1] + Math.random() * z.size[1];
+  const c = new THREE.Color(z.color);
+  particlesColors[i*3] = c.r;
+  particlesColors[i*3+1] = c.g;
+  particlesColors[i*3+2] = c.b;
+}
+particlesGeo.setAttribute('position', new THREE.BufferAttribute(particlesPos, 3));
+particlesGeo.setAttribute('color', new THREE.BufferAttribute(particlesColors, 3));
+const particlesMat = new THREE.PointsMaterial({size:0.15, vertexColors:true, blending:THREE.AdditiveBlending, depthWrite:false, opacity:0.6});
+const particles = new THREE.Points(particlesGeo, particlesMat);
+scene.add(particles);
+
+// ── 交互 ─────────────────────────────────────
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hovered = null;
+
+function focusZone(zone) {
+  const [px, pz] = zone.pos;
+  const [sx, sz] = zone.size;
+  controls.target.set(px + sx/2, 0, pz + sz/2);
+  camera.position.set(px + sx/2, sx * 0.7, pz + sz/2 + sx * 0.8);
+  controls.update();
+  showInfo(zone);
+}
+
+function showInfo(zone) {
+  document.getElementById('info').style.display = 'block';
+  document.getElementById('info-title').textContent = zone.name;
+  let html = '';
+  html += `<div class="stat">工位数: <span>${zone.stations.length}</span></div>`;
+  html += `<div class="stat">面积: <span>${zone.size[0]}×${zone.size[1]}m</span></div>`;
+  html += `<hr style="border-color:#1a1f2b;margin:8px 0">`;
+  zone.stations.forEach(s => {
+    html += `<div class="station"><span>${s[0]}</span><span class="eq">${s[1]||'—'}</span></div>`;
+  });
+  document.getElementById('info-body').innerHTML = html;
+}
+
+renderer.domElement.addEventListener('click', (e) => {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(zoneMeshes);
+  if (intersects.length > 0) {
+    focusZone(intersects[0].object.userData.zone);
+  }
+});
+
+renderer.domElement.addEventListener('mousemove', (e) => {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(zoneMeshes);
+  if (intersects.length > 0) {
+    renderer.domElement.style.cursor = 'pointer';
+    if (hovered) hovered.material.emissiveIntensity = 0;
+    hovered = intersects[0].object;
+    hovered.material.emissive = new THREE.Color(0xffffff);
+    hovered.material.emissiveIntensity = 0.2;
+  } else {
+    renderer.domElement.style.cursor = '';
+    if (hovered) {
+      hovered.material.emissiveIntensity = 0;
+      hovered = null;
+    }
+  }
+});
+
+// ── 视图切换 ─────────────────────────────────
+window.setView = function(mode) {
+  document.querySelectorAll('#topbar .btn').forEach(b => b.classList.remove('active'));
+  if (mode === 'top') {
+    camera.position.set(22, 50, -8);
+    controls.target.set(22, 0, -8);
+    document.getElementById('btn-top').classList.add('active');
+  } else if (mode === 'iso') {
+    camera.position.set(25, 40, 35);
+    controls.target.set(22, 0, -8);
+    document.getElementById('btn-iso').classList.add('active');
+  } else {
+    camera.position.set(10, 8, 20);
+    controls.target.set(20, 2, -8);
+    document.getElementById('btn-walk').classList.add('active');
+  }
+  controls.update();
+};
+
+// ── 渲染循环 ─────────────────────────────────
+const clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  controls.update();
+
+  // 粒子浮动
+  const pos = particlesGeo.attributes.position.array;
+  for (let i = 0; i < particlesCount; i++) {
+    pos[i*3+1] += Math.sin(t * 2 + i) * 0.005;
+    if (pos[i*3+1] > 4) pos[i*3+1] = 1;
+    if (pos[i*3+1] < 0.5) pos[i*3+1] = 0.5;
+  }
+  particlesGeo.attributes.position.needsUpdate = true;
+
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+}
+
+// 隐藏 loading
+setTimeout(() => {
+  document.getElementById('loading').style.display = 'none';
+}, 600);
+
+animate();
+
+// 响应式
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  labelRenderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
