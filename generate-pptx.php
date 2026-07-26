@@ -1,14 +1,11 @@
 <?php
-// Regenerate PPTX from DDS database and return for download
+// Serve pre-generated PPTX file (regenerated via cron or manual trigger)
 $out = '/www/wwwroot/datadrive.world/Z700-立项申请书.pptx';
 
-// Run the Python generator (reads dds.db directly)
-exec("python3 /root/zmax-website/gen_pptx.py 2>&1", $output, $rc);
-
-if ($rc !== 0 || !file_exists($out)) {
-    http_response_code(500);
+if (!file_exists($out)) {
+    http_response_code(404);
     header('Content-Type: application/json');
-    echo json_encode(['error'=>'Generation failed', 'output'=>implode("\n",$output)], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error'=>'PPTX file not found. Contact admin to regenerate.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

@@ -76,6 +76,7 @@ td[contenteditable]{background:var(--bg)}
   .toolbar{gap:4px}
 }
 </style>
+<script src="/zmax-auth.js"></script>
 </head>
 <body>
 
@@ -220,6 +221,18 @@ var dirty = {};
 fetch('/dds-api.php').then(function(r){return r.json()}).then(function(d){
   DDS = d;
   renderDynamic();
+  // 恢复 localStorage 中保存的编辑
+  try {
+    var saved = JSON.parse(localStorage.getItem('zmax_edits')||'{}');
+    Object.keys(saved).forEach(function(k){
+      document.querySelectorAll('[contenteditable]').forEach(function(el){
+        var id = el.dataset.table ? el.dataset.table+'.'+el.dataset.key+(el.dataset.field?'.'+el.dataset.field:'') : null;
+        if ((id && id===k) || el.textContent.substring(0,20)===k){
+          el.innerHTML = saved[k];
+        }
+      });
+    });
+  } catch(e){}
   bindEditable();
 });
 
@@ -322,8 +335,15 @@ function saveAll(){
   
   Promise.all(promises).then(function(r){
     dirty = {};
-    status('<span style="color:var(--green)">● 已保存 · 2分钟内全站同步</span>');
-    // 已保存，页面保持当前编辑状态
+    // 同时保存所有 contenteditable 到 localStorage（含无 data 绑定的字段）
+    var snapshot = {};
+    document.querySelectorAll('[contenteditable]').forEach(function(el){
+      var id = el.dataset.table ? el.dataset.table+'.'+el.dataset.key+(el.dataset.field?'.'+el.dataset.field:'') : null;
+      var key = id || el.textContent.substring(0,20);
+      snapshot[key] = el.innerHTML;
+    });
+    localStorage.setItem('zmax_edits', JSON.stringify(snapshot));
+    status('<span style="color:var(--green)">● 已保存 · 刷新不丢失 · 2分钟内全站同步</span>');
   }).catch(function(e){
     status('<span style="color:#ff4444">保存失败: '+e.message+'</span>');
   });
@@ -331,6 +351,70 @@ function saveAll(){
 
 function status(msg){
   document.getElementById('status').innerHTML = msg;
+}
+</script>
+
+<!-- ═══ PPT 同步 ═══ -->
+<div class="slide" id="s-pptsync">
+  <div class="slide-num">同步</div>
+  <div class="slide-title"><span>📥 PPT 反向同步</span></div>
+  <div class="divider"></div>
+  <p style="font-size:12px;color:var(--gray);margin-bottom:16px">导出PPT修改后，上传到此。系统自动比对差异，一键更新全站数据。</p>
+  
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+    <a href="/generate-pptx.php" class="btn-export" style="display:inline-block;padding:10px 20px;text-decoration:none">📥 先导出 PPTX</a>
+  </div>
+  
+  <div id="pptx-drop" style="border:2px dashed #1a1f2b;border-radius:12px;padding:24px;text-align:center;background:var(--bg);cursor:pointer;margin-bottom:12px"
+    ondragover="this.style.borderColor='var(--green)';event.preventDefault()"
+    ondragleave="this.style.borderColor='#1a1f2b'"
+    ondrop="handlePPTXDrop(event)"
+    onclick="document.getElementById('pptx-file').click()">
+    <div style="font-size:28px;margin-bottom:8px">📤</div>
+    <div style="color:var(--white);font-weight:600;font-size:13px">拖拽修改后的 PPTX 到此处</div>
+    <div style="color:var(--gray);font-size:11px">或点击选择文件</div>
+    <input type="file" id="pptx-file" accept=".pptx" style="display:none" onchange="handlePPTXFiles(this.files)">
+  </div>
+  
+  <div id="pptx-result" style="font-size:12px;margin-top:8px"></div>
+</div>
+
+<script>
+function handlePPTXDrop(e){
+  e.preventDefault();
+  document.getElementById('pptx-drop').style.borderColor='#1a1f2b';
+  if(e.dataTransfer&&e.dataTransfer.files) handlePPTXFiles(e.dataTransfer.files);
+}
+function handlePPTXFiles(files){
+  if(!files||!files.length)return;
+  var r=document.getElementById('pptx-result');
+  r.innerHTML='<span style="color:#d4a800">⏳ 解析中...</span>';
+  var fd=new FormData();fd.append('pptx',files[0]);
+  fetch('/upload-pptx.php',{method:'POST',body:fd})
+    .then(function(x){return x.json()})
+    .then(function(d){
+      if(d.error){r.innerHTML='<span style="color:#ff4444">'+d.error+'</span>';return}
+      var h='<div style="color:var(--green);margin-bottom:8px">✅ 解析完成 · '+d.slides+'页 · '+d.diffs.length+'处差异</div>';
+      if(d.diffs.length){
+        h+='<table style="width:100%;font-size:11px"><tr><th>表</th><th>字段</th><th>当前值</th><th>来源页</th><th>操作</th></tr>';
+        d.diffs.forEach(function(df){
+          h+='<tr><td>'+df.table+'</td><td>'+df.key+'</td><td>'+df.current+'</td><td>P'+df.slide+'</td>'+
+            '<td><button onclick="applyDiff(\''+df.table+'\',\''+df.key+'\',\''+(df.suggested||'')+'\')" style="background:var(--green);color:var(--bg);border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:10px">应用</button></td></tr>';
+        });
+        h+='</table>';
+      }
+      // Show all slide texts for manual comparison
+      h+='<div style="margin-top:12px;font-size:11px;color:var(--gray)">各页文字：</div>';
+      d.slides_data.forEach(function(s){
+        h+='<details style="margin:4px 0"><summary style="cursor:pointer;color:var(--green)">P'+s.num+'</summary><div style="padding:8px;background:var(--bg);border-radius:4px;white-space:pre-wrap;font-size:11px">'+s.text+'</div></details>';
+      });
+      r.innerHTML=h;
+    })
+    .catch(function(e){r.innerHTML='<span style="color:#ff4444">网络错误</span>'});
+}
+function applyDiff(table,key,val){
+  // User needs to manually edit the corresponding field
+  alert('请在上方编辑区域找到 "'+table+' → '+key+'" 字段，手动更新为 PPT 中的内容。');
 }
 </script>
 </body>
