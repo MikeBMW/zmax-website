@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z700 立项书 · 在线编辑</title>
+<style>
+:root{--bg:#06080d;--card:#0d1117;--green:#00d4aa;--white:#e6edf3;--gray:#8b949e;--border:#1a1f2b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--white);padding:20px;max-width:1000px;margin:0 auto}
+h1{color:var(--green);font-size:22px;margin-bottom:4px}
+.toolbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar button{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}
+.btn-save{background:var(--green);color:var(--bg)}
+.btn-export{background:#1a1f2b;color:var(--white)}
+.btn-export:hover{background:#2a3040}
+.toolbar a{color:var(--gray);text-decoration:none;font-size:13px}
+.status{font-size:12px;margin-left:auto}
+
+.slide{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:32px;margin-bottom:16px;position:relative}
+.slide-num{position:absolute;top:12px;right:16px;font-size:11px;color:#484f58}
+.slide-title{font-size:20px;font-weight:800;color:var(--white);margin-bottom:6px}
+.slide-sub{font-size:13px;color:var(--gray);margin-bottom:20px}
+.slide .divider{width:40px;height:2px;background:var(--green);margin-bottom:20px;border-radius:1px}
+
+[contenteditable]{outline:none;border-radius:4px;padding:2px 6px;margin:-2px -6px;transition:all .15s}
+[contenteditable]:hover{background:#1a1f2b33}
+[contenteditable]:focus{background:#1a1f2b;border:1px solid var(--green)}
+
+.kpi-row{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:20px}
+.kpi-item{text-align:center;flex:1;min-width:120px}
+.kpi-val{font-size:36px;font-weight:900;color:var(--green)}
+.kpi-unit{font-size:16px}
+.kpi-label{font-size:11px;color:var(--gray);margin-top:4px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:20px}
+.card-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:20px}
+.card-item h4{font-size:14px;color:var(--green);margin-bottom:8px}
+.card-item p{font-size:12px;color:var(--gray);line-height:1.7}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
+td,th{padding:8px 10px;border:1px solid var(--border);text-align:left}
+th{background:var(--green);color:var(--bg);font-weight:700}
+td[contenteditable]{background:var(--bg)}
+
+.step-dot{width:32px;height:32px;border-radius:50%;background:var(--green);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin:0 auto 8px}
+.step-arrow{font-size:20px;color:var(--green)}
+.pipe-row{display:flex;align-items:flex-start;gap:10px;margin:16px 0;flex-wrap:wrap}
+.pipe-step{flex:1;min-width:160px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px 12px}
+
+@media(max-width:768px){
+  body{padding:12px;font-size:14px}
+  .toolbar{position:sticky;bottom:0;top:auto;padding:10px 0;border-top:1px solid var(--border);border-bottom:none;margin:12px 0 0;gap:6px;background:var(--bg);z-index:100}
+  .toolbar a{font-size:12px}
+  .toolbar button{padding:10px 16px;font-size:14px;min-height:44px}
+  .slide{padding:20px 14px;margin-bottom:14px}
+  .slide-title{font-size:18px}
+  .two-col,.three-col,.four-col{grid-template-columns:1fr}
+  .kpi-row{gap:12px}
+  .kpi-val{font-size:28px}
+  .cards{grid-template-columns:1fr}
+  [contenteditable]{padding:6px 8px;margin:-2px -6px;min-height:32px;display:inline-block}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  td,th{padding:10px 8px;font-size:13px;min-width:80px}
+  .pipe-row{flex-direction:column;align-items:stretch}
+  .step-arrow{transform:rotate(90deg);margin:4px auto}
+  .btn-save{position:fixed;bottom:12px;right:12px;z-index:200;padding:14px 24px;font-size:15px;border-radius:50px;box-shadow:0 4px 20px rgba(0,212,170,.3)}
+}
+@media(max-width:400px){
+  .slide{padding:14px 10px}
+  .kpi-val{font-size:24px}
+  .toolbar{gap:4px}
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <a href="/">← 主页</a>
+  <span style="color:var(--white);font-weight:700">Z700 立项申请书 · 在线编辑</span>
+  <button class="btn-save" onclick="saveAll()">💾 保存并同步全站</button>
+  <a href="/generate-pptx.php" class="btn-export" style="display:inline-block;padding:8px 20px">📥 导出 PPTX</a>
+  <a href="/Z700-立项申请书.docx" class="btn-export" style="display:inline-block;padding:8px 20px">📝 导出 DOCX</a>
+  <span class="status" id="status"></span>
+</div>
+
+<!-- ═══ SLIDE 1: 封面 ═══ -->
+<div class="slide" id="s-cover">
+  <div class="slide-num">1 / 10</div>
+  <div style="text-align:center;padding:60px 0">
+    <h1 style="font-size:36px"><span contenteditable data-table="company" data-key="product">Z-MAX</span> 光模块精密制造</h1>
+    <p style="font-size:24px;color:var(--green);margin:12px 0">具身智能机器人系统</p>
+    <p style="font-size:18px;margin:8px 0">立 项 申 请 书</p>
+    <div style="margin-top:40px;font-size:13px;color:var(--gray)">
+      <p>申请单位：<span contenteditable data-table="company" data-key="name">智蜂创元</span></p>
+      <p>技术路线：视触觉混合动作模型 · 端到端感知决策控制</p>
+      <p>应用场景：光模块（100G/400G/800G）精密制造产线</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 2: 项目概述 ═══ -->
+<div class="slide" id="s-overview">
+  <div class="slide-num">2 / 10</div>
+  <div class="slide-title">一、项目概述</div>
+  <div class="divider"></div>
+  
+  <div class="two-col">
+    <div class="card-item">
+      <h4>项目背景</h4>
+      <p contenteditable data-table="company" data-key="product_tag">具身智能 · 光模块精密制造</p>
+      <p contenteditable style="margin-top:8px">AI算力爆发驱动光模块扩产，精密制造人工替代刚需，2026年全球市场规模超200亿美元。</p>
+    </div>
+    <div class="card-item">
+      <h4>核心创新</h4>
+      <p contenteditable>视触觉混合动作模型 · 端到端感知决策控制 · >1kHz力控闭环 · 零样本泛化</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 3: KPI ═══ -->
+<div class="slide" id="s-kpi">
+  <div class="slide-num">3 / 10</div>
+  <div class="slide-title">二、核心性能指标</div>
+  <div class="divider"></div>
+  
+  <div class="kpi-row" id="kpi-row"></div>
+</div>
+
+<!-- ═══ SLIDE 4: 产品 ═══ -->
+<div class="slide" id="s-products">
+  <div class="slide-num">4 / 10</div>
+  <div class="slide-title">三、产品系列</div>
+  <p class="slide-sub">同一套智能引擎，L2 到 L4 软件定义进化</p>
+  <div class="divider"></div>
+  
+  <div class="cards" id="robot-cards"></div>
+</div>
+
+<!-- ═══ SLIDE 5: 核心技术 ═══ -->
+<div class="slide" id="s-tech">
+  <div class="slide-num">5 / 10</div>
+  <div class="slide-title">四、核心技术能力</div>
+  <div class="divider"></div>
+  <div class="three-col" id="tech-grid"></div>
+</div>
+
+<!-- ═══ SLIDE 6: 系统架构 ═══ -->
+<div class="slide" id="s-arch">
+  <div class="slide-num">6 / 10</div>
+  <div class="slide-title">五、端到端流水线</div>
+  <div class="divider"></div>
+  <div class="pipe-row" id="pipe-steps"></div>
+</div>
+
+<!-- ═══ SLIDE 7: 工厂布局 ═══ -->
+<div class="slide" id="s-factory">
+  <div class="slide-num">7 / 10</div>
+  <div class="slide-title">六、目标工厂：<span contenteditable data-table="factory_meta" data-key="product">800G DR8</span> 光模块产线</div>
+  <div class="divider"></div>
+  <div class="four-col" id="zone-cards"></div>
+</div>
+
+<!-- ═══ SLIDE 8: 合作模式 ═══ -->
+<div class="slide" id="s-coop">
+  <div class="slide-num">8 / 10</div>
+  <div class="slide-title">七、工程合作模式</div>
+  <div class="divider"></div>
+  <div class="two-col">
+    <div class="card-item">
+      <h4>智蜂 — AI模型与智能引擎</h4>
+      <p contenteditable>视触觉混合动作模型研发 · 感知/决策/控制算法迭代 · 数据闭环与模型训练 · 云端训练基础设施 · 技术路线制定与攻关</p>
+    </div>
+    <div class="card-item">
+      <h4>它石/他山 — 硬件集成与工程落地</h4>
+      <p contenteditable>机械臂/夹爪/传感器选型集成 · 工位改造与产线适配 · 现场部署调试与验收 · 售后运维与技术支持</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 9: 开发阶段 ═══ -->
+<div class="slide" id="s-phases">
+  <div class="slide-num">9 / 10</div>
+  <div class="slide-title">八、开发阶段与里程碑</div>
+  <div class="divider"></div>
+  <table id="roadmap-table">
+    <tr><th>阶段</th><th>时间</th><th>关键交付</th><th>验收标准</th></tr>
+  </table>
+</div>
+
+<!-- ═══ SLIDE 10: 总结 ═══ -->
+<div class="slide" id="s-summary">
+  <div class="slide-num">10 / 10</div>
+  <div class="slide-title">九、立项总结</div>
+  <div class="divider"></div>
+  <div class="two-col">
+    <div class="card-item">
+      <h4>项目核心价值</h4>
+      <p contenteditable>技术先进性：视触觉混合动作模型、端到端感知决策控制、>1kHz力控闭环、零样本泛化</p>
+      <p contenteditable style="margin-top:8px">市场紧迫性：AI算力爆发驱动光模块扩产，精密制造人工替代刚需</p>
+      <p contenteditable style="margin-top:8px">团队完备性：三人核心团队覆盖全栈，模型+硬件+部署闭环</p>
+    </div>
+    <div class="card-item">
+      <h4>下一步行动</h4>
+      <p contenteditable>本月：完成立项审批、确定合作方、签署NDA</p>
+      <p contenteditable style="margin-top:8px">Q3：Z700F产线验收、力控±0.02mm达标</p>
+      <p contenteditable style="margin-top:8px">Q4-Q2：Z700部署、全产线协同、7x24验收</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var DDS = null;
+var dirty = {};
+
+fetch('/dds-api.php').then(function(r){return r.json()}).then(function(d){
+  DDS = d;
+  renderDynamic();
+  bindEditable();
+});
+
+function renderDynamic(){
+  // KPI
+  var kpiRow = document.getElementById('kpi-row');
+  var kpi = DDS.kpi || {};
+  Object.keys(kpi).forEach(function(k){
+    var v = kpi[k];
+    kpiRow.innerHTML += '<div class="kpi-item">'+
+      '<div class="kpi-val"><span contenteditable data-table="kpi" data-key="'+k+'" data-field="value">'+v.value+'</span>'+
+      '<span class="kpi-unit"><span contenteditable data-table="kpi" data-key="'+k+'" data-field="unit">'+v.unit+'</span></span></div>'+
+      '<div class="kpi-label"><span contenteditable data-table="kpi" data-key="'+k+'" data-field="label">'+v.label+'</span></div></div>';
+  });
+
+  // Robots
+  var rc = document.getElementById('robot-cards');
+  var robots = DDS.robots || {};
+  Object.keys(robots).forEach(function(id){
+    var r = robots[id];
+    rc.innerHTML += '<div class="card-item"><h4>'+r.name+' ['+r.level_label+']</h4>'+
+      '<p contenteditable data-table="robots" data-key="'+id+'" data-field="desc">'+r.desc+'</p></div>';
+  });
+
+  // Systems for pipeline
+  var sys = DDS.systems || {};
+  var order = ['sys0','sys1','sys2','edge'];
+  var labels = ['感知采集','端边推理','云端训练','端侧执行'];
+  var ps = document.getElementById('pipe-steps');
+  order.forEach(function(k, i){
+    var s = sys[k] || {};
+    ps.innerHTML += '<div class="pipe-step"><div class="step-dot">'+(i+1)+'</div>'+
+      '<h4 style="font-size:13px;color:var(--white);margin-bottom:4px">'+labels[i]+'</h4>'+
+      '<p contenteditable data-table="systems" data-key="'+k+'" data-field="role" style="font-size:11px;color:var(--gray)">'+s.role+'</p></div>'+
+      (i<3 ? '<div class="step-arrow" style="display:flex;align-items:center">→</div>' : '');
+  });
+
+  // Zones
+  var zc = document.getElementById('zone-cards');
+  (DDS.factory_zones || []).forEach(function(z){
+    zc.innerHTML += '<div class="card-item"><h4>'+z.name+'</h4>'+
+      '<p>'+z.stations+' ('+z.count+'站)</p></div>';
+  });
+
+  // Roadmap
+  (DDS.roadmap || []).forEach(function(r){
+    document.getElementById('roadmap-table').innerHTML +=
+      '<tr><td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="name">'+r.name+'</td>'+
+      '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="timeline">'+r.timeline+'</td>'+
+      '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="desc">'+r.desc+'</td>'+
+      '<td contenteditable>待定</td></tr>';
+  });
+}
+
+function bindEditable(){
+  document.querySelectorAll('[contenteditable]').forEach(function(el){
+    el.addEventListener('input', function(){
+      markEdited(el.dataset.table, el.dataset.key, el.dataset.field, el.textContent);
+    });
+  });
+}
+
+function markEdited(table, key, field, value){
+  if (!dirty[table]) dirty[table] = {};
+  if (!dirty[table][key]) dirty[table][key] = {};
+  dirty[table][key][field] = value;
+  document.getElementById('status').innerHTML = '<span style="color:#d4a800">● 未保存</span>';
+}
+
+function saveAll(){
+  if (!Object.keys(dirty).length){ status('没有修改'); return; }
+  
+  var tables = Object.keys(dirty);
+  var promises = tables.map(function(table){
+    var data = {};
+    Object.keys(dirty[table]).forEach(function(key){
+      data[key] = dirty[table][key];
+    });
+    return fetch('/dds-api.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({table: table, data: data})
+    });
+  });
+  
+  Promise.all(promises).then(function(){
+    dirty = {};
+    status('<span style="color:var(--green)">● 已保存 · 全站同步</span>');
+  }).catch(function(e){
+    status('<span style="color:#ff4444">保存失败</span>');
+  });
+}
+
+function status(msg){
+  document.getElementById('status').innerHTML = msg;
+}
+</script>
+</body>
+</html>
