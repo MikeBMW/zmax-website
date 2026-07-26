@@ -43,10 +43,11 @@ tr:nth-child(even) td{background:#080c14}
 .fa-arrow{color:#8b949e;font-size:12px}
 </style>
 <script src="/dds-global.js"></script>
+<script src="/zmax-auth.js"></script>
 </head>
 <body>
 <div class="wrap">
-<a href="/kanban.html" class="back-home">← 看板</a>
+<a href="/kanban.html" class="back-home">← 看板</a> &nbsp; <a href="/dds-skill-master.html" style="color:#00d4aa;text-decoration:none;font-size:12px">📋 原子技能 →</a>
 <h1>DDS 闭环数据空间</h1>
 <p class="sub">condition条件→模型推理→action动作 · 全局ID · 2026-07-14</p>
 
@@ -212,6 +213,7 @@ function f(t,b){
 }
 function exportExcel(){
   var h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><script src="/dds-global.js"></script>
+<script src="/zmax-auth.js"></script>
 </head><body>';
   var labs=['条件技能C001-C030','模型技能M01-M07','100G KPI','400G KPI','800G KPI','安全KPI'];
   document.querySelectorAll('table').forEach(function(t,i){h+='<h2>'+labs[i]+'</h2>'+t.outerHTML});
