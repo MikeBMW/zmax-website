@@ -272,13 +272,6 @@ function renderDynamic(){
       '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="desc">'+r.desc+'</td>'+
       '<td contenteditable>待定</td></tr>';
   });
-  // Make ALL remaining text editable
-  document.querySelectorAll('.slide p:not([contenteditable]), .slide h4:not([contenteditable]), .slide-title:not([contenteditable]), .slide-sub:not([contenteditable])').forEach(function(el){
-    if (el.textContent.trim() && !el.querySelector('[contenteditable]')){
-      el.setAttribute('contenteditable', 'true');
-    }
-  });
-  bindEditable();
 }
 
 function bindEditable(){
@@ -301,13 +294,6 @@ function bindEditable(){
       if (t && k) markEdited(t, k, f, v);
     });
   });
-  // Make ALL remaining text editable
-  document.querySelectorAll('.slide p:not([contenteditable]), .slide h4:not([contenteditable]), .slide-title:not([contenteditable]), .slide-sub:not([contenteditable])').forEach(function(el){
-    if (el.textContent.trim() && !el.querySelector('[contenteditable]')){
-      el.setAttribute('contenteditable', 'true');
-    }
-  });
-  bindEditable();
 }
 
 var KV_TABLES = ['company','links','theme','factory_meta'];
@@ -342,13 +328,6 @@ function saveAll(){
   }).catch(function(e){
     status('<span style="color:#ff4444">保存失败: '+e.message+'</span>');
   });
-  // Make ALL remaining text editable
-  document.querySelectorAll('.slide p:not([contenteditable]), .slide h4:not([contenteditable]), .slide-title:not([contenteditable]), .slide-sub:not([contenteditable])').forEach(function(el){
-    if (el.textContent.trim() && !el.querySelector('[contenteditable]')){
-      el.setAttribute('contenteditable', 'true');
-    }
-  });
-  bindEditable();
 }
 
 function status(msg){
