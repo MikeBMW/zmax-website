@@ -38,7 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (in_array($table, ['company','factory_meta','links','theme'])) {
         foreach ($body['data'] as $k => $v) {
-            $db->exec("INSERT OR REPLACE INTO $table(key,value) VALUES('$k','".$db->escapeString($v)."')");
+            $val = is_array($v) ? (reset($v) ?: '') : (string)$v;
+            $db->exec("INSERT OR REPLACE INTO $table(key,value) VALUES('$k','".$db->escapeString($val)."')");
         }
     } elseif (in_array($table, ['kpi','robots','systems','models','hardware'])) {
         foreach ($body['data'] as $id => $fields) {
