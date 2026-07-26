@@ -447,11 +447,17 @@ function doLogin(){
   var u=document.getElementById('login-user').value;
   var p=document.getElementById('login-pass').value;
   if(u==='15840273872' && p==='15840273872'){
+    localStorage.setItem('zmax_auth','1');
     document.getElementById('login-overlay').style.display='none';
     document.getElementById('login-err').innerText='';
   } else {
     document.getElementById('login-err').innerText='⛔ 用户名或密码错误';
   }
+}
+
+// 已登录过 → 跳过
+if(localStorage.getItem('zmax_auth')){
+  document.getElementById('login-overlay').style.display='none';
 }
 document.getElementById('login-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
 document.getElementById('login-user').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
