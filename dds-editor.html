@@ -323,8 +323,7 @@ function saveAll(){
   Promise.all(promises).then(function(r){
     dirty = {};
     status('<span style="color:var(--green)">● 已保存 · 2分钟内全站同步</span>');
-    // 刷新页面显示最新值
-    setTimeout(function(){ location.reload(); }, 800);
+    // 已保存，页面保持当前编辑状态
   }).catch(function(e){
     status('<span style="color:#ff4444">保存失败: '+e.message+'</span>');
   });
