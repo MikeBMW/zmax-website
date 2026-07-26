@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z700 立项申请书 · 数据驱动 | Z-MAX</title>
+<style>:root{--c:#00d4aa;--bg:#06080d;--card:#0d1117;--bor:#1a1f2b;--sub:#8b949e;--tx:#c9d1d9;--blue:#58a6ff;--gold:#d4a800;--red:#ff6b6b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.75}
+.wrap{max-width:1100px;margin:0 auto;padding:30px 20px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.bar a,.bar button{color:var(--c);text-decoration:none;font-size:11px;padding:6px 14px;border:1px solid var(--bor);border-radius:8px;white-space:nowrap;background:transparent;cursor:pointer}
+.bar .dl{background:var(--c);color:var(--bg);border-color:var(--c);font-weight:700}
+.bar .edit{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.spacer{flex:1}
+h1{color:#fff;font-size:26px;text-align:center;font-weight:900;margin-bottom:4px}
+h1 em{color:var(--c);font-style:normal}
+.sub{text-align:center;color:var(--sub);font-size:12px;margin-bottom:20px}
+.section{margin:28px 0}
+.section h2{color:var(--c);font-size:18px;font-weight:800;margin-bottom:10px;padding-bottom:4px;border-bottom:2px solid var(--c)22}
+.card{background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:16px 20px;margin:10px 0}
+.kpi-row{display:flex;gap:10px;flex-wrap:wrap}
+.kpi{flex:1;min-width:120px;background:var(--card);border:1px solid var(--bor);border-radius:10px;padding:14px;text-align:center}
+.kpi .v{font-size:24px;font-weight:900;color:var(--c)}.kpi .u{font-size:10px;color:var(--sub)}.kpi .l{font-size:9px;color:var(--sub);margin-top:3px}
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.col3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden;margin:10px 0;font-size:10px}
+th{background:var(--c)22;padding:7px 10px;text-align:left;color:var(--c);font-weight:700}td{padding:6px 10px;border-bottom:1px solid var(--bor)}
+[contenteditable]{outline:none;border-bottom:1px dashed transparent;transition:border-color .2s}
+[contenteditable]:hover,[contenteditable]:focus{border-bottom-color:var(--c);background:var(--c)08}
+[contenteditable].dirty{border-bottom-color:var(--gold)}
+.editable .kpi .v,[contenteditable].kpi-v{border-bottom:1px dashed transparent}
+.editable .kpi:hover .v{border-bottom-color:var(--c)}
+.updated{color:var(--c);font-size:10px;text-align:center;margin-top:4px}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700}
+.tg{background:var(--c)22;color:var(--c)}.tb{background:var(--blue)22;color:var(--blue)}
+.ty{background:var(--gold)22;color:var(--gold)}
+@media(max-width:768px){.col2,.col3{grid-template-columns:1fr}.kpi{min-width:90px}.kpi .v{font-size:20px}}
+</style></head><body>
+<div class="wrap">
+
+<div class="bar">
+  <a href="/">← 主页</a>
+  <a href="/z700-analysis.html">精品分析</a>
+  <a href="/atomic-skills.html">原子技能</a>
+  <span class="spacer"></span>
+  <button id="btn-edit" onclick="toggleEdit()">✏️ 编辑模式</button>
+  <a href="/api/proposal.php?format=pptx" class="dl">📊 PPT</a>
+  <a href="/api/proposal.php?format=docx" class="dl">📝 Word</a>
+</div>
+
+<h1 id="proj-name" contenteditable="false">Z-MAX · <em>Z700</em> 轮式双臂机器人</h1>
+<p class="sub" id="proj-tag" contenteditable="false">光模块精密制造 · 具身智能旗舰 · 立项申请书</p>
+<div class="updated" id="update-time"></div>
+
+<div id="content"><div style="text-align:center;padding:40px;color:var(--sub)">加载中...</div></div>
+</div>
+
+<script>
+let D={},editMode=false;
+const API='/api/dds-all.php';
+
+fetch(API).then(r=>r.json()).then(d=>{
+  D=d; document.getElementById('update-time').textContent='数据源: DDS全局空间 · '+d.generated_at;
+  render();
+});
+
+function toggleEdit(){
+  editMode=!editMode;
+  document.getElementById('btn-edit').textContent=editMode?'💾 保存':'✏️ 编辑模式';
+  document.getElementById('btn-edit').className=editMode?'bar edit':'bar';
+  document.querySelectorAll('[contenteditable]').forEach(el=>el.contentEditable=editMode?'true':'false');
+  document.body.classList.toggle('editable',editMode);
+  if(!editMode) saveChanges();
+}
+
+function saveChanges(){
+  const changes={};
+  document.querySelectorAll('[contenteditable].dirty').forEach(el=>{
+    const key=el.dataset.key; if(!key)return;
+    const[table,id,field]=key.split('.');
+    if(!changes[table])changes[table]={};
+    if(!changes[table][id])changes[table][id]={};
+    changes[table][id][field||'value']=el.textContent.trim();
+    el.classList.remove('dirty');
+  });
+  if(!Object.keys(changes).length)return;
+  // Save each table
+  Object.entries(changes).forEach(([table,data])=>{
+    fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,data})})
+      .then(r=>r.json()).then(r=>console.log('Saved',table,r));
+  });
+  document.getElementById('update-time').textContent='💾 已保存 · '+new Date().toLocaleString();
+}
+
+document.addEventListener('input',e=>{
+  if(e.target.contentEditable==='true')e.target.classList.add('dirty');
+});
+
+function render(){
+  if(!D.company)return;
+  const co=D.company;
+  let h='';
+
+  // Section 1: Overview
+  h+=`<div class="section"><h2>一、项目概述</h2>`;
+  h+=`<div class="card"><p style="font-size:11px;color:var(--sub)"><span data-key="company.product_tag" contenteditable="false">${co.product_tag||''}</span>。光模块是AI算力基础设施的核心器件，800G/1.6T高速模块产能持续扩张。传统产线依赖人工，面临精度不足、一致性差、招工难三大痛点。</p></div>`;
+  h+=`<div class="kpi-row">`;
+  Object.entries(D.kpi||{}).forEach(([id,k])=>{
+    h+=`<div class="kpi"><div class="v" data-key="kpi.${id}.value" contenteditable="false">${k.value||''}</div><div class="u">${k.unit||''}</div><div class="l" data-key="kpi.${id}.label" contenteditable="false">${k.label||''}</div></div>`;
+  });
+  h+=`</div></div>`;
+
+  // Section 2: Products
+  h+=`<div class="section"><h2>二、产品与系统架构</h2><div class="col2">`;
+  (D.robots||[]).forEach(r=>{
+    h+=`<div class="card"><h3><span data-key="robots.${r.id}.name" contenteditable="false">${r.name||''}</span> <span class="tag tg">${r.level_label||''}</span></h3><p style="font-size:10px;color:var(--sub)" data-key="robots.${r.id}.desc" contenteditable="false">${r.desc||''}</p></div>`;
+  });
+  h+=`</div>`;
+  // Systems
+  h+=`<div class="col3">`;
+  (D.systems||[]).slice(0,6).forEach(s=>{
+    h+=`<div class="card" style="border-left:3px solid ${s.color||'#333'}"><h4 style="font-size:12px;color:#fff">${s.name||''}</h4><p style="font-size:9px;color:var(--sub)">${s.hardware||''} · ${s.role||''}</p></div>`;
+  });
+  h+=`</div></div>`;
+
+  // Section 3: Factory
+  h+=`<div class="section"><h2>三、目标工厂</h2>`;
+  h+=`<div class="kpi-row">`;
+  h+=`<div class="kpi"><div class="v">${(D.factory_zones||[]).length}</div><div class="u">区域</div><div class="l">产线分区</div></div>`;
+  const totalStations=(D.factory_zones||[]).reduce((s,z)=>s+(z.stations||0),0);
+  h+=`<div class="kpi"><div class="v">${totalStations||129}</div><div class="u">工位</div><div class="l">覆盖全流程</div></div>`;
+  h+=`<div class="kpi"><div class="v">${D.atomic_total||89}</div><div class="u">技能</div><div class="l">原子技能库</div></div>`;
+  h+=`<div class="kpi"><div class="v">10</div><div class="u">台</div><div class="l">一期部署</div></div>`;
+  h+=`</div>`;
+  h+=`<table><tr><th>区域</th><th>工位数</th><th>工序</th></tr>`;
+  (D.factory_zones||[]).forEach(z=>{
+    h+=`<tr><td><b>${z.name||''}</b></td><td>${z.stations||0}</td><td><span data-key="factory_zones.${z.id}.desc" contenteditable="false">—</span></td></tr>`;
+  });
+  h+=`</table></div>`;
+
+  // Section 4: Atomic Skills
+  h+=`<div class="section"><h2>四、原子技能覆盖（${D.atomic_total||89}项）</h2><div class="col3">`;
+  (D.atomic_categories||[]).forEach(c=>{
+    h+=`<div class="card" style="text-align:center"><div style="font-size:20px;font-weight:900;color:var(--c)">${c.cnt}</div><div style="font-size:10px;color:var(--sub)">${c.category}</div></div>`;
+  });
+  h+=`</div><p style="text-align:center;font-size:10px;color:var(--sub);margin-top:8px"><a href="/atomic-skills.html" style="color:var(--c)">查看全部原子技能 →</a></p></div>`;
+
+  // Section 5: Roadmap
+  h+=`<div class="section"><h2>五、开发路线图</h2>`;
+  (D.roadmap||[]).forEach((r,i)=>{
+    h+=`<div class="card"><h3 style="color:${r.color||(i===0?'var(--c)':i===1?'var(--blue)':'var(--gold)')}">${r.version||''}: ${r.name||''}</h3><p style="font-size:10px;color:var(--sub)">${r.timeline||''} · ${r.desc||''}</p></div>`;
+  });
+  h+=`</div>`;
+
+  // Section 6: Pipeline
+  if(D.pipeline&&D.pipeline.length){
+    h+=`<div class="section"><h2>六、数据流水线</h2>`;
+    h+=`<table><tr><th>阶段</th><th>说明</th><th>状态</th></tr>`;
+    D.pipeline.forEach(p=>{
+      h+=`<tr><td>${p.stage||''}</td><td>${p.desc||''}</td><td>${p.status||''}</td></tr>`;
+    });
+    h+=`</table></div>`;
+  }
+
+  // Footer
+  h+=`<div class="card" style="text-align:center;padding:20px;margin-top:30px">`;
+  h+=`<h3 style="color:var(--c);font-size:16px">${co.product_tag||'具身智能精密制造'}</h3>`;
+  h+=`<p style="font-size:10px;color:var(--sub);margin-top:6px">${co.name||''} · ${co.domain||'datadrive.world'} · ${co.year||'2026'}</p>`;
+  h+=`</div>`;
+
+  document.getElementById('content').innerHTML=h;
+}
+</script></body></html>
