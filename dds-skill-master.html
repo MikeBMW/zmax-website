@@ -23,12 +23,13 @@ tr:nth-child(even) td{background:#080c14}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:768px){.grid2{grid-template-columns:1fr}}
 </style>
+<script src="/dds-global.js"></script>
 </head>
 <body>
 <div class="wrap">
 <a href="/kanban.html" class="back-home">← 返回看板</a>
 <h1>🗂️ DDS Skill 主数据体系</h1>
-<p class="sub">model_skill(多模态训练) + action_skill(光模块动作) · 全主数据 · 2026-07-14</p>
+<p class="sub">model_skill(多模态训练) + action_skill(光模块动作) · 全主数据 · DDS驱动</p>
 
 <div class="grid2">
 
@@ -40,14 +41,14 @@ tr:nth-child(even) td{background:#080c14}
 <div class="card"><h3>M01 · sensor_rgb</h3>
 <table><tr><td>DDS Topic</td><td>/dds/model/rgb</td></tr>
 <tr><td>数据类型</td><td>uint8 (B,3,H,W)</td></tr>
-<tr><td>来源</td><td>RealSense D435 → Orin</td></tr>
+<tr><td>来源</td><td>RealSense D405 → Orin</td></tr>
 <tr><td>训练模型</td><td>Sys11/Sys21/Sys22</td></tr>
 <tr><td>质量Key</td><td>帧率≥25fps, 1920×1080</td></tr></table></div>
 
 <div class="card"><h3>M02 · sensor_depth</h3>
 <table><tr><td>DDS Topic</td><td>/dds/model/depth</td></tr>
 <tr><td>数据类型</td><td>float32 (B,1,H,W)</td></tr>
-<tr><td>来源</td><td>RealSense D435 深度流</td></tr>
+<tr><td>来源</td><td>RealSense D405 深度流</td></tr>
 <tr><td>训练模型</td><td>Sys21 VLA-T(3D感知)</td></tr>
 <tr><td>质量Key</td><td>0.1-10m有效范围</td></tr></table></div>
 

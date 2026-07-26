@@ -42,6 +42,7 @@ tr:nth-child(even) td{background:#080c14}
 .fc{border-color:#a371f7;color:#a371f7}.fa{border-color:#00d4aa;color:#00d4aa}.fm{border-color:#58a6ff;color:#58a6ff}
 .fa-arrow{color:#8b949e;font-size:12px}
 </style>
+<script src="/dds-global.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -49,7 +50,7 @@ tr:nth-child(even) td{background:#080c14}
 <h1>DDS 闭环数据空间</h1>
 <p class="sub">condition条件→模型推理→action动作 · 全局ID · 2026-07-14</p>
 
-<div class="count-row">
+<div class="count-row" id="dds-counts">
 <div><div class="count-num c0">38</div><div class="count-lab">condition条件</div></div>
 <div><div class="count-num c1">7</div><div class="count-lab">model模型</div></div>
 <div><div class="count-num c2">30</div><div class="count-lab">action动作</div></div>
@@ -188,13 +189,30 @@ tr:nth-child(even) td{background:#080c14}
 <div class="footer">Z-MAX · 闭环数据空间 · C001-C038条件→M01-M07模型→A01-A30动作 · 2026-07-14</div>
 </div>
 <script>
+
+// DDS数据填充
+(function(){
+  var D=window.DDS;
+  if(!D)return;
+  // 更新计数 - 来自DDS主数据
+  var cnts=document.getElementById("dds-counts");
+  if(cnts){
+    var ns=cnts.querySelectorAll(".count-num");
+    if(D.dds_skills){ns[0].textContent=D.dds_skills.conditions.count;ns[1].textContent=D.dds_skills.models.count;ns[3].textContent=D.dds_skills.safety.count}
+  }
+  // 更新副标题
+  var sub=document.querySelector(".sub");
+  if(sub)sub.textContent="condition条件→模型推理→action动作 · 全局ID · DDS v"+D.version;
+})();
+
 function f(t,b){
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   document.querySelectorAll('.card').forEach(c=>{c.style.display=t==='all'?'':c.dataset.type===t?'':'none'});
 }
 function exportExcel(){
-  var h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>';
+  var h='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"><script src="/dds-global.js"></script>
+</head><body>';
   var labs=['条件技能C001-C030','模型技能M01-M07','100G KPI','400G KPI','800G KPI','安全KPI'];
   document.querySelectorAll('table').forEach(function(t,i){h+='<h2>'+labs[i]+'</h2>'+t.outerHTML});
   h+='</body></html>';var b=new Blob([h],{type:'application/vnd.ms-excel'});
