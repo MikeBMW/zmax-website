@@ -470,9 +470,59 @@ document.getElementById('login-user').addEventListener('keydown',function(e){if(
 
 
 <script>
-function handleDataDrop(e){e.preventDefault();handleDataFiles(e.dataTransfer.files);e.target.style.borderColor="#1a1f2b";e.target.style.background="#0d1117"}
-function handleDataFiles(files){var s=document.getElementById("data-status");for(var i=0;i<files.length;i++){s.style.color="#8b949e";s.textContent="上传中...";var fd=new FormData();fd.append("file",files[i]);fetch("/upload-data.php",{method:"POST",body:fd}).then(function(r){return r.json()}).then(function(d){if(d.ok){s.style.color="#00d4aa";s.textContent="已上传: "+d.name;loadDataFiles()}else{s.style.color="#ff4444";s.textContent="失败: "+(d.error||"")}}).catch(function(e){s.style.color="#ff4444";s.textContent="网络错误"})}}
-function loadDataFiles(){fetch("/upload-data.php").then(function(r){return r.json()}).then(function(files){var el=document.getElementById("data-files");if(!files||!files.length){el.innerHTML="";return}el.innerHTML=files.map(function(f){return "<a href="+f.url+" target=_blank style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;text-decoration:none;color:#c8d1d9;font-size:12px">"+f.name+"<span style="color:#484f58;font-size:10px;margin-left:auto">"+(f.size/1024).toFixed(1)+"KB</span></a>"}).join("")})}
+function handleDataDrop(e){
+  e.preventDefault();
+  e.stopPropagation();
+  var el = document.getElementById('data-upload');
+  el.style.borderColor = '#1a1f2b';
+  el.style.background = '#0d1117';
+  if (e.dataTransfer && e.dataTransfer.files){
+    handleDataFiles(e.dataTransfer.files);
+  }
+}
+function handleDataFiles(files){
+  var s = document.getElementById('data-status');
+  if (!files || !files.length) return;
+  for (var i = 0; i < files.length; i++){
+    s.style.color = '#8b949e';
+    s.textContent = '上传中...';
+    var fd = new FormData();
+    fd.append('file', files[i]);
+    fetch('/upload-data.php', {method: 'POST', body: fd})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.ok){
+          s.style.color = '#00d4aa';
+          s.textContent = '已上传: ' + d.name;
+          loadDataFiles();
+        } else {
+          s.style.color = '#ff4444';
+          s.textContent = '失败: ' + (d.error || '');
+        }
+      })
+      .catch(function(e){
+        s.style.color = '#ff4444';
+        s.textContent = '网络错误';
+      });
+  }
+}
+function loadDataFiles(){
+  fetch('/upload-data.php')
+    .then(function(r){ return r.json(); })
+    .then(function(files){
+      var el = document.getElementById('data-files');
+      if (!files || !files.length){
+        el.innerHTML = '<div style="color:#8b949e;font-size:11px;grid-column:1/-1">暂无文件</div>';
+        return;
+      }
+      var html = '';
+      files.forEach(function(f){
+        html += '<a href="' + f.url + '" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;text-decoration:none;color:#c8d1d9;font-size:12px">' +
+          f.name + '<span style="color:#484f58;font-size:10px;margin-left:auto">' + (f.size/1024).toFixed(1) + 'KB</span></a>';
+      });
+      el.innerHTML = html;
+    });
+}
 loadDataFiles();
 </script>
 
