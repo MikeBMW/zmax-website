@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 """DDS SQLite → dds-global.js 同步导出"""
-import sqlite3, json, os
+import sqlite3, os
 
 DB = '/www/wwwroot/datadrive.world/dds.db'
 OUT = '/www/wwwroot/datadrive.world/dds-global.js'
-
 conn = sqlite3.connect(DB)
 
-def row(c, table, key_col='key'):
+def col(c, table, val_col='value'):
+    c.execute(f"SELECT * FROM {table}")
+    cols = [d[0] for d in c.description]
+    result = {}
+    for r in c.fetchall():
+        d = dict(zip(cols, r))
+        k = d.pop('key')
+        result[k] = d[val_col]
+    return result
+
+def row(c, table, key_col='id'):
     c.execute(f"SELECT * FROM {table}")
     cols = [d[0] for d in c.description]
     result = {}
@@ -17,140 +26,121 @@ def row(c, table, key_col='key'):
         result[k] = d
     return result
 
-def col(c, table, key_col='key'):
-    c.execute(f"SELECT * FROM {table}")
-    cols = [d[0] for d in c.description]
-    result = {}
-    for r in c.fetchall():
-        d = dict(zip(cols, r))
-        k = d.pop(key_col)
-        result[k] = d['value']
-    return result
-
 c = conn.cursor()
-
 company = col(c, 'company')
-kpi_data = row(c, 'kpi', 'id')
-robots = row(c, 'robots', 'id')
-systems = row(c, 'systems', 'id')
-models = row(c, 'models', 'id')
-hardware = row(c, 'hardware', 'id')
+kpi_data = row(c, 'kpi')
+robots = row(c, 'robots')
+systems = row(c, 'systems')
+models = row(c, 'models')
+hardware = row(c, 'hardware')
 
 c.execute("SELECT * FROM factory_zones ORDER BY id")
-zones_cols = [d[0] for d in c.description]
-zones = [dict(zip(zones_cols, r)) for r in c.fetchall()]
+zc = [d[0] for d in c.description]
+zones = [dict(zip(zc, r)) for r in c.fetchall()]
 
 factory_meta = col(c, 'factory_meta')
-c.execute("SELECT * FROM roadmap ORDER BY version")
-rm_cols = [d[0] for d in c.description]
-roadmap = [dict(zip(rm_cols, r)) for r in c.fetchall()]
-
+roadmap = [dict(zip([d[0] for d in c.description], r)) for r in c.execute("SELECT * FROM roadmap ORDER BY version").fetchall()]
 theme = col(c, 'theme')
+skills = [dict(zip([d[0] for d in c.description], r)) for r in c.execute("SELECT * FROM dds_skills").fetchall()]
+dds_skills = {s['id']: {k:v for k,v in s.items() if k!='id'} for s in skills}
 
-c.execute("SELECT * FROM dds_skills")
-skills_cols = [d[0] for d in c.description]
-skills_raw = [dict(zip(skills_cols, r)) for r in c.fetchall()]
-dds_skills = {}
-for s in skills_raw:
-    dds_skills[s['id']] = {k: v for k, v in s.items() if k != 'id'}
+# Links: key→url (2-column table)
+links_data = {}
+for r in c.execute("SELECT * FROM links").fetchall():
+    links_data[r[0]] = r[1]
 
-links_data = col(c, 'links')
-
-c.execute("SELECT * FROM pipeline ORDER BY step")
-pipe_cols = [d[0] for d in c.description]
-pipeline_phases = [dict(zip(pipe_cols, r)) for r in c.fetchall()]
-
+pipeline_phases = [dict(zip([d[0] for d in c.description], r)) for r in c.execute("SELECT * FROM pipeline ORDER BY step").fetchall()]
 conn.close()
 
-# Build JS
-js = f'''/**
+def esc(s): return str(s).replace('\\','\\\\').replace('"','\\"')
+
+lines = []
+L = lines.append
+L("""/**
  * DDS Global Data Layer · SQLite驱动
- * 
- * 数据源：dds.db (SQLite) → dds-export.py 导出
- * 改数据改数据库，运行 python3 dds-export.py 同步
- * 
+ * 数据源：dds.db → dds-export.py 导出
  * 版本：v2.6 · 2026-07-26
  */
-window.DDS = {{
+window.DDS = {""")
 
-  company: {{
-    name:       "{company.get('name','')}",
-    name_en:    "{company.get('name_en','')}",
-    product:    "{company.get('product','')}",
-    product_tag:"{company.get('product_tag','')}",
-    domain:     "{company.get('domain','')}",
-    year:       "{company.get('year','')}",
-    city:       "{company.get('city','')}",
-  }},
+L("  company: {")
+for k in ['name','name_en','product','product_tag','domain','year','city']:
+    v = company.get(k,''); L(f'    {k}: "{esc(v)}",')
+L("  },")
 
-  kpi: {{
-    precision:  {{ value:"{kpi_data['precision']['value']}", unit:"{kpi_data['precision']['unit']}", label:"{kpi_data['precision']['label']}", icon:"{kpi_data['precision']['icon']}" }},
-    yield_rate: {{ value:"{kpi_data['yield_rate']['value']}", unit:"{kpi_data['yield_rate']['unit']}", label:"{kpi_data['yield_rate']['label']}", icon:"{kpi_data['yield_rate']['icon']}" }},
-    force_bw:   {{ value:"{kpi_data['force_bw']['value']}", unit:"{kpi_data['force_bw']['unit']}", label:"{kpi_data['force_bw']['label']}", icon:"{kpi_data['force_bw']['icon']}" }},
-    cycle_time: {{ value:"{kpi_data['cycle_time']['value']}", unit:"{kpi_data['cycle_time']['unit']}", label:"{kpi_data['cycle_time']['label']}", icon:"{kpi_data['cycle_time']['icon']}" }},
-  }},
+L("  kpi: {")
+for kid, kv in kpi_data.items():
+    L(f'    {kid}: {{ value:"{esc(kv["value"])}", unit:"{esc(kv["unit"])}", label:"{esc(kv["label"])}", icon:"{esc(kv.get("icon",""))}" }},')
+L("  },")
 
-  robots: {{
-    Z700: {{ id:"Z700", name:"{robots['Z700']['name']}", level:"{robots['Z700']['level']}", level_label:"{robots['Z700']['level_label']}", desc:"{robots['Z700']['desc']}", icon:"{robots['Z700']['icon']}", page:"{robots['Z700']['page']}", color:"{robots['Z700']['color']}" }},
-    Z700F:{{ id:"Z700F",name:"{robots['Z700F']['name']}",level:"{robots['Z700F']['level']}",level_label:"{robots['Z700F']['level_label']}",desc:"{robots['Z700F']['desc']}",icon:"{robots['Z700F']['icon']}",page:"{robots['Z700F']['page']}",color:"{robots['Z700F']['color']}" }},
-    Z100L:{{ id:"Z100L",name:"{robots['Z100L']['name']}",level:"{robots['Z100L']['level']}",level_label:"{robots['Z100L']['level_label']}",desc:"{robots['Z100L']['desc']}",icon:"{robots['Z100L']['icon']}",page:"{robots['Z100L']['page']}",color:"{robots['Z100L']['color']}" }},
-    Z700F_AOI:{{ id:"Z700F+AOI",name:"{robots['Z700F_AOI']['name']}",level:"{robots['Z700F_AOI']['level']}",level_label:"{robots['Z700F_AOI']['level_label']}",desc:"{robots['Z700F_AOI']['desc']}",icon:"{robots['Z700F_AOI']['icon']}",page:"{robots['Z700F_AOI']['page']}",color:"{robots['Z700F_AOI']['color']}" }},
-  }},
+L("  robots: {")
+for rid, rv in robots.items():
+    L(f'    {rid}: {{ id:"{esc(rid)}", name:"{esc(rv["name"])}", level:"{esc(rv["level"])}", level_label:"{esc(rv["level_label"])}", desc:"{esc(rv["desc"])}", icon:"{esc(rv["icon"])}", page:"{esc(rv.get("page",""))}", color:"{esc(rv["color"])}" }},')
+L("  },")
 
-  systems: {{
-    sys0: {{ id:"Sys0",name:"{systems['sys0']['name']}",hardware:"{systems['sys0']['hardware']}",gpu:"{systems['sys0']['gpu']}",ram:"{systems['sys0']['ram']}",role:"{systems['sys0']['role']}",model:"{systems['sys0']['model']}",color:"{systems['sys0']['color']}" }},
-    sys1: {{ id:"Sys1",name:"{systems['sys1']['name']}",hardware:"{systems['sys1']['hardware']}",gpu:"{systems['sys1']['gpu']}",ram:"{systems['sys1']['ram']}",role:"{systems['sys1']['role']}",model:"{systems['sys1']['model']}",color:"{systems['sys1']['color']}" }},
-    sys2: {{ id:"Sys2",name:"{systems['sys2']['name']}",hardware:"{systems['sys2']['hardware']}",gpu:"{systems['sys2']['gpu']}",ram:"{systems['sys2']['ram']}",role:"{systems['sys2']['role']}",model:"{systems['sys2']['model']}",color:"{systems['sys2']['color']}" }},
-    edge: {{ id:"Edge",name:"{systems['edge']['name']}",hardware:"{systems['edge']['hardware']}",gpu:"{systems['edge']['gpu']}",ram:"{systems['edge']['ram']}",role:"{systems['edge']['role']}",model:"{systems['edge']['model']}",color:"{systems['edge']['color']}" }},
-  }},
+L("  systems: {")
+for sid, sv in systems.items():
+    L(f'    {sid}: {{ id:"{esc(sv["name"].split(chr(183))[0].strip())}", name:"{esc(sv["name"])}", hardware:"{esc(sv["hardware"])}", gpu:"{esc(sv["gpu"])}", ram:"{esc(sv["ram"])}", role:"{esc(sv["role"])}", model:"{esc(sv["model"])}", color:"{esc(sv["color"])}" }},')
+L("  },")
 
-  models: {{
-{''.join(f'    {k}: {{ name:"{v["name"]}",full_name:"{v["full_name"]}",params:"{v["params"]}",type:"{v["type"]}",deployment:"{v["deployment"]}",desc:"{v["desc"]}",color:"{v["color"]}" }},\n' for k, v in models.items())}  }},
+L("  models: {")
+for mid, mv in models.items():
+    L(f'    {mid}: {{ name:"{esc(mv["name"])}", full_name:"{esc(mv["full_name"])}", params:"{esc(mv["params"])}", type:"{esc(mv["type"])}", deployment:"{esc(mv["deployment"])}", desc:"{esc(mv["desc"])}", color:"{esc(mv["color"])}" }},')
+L("  },")
 
-  hardware: {{
-{''.join(f'    {k}: {{ model:"{v["model"]}",type:"{v["type"]}",spec:"{v["spec"]}" }},\n' for k, v in hardware.items())}  }},
+L("  hardware: {")
+for hid, hv in hardware.items():
+    L(f'    {hid}: {{ model:"{esc(hv["model"])}", type:"{esc(hv["type"])}", spec:"{esc(hv["spec"])}" }},')
+L("  },")
 
-  factory: {{
-    product:      "{factory_meta.get('product','')}",
-    product_pn:   "{factory_meta.get('product_pn','')}",
-    zones: [
-{''.join(f'      {{ id:"{z["id"]}",name:"{z["name"]}",color:"{z["color"]}",page:"{z["page"]}",stations:"{z["stations"]}",count:{z["count"]} }},\n' for z in zones)}    ],
-    total_stations: {factory_meta.get('total_stations',0)},
-    final_inspection: "{factory_meta.get('final_inspection','')}",
-  }},
+L("  factory: {")
+L(f'    product: "{esc(factory_meta.get("product",""))}",')
+L(f'    product_pn: "{esc(factory_meta.get("product_pn",""))}",')
+L("    zones: [")
+for z in zones:
+    L(f'      {{ id:"{esc(z["id"])}", name:"{esc(z["name"])}", color:"{esc(z["color"])}", page:"{esc(z["page"])}", stations:"{esc(z["stations"])}", count:{z["count"]} }},')
+L("    ],")
+L(f'    total_stations: {factory_meta.get("total_stations",0)},')
+L(f'    final_inspection: "{esc(factory_meta.get("final_inspection",""))}",')
+L("  },")
 
-  dds_skills: {{
-{''.join(f'    {k}: {{ count:{v.get("count",0)},id_range:"{v.get("id_range","")}",color:"{v.get("color","")}",icon:"{v.get("icon","")}",label:"{v.get("label","")}",desc:"{v.get("desc","")}" }},\n' for k, v in dds_skills.items())}  }},
+L("  dds_skills: {")
+for sid, sv in dds_skills.items():
+    L(f'    {sid}: {{ count:{sv.get("count",0)}, id_range:"{esc(sv.get("id_range",""))}", color:"{esc(sv.get("color",""))}", icon:"{esc(sv.get("icon",""))}", label:"{esc(sv.get("label",""))}", desc:"{esc(sv.get("desc",""))}" }},')
+L("  },")
 
-  pipeline: {{
-    name: "数据流水线 · Orin→MAC→4090",
-    version: "2.0",
-    phases: [
-{''.join(f'      {{ name:"{p["name"]}",node:"{p["node"]}",duration:{p["duration"]},icon:"{p["icon"]}" }},\n' for p in pipeline_phases)}    ],
-  }},
+L("  pipeline: {")
+L('    name: "数据流水线 · Orin→MAC→4090", version: "2.0",')
+L("    phases: [")
+for p in pipeline_phases:
+    L(f'      {{ name:"{esc(p["name"])}", node:"{esc(p["node"])}", duration:{p["duration"]}, icon:"{esc(p["icon"])}" }},')
+L("    ],")
+L("  },")
 
-  roadmap: [
-{''.join(f'    {{ version:"{r["version"]}",timeline:"{r["timeline"]}",name:"{r["name"]}",desc:"{r["desc"]}",color:"{r["color"]}" }},\n' for r in roadmap)}  ],
+L("  roadmap: [")
+for r in roadmap:
+    L(f'    {{ version:"{esc(r["version"])}", timeline:"{esc(r["timeline"])}", name:"{esc(r["name"])}", desc:"{esc(r["desc"])}", color:"{esc(r["color"])}" }},')
+L("  ],")
 
-  links: {{
-{''.join(f'    {k}: "{v}",\n' for k, v in links_data.items())}  }},
+L("  links: {")
+for k, v in links_data.items():
+    L(f'    {k}: "{esc(v)}",')
+L("  },")
 
-  theme: {{
-{''.join(f'    {k}: "{v}",\n' for k, v in theme.items())}  }},
+L("  theme: {")
+for k, v in theme.items():
+    L(f'    {k}: "{esc(v)}",')
+L("  },")
 
-}};
+L("};")
+L("")
+L("window.DDS.getKPI = function(key) { return this.kpi[key]; };")
+L("window.DDS.getRobot = function(id) { return this.robots[id]; };")
+L("window.DDS.getSystem = function(id) { return this.systems[id]; };")
+L("window.DDS.getModel = function(id) { return this.models[id]; };")
+L("window.DDS.getZone = function(id) { return this.factory.zones.find(function(z){return z.id===id;}); };")
+L("")
+L('console.log("DDS Global · SQLite同步 · v" + window.DDS.company.year + " · " + window.DDS.factory.product);')
 
-window.DDS.getKPI = function(key) {{ return this.kpi[key]; }};
-window.DDS.getRobot = function(id) {{ return this.robots[id]; }};
-window.DDS.getSystem = function(id) {{ return this.systems[id]; }};
-window.DDS.getModel = function(id) {{ return this.models[id]; }};
-window.DDS.getZone = function(id) {{ return this.factory.zones.find(function(z){{return z.id===id;}}); }};
-
-console.log("DDS Global · SQLite同步 · v" + window.DDS.company.year + " · " + window.DDS.factory.product);
-'''
-
-with open(OUT, 'w') as f:
-    f.write(js)
-
-print(f"Exported: {OUT}")
-print(f"Size: {os.path.getsize(OUT)/1024:.1f} KB")
+with open(OUT, 'w') as f: f.write('\n'.join(lines))
+print(f"Exported: {OUT} ({os.path.getsize(OUT)} bytes)")
