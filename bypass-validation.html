@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原型迁移部署旁路验证 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:1000px;margin:0 auto;padding:60px 20px}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:24px}
+h1{color:#00d4aa;font-size:28px;margin-bottom:6px}
+.sub{color:#8b949e;font-size:13px;margin-bottom:28px}
+h2{color:#fff;font-size:20px;margin:32px 0 16px}
+.divider{width:48px;height:3px;background:#00d4aa;margin:12px 0 28px;border-radius:2px}
+
+/* 三级卡片 */
+.triple{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:20px 0}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:24px}
+.card.accent{border-color:#00d4aa44}
+.card .tag{font-size:12px;letter-spacing:2px;color:#00d4aa;margin-bottom:8px;font-weight:700}
+.card h3{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px}
+.card .spec{font-size:12px;color:#8b949e;margin-bottom:10px}
+.card .desc{font-size:13px;color:#c8d1d9;line-height:1.7}
+.card .link{display:block;margin-top:12px;font-size:11px;color:#00d4aa}
+
+/* 流程图 */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:12px;margin:24px 0;padding:20px;background:#0d1117;border-radius:12px;border:1px solid #1a1f2b}
+.flow-n{border:2px solid;border-radius:8px;padding:10px 16px;text-align:center;min-width:100px}
+.flow-arrow{color:#8b949e;font-size:18px;font-weight:700}
+.fc{border-color:#a371f7;color:#a371f7}
+.fa{border-color:#00d4aa;color:#00d4aa}
+.fm{border-color:#58a6ff;color:#58a6ff}
+
+/* 详细表 */
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:16px 0;font-size:12px}
+th{background:#00d4aa22;padding:8px 12px;text-align:left;color:#00d4aa;font-weight:700}
+td{padding:7px 12px;border-bottom:1px solid #1a1f2b}
+tr:nth-child(even) td{background:#080c14}
+
+.footer{text-align:center;padding:40px;color:#484f58;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+.footer a{color:#8b949e;text-decoration:none}
+
+@media(max-width:768px){
+  .triple{grid-template-columns:1fr}
+  h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<a href="/index.html" class="back-home">← 返回主页</a>
+<h1>原型迁移部署旁路验证</h1>
+<p class="sub">Sys1(4060) → Sys2(4090) → Edge(Orin/Mac) 三级验证链 · 软件定义升级路径</p>
+<div class="divider"></div>
+
+<!-- 数据流 -->
+<div class="flow">
+  <div class="flow-n fc">🖥️ Sys0 硬件基座<br><small>Orin Nano · SR5-C</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-n fm">🧠 Sys1 端边推理<br><small>RTX 4060 · ACT 52M</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-n fa">☁️ Sys2 云端智能<br><small>RTX 4090 · SmolVLA 450M</small></div>
+  <div class="flow-arrow">←</div>
+  <div class="flow-n fc">📱 Edge 端侧执行<br><small>Mac M1 · Orin Nano</small></div>
+</div>
+
+<!-- 三级卡片 -->
+<h2>三级智能引擎</h2>
+<div class="triple">
+  <div class="card">
+    <div class="tag">Sys1 · ACT</div>
+    <h3>边缘推理引擎</h3>
+    <div class="spec">RTX 4060 · 8GB</div>
+    <div class="desc">Action Chunking Transformer，52M参数，&lt;10ms推理。实时力控闭环&gt;1kHz。</div>
+    <div class="link">← Sys11 SmolVLA · Sys12 LeWorld</div>
+  </div>
+  <div class="card accent">
+    <div class="tag">Sys2 · 全产线智能</div>
+    <h3>大模型推理</h3>
+    <div class="spec">RTX 4090 · 24GB</div>
+    <div class="desc">SmolVLA 450M + GR00T 7B。复杂任务自主决策，多产线调度。</div>
+    <div class="link">← Sys1 gRPC调用 → Edge下发</div>
+  </div>
+  <div class="card">
+    <div class="tag">Edge · 端侧</div>
+    <h3>现场执行</h3>
+    <div class="spec">Mac M1 · Orin Nano</div>
+    <div class="desc">SmolVLA-INT8量化模型，&lt;15ms推理。即插即用智能硬件连接，7×24可靠运行。</div>
+    <div class="link">← 机械臂控制 · 传感器采集</div>
+  </div>
+</div>
+
+<!-- 详细验证矩阵 -->
+<h2>验证链路矩阵</h2>
+<table>
+<tr><th>验证项</th><th>Sys1 (4060)</th><th>Sys2 (4090)</th><th>Edge (Orin/Mac)</th></tr>
+<tr><td>模型引擎</td><td>ACT 52M · VLA-T</td><td>SmolVLA 450M · GR00T 7B</td><td>SmolVLA-INT8</td></tr>
+<tr><td>推理延迟</td><td>&lt;10ms</td><td>~150ms</td><td>&lt;15ms</td></tr>
+<tr><td>力控闭环</td><td>&gt;1kHz · 实时</td><td>— (离线训练)</td><td>&gt;1kHz · 实时</td></tr>
+<tr><td>传感器</td><td>6轴关节+力控</td><td>全模态融合</td><td>Realsense D405+力+触觉</td></tr>
+<tr><td>精度</td><td>±0.02mm</td><td>—</td><td>±0.02mm</td></tr>
+<tr><td>部署方式</td><td>gRPC → Sys2</td><td>HTTP ← Sys1 / → Edge</td><td>gRPC ← Sys1</td></tr>
+<tr><td>升级路径</td><td>L2→L3→L4 软件定义</td><td>云端持续训练</td><td>OTA量化模型更新</td></tr>
+</table>
+
+<!-- 升级路径 -->
+<h2>软件定义升级路径</h2>
+<div class="flow">
+  <div class="flow-n fc">L2 基线<br><small>固定轨迹<br>ACT 52M</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-n fm">L3 自适应<br><small>力觉泛化<br>VLA-T</small></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-n fa">L4 自主<br><small>零样本换型<br>SmolVLA+LeWM</small></div>
+</div>
+<p style="text-align:center;color:#8b949e;font-size:12px;margin-top:8px">同一硬件平台(HW3.0)，纯软件OTA升级。硬件投资保护，能力持续进化。</p>
+
+</div>
+
+<footer class="footer">
+  <p>© 2026 智蜂创元 ZFCY · datadrive.world · 原型迁移部署旁路验证</p>
+  <p style="margin-top:4px"><a href="/index.html">← 返回主页</a> · <a href="/kanban.html">任务看板</a></p>
+</footer>
+
+</body>
+</html>
