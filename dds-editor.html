@@ -277,15 +277,34 @@ function renderDynamic(){
 function bindEditable(){
   document.querySelectorAll('[contenteditable]').forEach(function(el){
     el.addEventListener('input', function(){
-      markEdited(el.dataset.table, el.dataset.key, el.dataset.field, el.textContent);
+      var t = el.dataset.table;
+      var k = el.dataset.key;
+      var f = el.dataset.field;
+      var v = el.textContent.trim();
+      if (t && k) markEdited(t, k, f, v);
+    });
+  });
+  // 也监听 blur 确保最后的值被捕获
+  document.querySelectorAll('[contenteditable]').forEach(function(el){
+    el.addEventListener('blur', function(){
+      var t = el.dataset.table;
+      var k = el.dataset.key;
+      var f = el.dataset.field;
+      var v = el.textContent.trim();
+      if (t && k) markEdited(t, k, f, v);
     });
   });
 }
 
+var KV_TABLES = ['company','links','theme','factory_meta'];
 function markEdited(table, key, field, value){
   if (!dirty[table]) dirty[table] = {};
-  if (!dirty[table][key]) dirty[table][key] = {};
-  dirty[table][key][field] = value;
+  if (KV_TABLES.indexOf(table) >= 0){
+    dirty[table][key] = value;
+  } else {
+    if (!dirty[table][key]) dirty[table][key] = {};
+    dirty[table][key][field||'value'] = value;
+  }
   document.getElementById('status').innerHTML = '<span style="color:#d4a800">● 未保存</span>';
 }
 
@@ -294,22 +313,20 @@ function saveAll(){
   
   var tables = Object.keys(dirty);
   var promises = tables.map(function(table){
-    var data = {};
-    Object.keys(dirty[table]).forEach(function(key){
-      data[key] = dirty[table][key];
-    });
     return fetch('/dds-api.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({table: table, data: data})
+      body: JSON.stringify({table: table, data: dirty[table]})
     });
   });
   
-  Promise.all(promises).then(function(){
+  Promise.all(promises).then(function(r){
     dirty = {};
     status('<span style="color:var(--green)">● 已保存 · 全站同步</span>');
+    // 刷新页面显示最新值
+    setTimeout(function(){ location.reload(); }, 800);
   }).catch(function(e){
-    status('<span style="color:#ff4444">保存失败</span>');
+    status('<span style="color:#ff4444">保存失败: '+e.message+'</span>');
   });
 }
 
