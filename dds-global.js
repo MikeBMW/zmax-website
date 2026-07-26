@@ -276,6 +276,8 @@ window.DDS = {
    * ═══════════════════════════════════════════ */
   links: {
     github:     "https://github.com/MikeBMW/lerobot-smolvla-lew",
+    zmax:       "https://github.com/MikeBMW/zmax-website",
+    hybrid:     "https://github.com/MikeBMW/zmax-website",
     deepseek:   "https://platform.deepseek.com/usage",
     gpu_console:"https://console.compshare.cn/uaccount/costcenter",
     wandb:      "https://wandb.ai/xspace/zmax-hjepa",
