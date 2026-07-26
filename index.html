@@ -339,6 +339,107 @@
   </div>
 </section>
 
+<!-- ═══════ 数据空间 ═══════ -->
+<section style="background:#080c14;max-width:none;padding:60px 24px">
+<div style="max-width:1200px;margin:0 auto">
+<div class="sec-label">数据</div>
+<h2 class="sec-title">DDS 全局数据空间</h2>
+<p class="sec-sub">统一管理全站数据。上传文档、编辑内容，改一处全站同步。</p>
+<div class="divider"></div>
+
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px">
+  <a href="/dds-editor.html" style="display:inline-block;padding:14px 32px;background:#00d4aa;color:#06080d;border-radius:8px;text-decoration:none;font-size:15px;font-weight:700">📊 在线PPT · 编辑全站数据</a>
+  <a href="/dds-data-space.html" style="display:inline-block;padding:14px 32px;background:#1a1f2b;color:#c8d1d9;border-radius:8px;text-decoration:none;font-size:15px;font-weight:600;border:1px solid #00d4aa44">🌐 DDS 数据空间</a>
+  <a href="/dds-3d-space.html" style="display:inline-block;padding:14px 32px;background:#1a1f2b;color:#c8d1d9;border-radius:8px;text-decoration:none;font-size:15px;font-weight:600">🗺️ DDS 3D映射</a>
+  <a href="/dds-skill-master.html" style="display:inline-block;padding:14px 32px;background:#1a1f2b;color:#c8d1d9;border-radius:8px;text-decoration:none;font-size:15px;font-weight:600">📋 Skill 主数据</a>
+</div>
+
+<div id="data-upload" style="border:2px dashed #1a1f2b;border-radius:12px;padding:30px;text-align:center;background:#0d1117;cursor:pointer;margin-bottom:20px"
+  ondragover="this.style.borderColor='#00d4aa';this.style.background='#0a1a15';event.preventDefault()"
+  ondragleave="this.style.borderColor='#1a1f2b';this.style.background='#0d1117'"
+  ondrop="handleDataDrop(event)"
+  onclick="document.getElementById('data-file').click()">
+  <div style="font-size:32px;margin-bottom:8px">📤</div>
+  <div style="color:#fff;font-weight:600">拖拽文件上传</div>
+  <div style="color:#8b949e;font-size:11px">PDF / DOCX / PPTX / 图片</div>
+  <input type="file" id="data-file" multiple style="display:none" onchange="handleDataFiles(this.files)">
+  <div id="data-status" style="margin-top:8px;font-size:11px"></div>
+</div>
+<div id="data-files" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px"></div>
+</div>
+</section>
+
+<!-- ═══════ 全站导航 ═══════ -->
+<div style="max-width:1200px;margin:0 auto;padding:40px 24px 60px">
+<div class="sec-label">全站导航</div>
+<h2 class="sec-title" style="margin-bottom:24px">datadrive.world 产品通道</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px">
+  <div style="font-size:16px;margin-bottom:10px;font-weight:700;color:#fff">🏭 数字工厂</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+    <a href="/factory-3d.html" style="color:#00d4aa;text-decoration:none">🏭 工厂3D总览</a>
+    <a href="/factory-mobile.html" style="color:#8b949e;text-decoration:none">📱 产线巡检</a>
+    <a href="/factory-nav.html" style="color:#8b949e;text-decoration:none">🤖 自主导航</a>
+    <a href="/factory-fpv.html" style="color:#8b949e;text-decoration:none">🎮 FPV仿真</a>
+    <a href="/factory-game.html" style="color:#8b949e;text-decoration:none">🎮 工厂游戏</a>
+  </div>
+</div>
+
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px">
+  <div style="font-size:16px;margin-bottom:10px;font-weight:700;color:#fff">📋 产线工艺</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+    <a href="/coc-process.html" style="color:#f0a500;text-decoration:none">🟠 COC 基板区</a>
+    <a href="/oe-process.html" style="color:#ff6b35;text-decoration:none">🔴 OE 光引擎区</a>
+    <a href="/mod-process.html" style="color:#58a6ff;text-decoration:none">🔵 MOD 模块区</a>
+    <a href="/wh-process.html" style="color:#3fb950;text-decoration:none">🟢 WH 仓库区</a>
+  </div>
+</div>
+
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px">
+  <div style="font-size:16px;margin-bottom:10px;font-weight:700;color:#fff">🤖 产品与工位</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+    <a href="/robot2.html" style="color:#00d4aa;text-decoration:none">🤖 Z700 轮式双臂</a>
+    <a href="/robot.html" style="color:#8b949e;text-decoration:none">🔧 Z700F 固定式</a>
+    <a href="/station-i120.html" style="color:#8b949e;text-decoration:none">📍 I-120 老化箱</a>
+    <a href="/station-i142.html" style="color:#8b949e;text-decoration:none">📍 I-142 老化箱</a>
+  </div>
+</div>
+
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px">
+  <div style="font-size:16px;margin-bottom:10px;font-weight:700;color:#fff">🧠 智能引擎</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+    <a href="/comfyui.html" style="color:#00d4aa;text-decoration:none">🎨 ComfyUI 编辑器</a>
+    <a href="/hybrid-arch.html" style="color:#a371f7;text-decoration:none">🔀 混合架构</a>
+    <a href="/drawio.html" style="color:#00d4aa;text-decoration:none">✏️ Draw.io</a>
+    <a href="/bypass-validation.html" style="color:#8b949e;text-decoration:none">🔬 旁路验证</a>
+    <a href="/dds-skill-map.html" style="color:#8b949e;text-decoration:none">🗺️ Skill地图</a>
+  </div>
+</div>
+
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px">
+  <div style="font-size:16px;margin-bottom:10px;font-weight:700;color:#fff">📊 运营监控</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+    <a href="/monitor.html" style="color:#00d4aa;text-decoration:none">📺 实时监控</a>
+    <a href="/performance.html" style="color:#8b949e;text-decoration:none">⚡ 算力指标</a>
+    <a href="/data-loop.html" style="color:#8b949e;text-decoration:none">🔄 数据闭环</a>
+    <a href="/orin-pipeline.html" style="color:#8b949e;text-decoration:none">🔩 Orin管线</a>
+  </div>
+</div>
+
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px">
+  <div style="font-size:16px;margin-bottom:10px;font-weight:700;color:#fff">🔧 工程管理</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+    <a href="/kanban.html" style="color:#00d4aa;text-decoration:none">📋 任务看板</a>
+    <a href="/aspice-vmodel.html" style="color:#8b949e;text-decoration:none">📐 ASPICE V-Model</a>
+    <a href="/retrospective.html" style="color:#8b949e;text-decoration:none">📝 项目复盘</a>
+    <a href="/docs.html" style="color:#8b949e;text-decoration:none">📋 系统文档</a>
+  </div>
+</div>
+
+</div>
+</div>
+
 <!-- ═══════ FOOTER ═══════ -->
 <footer>
   <p>© 2026 智蜂创元 ZFCY · datadrive.world · Q/ZFCY 001.1-2026</p>
@@ -365,6 +466,14 @@ function doLogin(){
 }
 document.getElementById('login-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
 document.getElementById('login-user').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+</script>
+
+
+<script>
+function handleDataDrop(e){e.preventDefault();handleDataFiles(e.dataTransfer.files);e.target.style.borderColor="#1a1f2b";e.target.style.background="#0d1117"}
+function handleDataFiles(files){var s=document.getElementById("data-status");for(var i=0;i<files.length;i++){s.style.color="#8b949e";s.textContent="上传中...";var fd=new FormData();fd.append("file",files[i]);fetch("/upload-data.php",{method:"POST",body:fd}).then(function(r){return r.json()}).then(function(d){if(d.ok){s.style.color="#00d4aa";s.textContent="已上传: "+d.name;loadDataFiles()}else{s.style.color="#ff4444";s.textContent="失败: "+(d.error||"")}}).catch(function(e){s.style.color="#ff4444";s.textContent="网络错误"})}}
+function loadDataFiles(){fetch("/upload-data.php").then(function(r){return r.json()}).then(function(files){var el=document.getElementById("data-files");if(!files||!files.length){el.innerHTML="";return}el.innerHTML=files.map(function(f){return "<a href="+f.url+" target=_blank style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;text-decoration:none;color:#c8d1d9;font-size:12px">"+f.name+"<span style="color:#484f58;font-size:10px;margin-left:auto">"+(f.size/1024).toFixed(1)+"KB</span></a>"}).join("")})}
+loadDataFiles();
 </script>
 
 </body>
