@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>原子技能库 · Z700 具身智能</title>
+<style>
+:root{--c:#00d4aa;--bg:#06080d;--card:#0d1117;--bor:#1a1f2b;--sub:#8b949e;--tx:#c9d1d9}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.6}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px}
+h1{color:var(--c);font-size:22px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:var(--sub);font-size:12px;margin-bottom:20px}
+.top-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.top-bar a{color:var(--c);text-decoration:none;font-size:12px;padding:6px 14px;border:1px solid var(--bor);border-radius:8px;white-space:nowrap}
+.top-bar input{flex:1;min-width:160px;padding:8px 12px;border-radius:8px;background:var(--card);border:1px solid var(--bor);color:var(--tx);font-size:12px;outline:none}
+.top-bar input:focus{border-color:var(--c)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.stat-chip{background:var(--card);border:1px solid var(--bor);border-radius:8px;padding:6px 12px;font-size:10px;color:var(--sub);cursor:pointer;transition:all .15s}
+.stat-chip.active,.stat-chip:hover{border-color:var(--c);color:var(--c)}
+.stat-chip .num{font-size:16px;font-weight:800;color:#fff;display:block}
+.cat-section{margin-bottom:24px}
+.cat-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--c)22}
+.cat-header h2{font-size:15px;color:var(--c);font-weight:800}
+.cat-header .cnt{font-size:10px;color:var(--sub);background:var(--card);padding:2px 8px;border-radius:4px}
+.skill-card{background:var(--card);border:1px solid var(--bor);border-radius:10px;padding:12px 14px;margin-bottom:8px;transition:all .15s}
+.skill-card:hover{border-color:var(--c)44}
+.skill-card .head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.skill-card .id-badge{background:var(--c)22;color:var(--c);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.skill-card .name{font-size:13px;font-weight:700;color:#fff}
+.skill-card .meta{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--sub);margin-bottom:6px}
+.skill-card .meta span{display:flex;align-items:center;gap:3px}
+.skill-card .desc{font-size:10px;color:var(--sub);line-height:1.5;margin-bottom:4px}
+.skill-card .fields{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:10px}
+.skill-card .fields .fl{color:var(--sub)}.skill-card .fields .fv{color:var(--tx)}
+@media(max-width:640px){.skill-card .fields{grid-template-columns:1fr}}
+.empty{text-align:center;color:var(--sub);padding:40px;font-size:13px}
+.loading{text-align:center;color:var(--sub);padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/" style="color:var(--c);text-decoration:none;font-size:12px">← 主页</a>
+<h1>🤖 具身机器人原子技能库</h1>
+<p class="sub">Z700 · 制造业场景驱动 · 89项原子技能</p>
+
+<div class="top-bar">
+  <input type="text" id="search" placeholder="搜索技能名称、ID、定义..." oninput="filter()">
+  <a href="javascript:filterCat('all')" id="cat-all" class="stat-chip active">全部</a>
+</div>
+
+<div class="stats" id="stats"></div>
+<div id="content"><div class="loading">加载中...</div></div>
+</div>
+
+<script>
+let allSkills=[],activeCat='all';
+
+fetch('/dds-atomic-api.php?action=categories').then(r=>r.json()).then(cats=>{
+  const stats=document.getElementById('stats');
+  stats.innerHTML=cats.map(c=>`<div class="stat-chip" onclick="filterCat('${c.category}')" id="cat-${c.category}"><span class="num">${c.cnt}</span>${c.category}</div>`).join('');
+  if(cats.length>0)filterCat('all');
+});
+
+function filterCat(cat){
+  activeCat=cat;
+  document.querySelectorAll('.stat-chip').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('cat-'+cat)||document.getElementById('cat-all');
+  if(el)el.classList.add('active');
+
+  const url=cat==='all'?'/dds-atomic-api.php?action=list':'/dds-atomic-api.php?action=list&cat='+encodeURIComponent(cat);
+  fetch(url).then(r=>r.json()).then(skills=>{
+    allSkills=skills;
+    render(skills);
+  });
+}
+
+function filter(){
+  const q=document.getElementById('search').value.toLowerCase();
+  if(!q){render(allSkills);return}
+  render(allSkills.filter(s=>(s.id+s.name+s.definition+s.category+s.scenarios).toLowerCase().includes(q)));
+}
+
+function render(skills){
+  const el=document.getElementById('content');
+  if(!skills.length){el.innerHTML='<div class="empty">无匹配技能</div>';return}
+
+  const grouped={};
+  skills.forEach(s=>{if(!grouped[s.category])grouped[s.category]=[];grouped[s.category].push(s)});
+
+  let html='';
+  for(const[cat,items]of Object.entries(grouped)){
+    html+=`<div class="cat-section"><div class="cat-header"><h2>${cat}</h2><span class="cnt">${items.length}项</span></div>`;
+    items.forEach(s=>{
+      html+=`<div class="skill-card">
+        <div class="head"><span class="id-badge">${s.id}</span><span class="name">${s.name}</span></div>
+        <div class="meta">
+          <span>📊 成熟度 ${s.maturity_current||'?'}→${s.maturity_target||'?'}</span>
+          <span>🔧 难度 ${s.difficulty||'?'}</span>
+          <span>⚡ ${s.priority||''}</span>
+        </div>
+        <div class="desc">📝 ${s.definition||'—'}</div>
+        <div class="fields">
+          <div><span class="fl">输入：</span><span class="fv">${s.input_cond||'—'}</span></div>
+          <div><span class="fl">输出：</span><span class="fv">${s.output_criteria||'—'}</span></div>
+          <div><span class="fl">传感/工具：</span><span class="fv">${s.sensors||'—'}</span></div>
+          <div><span class="fl">依赖：</span><span class="fv">${s.deps||'—'}</span></div>
+          <div><span class="fl">场景：</span><span class="fv">${s.scenarios||'—'}</span></div>
+          <div><span class="fl">备注：</span><span class="fv">${s.notes||'—'}</span></div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+</script>
+</body>
+</html>
