@@ -22,11 +22,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($table === 'systems') {
         foreach ($data as $key => $val) {
-            // Update or insert
             $exists = $db->querySingle("SELECT COUNT(*) FROM systems WHERE id='".$db->escapeString($key)."'");
             if ($exists) {
                 $db->exec("UPDATE systems SET name='".$db->escapeString($val['name'])."', hardware='".$db->escapeString($val['hardware'])."', gpu='".$db->escapeString($val['gpu'])."', ram='".$db->escapeString($val['ram'])."', role='".$db->escapeString($val['role'])."', model='".$db->escapeString($val['model'])."', color='".$db->escapeString($val['color'])."' WHERE id='".$db->escapeString($key)."'");
             }
+        }
+    } elseif ($table === 'robots') {
+        foreach ($data as $key => $val) {
+            $sets = [];
+            if (isset($val['name'])) $sets[] = "name='".$db->escapeString($val['name'])."'";
+            if (isset($val['level'])) $sets[] = "level='".$db->escapeString($val['level'])."'";
+            if (isset($val['level_label'])) $sets[] = "level_label='".$db->escapeString($val['level_label'])."'";
+            if (isset($val['desc'])) $sets[] = "desc='".$db->escapeString($val['desc'])."'";
+            if (!empty($sets)) {
+                $db->exec("UPDATE robots SET ".implode(',',$sets)." WHERE id='".$db->escapeString($key)."'");
+            }
+        }
+    } elseif ($table === 'factory_zones') {
+        foreach ($data as $key => $val) {
+            $db->exec("UPDATE factory_zones SET stations=".intval($val['stations'])." WHERE id='".$db->escapeString($key)."'");
         }
     }
     echo json_encode(['status'=>'ok']);

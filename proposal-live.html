@@ -110,7 +110,8 @@ function render(){
   // Section 2: Products
   h+=`<div class="section"><h2>二、产品与系统架构</h2><div class="col2">`;
   (D.robots||[]).forEach(r=>{
-    h+=`<div class="card"><h3><span data-key="robots.${r.id}.name" contenteditable="false">${r.name||''}</span> <span class="tag tg">${r.level_label||''}</span></h3><p style="font-size:10px;color:var(--sub)" data-key="robots.${r.id}.desc" contenteditable="false">${r.desc||''}</p></div>`;
+    const lvlClass=r.level==='L4'?'tg':r.level==='L2'?'tb':'ty';
+    h+=`<div class="card"><h3><span data-key="robots.${r.id}.name" contenteditable="false">${r.name||''}</span> <span class="tag ${lvlClass}" contenteditable="false"><span data-key="robots.${r.id}.level" style="font-weight:900">${r.level||''}</span> <span data-key="robots.${r.id}.level_label">${r.level_label||''}</span></span></h3><p style="font-size:10px;color:var(--sub)" data-key="robots.${r.id}.desc" contenteditable="false">${r.desc||''}</p></div>`;
   });
   h+=`</div>`;
   // Systems
