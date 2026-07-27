@@ -75,6 +75,29 @@ td[contenteditable]{background:var(--bg)}
   .kpi-val{font-size:24px}
   .toolbar{gap:4px}
 }
+
+@media print{
+  body{background:#fff!important;color:#000!important;max-width:100%!important;padding:0!important}
+  .toolbar,.slide-num,.status,#pptx-drop,.btn-save,.btn-export{display:none!important}
+  .slide{background:#fff!important;border:1px solid #ccc!important;break-inside:avoid;margin-bottom:20px!important;padding:24px!important}
+  .slide-title{color:#000!important}
+  .card-item{background:#f8f8f8!important;border:1px solid #ddd!important;color:#000!important}
+  .card-item h4{color:#000!important}
+  .card-item p{color:#333!important}
+  .kpi-val{color:#000!important}
+  .kpi-label{color:#555!important}
+  .step-dot{background:#000!important;color:#fff!important}
+  .pipe-step{background:#f8f8f8!important;border:1px solid #ddd!important;color:#000!important}
+  .divider{background:#000!important}
+  h1{color:#000!important}
+  table{color:#000!important}
+  td,th{border-color:#ccc!important;color:#000!important}
+  th{background:#eee!important;color:#000!important}
+  td[contenteditable]{background:#fff!important}
+  a{color:#000!important}
+  [contenteditable]{border:none!important;background:transparent!important}
+  [contenteditable]:hover,[contenteditable]:focus{background:transparent!important;border:none!important}
+}
 </style>
 <script src="/zmax-auth.js"></script>
 </head>
@@ -86,6 +109,7 @@ td[contenteditable]{background:var(--bg)}
   <button class="btn-save" onclick="saveAll()">💾 保存并同步全站</button>
   <a href="/generate-pptx.php" class="btn-export" style="display:inline-block;padding:8px 20px">📥 导出 PPTX</a>
   <a href="/Z700-立项申请书.docx" class="btn-export" style="display:inline-block;padding:8px 20px">📝 导出 DOCX</a>
+  <button class="btn-export" onclick="window.print()" style="display:inline-block;padding:8px 20px;cursor:pointer">📄 导出 PDF</button>
   <span class="status" id="status"></span>
 </div>
 

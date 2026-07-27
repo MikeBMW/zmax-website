@@ -61,8 +61,7 @@ rPr.insert(0, rFonts)
 def heading(text, level=1):
     h = doc.add_heading(text, level=level)
     for run in h.runs:
-        set_cn_font(run, '等线', 16 if level==1 else 13, bold=True, color=
-                     RGBColor(0x00,0xD4,0xAA) if level==1 else RGBColor(0x58,0xA6,0xFF))
+        set_cn_font(run, '等线', 16 if level==1 else 13, bold=True, color=RGBColor(0x00,0x00,0x00))
     return h
 
 def para(text, bold=False, sz=10.5, color=None):
@@ -88,7 +87,7 @@ def table(headers, rows, col_widths=None):
         cell = t.rows[0].cells[i]
         cell.text = ''
         run = cell.paragraphs[0].add_run(h)
-        set_cn_font(run, '等线', 10, bold=True, color=RGBColor(0x00,0xD4,0xAA))
+        set_cn_font(run, '等线', 10, bold=True, color=RGBColor(0x00,0x00,0x00))
     # Data rows
     for r_idx, row in enumerate(rows):
         for c_idx, val in enumerate(row):
@@ -102,7 +101,7 @@ def table(headers, rows, col_widths=None):
 # ═══════════ COVER ═══════════
 for _ in range(5):
     doc.add_paragraph()
-para("Z700 光模块精密制造", bold=True, sz=26, color=RGBColor(0x00,0xD4,0xAA))
+para("Z700 光模块精密制造", bold=True, sz=26, color=RGBColor(0x00,0x00,0x00))
 para("具身智能机器人系统 · 立项申请书", bold=True, sz=18)
 doc.add_paragraph()
 para(f"申请单位：智蜂创元 ZFCY")
