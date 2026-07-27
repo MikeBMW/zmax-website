@@ -74,7 +74,7 @@ body{background:#0a0a0f;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <div id="mention-hint"></div>
   <div class="info" id="info-bar">👑 当前: <b id="info-who">大倪（静界）</b> — 输入 @ 可以 @人 或 @all（自动推送到飞书群）</div>
   <div class="input-row">
-    <textarea id="inp" placeholder="@all 全员通知 | @静静 @web @小芳 指定提醒" onkeydown="handleKey(event)" oninput="checkMention()"></textarea>
+    <textarea id="inp" placeholder="@all 全员通知 | @静静 @web @小芳 @大鲵 指定提醒" onkeydown="handleKey(event)" oninput="checkMention()"></textarea>
     <button onclick="send()">发送</button>
   </div>
 </div>
@@ -87,7 +87,8 @@ const USERS={
   dani:{name:"大倪",avatar:"👑",color:"#f0c060",bg:"#4a3000",label:"大倪（静界）"},
   xspace:{name:"静静",avatar:"🟢",color:"#3fb950",bg:"#0d3320",label:"静静（xspace）"},
   web:{name:"web",avatar:"🟣",color:"#a371f7",bg:"#1a1033",label:"web（PM）"},
-  xiaofang:{name:"小芳",avatar:"🟠",color:"#f0883e",bg:"#332010",label:"小芳（硬件）"}
+  xiaofang:{name:"小芳",avatar:"🟠",color:"#f0883e",bg:"#332010",label:"小芳（硬件）"},
+  dani2:{name:"大鲵",avatar:"🐋",color:"#58a6ff",bg:"#0a2a3a",label:"大鲵"}
 };
 
 let currentUser="dani";
