@@ -612,8 +612,8 @@ function buildFactory(){
   fcLbl.rotation.x=-Math.PI/2;fcLbl.position.set(-22,.02,-8);fcLbl.renderOrder=1001;
   scene.add(fcLbl);
 
-  // ═══ Z700 #2 — COC上料设备下面 ═══
-  const z700f2=new THREE.Group();z700f2.name='Z700@I215';
+  // ═══ Z700 #2 — MOD区FW下载设备旁 ═══
+  const z700f2=new THREE.Group();z700f2.name='Z700@FW下载';
   const f2Mat=new THREE.MeshStandardMaterial({color:0x99aabb,metalness:.3,roughness:.3});
   const f2Ac=new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.4});
   const f2Base=new THREE.Mesh(new THREE.CylinderGeometry(.25,.3,.2,16),f2Mat);
@@ -632,17 +632,17 @@ function buildFactory(){
   const f2Lbl=new THREE.Mesh(new THREE.PlaneGeometry(1,.25),
     new THREE.MeshBasicMaterial({map:f2Tx,transparent:true,depthTest:false,depthWrite:false}));
   f2Lbl.position.set(0,1.25,0);f2Lbl.renderOrder=1001;z700f2.add(f2Lbl);
-  z700f2.position.set(-20,-.02,-7.5);
+  z700f2.position.set(-3,-.02,8);
   scene.add(z700f2);
   // Z700#2坐标标签
   const fc2Cv=document.createElement('canvas');fc2Cv.width=160;fc2Cv.height=32;
   const fc2Cx=fc2Cv.getContext('2d');
   fc2Cx.fillStyle='#f0a500';fc2Cx.font='bold 12px monospace';fc2Cx.textAlign='center';fc2Cx.textBaseline='middle';
-  fc2Cx.fillText('Z700 (-2,20)',80,16);
+  fc2Cx.fillText('Z700 (15,4)',80,16);
   const fc2Tx=new THREE.CanvasTexture(fc2Cv);fc2Tx.minFilter=THREE.LinearFilter;
   const fc2Lbl=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.25),
     new THREE.MeshBasicMaterial({map:fc2Tx,transparent:true,depthTest:false,depthWrite:false}));
-  fc2Lbl.rotation.x=-Math.PI/2;fc2Lbl.position.set(-20,.02,-7.5);fc2Lbl.renderOrder=1001;
+  fc2Lbl.rotation.x=-Math.PI/2;fc2Lbl.position.set(-3,.02,8);fc2Lbl.renderOrder=1001;
   scene.add(fc2Lbl);
 
   // AGVs — 4台高对比色往返4区（当前1台展开）
