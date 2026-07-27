@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--white);padding:20px;max-width:1000px;margin:0 auto}
 h1{color:var(--green);font-size:22px;margin-bottom:4px}
-.toolbar{position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar{position:sticky;bottom:0;z-index:10;background:var(--bg);padding:12px 0;border-top:1px solid var(--border);margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .toolbar button{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}
 .btn-save{background:var(--green);color:var(--bg)}
 .btn-export{background:#1a1f2b;color:var(--white)}
@@ -103,15 +103,6 @@ td[contenteditable]{background:var(--bg)}
 </head>
 <body>
 
-<div class="toolbar">
-  <a href="/">← 主页</a>
-  <span style="color:var(--white);font-weight:700">Z700 立项申请书 · 在线编辑</span>
-  <button class="btn-save" onclick="saveAll()">💾 保存并同步全站</button>
-  <a href="/generate-pptx.php" class="btn-export" style="display:inline-block;padding:8px 20px">📥 导出 PPTX</a>
-  <a href="/Z700-立项申请书.docx" class="btn-export" style="display:inline-block;padding:8px 20px">📝 导出 DOCX</a>
-  <button class="btn-export" onclick="window.print()" style="display:inline-block;padding:8px 20px;cursor:pointer">📄 导出 PDF</button>
-  <span class="status" id="status"></span>
-</div>
 
 <!-- ═══ SLIDE 1: 封面 ═══ -->
 <div class="slide" id="s-cover">
@@ -277,7 +268,7 @@ function renderDynamic(){
   var robots = DDS.robots || {};
   Object.keys(robots).forEach(function(id){
     var r = robots[id];
-    rc.innerHTML += '<div class="card-item"><h4><span contenteditable data-table="robots" data-key="'+id+'" data-field="name">'+r.name+'</span> ['+r.level_label+']</h4>'+
+    rc.innerHTML += '<div class="card-item"><h4><span contenteditable data-table="robots" data-key="'+id+'" data-field="name">'+r.name+'</span> [<span contenteditable data-table="robots" data-key="'+id+'" data-field="level_label">'+r.level_label+'</span>]</h4>'+
       '<p contenteditable data-table="robots" data-key="'+id+'" data-field="desc">'+r.desc+'</p></div>';
   });
 
@@ -441,5 +432,15 @@ function applyDiff(table,key,val){
   alert('请在上方编辑区域找到 "'+table+' → '+key+'" 字段，手动更新为 PPT 中的内容。');
 }
 </script>
+<div class="toolbar">
+  <a href="/">← 主页</a>
+  <span style="color:var(--white);font-weight:700">Z700 立项申请书 · 在线编辑</span>
+  <button class="btn-save" onclick="saveAll()">💾 保存并同步全站</button>
+  <a href="/generate-pptx.php" class="btn-export" style="display:inline-block;padding:8px 20px">📥 导出 PPTX</a>
+  <a href="/Z700-立项申请书.docx" class="btn-export" style="display:inline-block;padding:8px 20px">📝 导出 DOCX</a>
+  <button class="btn-export" onclick="window.print()" style="display:inline-block;padding:8px 20px;cursor:pointer">📄 导出 PDF</button>
+  <span class="status" id="status"></span>
+</div>
+
 </body>
 </html>
