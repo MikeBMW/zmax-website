@@ -247,7 +247,7 @@ let hoveredStation=null;
 
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
-  {name:"Z4 AOI",zone:"coc",x:-16.5,z:-2.7,rowZ:-3.9},
+  {name:"Z4 AOI",zone:"coc",x:-16.5,z:-10,rowZ:-10},
   {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3},
   {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1},
   {name:"M1",zone:"mod",x:2.5,z:3.7,rowZ:2.5},
@@ -601,17 +601,17 @@ function buildFactory(){
   const fLbl=new THREE.Mesh(new THREE.PlaneGeometry(1,.25),
     new THREE.MeshBasicMaterial({map:fTx,transparent:true,depthTest:false,depthWrite:false}));
   fLbl.position.set(0,1.25,0);fLbl.renderOrder=1001;z700f.add(fLbl);
-  z700f.position.set(-17.5,-.02,-3.8);
+  z700f.position.set(-19,-.02,-10);
   scene.add(z700f);
   // Z700坐标标签 (显示坐标)
   const fcCv=document.createElement('canvas');fcCv.width=160;fcCv.height=32;
   const fcCx=fcCv.getContext('2d');
   fcCx.fillStyle='#f0a500';fcCx.font='bold 12px monospace';fcCx.textAlign='center';fcCx.textBaseline='middle';
-  fcCx.fillText('Z700 (5,158)',80,16);
+  fcCx.fillText('Z700 (-1,22)',80,16);
   const fcTx=new THREE.CanvasTexture(fcCv);fcTx.minFilter=THREE.LinearFilter;
   const fcLbl=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.25),
     new THREE.MeshBasicMaterial({map:fcTx,transparent:true,depthTest:false,depthWrite:false}));
-  fcLbl.rotation.x=-Math.PI/2;fcLbl.position.set(-17.5,.02,-3.8);fcLbl.renderOrder=1001;
+  fcLbl.rotation.x=-Math.PI/2;fcLbl.position.set(-19,.02,-10);fcLbl.renderOrder=1001;
   scene.add(fcLbl);
 
   // ═══ Z700 @I215 — 下载FW工位旁 ═══
@@ -634,8 +634,18 @@ function buildFactory(){
   const f2Lbl=new THREE.Mesh(new THREE.PlaneGeometry(1,.25),
     new THREE.MeshBasicMaterial({map:f2Tx,transparent:true,depthTest:false,depthWrite:false}));
   f2Lbl.position.set(0,1.25,0);f2Lbl.renderOrder=1001;z700f2.add(f2Lbl);
-  z700f2.position.set(11,-.02,7.1);
+  z700f2.position.set(-17,-.02,-14);
   scene.add(z700f2);
+  // Z700#2坐标标签 (显示坐标: x=-17+18=1, z=-(-14)+12=26)
+  const fc2Cv=document.createElement('canvas');fc2Cv.width=160;fc2Cv.height=32;
+  const fc2Cx=fc2Cv.getContext('2d');
+  fc2Cx.fillStyle='#f0a500';fc2Cx.font='bold 12px monospace';fc2Cx.textAlign='center';fc2Cx.textBaseline='middle';
+  fc2Cx.fillText('Z700 (1,26)',80,16);
+  const fc2Tx=new THREE.CanvasTexture(fc2Cv);fc2Tx.minFilter=THREE.LinearFilter;
+  const fc2Lbl=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.25),
+    new THREE.MeshBasicMaterial({map:fc2Tx,transparent:true,depthTest:false,depthWrite:false}));
+  fc2Lbl.rotation.x=-Math.PI/2;fc2Lbl.position.set(-17,.02,-14);fc2Lbl.renderOrder=1001;
+  scene.add(fc2Lbl);
 
   // AGVs — 4台高对比色往返4区（当前1台展开）
   const AGV_DEFS=[
