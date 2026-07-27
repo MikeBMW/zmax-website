@@ -99,7 +99,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 // MULTI-ZONE FACTORY LAYOUT
 // ═══════════════════════════════════════
 const ZONES=[
-{id:"coc",name:"COC基板区",color:0xf0a500,pos:{x:-16,z:-8},size:{w:14,d:12},gridCols:6,stations:[
+{id:"coc",name:"COC基板区",color:0xf0a500,pos:{x:-16,z:-12},size:{w:14,d:12},gridCols:6,stations:[
     {id:"I101",label:"进料检验",desc:"精度 ±5μm | 节拍 ≤3s | 质量门 无崩边/裂纹 | 良率 ≥99.5% | Z700料盘AOI检查",specs:[["显微镜","目检"],["治具","手动"]]},
     {id:"I102",label:"贴片备料",desc:"精度 ±10μm | 节拍 ≤5s | 质量门 方向/极性 | 良率 ≥99.8% | Z700+Z700料盘搬运",specs:[["治具×3","备料"],["显微镜×3","目检"]]},
     {id:"I103",label:"Submount打标",desc:"精度 ±5μm | 节拍 ≤2s | 质量门 码可读率100% | 良率 ≥99.9% | Z700料盘操作",specs:[["激光","打标"],["基板","标识"]]},
@@ -125,7 +125,7 @@ const ZONES=[
     {id:"I123",label:"COC出货目检",desc:"精度 目检50× | 节拍 ≤5s | 质量门 零缺陷 | 良率 100% | Z700料盘AOI检查",specs:[["显微镜","目检"],["出货","终检"]]},
     {id:"I124",label:"手动贴装×4",desc:"精度 ±5μm | 节拍 ≤10s | 质量门 全检通过 | 良率 ≥99.5% | Z700+Z700料盘搬运",specs:[["×4","工位"],["显微镜×4","对位"]]},
   ]},
-  {id:"oe",name:"OE光引擎区",color:0xff6b35,pos:{x:6,z:-8},size:{w:24,d:18},gridCols:12,stations:[
+  {id:"oe",name:"OE光引擎区",color:0xff6b35,pos:{x:6,z:-12},size:{w:24,d:18},gridCols:12,stations:[
     {id:"I125",label:"生产前物料准备",desc:"物料清点/打叉板分类",specs:[]},
     {id:"I126",label:"进料检验&贴标签",desc:"IPSN&PCBA 绑定SN→物料拆包→显微镜检来料→打印标签→贴标签→标签遮挡打叉板Mark点*13% | Z700F + AOI",specs:[]},
     {id:"I127",label:"连板FW烧录/IPSN写入",desc:"拿取物料/扫码→上治具压紧→启动程序→程序运行→下料装入治具载板放置料盒 | Z100L",specs:[]},
