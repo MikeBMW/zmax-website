@@ -252,7 +252,6 @@ const ROBOT_DEFS=[
   {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1,offset:2.0},
   {name:"M1",zone:"mod",x:2.5,z:3.7,rowZ:2.5,offset:2.0},
   {name:"W1",zone:"wh",x:-16.5,z:4.2,rowZ:3.5,offset:1.0},
-  {name:"W2",zone:"wh",x:-16.5,z:6.3,rowZ:5.7,offset:1.0},
 ];
 
 // ═══════ THREE.JS ═══════
@@ -736,24 +735,6 @@ function buildFactory(){
     m1b.nameSprite={sprite:m1bnPlane,canvas:m1bnCv,ctx:m1bnCx,texture:m1bnTx};
     scene.add(m1bnPlane);
     agvObjs.push(m1b);
-    // W2 follower AGVs — 3台绿色小车串行跟在W2后面
-    [{d:1.2},{d:1.8},{d:2.4}].forEach(function(f,i){
-      const w2agv={obj:createAGV(-16.5,6.3,0x3fb950,0xffffff),pos:{x:-16.5,z:6.9},
-                   name:'W2'+(i+1),nameSprite:null,isFollower:true,followRobot:'W2',followDist:f.d};
-      scene.add(w2agv.obj);
-      const cv=document.createElement('canvas');cv.width=64;cv.height=32;
-      const cx=cv.getContext('2d');
-      cx.fillStyle='#3fb950';cx.font='bold 14px monospace';
-      cx.textAlign='center';cx.textBaseline='middle';
-      cx.fillText('W2',32,16);
-      const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
-      const pl=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
-        new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
-      pl.position.set(-16.5,.6,6.9);pl.renderOrder=1000;
-      w2agv.nameSprite={sprite:pl,canvas:cv,ctx:cx,texture:tx};
-      scene.add(pl);
-      agvObjs.push(w2agv);
-    });
     // W1 follower AGVs — 3台绿色小车串行跟在W1后面
     [{d:1.2},{d:1.8},{d:2.4}].forEach(function(f,i){
       const w1agv={obj:createAGV(-16.5,4.2,0x3fb950,0xffffff),pos:{x:-16.5,z:4.7},
