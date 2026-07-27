@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>时空 · 感知-决策计算架构 | Z-MAX</title>
+<style>:root{--c:#00d4aa;--bg:#06080d;--card:#0d1117;--bor:#1a1f2b;--sub:#8b949e;--tx:#c9d1d9}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.arch{display:flex;gap:0;max-width:1000px;width:100%;position:relative}
+.left{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:0;padding-right:0}
+.right{flex:1;display:flex;flex-direction:column;gap:0;padding-left:0}
+.block{border:1px solid var(--bor);background:var(--card);display:flex;align-items:center;justify-content:center;text-align:center;transition:all .2s}
+.block:hover{border-color:var(--c)}
+.left .block{border-right:none}
+.right .block{border-left:none}
+.block-perception{height:90px;width:90px;border-radius:12px 0 0 12px;border-color:#a371f7;background:linear-gradient(135deg,#a371f722,#0d1117)}
+.block-perception .inner{font-size:13px;font-weight:800;color:#a371f7}
+.block-perception .inner small{display:block;font-size:9px;color:var(--sub);font-weight:400}
+.block-data{height:100px;border-radius:0 0 0 0;border-color:#58a6ff;background:linear-gradient(135deg,#58a6ff11,#0d1117);font-size:14px;font-weight:700;color:#58a6ff}
+.block-dist{height:50px;border-radius:0 0 0 8px;border-color:var(--c);background:linear-gradient(135deg,var(--c)11,#0d1117);font-size:12px;font-weight:700;color:var(--c)}
+.block-hw{height:30px;border-radius:0 0 0 8px;border-color:#d4a800;background:linear-gradient(135deg,#d4a80011,#0d1117);font-size:10px;color:#d4a800}
+
+.block-decision{height:90px;width:90px;border-radius:0 12px 12px 0;border-color:#ff6b6b;background:linear-gradient(135deg,#ff6b6b22,#0d1117)}
+.block-decision .inner{font-size:13px;font-weight:800;color:#ff6b6b}
+.block-decision .inner small{display:block;font-size:9px;color:var(--sub);font-weight:400}
+.block-security{height:45px;border-radius:0 0 0 0;border-color:#e67e22;background:linear-gradient(135deg,#e67e2211,#0d1117);font-size:11px;font-weight:700;color:#e67e22}
+.block-recovery{height:35px;border-radius:0 0 0 0;border-color:#e67e22;background:linear-gradient(135deg,#e67e2211,#0d1117);font-size:10px;color:#e67e22}
+.block-mgmt{height:90px;border-radius:0 0 8px 0;border-color:var(--c);background:linear-gradient(135deg,var(--c)11,#0d1117);font-size:13px;font-weight:700;color:var(--c)}
+
+.connector{display:flex;align-items:center;justify-content:center;position:relative}
+.connector .line{width:2px;height:20px;background:var(--bor)}
+.connector .dot{width:6px;height:6px;border-radius:50%;background:var(--c);position:absolute}
+
+.mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:0 8px}
+.mid .pipe{width:2px;flex:1;background:linear-gradient(180deg,var(--c),var(--bor),var(--c))}
+.flow-arrow{font-size:10px;color:var(--sub);writing-mode:vertical-lr}
+
+.knowledge{position:absolute;right:20px;bottom:40px;border:1px dashed #d4a800;border-radius:6px;padding:4px 10px;font-size:9px;color:#d4a800;background:var(--card)}
+
+.bar{position:fixed;top:0;left:0;right:0;padding:10px 16px;display:flex;gap:8px}
+.bar a{color:var(--c);text-decoration:none;font-size:11px;padding:5px 12px;border:1px solid var(--bor);border-radius:6px}
+
+@media(max-width:640px){
+  .block-perception,.block-decision{height:70px;width:70px}
+  .block-perception .inner,.block-decision .inner{font-size:11px}
+  .block-data{height:80px;font-size:12px}
+  .block-mgmt{height:70px;font-size:11px}
+}
+</style></head><body>
+<div class="bar">
+  <a href="/">← 主页</a>
+  <a href="/proposal-live.php">立项书</a>
+  <a href="/wp-content/uploads/2025/06/时空.pptx">📥 下载PPT</a>
+</div>
+
+<div class="arch">
+  <!-- 左侧：感知链路 -->
+  <div class="left" style="gap:8px">
+    <div class="block block-perception"><div class="inner">感知<br><small>agent</small></div></div>
+    <div class="connector"><div class="line"></div></div>
+    <div class="block block-data">数据处理</div>
+    <div class="connector"><div class="line"></div></div>
+    <div class="block block-dist">分布式计算系统</div>
+    <div class="connector"><div class="line" style="height:12px"></div></div>
+    <div class="block block-hw">异构硬件</div>
+  </div>
+
+  <!-- 中间连线 -->
+  <div class="mid">
+    <div class="pipe"></div>
+    <span class="flow-arrow">⇅</span>
+    <div class="pipe"></div>
+  </div>
+
+  <!-- 右侧：决策链路 -->
+  <div class="right" style="gap:8px;position:relative">
+    <div class="block block-decision"><div class="inner">决策<br><small>agent</small></div></div>
+    <div class="connector"><div class="line"></div></div>
+    <div class="block block-security">安全控制</div>
+    <div class="connector"><div class="line"></div></div>
+    <div class="block block-recovery">保障与恢复</div>
+    <div class="connector"><div class="line"></div></div>
+    <div class="block block-mgmt">智能管理</div>
+    <div class="knowledge">知识库</div>
+  </div>
+</div>
+</body></html>
