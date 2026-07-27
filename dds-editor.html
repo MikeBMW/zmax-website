@@ -147,7 +147,24 @@ td[contenteditable]{background:var(--bg)}
   <div class="slide-title"><span contenteditable>二、核心性能指标</span></div>
   <div class="divider"></div>
   
-  <div class="kpi-row" id="kpi-row"></div>
+  <div class="kpi-row">
+    <div class="kpi-item">
+      <div class="kpi-val"><span contenteditable data-table="kpi" data-key="precision" data-field="value">±0.02</span><span class="kpi-unit"><span contenteditable data-table="kpi" data-key="precision" data-field="unit">mm</span></span></div>
+      <div class="kpi-label"><span contenteditable data-table="kpi" data-key="precision" data-field="label">重复定位精度</span></div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val"><span contenteditable data-table="kpi" data-key="yield_rate" data-field="value">&gt;99</span><span class="kpi-unit"><span contenteditable data-table="kpi" data-key="yield_rate" data-field="unit">%</span></span></div>
+      <div class="kpi-label"><span contenteditable data-table="kpi" data-key="yield_rate" data-field="label">关键工序良率</span></div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val"><span contenteditable data-table="kpi" data-key="force_bw" data-field="value">&gt;10</span><span class="kpi-unit"><span contenteditable data-table="kpi" data-key="force_bw" data-field="unit">kHz</span></span></div>
+      <div class="kpi-label"><span contenteditable data-table="kpi" data-key="force_bw" data-field="label">力控闭环带宽</span></div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val"><span contenteditable data-table="kpi" data-key="cycle_time" data-field="value">&lt;15</span><span class="kpi-unit"><span contenteditable data-table="kpi" data-key="cycle_time" data-field="unit">s</span></span></div>
+      <div class="kpi-label"><span contenteditable data-table="kpi" data-key="cycle_time" data-field="label">单次插拔节拍</span></div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ SLIDE 4: 产品 ═══ -->
@@ -157,7 +174,16 @@ td[contenteditable]{background:var(--bg)}
   <p class="slide-sub"><span contenteditable>同一套智能引擎，L2 到 L4 软件定义进化</span></p>
   <div class="divider"></div>
   
-  <div class="cards" id="robot-cards"></div>
+  <div class="cards">
+    <div class="card-item"><h4><span contenteditable data-table="robots" data-key="Z700" data-field="name">Z700 轮式双臂机器人</span> [<span contenteditable data-table="robots" data-key="Z700" data-field="level_label">L4 旗舰 立项中</span>]</h4>
+      <p contenteditable data-table="robots" data-key="Z700" data-field="desc">轮式底盘自主导航，双臂协同精细操作。覆盖老化箱插拔、产线巡检、多工位联动作业。全自主执行+自适应+自恢复。</p></div>
+    <div class="card-item"><h4><span contenteditable data-table="robots" data-key="Z700F" data-field="name">Z700F 固定式精密插拔</span> [<span contenteditable data-table="robots" data-key="Z700F" data-field="level_label">L2 基线，已到货</span>]</h4>
+      <p contenteditable data-table="robots" data-key="Z700F" data-field="desc">单工位高精度插拔产线。珞石SR5-C机械臂+DH夹爪，5工位循环：入料→扫码→刷程序→AOI检测→出料。</p></div>
+    <div class="card-item"><h4><span contenteditable data-table="robots" data-key="Z100L" data-field="name">Z100L 上下料搬运机器人</span> [<span contenteditable data-table="robots" data-key="Z100L" data-field="level_label">已立项</span>]</h4>
+      <p contenteditable data-table="robots" data-key="Z100L" data-field="desc">上下料+料笼/料盘搬运专用，负载10kg。</p></div>
+    <div class="card-item"><h4><span contenteditable data-table="robots" data-key="Z700F_AOI" data-field="name">Z系列 + AOI 目检机器人</span> [<span contenteditable data-table="robots" data-key="Z700F_AOI" data-field="level_label">适配中</span>]</h4>
+      <p contenteditable data-table="robots" data-key="Z700F_AOI" data-field="desc">精密AOI目检专用。显微镜检、外观检查、缺陷判定。</p></div>
+  </div>
 </div>
 
 <!-- ═══ SLIDE 5: 核心技术 ═══ -->
@@ -199,7 +225,15 @@ td[contenteditable]{background:var(--bg)}
   <div class="slide-num">6 / 10</div>
   <div class="slide-title"><span contenteditable>五、端到端流水线</span></div>
   <div class="divider"></div>
-  <div class="pipe-row" id="pipe-steps"></div>
+  <div class="pipe-row">
+    <div class="pipe-step"><div class="step-dot">1</div><h4 style="font-size:13px;color:var(--white);margin-bottom:4px"><span contenteditable>感知采集</span></h4><p contenteditable data-table="systems" data-key="sys0" data-field="role" style="font-size:11px;color:var(--gray)">Orin Nano + D405 · 多模态感知(视觉+触觉+听觉) · XData采集</p></div>
+    <div class="step-arrow" style="display:flex;align-items:center">→</div>
+    <div class="pipe-step"><div class="step-dot">2</div><h4 style="font-size:13px;color:var(--white);margin-bottom:4px"><span contenteditable>端边推理</span></h4><p contenteditable data-table="systems" data-key="sys1" data-field="role" style="font-size:11px;color:var(--gray)">4060 · 端到端分层模型推理 · 分段+ACT+SmolVLA</p></div>
+    <div class="step-arrow" style="display:flex;align-items:center">→</div>
+    <div class="pipe-step"><div class="step-dot">3</div><h4 style="font-size:13px;color:var(--white);margin-bottom:4px"><span contenteditable>云端训练</span></h4><p contenteditable data-table="systems" data-key="sys2" data-field="role" style="font-size:11px;color:var(--gray)">4090 · 模型训练+仿真+世界模型 · XMo平台</p></div>
+    <div class="step-arrow" style="display:flex;align-items:center">→</div>
+    <div class="pipe-step"><div class="step-dot">4</div><h4 style="font-size:13px;color:var(--white);margin-bottom:4px"><span contenteditable>端侧执行</span></h4><p contenteditable data-table="systems" data-key="edge" data-field="role" style="font-size:11px;color:var(--gray)">Z700系列 · 感驱控一体 · XRobot强健肢体执行</p></div>
+  </div>
 </div>
 
 <!-- ═══ SLIDE 7: 工厂布局 ═══ -->
@@ -207,7 +241,12 @@ td[contenteditable]{background:var(--bg)}
   <div class="slide-num">7 / 10</div>
   <div class="slide-title">六、目标工厂：<span contenteditable data-table="factory_meta" data-key="product">800G DR8</span> <span contenteditable>光模块产线</span></div>
   <div class="divider"></div>
-  <div class="four-col" id="zone-cards"></div>
+  <div class="four-col">
+    <div class="card-item"><h4><span contenteditable data-table="factory_zones" data-key="coc" data-field="name">COC 基板区</span></h4><p><span contenteditable data-table="factory_zones" data-key="coc" data-field="stations">I101-I124</span> (24站)</p></div>
+    <div class="card-item"><h4><span contenteditable data-table="factory_zones" data-key="oe" data-field="name">OE 光引擎区</span></h4><p><span contenteditable data-table="factory_zones" data-key="oe" data-field="stations">I125-I196</span> (72站)</p></div>
+    <div class="card-item"><h4><span contenteditable data-table="factory_zones" data-key="mod" data-field="name">MOD 模块组装区</span></h4><p><span contenteditable data-table="factory_zones" data-key="mod" data-field="stations">I197-I222</span> (26站)</p></div>
+    <div class="card-item"><h4><span contenteditable data-table="factory_zones" data-key="wh" data-field="name">WH 仓库物流区</span></h4><p><span contenteditable data-table="factory_zones" data-key="wh" data-field="stations">I223-I228+I500</span> (7站)</p></div>
+  </div>
 </div>
 
 <!-- ═══ SLIDE 8: 合作模式 ═══ -->
@@ -280,66 +319,21 @@ td[contenteditable]{background:var(--bg)}
 var DDS = null;
 var dirty = {};
 
-fetch('/dds-api.php').then(function(r){return r.json()}).then(function(d){
-  DDS = d;
-  renderDynamic();
-  // 恢复 localStorage 中保存的编辑
-  try {
-    var saved = JSON.parse(localStorage.getItem('zmax_edits')||'{}');
-    Object.keys(saved).forEach(function(k){
-      document.querySelectorAll('[contenteditable]').forEach(function(el){
-        var id = el.dataset.table ? el.dataset.table+'.'+el.dataset.key+(el.dataset.field?'.'+el.dataset.field:'') : null;
-        if ((id && id===k) || el.textContent.substring(0,20)===k){
-          el.innerHTML = saved[k];
-        }
-      });
+// Restore localStorage edits on load
+try {
+  var saved = JSON.parse(localStorage.getItem('zmax_edits')||'{}');
+  Object.keys(saved).forEach(function(k){
+    document.querySelectorAll('[contenteditable]').forEach(function(el){
+      var id = el.dataset.table ? el.dataset.table+'.'+el.dataset.key+(el.dataset.field?'.'+el.dataset.field:'') : null;
+      if ((id && id===k) || el.textContent.substring(0,20)===k){
+        el.innerHTML = saved[k];
+      }
     });
-  } catch(e){}
-  bindEditable();
-});
-
-function renderDynamic(){
-  // KPI
-  var kpiRow = document.getElementById('kpi-row');
-  var kpi = DDS.kpi || {};
-  Object.keys(kpi).forEach(function(k){
-    var v = kpi[k];
-    kpiRow.innerHTML += '<div class="kpi-item">'+
-      '<div class="kpi-val"><span contenteditable data-table="kpi" data-key="'+k+'" data-field="value">'+v.value+'</span>'+
-      '<span class="kpi-unit"><span contenteditable data-table="kpi" data-key="'+k+'" data-field="unit">'+v.unit+'</span></span></div>'+
-      '<div class="kpi-label"><span contenteditable data-table="kpi" data-key="'+k+'" data-field="label">'+v.label+'</span></div></div>';
   });
+} catch(e){}
+bindEditable();
 
-  // Robots
-  var rc = document.getElementById('robot-cards');
-  var robots = DDS.robots || {};
-  Object.keys(robots).forEach(function(id){
-    var r = robots[id];
-    rc.innerHTML += '<div class="card-item"><h4><span contenteditable data-table="robots" data-key="'+id+'" data-field="name">'+r.name+'</span> [<span contenteditable data-table="robots" data-key="'+id+'" data-field="level_label">'+r.level_label+'</span>]</h4>'+
-      '<p contenteditable data-table="robots" data-key="'+id+'" data-field="desc">'+r.desc+'</p></div>';
-  });
 
-  // Systems for pipeline
-  var sys = DDS.systems || {};
-  var order = ['sys0','sys1','sys2','edge'];
-  var labels = ['感知采集','端边推理','云端训练','端侧执行'];
-  var ps = document.getElementById('pipe-steps');
-  order.forEach(function(k, i){
-    var s = sys[k] || {};
-    ps.innerHTML += '<div class="pipe-step"><div class="step-dot">'+(i+1)+'</div>'+
-      '<h4 style="font-size:13px;color:var(--white);margin-bottom:4px"><span contenteditable>'+labels[i]+'</span></h4>'+
-      '<p contenteditable data-table="systems" data-key="'+k+'" data-field="role" style="font-size:11px;color:var(--gray)">'+s.role+'</p></div>'+
-      (i<3 ? '<div class="step-arrow" style="display:flex;align-items:center">→</div>' : '');
-  });
-
-  // Zones
-  var zc = document.getElementById('zone-cards');
-  (DDS.factory_zones || []).forEach(function(z){
-    zc.innerHTML += '<div class="card-item"><h4><span contenteditable data-table="factory_zones" data-key="'+z.id+'" data-field="name">'+z.name+'</span></h4>'+
-      '<p><span contenteditable data-table="factory_zones" data-key="'+z.id+'" data-field="stations">'+z.stations+'</span> ('+z.count+'站)</p></div>';
-  });
-
-}
 
 function bindEditable(){
   document.querySelectorAll('[contenteditable]').forEach(function(el){
