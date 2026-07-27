@@ -508,7 +508,7 @@ function buildFactory(){
 
 
   // 线边仓 — COC区右侧物料缓冲区
-  const lbcWall=createWall(-2.5,-7,2.5,10,0x888866);
+  const lbcWall=createWall(-7.5,-7,2.5,10,0x888866);
   lbcWall.userData={isZone:true,label:'线边仓'};
   scene.add(lbcWall);
   // 线边仓标签
@@ -520,13 +520,13 @@ function buildFactory(){
   const lbcTx=new THREE.CanvasTexture(lbcCv);lbcTx.minFilter=THREE.LinearFilter;
   const lbcPlane=new THREE.Mesh(new THREE.PlaneGeometry(2.5,.8),
     new THREE.MeshBasicMaterial({map:lbcTx,transparent:true,depthTest:false,depthWrite:false}));
-  lbcPlane.rotation.x=-Math.PI/2;lbcPlane.position.set(-2.5,.025,-7);lbcPlane.renderOrder=1001;
+  lbcPlane.rotation.x=-Math.PI/2;lbcPlane.position.set(-7.5,.025,-7);lbcPlane.renderOrder=1001;
   scene.add(lbcPlane);
   // 货架示意
   for(let si=0;si<3;si++){
     const shelf=new THREE.Mesh(new THREE.BoxGeometry(.4,1.5,1.8),
       new THREE.MeshStandardMaterial({color:0x776655,metalness:.3,roughness:.5}));
-    shelf.position.set(-3.3,.75,-9+si*2.2);
+    shelf.position.set(-8.3,.75,-9+si*2.2);
     shelf.castShadow=true;scene.add(shelf);
   }
 
