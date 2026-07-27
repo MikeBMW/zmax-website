@@ -234,6 +234,24 @@ td[contenteditable]{background:var(--bg)}
   <div class="divider"></div>
   <table id="roadmap-table">
     <tr><th>阶段</th><th>时间</th><th>关键交付</th><th>验收标准</th></tr>
+    <tr>
+      <td contenteditable data-table="roadmap" data-key="v1.0" data-field="name">单工位验证</td>
+      <td contenteditable data-table="roadmap" data-key="v1.0" data-field="timeline">2026Q3</td>
+      <td contenteditable data-table="roadmap" data-key="v1.0" data-field="desc">光模块插拔 · 固定轨迹 · Orin Nano边缘部署 · 力控±0.02mm</td>
+      <td contenteditable data-table="roadmap" data-key="v1.0" data-field="criteria">力控±0.02mm·良率>99%</td>
+    </tr>
+    <tr>
+      <td contenteditable data-table="roadmap" data-key="v1.5" data-field="name">多工位联线</td>
+      <td contenteditable data-table="roadmap" data-key="v1.5" data-field="timeline">2026Q4</td>
+      <td contenteditable data-table="roadmap" data-key="v1.5" data-field="desc">抓取→插拔→AOI×6全链条 · Sys1端侧VLA-T力控闭环 · 99%+良率</td>
+      <td contenteditable data-table="roadmap" data-key="v1.5" data-field="criteria">多工位联线·99%+良率·换型<5min</td>
+    </tr>
+    <tr>
+      <td contenteditable data-table="roadmap" data-key="v2.0" data-field="name">全产线智能</td>
+      <td contenteditable data-table="roadmap" data-key="v2.0" data-field="timeline">2027Q2</td>
+      <td contenteditable data-table="roadmap" data-key="v2.0" data-field="desc">多机协同 · 换型自适配 · VLA-T+GR00T · 云端训练闭环</td>
+      <td contenteditable data-table="roadmap" data-key="v2.0" data-field="criteria">全产线7x24无人值守·换型零干预</td>
+    </tr>
   </table>
 </div>
 
@@ -321,14 +339,6 @@ function renderDynamic(){
       '<p><span contenteditable data-table="factory_zones" data-key="'+z.id+'" data-field="stations">'+z.stations+'</span> ('+z.count+'站)</p></div>';
   });
 
-  // Roadmap
-  (DDS.roadmap || []).forEach(function(r){
-    document.getElementById('roadmap-table').innerHTML +=
-      '<tr><td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="name">'+r.name+'</td>'+
-      '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="timeline">'+r.timeline+'</td>'+
-      '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="desc">'+r.desc+'</td>'+
-      '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="criteria">'+(r.criteria||'待定')+'</td></tr>';
-  });
 }
 
 function bindEditable(){
@@ -367,12 +377,11 @@ function markEdited(table, key, field, value){
     if (!dirty[table][key]) dirty[table][key] = {};
     dirty[table][key][field||'value'] = value;
   }
-  document.getElementById('status').innerHTML = '<span style="color:#d4a800">● </span>';
+  document.getElementById('status').innerHTML = '<span style="color:#d4a800">● 待保存</span>';
   autoSave();
 }
 
 var _autoTimer = null;
-var _origValues = {};
 
 function autoSave(){
   if (!Object.keys(dirty).length) return;
@@ -386,13 +395,13 @@ function doSave(){
   tables.forEach(function(table){
     payloads.push({table: table, data: dirty[table]});
   });
+  status('<span style="color:#d4a800">⏳ 保存中...</span>');
   
   fetch('/dds-api.php', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({batch: payloads, changelog: _origValues})
+    body: JSON.stringify({batch: payloads})
   }).then(function(r){ return r.json(); }).then(function(d){
-    _origValues = {};
     dirty = {};
     // localStorage snapshot
     var snap = {};
@@ -401,13 +410,16 @@ function doSave(){
       snap[id || el.textContent.substring(0,20)] = el.innerHTML;
     });
     localStorage.setItem('zmax_edits', JSON.stringify(snap));
-    status('<span class="auto-save">● 已自动保存 '+new Date().toLocaleTimeString()+'</span>');
+    status('<span style="color:var(--green)">● 已保存 '+new Date().toLocaleTimeString()+'</span>');
   }).catch(function(e){
-    status('<span style="color:#ff4444">保存失败</span>');
+    status('<span style="color:#ff4444">保存失败: '+e.message+'</span>');
   });
 }
 
-function saveAll(){ doSave(); }
+function saveAll(){ 
+  if (!Object.keys(dirty).length){ status('没有修改'); return; }
+  doSave(); 
+}
 
 function fetchChangelog(){
   fetch('/api/dds-changelog.php').then(function(r){return r.json()}).then(function(rows){
