@@ -248,7 +248,6 @@ let hoveredStation=null;
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
   {name:"Z4 AOI",zone:"coc",x:-16.5,z:-12.1,rowZ:-12.1,offset:2.0},
-  {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3,offset:2.0},
   {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1,offset:2.0},
   {name:"M1",zone:"mod",x:2.5,z:1.5,rowZ:1.5,offset:1.5},
   {name:"W1",zone:"wh",x:-16.5,z:4.2,rowZ:3.5,offset:1.0},
@@ -672,22 +671,6 @@ function buildFactory(){
       scene.add(nPlane);
       agvObjs.push(a);
     });
-    // R2 follower AGV
-    const r2agv={obj:createAGV(2.5,-9.3,0xffaa00,0xffffff),pos:{x:2.5,z:-7.1},
-                 name:'R2',nameSprite:null,isFollower:true,followRobot:'R2'};
-    scene.add(r2agv.obj);
-    const r2nCv=document.createElement('canvas');r2nCv.width=64;r2nCv.height=32;
-    const r2nCx=r2nCv.getContext('2d');
-    r2nCx.fillStyle='#ffaa00';r2nCx.font='bold 14px monospace';
-    r2nCx.textAlign='center';r2nCx.textBaseline='middle';
-    r2nCx.fillText('R2',32,16);
-    const r2nTx=new THREE.CanvasTexture(r2nCv);r2nTx.minFilter=THREE.LinearFilter;
-    const r2nPlane=new THREE.Mesh(new THREE.PlaneGeometry(.6,.3),
-      new THREE.MeshBasicMaterial({map:r2nTx,transparent:true,depthTest:false,depthWrite:false}));
-    r2nPlane.position.set(2.5,.6,-9.3);r2nPlane.renderOrder=1000;
-    r2agv.nameSprite={sprite:r2nPlane,canvas:r2nCv,ctx:r2nCx,texture:r2nTx};
-    scene.add(r2nPlane);
-    agvObjs.push(r2agv);
     // R3 follower AGV
     const r3agv={obj:createAGV(2.5,-7.1,0xff6b35,0xffffff),pos:{x:2.5,z:-4.9},
                  name:'R3',nameSprite:null,isFollower:true,followRobot:'R3'};
