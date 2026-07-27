@@ -166,28 +166,28 @@ td[contenteditable]{background:var(--bg)}
   <div class="divider"></div>
   <div class="cards">
     <div class="card-item">
-      <h4>🔬 <span contenteditable>场景感知</span></h4>
-      <p contenteditable>RealSense D405 深度视觉 + 腕部 RGB + 六维力/力矩 + 触觉阵列。四路传感器实时融合，构建毫米级场景理解。不只是"看见"，而是"感知"物理交互。</p>
+      <h4>🔬 <span contenteditable data-table="proposal" data-key="scene_perception" data-field="title">场景感知</span></h4>
+      <p contenteditable data-table="proposal" data-key="scene_perception" data-field="desc">RealSense D405 深度视觉 + 腕部 RGB + 六维力/力矩 + 触觉阵列。四路传感器实时融合，构建毫米级场景理解。不只是"看见"，而是"感知"物理交互。</p>
     </div>
     <div class="card-item">
-      <h4>🧠 <span contenteditable>智能决策</span></h4>
-      <p contenteditable>视觉语言动作模型（VLA）。端到端从像素到动作指令，零样本泛化到新工位新模块型号。</p>
+      <h4>🧠 <span contenteditable data-table="proposal" data-key="smart_decision" data-field="title">智能决策</span></h4>
+      <p contenteditable data-table="proposal" data-key="smart_decision" data-field="desc">视觉语言动作模型（VLA）。端到端从像素到动作指令，零样本泛化到新工位新模块型号。</p>
     </div>
     <div class="card-item">
-      <h4>⚡ <span contenteditable>运动控制</span></h4>
-      <p contenteditable>关节力矩 + 末端六维力 + 指尖触觉三路闭环冗余。>1kHz毫秒级力反馈调节，Lissajous力搜索策略确保光模块金手指 ±0.02mm 精确定位插入。</p>
+      <h4>⚡ <span contenteditable data-table="proposal" data-key="motion_control" data-field="title">运动控制</span></h4>
+      <p contenteditable data-table="proposal" data-key="motion_control" data-field="desc">关节力矩 + 末端六维力 + 指尖触觉三路闭环冗余。>1kHz毫秒级力反馈调节，Lissajous力搜索策略确保光模块金手指 ±0.02mm 精确定位插入。</p>
     </div>
     <div class="card-item">
-      <h4>🤏 <span contenteditable>精细操作</span></h4>
-      <p contenteditable>双臂协同完成取料、插拔、AOI检测全流程。VLA-T力控模型实时调节夹持力，适配全系列光模块。</p>
+      <h4>🤏 <span contenteditable data-table="proposal" data-key="precision_ops" data-field="title">精细操作</span></h4>
+      <p contenteditable data-table="proposal" data-key="precision_ops" data-field="desc">双臂协同完成取料、插拔、AOI检测全流程。VLA-T力控模型实时调节夹持力，适配全系列光模块。</p>
     </div>
     <div class="card-item">
-      <h4>🔄 <span contenteditable>数据闭环</span></h4>
-      <p contenteditable>端侧采集 → 云端训练 → 模型部署回端侧。每次操作都是训练数据，模型持续迭代，产线越用越聪明。7×24无人值守训练流水线。</p>
+      <h4>🔄 <span contenteditable data-table="proposal" data-key="data_loop" data-field="title">数据闭环</span></h4>
+      <p contenteditable data-table="proposal" data-key="data_loop" data-field="desc">端侧采集 → 云端训练 → 模型部署回端侧。每次操作都是训练数据，模型持续迭代，产线越用越聪明。7×24无人值守训练流水线。</p>
     </div>
     <div class="card-item">
-      <h4>🛡️ <span contenteditable>泛化与稳定性</span></h4>
-      <p contenteditable>世界模型预测物理交互结果，换型零样本泛化。五层主动安全保护。异常自主判断，自动恢复。实操稳定性 >99%。</p>
+      <h4>🛡️ <span contenteditable data-table="proposal" data-key="generalization" data-field="title">泛化与稳定性</span></h4>
+      <p contenteditable data-table="proposal" data-key="generalization" data-field="desc">世界模型预测物理交互结果，换型零样本泛化。五层主动安全保护。异常自主判断，自动恢复。实操稳定性 >99%。</p>
     </div>
   </div>
 </div>
@@ -351,7 +351,7 @@ function bindEditable(){
   });
 }
 
-var KV_TABLES = ['company','links','theme','factory_meta'];
+var KV_TABLES = ['company','links','theme','factory_meta','proposal'];
 function markEdited(table, key, field, value){
   if (!dirty[table]) dirty[table] = {};
   if (KV_TABLES.indexOf(table) >= 0){

@@ -10,13 +10,13 @@ $db = new SQLite3('/www/wwwroot/datadrive.world/dds.db');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $data = [];
-    $tables = ['company','kpi','robots','systems','models','hardware','factory_zones','factory_meta','roadmap','dds_skills','links','pipeline','theme'];
+    $tables = ['company','kpi','robots','systems','models','hardware','factory_zones','factory_meta','roadmap','dds_skills','links','pipeline','theme','proposal'];
     foreach ($tables as $t) {
         $rows = [];
         $r = $db->query("SELECT * FROM $t");
         while ($row = $r->fetchArray(SQLITE3_ASSOC)) $rows[] = $row;
         
-        if (in_array($t, ['company','factory_meta','links','theme'])) {
+        if (in_array($t, ['company','factory_meta','links','theme','proposal'])) {
             $d = [];
             foreach ($rows as $r2) { $k = $r2['key']; unset($r2['key']); $d[$k] = reset($r2); }
             $data[$t] = $d;
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body = json_decode(file_get_contents('php://input'), true);
     $table = $body['table'];
     
-    if (in_array($table, ['company','factory_meta','links','theme'])) {
+    if (in_array($table, ['company','factory_meta','links','theme','proposal'])) {
         foreach ($body['data'] as $k => $v) {
             $val = is_array($v) ? (reset($v) ?: '') : (string)$v;
             $db->exec("INSERT OR REPLACE INTO $table(key,value) VALUES('$k','".$db->escapeString($val)."')");
