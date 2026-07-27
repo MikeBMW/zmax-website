@@ -99,6 +99,8 @@ td[contenteditable]{background:var(--bg)}
   [contenteditable]{border:none!important;background:transparent!important}
   [contenteditable]:hover,[contenteditable]:focus{background:transparent!important;border:none!important}
 }
+  .auto-save{font-size:12px;color:#00d4aa;animation:fadeIn .3s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 </style>
 <script src="/zmax-auth.js"></script>
 </head>
@@ -354,41 +356,78 @@ function bindEditable(){
 var KV_TABLES = ['company','links','theme','factory_meta','proposal'];
 function markEdited(table, key, field, value){
   if (!dirty[table]) dirty[table] = {};
+  // Track original value for changelog
+  var ck = table+'.'+key+(field?'.'+field:'');
+  if (!(ck in _origValues)){
+    _origValues[ck] = (KV_TABLES.indexOf(table)>=0) ? '' : '';
+  }
   if (KV_TABLES.indexOf(table) >= 0){
     dirty[table][key] = value;
   } else {
     if (!dirty[table][key]) dirty[table][key] = {};
     dirty[table][key][field||'value'] = value;
   }
-  document.getElementById('status').innerHTML = '<span style="color:#d4a800">● 未保存</span>';
+  document.getElementById('status').innerHTML = '<span style="color:#d4a800">● </span>';
+  autoSave();
 }
 
-function saveAll(){
-  if (!Object.keys(dirty).length){ status('没有修改'); return; }
-  
+var _autoTimer = null;
+var _origValues = {};
+
+function autoSave(){
+  if (!Object.keys(dirty).length) return;
+  clearTimeout(_autoTimer);
+  _autoTimer = setTimeout(doSave, 800);
+}
+
+function doSave(){
   var tables = Object.keys(dirty);
-  var promises = tables.map(function(table){
-    return fetch('/dds-api.php', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({table: table, data: dirty[table]})
-    });
+  var payloads = [];
+  tables.forEach(function(table){
+    payloads.push({table: table, data: dirty[table]});
   });
   
-  Promise.all(promises).then(function(r){
+  fetch('/dds-api.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({batch: payloads, changelog: _origValues})
+  }).then(function(r){ return r.json(); }).then(function(d){
+    _origValues = {};
     dirty = {};
-    // 同时保存所有 contenteditable 到 localStorage（含无 data 绑定的字段）
-    var snapshot = {};
+    // localStorage snapshot
+    var snap = {};
     document.querySelectorAll('[contenteditable]').forEach(function(el){
       var id = el.dataset.table ? el.dataset.table+'.'+el.dataset.key+(el.dataset.field?'.'+el.dataset.field:'') : null;
-      var key = id || el.textContent.substring(0,20);
-      snapshot[key] = el.innerHTML;
+      snap[id || el.textContent.substring(0,20)] = el.innerHTML;
     });
-    localStorage.setItem('zmax_edits', JSON.stringify(snapshot));
-    status('<span style="color:var(--green)">● 已保存 · 刷新不丢失 · 2分钟内全站同步</span>');
+    localStorage.setItem('zmax_edits', JSON.stringify(snap));
+    status('<span class="auto-save">● 已自动保存 '+new Date().toLocaleTimeString()+'</span>');
   }).catch(function(e){
-    status('<span style="color:#ff4444">保存失败: '+e.message+'</span>');
+    status('<span style="color:#ff4444">保存失败</span>');
   });
+}
+
+function saveAll(){ doSave(); }
+
+function fetchChangelog(){
+  fetch('/api/dds-changelog.php').then(function(r){return r.json()}).then(function(rows){
+    var h = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(6,8,13,0.95);z-index:9999;overflow:auto;padding:40px">';
+    h += '<h2 style="color:#00d4aa;margin-bottom:16px">📜 操作记录（最近100次）</h2>';
+    h += '<button onclick="this.parentElement.remove()" style="position:absolute;top:20px;right:20px;background:#ff4444;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer">✕ 关闭</button>';
+    h += '<table style="width:100%;font-size:11px"><tr><th>时间</th><th>表</th><th>键</th><th>字段</th><th>旧值</th><th>新值</th><th>恢复</th></tr>';
+    rows.forEach(function(r){
+      h += '<tr><td>'+r.ts+'</td><td>'+r.table_name+'</td><td>'+r.key_name+'</td><td>'+r.field_name+'</td><td style="max-width:200px;overflow:hidden">'+r.old_value+'</td><td style="max-width:200px;overflow:hidden">'+r.new_value+'</td><td><button onclick="restoreChange(\''+r.table_name+'\',\''+r.key_name+'\',\''+r.field_name+'\',\''+(r.old_value||'').replace(/'/g,"\\'")+'\')" style="background:#d4a800;color:#06080d;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:10px">↩ 恢复</button></td></tr>';
+    });
+    h += '</table></div>';
+    document.body.insertAdjacentHTML('beforeend', h);
+  });
+}
+
+function restoreChange(table, key, field, oldVal){
+  if (!confirm('恢复 '+table+'.'+key+'.'+field+' 为: '+oldVal.substring(0,50)+'?')) return;
+  fetch('/dds-api.php', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({batch:[{table:table, data:KV_TABLES.indexOf(table)>=0 ? {[key]:oldVal} : {[key]:{[field||'value']:oldVal}}}]})
+  }).then(function(){ location.reload(); });
 }
 
 function status(msg){
@@ -466,6 +505,7 @@ function applyDiff(table,key,val){
   <a href="/generate-pptx.php" class="btn-export" style="display:inline-block;padding:8px 20px">📥 导出 PPTX</a>
   <a href="/Z700-立项申请书.docx" class="btn-export" style="display:inline-block;padding:8px 20px">📝 导出 DOCX</a>
   <button class="btn-export" onclick="window.print()" style="display:inline-block;padding:8px 20px;cursor:pointer">📄 导出 PDF</button>
+  <button class="btn-export" onclick="fetchChangelog()" style="background:#1a1f2b;color:#d4a800;border:1px solid #d4a80044;font-size:12px">📜 操作记录</button>
   <span class="status" id="status"></span>
 </div>
 

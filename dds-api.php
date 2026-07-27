@@ -34,6 +34,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body = json_decode(file_get_contents('php://input'), true);
+    
+    // Batch mode: save all tables at once with changelog
+    if (isset($body['batch'])) {
+        foreach ($body['batch'] as $item) {
+            $t = $item['table'];
+            $d = $item['data'];
+            foreach ($d as $k => $v) {
+                if (is_array($v)) {
+                    foreach ($v as $f => $val) {
+                        $db->exec("INSERT INTO changelog(table_name,key_name,field_name,new_value) VALUES('".$db->escapeString($t)."','".$db->escapeString($k)."','".$db->escapeString($f)."','".$db->escapeString($val)."')");
+                        if (in_array($t, ['company','factory_meta','links','theme','proposal'])) {
+                            $db->exec("INSERT OR REPLACE INTO $t(key,value) VALUES('".$db->escapeString($k)."','".$db->escapeString($val)."')");
+                        } elseif ($t == 'roadmap') {
+                            $db->exec("UPDATE roadmap SET ".$db->escapeString($f)."='".$db->escapeString($val)."' WHERE version='".$db->escapeString($k)."'");
+                        } else {
+                            $db->exec("UPDATE $t SET ".$db->escapeString($f)."='".$db->escapeString($val)."' WHERE id='".$db->escapeString($k)."'");
+                        }
+                    }
+                } else {
+                    $db->exec("INSERT INTO changelog(table_name,key_name,new_value) VALUES('".$db->escapeString($t)."','".$db->escapeString($k)."','".$db->escapeString($v)."')");
+                    if (in_array($t, ['company','factory_meta','links','theme','proposal'])) {
+                        $db->exec("INSERT OR REPLACE INTO $t(key,value) VALUES('".$db->escapeString($k)."','".$db->escapeString($v)."')");
+                    }
+                }
+            }
+        }
+        $db->exec("DELETE FROM changelog WHERE id NOT IN (SELECT id FROM changelog ORDER BY id DESC LIMIT 100)");
+        $db->close();
+        echo '{"ok":true}';
+        exit;
+    }
+    
     $table = $body['table'];
     
     if (in_array($table, ['company','factory_meta','links','theme','proposal'])) {
