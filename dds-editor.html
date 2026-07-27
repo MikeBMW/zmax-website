@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--white);padding:20px;max-width:1000px;margin:0 auto}
 h1{color:var(--green);font-size:22px;margin-bottom:4px}
-.toolbar{position:sticky;bottom:0;z-index:10;background:var(--bg);padding:12px 0;border-top:1px solid var(--border);margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar{background:var(--bg);padding:12px 0;border-top:1px solid var(--border);margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .toolbar button{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:none}
 .btn-save{background:var(--green);color:var(--bg)}
 .btn-export{background:#1a1f2b;color:var(--white)}
@@ -54,7 +54,7 @@ td[contenteditable]{background:var(--bg)}
 
 @media(max-width:768px){
   body{padding:12px;font-size:14px}
-  .toolbar{position:sticky;bottom:0;top:auto;padding:10px 0;border-top:1px solid var(--border);border-bottom:none;margin:12px 0 0;gap:6px;background:var(--bg);z-index:100}
+  .toolbar{padding:10px 0;border-top:1px solid var(--border);margin:12px 0 0;gap:6px;background:var(--bg)}
   .toolbar a{font-size:12px}
   .toolbar button{padding:10px 16px;font-size:14px;min-height:44px}
   .slide{padding:20px 14px;margin-bottom:14px}
@@ -68,7 +68,7 @@ td[contenteditable]{background:var(--bg)}
   td,th{padding:10px 8px;font-size:13px;min-width:80px}
   .pipe-row{flex-direction:column;align-items:stretch}
   .step-arrow{transform:rotate(90deg);margin:4px auto}
-  .btn-save{position:fixed;bottom:12px;right:12px;z-index:200;padding:14px 24px;font-size:15px;border-radius:50px;box-shadow:0 4px 20px rgba(0,212,170,.3)}
+  .btn-save{padding:10px 16px;font-size:14px;min-height:44px}
 }
 @media(max-width:400px){
   .slide{padding:14px 10px}
@@ -161,8 +161,34 @@ td[contenteditable]{background:var(--bg)}
 <div class="slide" id="s-tech">
   <div class="slide-num">5 / 10</div>
   <div class="slide-title"><span contenteditable>四、核心技术能力</span></div>
+  <p class="slide-sub"><span contenteditable>VLA大模型驱动的具身智能引擎。不是规则堆砌，而是端到端可训练的视觉-语言-动作大模型。感知即决策，决策即行动。</span></div>
   <div class="divider"></div>
-  <div class="three-col" id="tech-grid"></div>
+  <div class="cards">
+    <div class="card-item">
+      <h4>🔬 <span contenteditable>场景感知</span></h4>
+      <p contenteditable>RealSense D405 深度视觉 + 腕部 RGB + 六维力/力矩 + 触觉阵列。四路传感器实时融合，构建毫米级场景理解。不只是"看见"，而是"感知"物理交互。</p>
+    </div>
+    <div class="card-item">
+      <h4>🧠 <span contenteditable>智能决策</span></h4>
+      <p contenteditable>视觉语言动作模型（VLA）。端到端从像素到动作指令，零样本泛化到新工位新模块型号。</p>
+    </div>
+    <div class="card-item">
+      <h4>⚡ <span contenteditable>运动控制</span></h4>
+      <p contenteditable>关节力矩 + 末端六维力 + 指尖触觉三路闭环冗余。>1kHz毫秒级力反馈调节，Lissajous力搜索策略确保光模块金手指 ±0.02mm 精确定位插入。</p>
+    </div>
+    <div class="card-item">
+      <h4>🤏 <span contenteditable>精细操作</span></h4>
+      <p contenteditable>双臂协同完成取料、插拔、AOI检测全流程。VLA-T力控模型实时调节夹持力，适配全系列光模块。</p>
+    </div>
+    <div class="card-item">
+      <h4>🔄 <span contenteditable>数据闭环</span></h4>
+      <p contenteditable>端侧采集 → 云端训练 → 模型部署回端侧。每次操作都是训练数据，模型持续迭代，产线越用越聪明。7×24无人值守训练流水线。</p>
+    </div>
+    <div class="card-item">
+      <h4>🛡️ <span contenteditable>泛化与稳定性</span></h4>
+      <p contenteditable>世界模型预测物理交互结果，换型零样本泛化。五层主动安全保护。异常自主判断，自动恢复。实操稳定性 >99%。</p>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ SLIDE 6: 系统架构 ═══ -->
