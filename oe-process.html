@@ -2,421 +2,157 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OE光引擎区 场景描述文档</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>OE 光引擎区 · 完整工艺文档 · Z-MAX</title>
+<script src="/zmax-auth.js"></script>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
-  h1{color:#ff6b35;font-size:28px;border-bottom:2px solid #ff6b3544;padding-bottom:12px;margin-bottom:20px}
-  h2{color:#ff6b35;font-size:20px;margin:28px 0 12px;border-left:3px solid #ff6b35;padding-left:10px}
-  h3{color:#ff8c55;font-size:16px;margin:18px 0 8px}
-  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:10px}
-  th{background:#0d1117;color:#ff6b35;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
-  td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
-  tr:nth-child(even){background:#0a0e14}
-  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
-  .kpi span{background:#0d1117;border:1px solid #ff6b3544;border-radius:6px;padding:6px 14px;color:#ff6b35;font-weight:700}
-  .note{background:#0d1117;border-left:3px solid #f0a500;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
-  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
-  .phase h3{margin-top:0;color:#ff6b35}
-  .btn{display:inline-block;background:#ff6b35;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 8px 0 0;text-decoration:none}
-  .btn:hover{filter:brightness(1.2)}
-  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
-  .compare .col{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px}
-  .compare .col h4{margin:0 0 8px;font-size:12px;color:#ff8c55}
-  .compare .col.human h4{color:#f0a500}
-  .compare .col.robot h4{color:#00d4aa}
-  .compare .col ul{list-style:none;padding:0;margin:0;font-size:10px}
-  .compare .col li{padding:3px 0;border-bottom:1px solid #1a1f2b22}
-  .compare .col li:last-child{border:none}
-  .flow-simple{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:16px;margin:12px 0;overflow-x:auto;font-family:monospace;font-size:10px;line-height:2.2;color:#c8d1d9;white-space:pre}
-  a{color:#ff6b35}
-  @media print{body{background:#fff!important;color:#000!important}body *{color:#000!important;background:#fff!important;border-color:#ccc!important;text-shadow:none!important;box-shadow:none!important}.btn{display:none}a{color:#000!important;text-decoration:underline}h1,h2,h3{color:#000!important;border-color:#000!important}.phase,.note,.robot-card,.layout-box,.flow-diagram,.flow-simple{background:#fff!important;border:1px solid #ccc!important}.note{border-left:3px solid #000!important}table{font-size:8px}th{background:#eee!important;color:#000!important;border-color:#000!important}td{border-color:#000!important}tr:nth-child(even){background:#f5f5f5!important}.compare .col{background:#fff!important;border:1px solid #ccc!important}.kpi span{background:#eee!important;color:#000!important;border-color:#000!important}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;max-width:1200px;margin:0 auto;padding:24px 16px;line-height:1.7}
+h1{color:#ff6b35;font-size:26px;border-bottom:2px solid #ff6b3544;padding-bottom:12px;margin-bottom:16px}
+h2{color:#ff6b35;font-size:18px;margin:24px 0 10px;border-left:3px solid #ff6b35;padding-left:10px}
+h3{color:#ff8c55;font-size:15px;margin:16px 0 6px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11px;display:block;overflow-x:auto}
+th{background:#0d1117;color:#ff6b35;padding:7px 8px;text-align:left;border:1px solid #1a1f2b;font-size:10px;white-space:nowrap}
+td{padding:5px 8px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
+tr:nth-child(even) td{background:#0a0e14}
+.note{background:#0d1117;border-left:3px solid #f0a500;padding:10px 14px;margin:8px 0;font-size:11px;color:#8b949e}
+.kpi{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.kpi span{background:#0d1117;border:1px solid #ff6b3544;border-radius:6px;padding:5px 12px;color:#ff6b35;font-weight:700;font-size:11px}
+.btn{display:inline-block;background:#ff6b35;color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;margin:12px 0;text-decoration:none}
+.tag-z100l{background:#58a6ff22;color:#58a6ff;border:1px solid #58a6ff44;padding:1px 5px;border-radius:3px;font-size:9px}
+.tag-z700{background:#00d4aa22;color:#00d4aa;border:1px solid #00d4aa44;padding:1px 5px;border-radius:3px;font-size:9px}
+.tag-aoi{background:#a371f722;color:#a371f7;border:1px solid #a371f744;padding:1px 5px;border-radius:3px;font-size:9px}
+.tag-p0{background:#ff444422;color:#ff4444;font-weight:700}
+.tag-p1{background:#d4a80022;color:#d4a800}
+.tag-p2{background:#00d4aa22;color:#00d4aa}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:#0d1117;border:1px solid #00d4aa44;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;margin-bottom:16px}
+@media print{body{background:#fff;color:#000}.btn{display:none}th{color:#000}td{border-color:#ccc}}
 </style>
 </head>
 <body>
-<h1>OE光引擎区 全场景描述文档</h1>
+<a href="/factory-3d.html" class="back-home">← 返回 3D 工厂</a>
+<h1>OE 光引擎区 · 完整工艺文档</h1>
 <div class="kpi">
-  <span>72 大工站</span><span>317 子工序</span><span>800G DR8 · 260-B4103</span>
+  <span>26 工位</span><span>I125-I150</span><span>75 人 DL</span><span>5 工序段</span><span>16 个机器人场景</span>
 </div>
-<button class="btn" onclick="window.print()">📄 导出 PDF</button>
-<button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
-<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#ff6b35;border:1px solid #ff6b3544">← 3D工厂</a>
 
-<h2>1. 机器人分配规则</h2>
+<h2>1. 定义与范围</h2>
 <table>
-<tr><th>触发条件</th><th>机器人</th><th>理由</th><th>操作对象</th></tr>
-<tr><td style="color:#00d4aa">含"目检/显微镜检/镜检"</td><td style="color:#00d4aa">Z700F + AOI</td><td style="font-size:9px">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td>光模块/芯片端面</td></tr>
-<tr><td style="color:#58a6ff">含"料笼/料箱"</td><td style="color:#58a6ff">Z100L</td><td style="font-size:9px">满载重量大，人工搬运劳动强度高、安全隐患</td><td>料笼/料箱</td></tr>
-<tr><td style="color:#58a6ff">含"料盘"</td><td style="color:#58a6ff">Z100L</td><td style="font-size:9px">精密传递，避免人工磕碰损伤模块</td><td>料盘</td></tr>
-<tr><td style="color:#58a6ff">含"上料/下料/上下料"</td><td style="color:#58a6ff">Z100L</td><td style="font-size:9px">重复性上下料，24h无人值守替代人工；高温/UV场景消除人身伤害风险</td><td>料盘/Tray盘/设备</td></tr>
+<tr><th style="width:120px">项</th><th>说明</th></tr>
+<tr><td>全称</td><td>Optical Engine / 光引擎</td></tr>
+<tr><td>核心工作</td><td>将 COC、DSP 等裸芯片通过高精度贴片机贴装到 PCB 载板上，金线连接所有芯片，光学耦合对准光纤，激光焊接永久固定光路</td></tr>
+<tr><td>产出物</td><td>PCBA 光引擎组件 —— 完成所有光电转换功能、尚未装壳的半成品板</td></tr>
+<tr><td>产线位置</td><td>苏州工厂 OE 车间</td></tr>
+<tr><td>数据来源</td><td>储翰 COC 车间及苏州/铜陵工厂调研数据</td></tr>
 </table>
 
-<h2>2. 覆盖统计</h2>
+<h2>2. 整体制程总览</h2>
 <table>
-<tr><th>机器人</th><th>子工序数</th><th>占比</th></tr>
-<tr><td style="color:#58a6ff">Z100L</td><td>62</td><td>20%</td></tr>
-<tr><td style="color:#00d4aa">Z700F + AOI</td><td>31</td><td>10%</td></tr>
-<tr><td style="color:#8b949e">—</td><td>224</td><td>71%</td></tr>
+<tr><th>阶段</th><th>名称</th><th>核心工作</th><th>产出物</th></tr>
+<tr><td>阶段一</td><td>COC（Chip on Carrier）</td><td>裸芯片共晶焊接到陶瓷载板，金线键合，老化筛选</td><td>COC 光引擎</td></tr>
+<tr><td style="color:#ff6b35;font-weight:700">阶段二</td><td style="color:#ff6b35;font-weight:700">OE 光引擎</td><td style="color:#ff6b35">COC/DSP贴装到PCB载板，金线连接，光学耦合对准光纤</td><td style="color:#ff6b35">PCBA 光引擎组件</td></tr>
+<tr><td>阶段三</td><td>模块（成品组装与测试）</td><td>PCBA装入外壳，结构件安装，密封，最终性能可靠性测试</td><td>成品光模块</td></tr>
 </table>
-<div class="note">机器人分配基于子工序文本关键词自动匹配，每条机器人分配均有明确的理由和操作对象，可逐条追溯验证。</div>
 
-<h2>4. 物料重量数据</h2>
+<h2>3. 工位总览</h2>
+
+<h3>3.1 来料段（I125~I127）</h3>
 <table>
-<tr><th>项目</th><th>成都料笼</th><th>苏州料笼</th></tr>
-<tr><td>层数</td><td>13层</td><td>5层 / 10层</td></tr>
-<tr><td>每层装载</td><td>8个OE（1连板）</td><td>6个光模块</td></tr>
-<tr><td>单连板重量</td><td>50g（1两）</td><td>—</td></tr>
-<tr><td>载条/载板重量</td><td>100g（2两）</td><td>100g</td></tr>
-<tr><td>单模块重量</td><td>—</td><td>800G: 80g / 200G: 60.6g</td></tr>
-<tr><td>每层总重</td><td>150g（连板+载条）</td><td>580g（6模块+载板）</td></tr>
-<tr><td>料笼自重</td><td>300g（6两）</td><td>300g</td></tr>
-<tr><td style="font-weight:700">料笼满载总重</td><td style="font-weight:700;color:#ff6b35">2.25kg（4.5斤）</td><td style="font-weight:700;color:#ff6b35">3.2kg（5层）/ 6.1kg（10层）</td></tr>
-<tr><td>两个料笼</td><td>4.5kg</td><td>6.4kg（5层×2）</td></tr>
+<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th><th>机器人方案</th></tr>
+<tr><td>I125</td><td>物料准备</td><td>手动</td><td>2</td><td>料笼搬运</td><td>≤15s/批</td><td>批次/数量/料号核对</td><td><span class="tag-z100l">Z100L 拖动料笼</span></td></tr>
+<tr><td>I126</td><td>来料目检 - 外观</td><td>人工·50×显微镜</td><td>4</td><td>料盘</td><td>≤5s/个</td><td>无裂纹/划伤/氧化</td><td><span class="tag-aoi">AOI 替代</span></td></tr>
+<tr><td>I127</td><td>来料目检 - 端面</td><td>单次约 200 个模块</td><td>2</td><td>料盘</td><td>≤5s/个</td><td>IEC61300-3-35</td><td><span class="tag-aoi">AOI 替代</span></td></tr>
 </table>
-<div class="note">CB制程为连板作业，按8个OE/连板为单位操作。Z100L搬运料笼满载重量2.25~6.1kg，远在Z100L负载能力范围内（&gt;50kg），无需人工搬运。</div>
 
-<h2>5. OE 全工序表</h2>
+<h3>3.2 清洗组装段（I128~I133）</h3>
 <table>
-<tr><th>序号</th><th>大工站</th><th>子工序</th><th>机器人</th><th>理由</th><th>操作对象</th></tr>
-<tr><td rowspan="1">1</td><td rowspan="1">生产前物料准备</td><td>物料清点/打叉板分类</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">2</td><td rowspan="6">进料检验&贴标签</td><td>IPSN&PCBA 绑定SN</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>物料拆包</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>显微镜检来料</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>打印标签</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>贴标签</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>标签遮挡打叉板Mark点*13%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">3</td><td rowspan="5">连板FW烧录/IPSN写入</td><td>拿取物料/扫码</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上治具压紧</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料装入治具载板放置料盒</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="6">4</td><td rowspan="6">Plasma清洗-热沉(24h)</td><td>物料准备</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>物料摆放治具</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动(往返)</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>开门放料开启程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（comon）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="3">5</td><td rowspan="3">热沉点胶</td><td>上料启动程序（一盘）</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>自动点胶（黑胶）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料（一盘）</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="9">6</td><td rowspan="9">热沉贴装&固化</td><td>镊子夹取氮化铝保护治具</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>拿取PCBA放入保护治具</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>锁紧治具卡口固定PCBA板</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>热沉位置调整（镊子手拨）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>盖上保护治具上盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>锁紧治具4颗螺丝（电动螺丝刀）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>翻转治具</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>手动点胶（UVT79) B类</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td rowspan="1">7</td><td rowspan="1">外观检查</td><td>检查胶量</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="9">8</td><td rowspan="9">UV固化&检外观</td><td>UV固化箱上料启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">UV固化上下料，避免UV光伤害</td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td>程序运行(胶水T79）B类</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>UV固化箱下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">UV固化上下料，避免UV光伤害</td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td>拆治具4颗螺丝</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打开保护治具上盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打开保护治具固定卡扣</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取出物料检查外观</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>放入载板、装置料笼</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料笼满载重量大，人工搬运劳动强度高、安全隐患</td><td style="font-size:9px;color:#c8d1d9">料笼</td></tr>
-<tr><td>热沉贴装过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">9</td><td rowspan="6">热沉烘烤1(150°,0.5H)</td><td>走动=>烤箱</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>上料进烤箱启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">高温烘烤炉上下料，人工操作有烫伤风险</td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>烘烤0.5H+0.5H升降温</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>走动=>工位</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动=>烤箱</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="2">10</td><td rowspan="2">烘烤后目检</td><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="7">11</td><td rowspan="7">DA芯片来料目检</td><td>PD*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>TIA*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>COC*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>FD Lens*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>PIC来料检*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>SUB垫块*5%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>RX FA垫块*5%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">12</td><td rowspan="5">DA1垫块贴装</td><td>上料启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>进料设备连板识别</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>DA贴片PIC/TX FA/COC</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>出料退至料盒</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="5">13</td><td rowspan="5">DA1自动二次元&目检</td><td>上下料+程序选择</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>位置测量*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打X板识别*13%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>显微镜检验*100%</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>DA1过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">14</td><td rowspan="4">DA烘烤-1(150°,1.5H)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤+冷却(B类）</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="2">15</td><td rowspan="2">烘烤后目检</td><td>显微镜检验*100%</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="5">16</td><td rowspan="5">DA2芯片贴装</td><td>上料启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>进料设备连板识别</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>DA贴片TIA/PD/COC/PIC</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>出料退至料盒</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="6">17</td><td rowspan="6">COC SN与PCBA SN绑定</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>过站（数据导出上传）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">18</td><td rowspan="5">DA2自动二次元&目检</td><td>上下料+程序选择</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>位置测量*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打X板识别*13%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>显微镜检验*100%</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>DA2过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">19</td><td rowspan="4">DA烘烤-2(150°,1.5H)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤+冷却(B类）</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="2">20</td><td rowspan="2">烘烤后目检</td><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="5">21</td><td rowspan="5">DA3芯片贴装</td><td>上料启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>进料设备连板识别</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>DA贴片Lens×4+电阻×2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>出料退至料盒</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="5">22</td><td rowspan="5">DA3自动二次元&目检</td><td>上下料+程序选择</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>位置测量*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打X板识别*13%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>显微镜检验*100%</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>DA3过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">23</td><td rowspan="4">DA烘烤-3(150°,1.5H)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤+冷却(B类）</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="2">24</td><td rowspan="2">烘烤后目检</td><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="5">25</td><td rowspan="5">Plasma清洗-WB(1H)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>程序运行SUB-1</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="2">26</td><td rowspan="2">首件 水滴角</td><td>检水滴角</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动多工位</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">27</td><td rowspan="1">走动 多工位</td><td>多工位走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="9">28</td><td rowspan="9">WB金线键合&目检</td><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>进连板</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打线预加热</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（193根金线）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>出连板</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>在线返工5%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>显微镜检验*100%</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>WB过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">29</td><td rowspan="1">首件 推拉力</td><td>推拉力*3pcs</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">30</td><td rowspan="6">Plasma清洗-Cover(4h)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（comon）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">31</td><td rowspan="6">PEI Cover组装</td><td>料笼取下1连扳</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料笼满载重量大，人工搬运劳动强度高、安全隐患</td><td style="font-size:9px;color:#c8d1d9">料笼</td></tr>
-<tr><td>手动点胶（3处）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>cover安装</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>装回料笼</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料笼满载重量大，人工搬运劳动强度高、安全隐患</td><td style="font-size:9px;color:#c8d1d9">料笼</td></tr>
-<tr><td>PEI Cover过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">32</td><td rowspan="4">PEI Cover烘烤</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤SN-614（1H+0.5H升降温）B类</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="2">33</td><td rowspan="2">烘烤后目检</td><td>烘烤后目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="6">34</td><td rowspan="6">Plasma清洗-隔离器(24h)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（SUB）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="14">35</td><td rowspan="14">隔离器贴装</td><td>隔离器物料摆放至PCBA*2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>料笼取下物料（1连扳）</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料笼满载重量大，人工搬运劳动强度高、安全隐患</td><td style="font-size:9px;color:#c8d1d9">料笼</td></tr>
-<tr><td>手动点胶左(胶水T16)</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>安装隔离器左*1</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>移动载板至UV光源区域启动</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td>UV固化左（程序10秒）</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td>目检隔离器左</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>手动点胶右(胶水T16)</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>安装隔离器右*1</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>移动载板至UV光源区域启动</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td>UV固化右（程序10秒）</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">载板/UV光源</td></tr>
-<tr><td>目检隔离器右</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>装回料笼</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料笼满载重量大，人工搬运劳动强度高、安全隐患</td><td style="font-size:9px;color:#c8d1d9">料笼</td></tr>
-<tr><td>隔离器烘烤过站</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td rowspan="4">36</td><td rowspan="4">隔离器烘烤</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤T-55（1H+0.5H升降温）B类</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="3">37</td><td rowspan="3">烘烤后目检</td><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">38</td><td rowspan="5">DA4芯片贴装</td><td>上料启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>进料设备连板识别</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>DA贴片FD Lens×2+RX FA×2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>出料退至料盒</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="3">39</td><td rowspan="3">红外测量</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>抽检100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">40</td><td rowspan="5">DA4自动二次元&目检</td><td>上下料+程序选择</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>位置测量*100%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打X板识别*13%</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>显微镜检验*100%</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>DA4过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">41</td><td rowspan="4">DA烘烤-4(150°,1H)</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤+冷却(B类）</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="3">42</td><td rowspan="3">烘烤后目检</td><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>烘烤目检过站</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="9">43</td><td rowspan="9">激光分板/目检</td><td>料笼取下连扳分开载板</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料笼满载重量大，人工搬运劳动强度高、安全隐患</td><td style="font-size:9px;color:#c8d1d9">料笼</td></tr>
-<tr><td>物料放入保护治具/盖上盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料启动程序</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>程序运行-分板</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">连板panel/分板机</td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>取下治具盖板/去除废料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>分板后目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>物料放置料盒（黑色料盒）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>分板后过站</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">连板panel/分板机</td></tr>
-<tr><td rowspan="4">44</td><td rowspan="4">保护治具组装</td><td>拿取保护治具底盖放入OE</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>盖上保护治具上盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>打螺丝*4颗（磁吸电动螺丝刀）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>物料放置托盘</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">45</td><td rowspan="5">Plasma清洗-LD lens</td><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>选程序启动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（comon）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="2">46</td><td rowspan="2">LD耦合前目检</td><td>目检（显微镜）</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">47</td><td rowspan="4">LD Lens AA耦合</td><td>拿取物料上设备</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>接电启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>耦合程序运行</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">光模块/耦合台</td></tr>
-<tr><td>取下放置物料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="2">48</td><td rowspan="2">LD耦合后目检</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>目检（显微镜）</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="4">49</td><td rowspan="4">LD耦合后烘烤</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>取出烘烤后料盘</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料盘精密传递，避免人工磕碰损伤模块</td><td style="font-size:9px;color:#c8d1d9">料盘</td></tr>
-<tr><td rowspan="7">50</td><td rowspan="7">Mpd_test_bake</td><td>物料摆放至烤台</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序预热</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>烤台预热（50°）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>拿取物料放入保护治具</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上电启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取下放置托盘</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">51</td><td rowspan="6">TRX FA组装/面清洁</td><td>取光纤取防尘盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>装Jumper</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>盖上盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>拿取物料撕保护纸</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>TX*1 RX*2清洁检查</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>放置物料(摆放治具中）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">52</td><td rowspan="5">Plasma清洗-FA</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>选程序启动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（comon）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="5">53</td><td rowspan="5">Plasma清洗-PCBA</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>选程序启动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行（comon）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>下料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td rowspan="3">54</td><td rowspan="3">TRX耦合前目检</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>TX FA耦合前目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="18">55</td><td rowspan="18">TRX FA AA耦合</td><td>拿取物料上设备</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>接电启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>设备试运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>看光纤端面*2（并行）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>TX RX上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>手动安装TX FA(镊子）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>手动点胶(T410)</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>手动安装左RX FA(镊子）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>手动点胶(T410)</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>手动安装右RX FA(镊子）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>手动点胶(T410)</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取下放置物料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="2">56</td><td rowspan="2">TRX耦合后目检</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>目检（显微镜）</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="4">57</td><td rowspan="4">TRX耦合后烘烤</td><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>选程序上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>烘烤</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>取出烘烤后料盘</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">料盘精密传递，避免人工磕碰损伤模块</td><td style="font-size:9px;color:#c8d1d9">料盘</td></tr>
-<tr><td rowspan="2">58</td><td rowspan="2">TRX烘烤后目检</td><td>目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>走动</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">59</td><td rowspan="4">端面清洁-1</td><td>拿料看端面</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>端面清洁*2（酒精棉签擦拭/吹端面）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>端面检查（仪器看端面*2）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>放置物料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">60</td><td rowspan="6">TRX Test</td><td>烤台预热（50°）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>拿料放入治具金手指接电</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>检查安装光纤端面*2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取下接电坐/光纤*2放置物料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="10">61</td><td rowspan="10">TCT-12hrs</td><td>进站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动=>TCT</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/TCT温变柜</td></tr>
-<tr><td>上料</td><td style="color:#58a6ff;white-space:nowrap">Z100L</td><td style="font-size:9px;color:#8b949e">重复性上下料，24h无人值守替代人工</td><td style="font-size:9px;color:#c8d1d9">料盘/Tray盘</td></tr>
-<tr><td>TCT-12hrs</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/TCT温变柜</td></tr>
-<tr><td>登记烘烤记录</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/烘烤炉</td></tr>
-<tr><td>走动=>工位</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动=>TCT</td><td style="color:#8b949e">—</td><td></td><td style="font-size:9px;color:#c8d1d9">Tray盘/TCT温变柜</td></tr>
-<tr><td>取料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>走动=>工位</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">62</td><td rowspan="1">端面清洁-2</td><td>端面清洁-2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="6">63</td><td rowspan="6">OE Test</td><td>烤台预热（50°）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>拿料放入治具金手指接电</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>检查安装光纤端面*2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取下接电坐/光纤*2放置物料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">64</td><td rowspan="1">端面清洁-3</td><td>端面清洁-3</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="5">65</td><td rowspan="5">TX ORL test</td><td>拿料放入治具金手指接电</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>检查安装光纤端面*2</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>启动程序</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>程序运行</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取下接电坐/光纤*2放置物料</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">66</td><td rowspan="1">端面清洁-4</td><td>端面清洁-4</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="4">67</td><td rowspan="4">拆保护治具</td><td>物料摆放</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取螺丝(电动螺丝刀）</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>取下OE放置托盘</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>放置保护治具上下盖</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="2">68</td><td rowspan="2">出货检查</td><td>出货目检</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td>目检完过站需电子档登记数量</td><td style="color:#00d4aa;white-space:nowrap">Z700F + AOI</td><td style="font-size:9px;color:#8b949e">替代人工显微镜目检，AI判定缺陷，消除视觉疲劳漏检</td><td style="font-size:9px;color:#c8d1d9">光模块/芯片端面</td></tr>
-<tr><td rowspan="1">69</td><td rowspan="1">XMES过站汇总</td><td>需员工手动扫码过站</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td>70</td><td>线平衡损失</td><td>—</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">71</td><td rowspan="1">MES+搬运损失</td><td>搬运损失</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
-<tr><td rowspan="1">72</td><td rowspan="1">MES+搬运损失</td><td>搬运损失</td><td style="color:#8b949e">—</td><td></td><td></td></tr>
+<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th><th>机器人方案</th></tr>
+<tr><td>I128</td><td>Adapter 超声波清洗</td><td>自动·40kHz</td><td>1</td><td>料盘操作</td><td>≤15s/批</td><td>无微粒/助焊剂残留</td><td><span class="tag-z100l">Z100L 上下料</span></td></tr>
+<tr><td>I129</td><td>Adapter 组装</td><td>手动·精密对位</td><td>4</td><td>料盘搬运</td><td>≤5s/个</td><td>定位±50μm</td><td>Z100L配送+Z700插拔</td></tr>
+<tr><td>I130</td><td>贴标签①</td><td>手动·激光打标</td><td>3</td><td>料盘操作</td><td>≤5s/个</td><td>码可读率 100%</td><td>Z100L打标一体化</td></tr>
+<tr><td>I131</td><td>组装后目检</td><td>人工</td><td>2</td><td>料盘</td><td>≤5s/个</td><td>对位/间隙/扭矩</td><td><span class="tag-aoi">AOI</span></td></tr>
+<tr><td>I132</td><td>贴标签②</td><td>手动·追溯二维码</td><td>2</td><td>料盘操作</td><td>≤5s/个</td><td>SN 唯一性</td><td>—</td></tr>
+<tr><td>I133</td><td>吸波材料贴装</td><td>手动</td><td>2</td><td>料盘搬运</td><td>≤5s/个</td><td>覆盖/厚度/附着力</td><td>—</td></tr>
+</table>
+
+<h3>3.3 预处理段（I134~I137）</h3>
+<table>
+<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th><th>机器人方案</th></tr>
+<tr><td>I134</td><td>TCT</td><td>自动·-40~125°C</td><td>1</td><td>Tray 盘操作</td><td>≤15s/批</td><td>无温度敏感失效</td><td><span class="tag-z700">Z700 Tray盘进出柜</span></td></tr>
+<tr><td>I135</td><td>FVI 高倍目检 1</td><td>单次约 100 个模块</td><td>4</td><td>料盘</td><td>≤5s/个</td><td>透镜偏移/气泡/胶裂</td><td><span class="tag-aoi">AOI 3D相机+AI</span></td></tr>
+<tr><td>I136</td><td>分晶</td><td>自动分选机</td><td>2</td><td>料盘操作</td><td>≤5s/个</td><td>波长/功率/IL 分 BIN</td><td>Z100L 自动上下料</td></tr>
+<tr><td>I137</td><td>Plasma 清洗 1</td><td>自动·Ar/O₂</td><td>1</td><td>料盘操作</td><td>≤15s/批</td><td>接触角 &lt;10°</td><td>Z100L 上下料</td></tr>
+</table>
+
+<h3>3.4 耦合段（I138~I142）</h3>
+<table>
+<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th><th>机器人方案</th></tr>
+<tr><td>I138</td><td>TX LD Lens 耦合</td><td>自动·14 台并行·6 轴</td><td>8</td><td>料盘搬运</td><td>≤5s/ch</td><td>IL≤3dB · ±0.5μm</td><td><span class="tag-z700">Z700×14 精密插拔</span> + <span class="tag-z100l">Z100L L2配送</span></td></tr>
+<tr><td>I139</td><td>TX 耦合后目检</td><td>人工·50×显微镜</td><td>3</td><td>料盘</td><td>≤5s/个</td><td>透镜位置/胶量/气泡</td><td><span class="tag-aoi">AOI 在线替代</span></td></tr>
+<tr><td>I140</td><td>烘烤①</td><td>自动·85°C N₂</td><td>2</td><td>Tray 盘操作</td><td>≤15s/批</td><td>硬度≥80 Shore D</td><td><span class="tag-z700">Z700 Tray盘批量上下</span></td></tr>
+<tr><td>I141</td><td>FVI 高倍目检 2</td><td>单次约 100 个模块</td><td>4</td><td>料盘</td><td>≤5s/个</td><td>固化后位移/裂纹</td><td><span class="tag-aoi">AOI 替代</span></td></tr>
+<tr><td>I142</td><td>Plasma 清洗 2</td><td>自动·Ar/O₂</td><td>2</td><td>料盘操作</td><td>≤15s/批</td><td>提升 FA 键合强度</td><td>Z100L 上下料</td></tr>
+</table>
+
+<h3>3.5 FA 双端耦合段（I143~I150）</h3>
+<table>
+<tr><th>编号</th><th>工位</th><th>方式</th><th>人</th><th>载体</th><th>节拍</th><th>质量门</th><th>机器人方案</th></tr>
+<tr><td>I143</td><td>TX FA 清洁</td><td>手动·无尘纸 + 酒精</td><td>2</td><td>料盘操作</td><td>≤5s/个</td><td>无颗粒 &gt;1μm</td><td>Z700 端面清洁自动化</td></tr>
+<tr><td>I144</td><td>TRX FA 清洗</td><td>自动·等离子</td><td>2</td><td>料盘操作</td><td>≤15s/批</td><td>去除氧化层/有机物</td><td>—</td></tr>
+<tr><td>I145</td><td>TX/RX FA 耦合</td><td>自动·8 台并行·双端</td><td>8</td><td>料盘搬运</td><td>≤5s/个</td><td>IL/RL 实时监测</td><td><span class="tag-z700">Z700×8 双端精密插拔</span> + <span class="tag-z100l">Z100L L3配送</span></td></tr>
+<tr><td>I146</td><td>TRX FA 目检</td><td>单次约 100 个模块</td><td>4</td><td>料盘</td><td>≤5s/个</td><td>对位/胶量/光纤弯曲</td><td><span class="tag-aoi">AOI</span></td></tr>
+<tr><td>I147</td><td>烘烤②</td><td>自动·85°C N₂</td><td>2</td><td>Tray 盘操作</td><td>≤15s/批</td><td>阶梯升温防热应力</td><td><span class="tag-z700">Z700 上下料</span></td></tr>
+<tr><td>I148</td><td>Plasma 清洗 3</td><td>自动</td><td>2</td><td>料盘操作</td><td>≤15s/批</td><td>去除残留污染物</td><td>—</td></tr>
+<tr><td>I149</td><td>FA 补胶</td><td>手动·UV + 热固化</td><td>4</td><td>料盘搬运</td><td>≤5s/个</td><td>胶量±0.1mg</td><td>Z700 Tray盘配送</td></tr>
+<tr><td>I150</td><td>烘烤③</td><td>自动·85°C 60min</td><td>2</td><td>Tray 盘操作</td><td>≤15s/批</td><td>硬度/附着力终检</td><td><span class="tag-z700">Z700 上下料</span></td></tr>
+</table>
+
+<h2>4. 物料容器与机器人分工</h2>
+<table>
+<tr><th>层级</th><th>容器</th><th>重量</th><th>机器人</th><th>场景</th></tr>
+<tr><td>L1 · 料笼</td><td>大型笼箱，内装 6~20 盘料盘</td><td>15~50kg</td><td><span class="tag-z100l">Z100L 专用</span></td><td>COC 来料 → 缓存仓 L1，空笼回收</td></tr>
+<tr><td>L2 · 料盘</td><td>周转盘，24 支/盘</td><td>0.5~2kg</td><td>Z700 姿态调整 + <span class="tag-z100l">Z100L 搬运</span></td><td>缓存仓 L1~L3 → 各工位 → 成品归仓</td></tr>
+<tr><td>L3 · Tray 盘</td><td>耐高温工装托盘（铝合金/陶瓷）</td><td>1~5kg</td><td><span class="tag-z700">Z700 全流程</span></td><td>检查→调整→搬运→热工艺上下柜</td></tr>
+</table>
+<div class="note">
+<b>核心规则：</b> Z100L 只拖动料笼（太重，15~50kg），不碰料盘/Tray 盘/器件。Z100L 固定单臂只做插拔（±0.05mm），不移动。Z700 操作 Tray 盘 + 料盘，可检查（AOI）、调整（位姿修正）、搬运（工位间传递），但不拖动料笼。
+</div>
+
+<h2>5. 优先级评估</h2>
+<table>
+<tr><th>编号</th><th>DL 岗位</th><th>机台</th><th>操作对象</th><th>机器人</th><th>AOI</th><th>优先级</th></tr>
+<tr><td>OE-1</td><td>来料目检（外观+端面）</td><td>I126/I127 目检工位</td><td>料盘</td><td>料盘上下料</td><td><span class="tag-aoi">裂纹/划伤/氧化 AOI全检</span></td><td class="tag-p0">P0</td></tr>
+<tr><td>OE-2</td><td>FVI 高倍目检 1/2</td><td>I135/I141</td><td>料盘</td><td>料盘上下料</td><td><span class="tag-aoi">3D相机+AI 检出率>99.5%</span></td><td class="tag-p0">P0</td></tr>
+<tr><td>OE-3</td><td>TX LD Lens 耦合上下料</td><td>耦合台×14</td><td>料盘</td><td><span class="tag-z700">Z700×14</span>+<span class="tag-z100l">Z100L</span></td><td>耦合质量在线反馈</td><td class="tag-p0">P0</td></tr>
+<tr><td>OE-4</td><td>TX/RX FA 双端耦合</td><td>FA耦合台×8</td><td>料盘</td><td><span class="tag-z700">Z700×8</span>+<span class="tag-z100l">Z100L</span></td><td>IL/RL实时监测</td><td class="tag-p0">P0</td></tr>
+<tr><td>OE-5</td><td>料笼流转</td><td>线边仓</td><td>料笼</td><td><span class="tag-z100l">Z100L+AGV</span></td><td>—</td><td class="tag-p0">P0</td></tr>
+<tr><td>OE-6</td><td>TCT 上下料</td><td>I134 温变柜</td><td>Tray盘(200支/次)</td><td><span class="tag-z700">Z700 高温耐受</span></td><td>—</td><td class="tag-p0">P0</td></tr>
+<tr><td>OE-7</td><td>组装后/TX耦合后/TRX FA 目检</td><td>I131/I139/I146</td><td>料盘</td><td>料盘上下料</td><td><span class="tag-aoi">共用AOI能力</span></td><td class="tag-p0">P0</td></tr>
+</table>
+
+<h2>6. OE 结论</h2>
+<div class="note">
+<b>整段定为 P2 低优先级</b>，因为 OE 段工位多（26个）、耦合精度要求高（±0.5μm），此时投入方案设计的返工风险大。
+<br><br>
+<b>例外：</b> OE-1/OE-2/OE-7 的 AOI 能力与 COC-2、MOD-11 同源，可随 AOI 方案一并预研，不必等整段推进。
+<br><br>
+<b>高优先级 7 个场景分三类：</b>
+<ul style="margin:8px 0 0 16px">
+<li><span class="tag-aoi">AOI 型</span> OE-1/OE-2/OE-7（23人纯目检岗）—— 可脱离整段进度提前预研</li>
+<li><span class="tag-z700">上下料型</span> OE-3/OE-4（耦合台群）、OE-6（TCT热工艺）</li>
+<li><span class="tag-z100l">流转型</span> OE-5（料笼流转，Z100L+AGV）</li>
+</ul>
+</div>
+
+<h2>7. 负载数据</h2>
+<table>
+<tr><th>容器</th><th>规格</th><th>空载</th><th>满载</th><th>数据来源</th></tr>
+<tr><td>CB 料笼（成都）</td><td>13 层 × 8 个 OE/连板（104块）</td><td>0.3 kg</td><td>2.25 kg</td><td>测算</td></tr>
+<tr><td>OE 料笼（苏州）</td><td>—</td><td>0.3 kg</td><td>约 3.2 kg</td><td>苏州线边仓确认</td></tr>
 </table>
 
 <br>
-<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#ff6b35;border:1px solid #ff6b3544">← 返回 3D 工厂</a>
-
-<script>
-function exportWord(){
-  var html=document.documentElement.outerHTML;
-  // Remove all color/background styles for clean Word export
-  html=html.replace(/color:#[0-9a-fA-F]+/g,'color:#000');
-  html=html.replace(/background:#[0-9a-fA-F]+/g,'background:#fff');
-  html=html.replace(/background:rgba\([^)]+\)/g,'background:#fff');
-  html=html.replace(/border:[^;]*#[0-9a-fA-F]+[^;]*/g,'border:1px solid #ccc');
-  html=html.replace(/emissive[^;"]*/g,'');
-  var blob=new Blob([html],{type:'application/msword'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='OE光引擎区_场景描述.doc';
-  a.click();
-}
-</script>
+<a href="/factory-3d.html" class="btn">← 返回 3D 工厂</a>
+<button class="btn" onclick="window.print()" style="background:#1a1f2b;color:#ff6b35;border:1px solid #ff6b3544;margin-left:8px">📄 导出 PDF</button>
 </body>
 </html>

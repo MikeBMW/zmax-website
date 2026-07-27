@@ -2,102 +2,131 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Z-MAX 模块组装区 场景描述文档</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MOD 模块区 · 完整工艺文档 · Z-MAX</title>
+<script src="/zmax-auth.js"></script>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px;line-height:1.7}
-  h1{color:#58a6ff;font-size:28px;border-bottom:2px solid #58a6ff44;padding-bottom:12px;margin-bottom:20px}
-  h2{color:#58a6ff;font-size:20px;margin:28px 0 12px;border-left:3px solid #58a6ff;padding-left:10px}
-  h3{color:#79b8ff;font-size:16px;margin:18px 0 8px}
-  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:10px}
-  th{background:#0d1117;color:#58a6ff;padding:8px 6px;text-align:left;border:1px solid #1a1f2b;font-size:10px}
-  td{padding:6px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
-  tr:nth-child(even){background:#0a0e14}
-  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
-  .kpi span{background:#0d1117;border:1px solid #58a6ff44;border-radius:6px;padding:6px 14px;color:#58a6ff;font-weight:700}
-  .note{background:#0d1117;border-left:3px solid #58a6ff;padding:10px 14px;margin:8px 0;font-size:10px;color:#8b949e}
-  .phase{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;margin:18px 0}
-  .phase h3{margin-top:0;color:#58a6ff}
-  .btn{display:inline-block;background:#58a6ff;color:#fff;border:none;padding:10px 24px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;margin:16px 8px 0 0;text-decoration:none}
-  a{color:#58a6ff}
-  @media print{body{background:#fff;color:#000}table{font-size:8px}.btn{display:none}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;max-width:1200px;margin:0 auto;padding:24px 16px;line-height:1.7}
+h1{color:#58a6ff;font-size:26px;border-bottom:2px solid #58a6ff44;padding-bottom:12px;margin-bottom:16px}
+h2{color:#58a6ff;font-size:18px;margin:24px 0 10px;border-left:3px solid #58a6ff;padding-left:10px}
+h3{color:#7ab8ff;font-size:15px;margin:16px 0 6px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11px;display:block;overflow-x:auto}
+th{background:#0d1117;color:#58a6ff;padding:7px 8px;text-align:left;border:1px solid #1a1f2b;font-size:10px;white-space:nowrap}
+td{padding:5px 8px;border:1px solid #1a1f2b;font-size:10px;vertical-align:top}
+tr:nth-child(even) td{background:#0a0e14}
+.note{background:#0d1117;border-left:3px solid #58a6ff;padding:10px 14px;margin:8px 0;font-size:11px;color:#8b949e}
+.kpi{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.kpi span{background:#0d1117;border:1px solid #58a6ff44;border-radius:6px;padding:5px 12px;color:#58a6ff;font-weight:700;font-size:11px}
+.tag-z100l{background:#58a6ff22;color:#58a6ff;border:1px solid #58a6ff44;padding:1px 5px;border-radius:3px;font-size:9px}
+.tag-z700{background:#00d4aa22;color:#00d4aa;border:1px solid #00d4aa44;padding:1px 5px;border-radius:3px;font-size:9px}
+.tag-aoi{background:#a371f722;color:#a371f7;border:1px solid #a371f744;padding:1px 5px;border-radius:3px;font-size:9px}
+.tag-p0{background:#ff444422;color:#ff4444;font-weight:700}
+.tag-p1{background:#d4a80022;color:#d4a800}
+.btn{display:inline-block;background:#58a6ff;color:#06080d;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;margin:12px 0;text-decoration:none}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:#0d1117;border:1px solid #00d4aa44;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;margin-bottom:16px}
+@media print{body{background:#fff;color:#000}.btn{display:none}th{color:#000}}
 </style>
 </head>
 <body>
-<h1>Z-MAX 模块组装区 全场景描述文档</h1>
-<div class="kpi"><span>4 工位</span><span>自动组装线(规划中)</span><span>EEPROM校验</span><span>老化墙</span></div>
-<button class="btn" onclick="window.print()">📄 导出 PDF</button>
-<button class="btn" style="background:#00d4aa;color:#06080d" onclick="exportWord()">📥 导出 Word</button>
-<a href="/factory-3d.html" class="btn" style="background:#1a1f2b;color:#58a6ff;border:1px solid #58a6ff44">← 3D工厂</a>
+<a href="/factory-3d.html" class="back-home">← 返回 3D 工厂</a>
+<h1>MOD 模块区 · 完整工艺文档</h1>
+<div class="kpi">
+  <span>29 道工序</span><span>114 人 DL</span><span>24 个机器人场景</span><span>ATS 4125台</span><span>苏州/铜陵工厂</span>
+</div>
 
-<h2>1. 定位与范围</h2>
-<h3>1.1 模块组装区定义</h3>
+<h2>1. 定义与范围</h2>
 <table>
 <tr><th style="width:120px">项</th><th>说明</th></tr>
-<tr><td>全称</td><td>Module Assembly / 模块组装区</td></tr>
-<tr><td>物料组成</td><td>OE光引擎组件 + PCB + 外壳 + 标签</td></tr>
-<tr><td>上游</td><td>OE光引擎区 → 模块组装区</td></tr>
-<tr><td>下游</td><td>模块组装区 → 成品 → 仓库物流区</td></tr>
-<tr><td>阶段产出</td><td>完整光模块成品(QSFP-DD/OSFP)</td></tr>
+<tr><td>核心工作</td><td>将 PCBA 光引擎装入金属或塑料外壳，安装解锁部件、拉环等结构件，完成密封，进行最终性能与可靠性测试</td></tr>
+<tr><td>产出物</td><td>成品光模块</td></tr>
+<tr><td>转运载具</td><td>黑色托盘</td></tr>
+<tr><td>数据来源</td><td>苏州/铜陵工厂 1.6T 高速模块生产测试信息</td></tr>
 </table>
 
-<h2>2. 详细工序</h2>
-
-<div class="phase">
-<h3>2.1 模块组装线 (I140)</h3>
+<h2>2. 苏州工站规模</h2>
 <table>
-<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
-<tr><td>I140</td><td>模块组装线</td><td>By Lot</td><td>自动(规划)</td><td>OE组件+PCB+外壳</td><td>组装后模块</td><td>TBD</td><td>TBD</td></tr>
+<tr><th>工站</th><th>机台数量</th><th>操作人数</th><th>机台配置</th><th>每pcs/时间(min)</th></tr>
+<tr><td style="color:#ff4444;font-weight:700">ATS</td><td>4,125</td><td>644</td><td>1拖16 & 一拖8</td><td>2.54</td></tr>
+<tr><td>环测</td><td>283</td><td>42</td><td>一拖8</td><td>1.12</td></tr>
+<tr><td>TRX 测试</td><td>154</td><td>14</td><td>一拖4</td><td>0.37</td></tr>
+<tr><td>Quick check</td><td>122</td><td>12</td><td>一拖4</td><td>1.03</td></tr>
+<tr><td>FW loading</td><td>62</td><td>32</td><td>一拖4 & 一拖8</td><td>0.32</td></tr>
+<tr><td>Burn-In</td><td>52</td><td>8</td><td>循环8小时</td><td>0.34</td></tr>
+<tr><td>端面检查</td><td>36</td><td>24</td><td>一人一机</td><td>0.47</td></tr>
+<tr><td>TCT</td><td>24</td><td>8</td><td>2人，循环8小时</td><td>0.14</td></tr>
+<tr><td>EEPROM Check</td><td>12</td><td>24</td><td>一拖4</td><td>0.8</td></tr>
+<tr><td>成品外观检验</td><td>16</td><td>16</td><td>一人一机</td><td>0.47</td></tr>
 </table>
-<div class="note">自动组装线规划中。包括：PCB焊接(SMT 260°C回流焊)、外壳装配(QSFP-DD/OSFP 0.3N·m)、散热片贴合、标签激光打标。当前阶段为手动组装过渡。</div>
+<div class="note">ATS 泰国约 4000 站，铜陵约 100 站，苏州只留少量验证机台。ATS 644 人是全流程最大人力池（占 18.4%）。</div>
+
+<h2>3. 工艺段</h2>
+
+<h3>3.1 OE 半成品封装</h3>
+<table>
+<tr><th>序号</th><th>工序</th><th>过站方式</th><th>人数</th></tr>
+<tr><td>1</td><td>测试数据分档</td><td>人工</td><td>2</td></tr>
+<tr><td>2</td><td>Housing 平面度测量</td><td>人工</td><td>2</td></tr>
+<tr><td>3</td><td>端面清洁（出货给制造五）</td><td>插入显微镜</td><td>2</td></tr>
+<tr><td>4</td><td>外观全检（出货给制造五）</td><td>人工</td><td>4</td></tr>
+<tr><td>5</td><td>出货确认绑批（SHIPCHK）</td><td>人工</td><td>2</td></tr>
+</table>
+
+<h3>3.2 模块封装与测试</h3>
+<table>
+<tr><th>序号</th><th>工序</th><th>过站方式</th><th>人数</th></tr>
+<tr><td>1</td><td>来料检验</td><td>人工</td><td>2</td></tr>
+<tr><td>2</td><td>成品组装</td><td>人工</td><td>4</td></tr>
+<tr><td>3</td><td>Quick check</td><td>插入测试机台</td><td>6</td></tr>
+<tr><td>4</td><td>Burn-In</td><td>插入测试机台</td><td>2</td></tr>
+<tr><td>5</td><td>TCT 高低温循环</td><td>插入测试机台</td><td>2</td></tr>
+<tr><td>6</td><td>环测</td><td>插入测试机台</td><td>5</td></tr>
+<tr><td>7</td><td>ATS</td><td>插入测试机台</td><td>34</td></tr>
+<tr><td>8</td><td>端面清洁</td><td>插入显微镜</td><td>5</td></tr>
+<tr><td>9</td><td>外观检验</td><td>人工</td><td>4</td></tr>
+</table>
+
+<h3>3.3 组装包装</h3>
+<table>
+<tr><th>序号</th><th>工序</th><th>过站方式</th><th>人数</th></tr>
+<tr><td>1</td><td>包装</td><td>人工</td><td>7</td></tr>
+<tr><td>2</td><td>物料周转</td><td>人工</td><td>2</td></tr>
+<tr><td>3</td><td>数据整理</td><td>人工</td><td>2</td></tr>
+</table>
+
+<h2>4. 可行性评估</h2>
+<table>
+<tr><th>编号</th><th>DL 岗位</th><th>机台</th><th>操作</th><th>机器人</th><th>AOI</th><th>优先级</th></tr>
+<tr><td>MOD-1</td><td>FW Loading</td><td>62台（一拖4&8）</td><td>金手指电口插入测试板→下载→取出</td><td><span class="tag-z700">Z700Fs</span></td><td>金手指氧化/变形检测</td><td class="tag-p0">P0</td></tr>
+<tr><td>MOD-2</td><td>EEPROM Check</td><td>12台（一拖4）</td><td>金手指电口插入→读数据</td><td><span class="tag-z700">Z700Fs</span></td><td>同上</td><td class="tag-p0">P0</td></tr>
+<tr><td>MOD-3</td><td>端面清洁/检查</td><td>36台（一人一机）</td><td>拔塞→MPO/LC插端检仪→清洗→盖塞</td><td><span class="tag-z700">Z700F</span></td><td><span class="tag-aoi">端面判定</span></td><td class="tag-p1">P1</td></tr>
+<tr><td>MOD-4</td><td>Quick check</td><td>122台（一拖4）</td><td>LC/MPO插TX/RX+金手指插测试板</td><td><span class="tag-z700">Z700F</span></td><td>插前端面检查</td><td class="tag-p1">P1</td></tr>
+<tr><td>MOD-5</td><td>物料周转</td><td>物料车/物料架</td><td>线边仓↔产线↔工位搬运</td><td><span class="tag-z100l">Z100L</span></td><td>—</td><td class="tag-p1">P1</td></tr>
+<tr><td>MOD-6</td><td>ATS</td><td>4125台</td><td>LC插TX/RX+金手指插测试板</td><td><span class="tag-z700">Z700</span></td><td>插前端面检查</td><td>中</td></tr>
+<tr><td>MOD-7</td><td>环测</td><td>283台</td><td>MPO/LC插TX/RX+金手指插测试板</td><td>—</td><td>—</td><td>中</td></tr>
+<tr><td>MOD-8</td><td>TRX 测试</td><td>154台</td><td>LC插TX/RX+金手指插测试板</td><td>—</td><td>—</td><td>中</td></tr>
+<tr><td>MOD-9</td><td>Burn-In</td><td>52台立柜烤箱</td><td>推料车→上料插拔 560支/次</td><td>Z700F改造</td><td>—</td><td>中</td></tr>
+<tr><td>MOD-10</td><td>TCT 高低温循环</td><td>24台温循箱</td><td>推料车→上料约1150支/次</td><td>Z700F集成</td><td>—</td><td>中</td></tr>
+<tr><td>MOD-11</td><td>成品外观检验</td><td>16台（一人一机）</td><td>托盘取放、翻面</td><td><span class="tag-aoi">AOI核心价值</span></td><td>外壳划伤/脏污/标签/金手指</td><td>中</td></tr>
+</table>
+
+<h2>5. 模块结论</h2>
+<div class="note">
+<b>高优先级 5 个场景，按插拔难度递进：</b>
+<br><br>
+[MOD-1/MOD-2] <b>仅电口</b> → [MOD-3] <b>仅光口</b> → [MOD-4] <b>电口+光口</b> →（P1扩展）MOD-6 ATS
+<br><br>
+<b>产品对应：</b> Z700Fs（MOD-1~4 插拔）+ Z100L（MOD-5 物料周转）
+<br>
+<b>人力杠杆：</b> ATS 644 人是全流程最大人力池（占 18.4%），但属电口+光口复合插拔——先在 MOD-1/MOD-2 打通电口，再向 MOD-4、MOD-6 复制
+<br>
+<b>AOI 落点：</b> MOD-3+MOD-14 端面检查（32人）、MOD-11+12+16 外观检验（24人）——两个纯检测人力池
+<br><br>
+<b>负载要求：</b> 苏州料笼 10层满载约 6.1kg，单臂负载应不低于 7kg
 </div>
 
-<div class="phase">
-<h3>2.2 EEPROM CHECK (I141)</h3>
-<table>
-<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
-<tr><td>I141</td><td>EEPROM CHECK</td><td>By SN</td><td>自动</td><td>组装后模块</td><td>参数写入后模块</td><td>≤2s</td><td>零误码</td></tr>
-</table>
-<div class="note">EEPROM参数校验与写入。包括：模块类型码、序列号、制造日期、校准参数(温度补偿表、功率校准表)、阈值告警值。I2C接口通信，校验和验证。兼容SFF-8636/SFF-8679协议。</div>
-</div>
-
-<div class="phase">
-<h3>2.3 老化墙 (I142)</h3>
-<table>
-<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
-<tr><td><a href="/station-i142.html?id=I-142&name=老化墙" style="color:#58a6ff">I142</a></td><td>老化墙</td><td>By Lot</td><td>自动</td><td>EEPROM后模块</td><td>老化后模块</td><td>24h/批</td><td>±1°C</td></tr>
-</table>
-<div class="note">模块级老化筛选。85°C通电老化24小时，在线监控光功率/电流/温度。Z700轮式机器人自动上下料。筛选早期失效模块，确保出厂可靠性。符合Telcordia GR-468标准。</div>
-</div>
-
-<div class="phase">
-<h3>2.4 模块内包装 (I143)</h3>
-<table>
-<tr><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>输入</th><th>输出</th><th>节拍</th><th>精度</th></tr>
-<tr><td>I143</td><td>模块内包装</td><td>By Lot</td><td>手动</td><td>老化后模块</td><td>内包装后模块</td><td>≤5s</td><td>ESD<100V</td></tr>
-</table>
-<div class="note">ESD防护包装。包括：防静电托盘、干燥剂+湿度指示卡、真空包装、标签打印。出货前最后一道工序，100%确认。</div>
-</div>
-
-<h2>3. 附录：MOD 全工序表</h2>
-<table>
-<tr><th>序号</th><th>I-Step</th><th>工序</th><th>过站</th><th>方式</th><th>节拍</th><th>精度</th><th>设备</th></tr>
-<tr><td>1</td><td>I140</td><td>模块组装线</td><td>By Lot</td><td>自动(规划)</td><td>TBD</td><td>TBD</td><td>自动组装线</td></tr>
-<tr><td>2</td><td>I141</td><td>EEPROM CHECK</td><td>By SN</td><td>自动</td><td>≤2s</td><td>零误码</td><td>EEPROM编程器</td></tr>
-<tr><td>3</td><td>I142</td><td>老化墙</td><td>By Lot</td><td>自动</td><td>24h/批</td><td>±1°C</td><td>Z700机器人+老化柜</td></tr>
-<tr><td>4</td><td>I143</td><td>模块内包装</td><td>By Lot</td><td>手动</td><td>≤5s</td><td>ESD<100V</td><td>真空包装机</td></tr>
-</table>
-
-<script>
-function exportWord(){
-  var html=document.documentElement.outerHTML;
-  var blob=new Blob([html],{type:'application/msword'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='Z-MAX_模块组装区_场景描述.doc';
-  a.click();
-}
-</script>
+<br>
+<a href="/factory-3d.html" class="btn">← 返回 3D 工厂</a>
+<button class="btn" onclick="window.print()" style="background:#1a1f2b;color:#58a6ff;border:1px solid #58a6ff44;margin-left:8px">📄 导出 PDF</button>
 </body>
 </html>
