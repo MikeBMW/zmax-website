@@ -325,7 +325,7 @@ function renderDynamic(){
       '<tr><td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="name">'+r.name+'</td>'+
       '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="timeline">'+r.timeline+'</td>'+
       '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="desc">'+r.desc+'</td>'+
-      '<td contenteditable>待定</td></tr>';
+      '<td contenteditable data-table="roadmap" data-key="'+r.version+'" data-field="criteria">'+(r.criteria||'待定')+'</td></tr>';
   });
 }
 

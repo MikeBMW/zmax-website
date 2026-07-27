@@ -52,8 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->exec("UPDATE factory_zones SET name='".$db->escapeString($z['name'])."', color='".$db->escapeString($z['color'])."', stations='".$db->escapeString($z['stations'])."', count=".intval($z['count'])." WHERE id='".$db->escapeString($z['id'])."'");
         }
     } elseif ($table == 'roadmap') {
-        foreach ($body['data'] as $r) {
-            $db->exec("UPDATE roadmap SET timeline='".$db->escapeString($r['timeline'])."', name='".$db->escapeString($r['name'])."', desc='".$db->escapeString($r['desc'])."', color='".$db->escapeString($r['color'])."' WHERE version='".$db->escapeString($r['version'])."'");
+        foreach ($body['data'] as $k => $r) {
+            // Handle both dict {version: {fields}} and array [{version:..., fields}]
+            if (is_array($r) && !isset($r['version'])) {
+                $version = $k;  // dict format: key is version
+                $fields = $r;
+            } else {
+                $version = $r['version'];  // array format
+                $fields = $r;
+            }
+            $criteria = isset($fields['criteria']) ? $db->escapeString($fields['criteria']) : '';
+            $db->exec("UPDATE roadmap SET timeline='".$db->escapeString($fields['timeline'])."', name='".$db->escapeString($fields['name'])."', desc='".$db->escapeString($fields['desc'])."', criteria='".$criteria."', color='".$db->escapeString($fields['color']??'')."' WHERE version='".$db->escapeString($version)."'");
         }
     }
     
