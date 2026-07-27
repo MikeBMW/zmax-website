@@ -80,9 +80,8 @@ body{background:#0a0a0f;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 </div>
 
 <script>
-const API="/forum.php";
-const NOTIFY="/notify.php";
-const READ="/read.php";
+const WS_URL = (location.protocol==="https:"?"wss":"ws") + "://datadrive.world/ws";
+let ws, wsRetry=0;
 
 const USERS={
   dani:{name:"大倪",avatar:"👑",color:"#f0c060",bg:"#4a3000",label:"大倪（静界）"},
@@ -266,39 +265,15 @@ async function load(){
   }catch(e){}
 }
 
-// ═══════ Send ═══════
-async function send(){
+// ═══════ Send via WebSocket ═══════
+function send(){
   let inp=document.getElementById("inp");
   let t=inp.value.trim();
-  if(!t) return;
-  inp.disabled=true;
-  
-  let hasAll=/\b@all\b/i.test(t);
-  let mentions=getMentions(t);
-  let shouldNotify=hasAll||mentions.length>0;
-  
-  try{
-    // 1. Save to forum
-    await fetch(API,{method:"POST",body:JSON.stringify({from:currentUser,msg:t})});
-    
-    // 2. Push to Feishu if @all or @mention
-    if(shouldNotify){
-      fetch(NOTIFY,{method:"POST",body:JSON.stringify({from:currentUser,msg:t,mentions:mentions})})
-        .then(r=>r.json()).then(d=>{
-          if(d.status==="ok") toast("📤 已推送到飞书群");
-        }).catch(()=>{});
-    }
-    
-    inp.value="";
-    inp.disabled=false;
-    inp.focus();
-    document.getElementById("mention-hint").style.display="none";
-    await load();
-    markRead();
-  }catch(e){
-    inp.disabled=false;
-    toast("发送失败");
-  }
+  if(!t||!ws||ws.readyState!==WebSocket.OPEN) return;
+  ws.send(JSON.stringify({type:"msg",from:currentUser,msg:t}));
+  inp.value="";
+  inp.focus();
+  document.getElementById("mention-hint").style.display="none";
 }
 
 // ═══════ Notifications ═══════
@@ -324,12 +299,87 @@ function toast(msg){
   setTimeout(()=>d.remove(),2000);
 }
 
-// ═══════ Init ═══════
+// ═══════ Init — WebSocket ═══════
 requestNotify();
-loadReads();
-load();
-markRead();
-setInterval(()=>{load();loadReads();},3000);
+let msgCount=0;
+
+function connectWS(){
+  document.getElementById("msgs").innerHTML='<p style="color:#8b949e;text-align:center;margin-top:60px">🔌 连接中...</p>';
+  ws=new WebSocket(WS_URL);
+  ws.onopen=function(){
+    ws.send(JSON.stringify({type:"hello",from:currentUser}));
+    wsRetry=0;
+  };
+  ws.onmessage=function(e){
+    try{
+      let data=JSON.parse(e.data);
+      if(data.type==="history"){
+        renderMsgList(data.msgs);
+      }else if(data.type==="msg"){
+        appendMsg(data);
+      }
+    }catch(err){}
+  };
+  ws.onclose=function(){
+    wsRetry++;
+    document.getElementById("msgs").innerHTML='<p style="color:#d4a800;text-align:center;margin-top:60px">🔌 断开，重连中('+wsRetry+')...</p>';
+    setTimeout(connectWS, Math.min(wsRetry*500, 5000));
+  };
+  ws.onerror=function(){
+    document.getElementById("msgs").innerHTML='<p style="color:#ff4444;text-align:center;margin-top:60px">❌ 连接失败，5秒后重试</p>';
+    setTimeout(connectWS, 5000);
+  };
+}
+
+function renderMsgList(msgs){
+  let container=document.getElementById("msgs");
+  let h="";
+  msgs.reverse();
+  msgs.forEach(m=>{
+    let from=m.from||"dani",u=USERS[from]||USERS.dani;
+    let isMe=from===currentUser;
+    let cls=["msg"]; if(isMe)cls.push("me");
+    if(hasMention(m.msg,currentUser))cls.push("mention-me");
+    if(/\b@all\b/i.test(m.msg))cls.push("mention-all");
+    h+=`<div class="${cls.join(' ')}">
+      <div class="avatar" style="background:${u.bg}">${u.avatar}</div>
+      <div class="bubble">
+        <div class="name" style="color:${u.color}">${u.name}${from==='dani'?' 👑':''}</div>
+        <div class="text">${parseMsg(m.msg)}</div>
+        <div class="time">${m.time||''}</div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML=h||"<p style='color:#484f58;text-align:center;margin-top:40px'>暂无消息，发送第一条吧 🚀</p>";
+  container.scrollTop=9999999;
+  msgCount=msgs.length;
+}
+
+function appendMsg(m){
+  let container=document.getElementById("msgs");
+  let from=m.from||"dani",u=USERS[from]||USERS.dani;
+  let isMe=from===currentUser;
+  let atBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
+  let cls=["msg"]; if(isMe)cls.push("me");
+  if(hasMention(m.msg,currentUser))cls.push("mention-me");
+  if(/\b@all\b/i.test(m.msg))cls.push("mention-all");
+  let div=document.createElement("div");
+  div.className=cls.join(" ");
+  div.innerHTML=`<div class="avatar" style="background:${u.bg}">${u.avatar}</div>
+    <div class="bubble">
+      <div class="name" style="color:${u.color}">${u.name}${from==='dani'?' 👑':''}</div>
+      <div class="text">${parseMsg(m.msg)}</div>
+      <div class="time">${m.time||''}</div>
+    </div>`;
+  container.appendChild(div);
+  if(atBottom) container.scrollTop=container.scrollHeight;
+  
+  // Sound + notification for mentions
+  if(hasMention(m.msg,currentUser)) notify("💬 "+u.name+" @了你",m.msg.substring(0,80));
+  else if(/\b@all\b/i.test(m.msg)) notify("📢 @all",u.name+": "+m.msg.substring(0,80));
+}
+
+connectWS();
 document.getElementById("inp").focus();
 </script>
 </body>
