@@ -247,12 +247,12 @@ let hoveredStation=null;
 
 // 4 robots — one per zone, never cross zones
 const ROBOT_DEFS=[
-  {name:"Z4 AOI",zone:"coc",x:-16.5,z:-12.1,rowZ:-12.1},
-  {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3},
-  {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1},
-  {name:"M1",zone:"mod",x:2.5,z:3.7,rowZ:2.5},
-  {name:"W1",zone:"wh",x:-16.5,z:4.2,rowZ:3.5},
-  {name:"W2",zone:"wh",x:-16.5,z:6.3,rowZ:5.7},
+  {name:"Z4 AOI",zone:"coc",x:-16.5,z:-12.1,rowZ:-12.1,offset:2.0},
+  {name:"R2",zone:"oe",x:2.5,z:-9.3,rowZ:-9.3,offset:2.0},
+  {name:"R3",zone:"oe",x:2.5,z:-7.1,rowZ:-7.1,offset:2.0},
+  {name:"M1",zone:"mod",x:2.5,z:3.7,rowZ:2.5,offset:2.0},
+  {name:"W1",zone:"wh",x:-16.5,z:4.2,rowZ:3.5,offset:1.0},
+  {name:"W2",zone:"wh",x:-16.5,z:6.3,rowZ:5.7,offset:1.0},
 ];
 
 // ═══════ THREE.JS ═══════
@@ -557,7 +557,7 @@ function buildFactory(){
   if(robotObjs.length===0){
     ROBOT_DEFS.forEach(rd=>{
       const r={obj:createRobot(rd.x,rd.z),pos:{x:rd.x,z:rd.z},
-               rowZ:rd.rowZ,stepIdx:0,zone:rd.zone,name:rd.name,
+               rowZ:rd.rowZ,stepIdx:0,zone:rd.zone,name:rd.name,offset:rd.offset,
                coordSprite:null,nameSprite:null,dwell:0,workAnim:0};
       r.coordSprite=createCoordSprite(rd.x,rd.z,'#00d4aa');
       scene.add(r.obj);scene.add(r.coordSprite.sprite);
@@ -951,7 +951,7 @@ function animate(){
     ).sort((a,b)=>a.position.x-b.position.x);
     if(rowStations.length===0)return;
     const st=rowStations[r.stepIdx%rowStations.length];
-    let tx=st.position.x,tz=st.position.z+2.0;
+    let tx=st.position.x,tz=st.position.z+(r.offset||2.0);
     const rdx=tx-r.pos.x,rdz=tz-r.pos.z;
     if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08){
       const dwellTime=r.name==='Z4 AOI'&&st.userData.id==='I120'?180:150;
