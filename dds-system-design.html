@@ -90,6 +90,44 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
 .footer{text-align:center;padding:24px;color:#8b949e;font-size:10px;border-top:1px solid #1a1f2b;margin-top:32px}
 
 /* Mobile */
+
+@media print {
+  body{background:#fff!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .back-home,.export-btn{display:none!important}
+  .wrap{max-width:100%;padding:15px}
+  h1{color:#000!important;font-size:20px}
+  .sub{color:#555!important;border-bottom:1px solid #ccc;padding-bottom:10px}
+  .version{color:#888!important}
+  .philosophy{background:#fafafa!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .philosophy h2{color:#000!important}
+  .philosophy p{color:#333!important}.philosophy .hl{color:#000!important;font-weight:900!important}
+  .pipeline-wrap{background:#fff!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .pipeline-wrap svg{max-width:100%}
+  .kpi-card{background:#f5f5f5!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .kpi-card .kpi-val{color:#000!important}
+  .kpi-card .kpi-lab{color:#555!important}
+  .phase-card{background:#fafafa!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .phase-card h3{color:#000!important}
+  .phase-card .desc{color:#333!important}
+  .phase-card .item{background:#f0f0f0!important;color:#000!important;border:1px solid #999!important}
+  .phase-card .phase-num{background:#e0e0e0!important;color:#000!important;border:1px solid #999!important}
+  .dispatch-table{background:#fff!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .dispatch-table h3{color:#000!important}
+  .dispatch-table th{background:#eee!important;color:#000!important}
+  .dispatch-table td{border-bottom:1px solid #ddd!important}
+  .dispatch-table tr:nth-child(even) td{background:#f9f9f9!important}
+  .dispatch-table .cond,.dispatch-table .model,.dispatch-table .host,.dispatch-table .act{color:#000!important}
+  .data-loop{background:#fafafa!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .data-loop h3{color:#000!important}
+  .loop-node{background:#fff!important;border-color:#999!important}
+  .loop-node,.ln1,.ln2,.ln3,.ln4,.ln5{color:#000!important}
+  .loop-desc{color:#333!important}
+  .loop-arrow{color:#888!important}
+  .related{display:none!important}
+  .footer{display:none!important}
+  .pipeline-wrap .cap{color:#888!important}
+}
+
 @media(max-width:768px){
   .wrap{padding:12px 8px}
   h1{font-size:20px}
@@ -108,10 +146,12 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
 <div class="wrap">
 
 <a href="/" class="back-home">← 返回主页</a>
+<a href="javascript:window.print()" class="export-btn" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#f0a50018;border:1px solid #f0a50044;border-radius:6px;color:#f0a500;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:18px;margin-left:8px;transition:all .2s" onmouseover="this.style.borderColor='#f0a500';this.style.background='#f0a50011'" onmouseout="this.style.borderColor='#f0a50044';this.style.background='#f0a50018'">🖨️ 导出 PDF</a>
+
 
 <h1>DDS 系统设计</h1>
 <p class="sub">Data-Driven System · 条件驱动的端到端具身智能架构</p>
-<p class="version">v2.7.5 · 2026-07-28 · Z-MAX</p>
+<p class="version">v2.7.6 · 2026-07-29 · Z-MAX</p>
 
 <!-- Philosophy -->
 <div class="philosophy">
@@ -330,7 +370,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   </div>
 </div>
 
-<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.5 · Data-Driven System Architecture</div>
+<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.6 · Data-Driven System Architecture</div>
 
 </div>
 </body>
