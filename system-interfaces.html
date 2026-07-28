@@ -3,123 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>系统接口总览 · Z-MAX</title>
+<title>系统接口 · Z-MAX</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
-.wrap{max-width:960px;margin:0 auto;padding:40px 20px}
-h1{color:#00d4aa;font-size:28px;text-align:center;margin-bottom:4px}
-.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
-h2{color:#00d4aa;font-size:18px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
-.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
-table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:12px}
-th{background:#00d4aa22;padding:9px 12px;text-align:left;color:#00d4aa;font-weight:700}
-td{padding:8px 12px;border-bottom:1px solid #1a1f2b}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
+.wrap{max-width:1100px;margin:0 auto;padding:30px 18px}
+h1{color:#00d4aa;font-size:24px;text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#8b949e;font-size:12px;margin-bottom:24px}
+h2{color:#00d4aa;font-size:16px;margin:28px 0 12px;padding-bottom:6px;border-bottom:2px solid #00d4aa33}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#0d1117;border:1px solid #00d4aa44;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;margin:10px 0;font-size:11px}
+th{background:#00d4aa18;padding:8px 10px;text-align:left;color:#00d4aa;font-weight:700;font-size:10px}
+td{padding:7px 10px;border-bottom:1px solid #1a1f2b}
 tr:nth-child(even) td{background:#080c14}
-pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 18px;overflow-x:auto;font-size:11px;margin:10px 0}
-code{font-size:11px}
-.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:16px 20px;margin:12px 0}
-.arch{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:16px 0}
-.arch-box{flex:1;min-width:120px;background:#0d1117;border:2px solid #1a1f2b;border-radius:10px;padding:14px;text-align:center}
-.arch-box.sys0{border-color:#d4a800}.arch-box.sys1{border-color:#58a6ff}.arch-box.sys2{border-color:#00d4aa}.arch-box.sys12{border-color:#a371f7}
-.arch-box h3{font-size:14px;margin-bottom:6px}.arch-box p{font-size:11px;color:#8b949e}
-.arrow-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font-size:11px;color:#8b949e;margin:4px 0}
-.api-method{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700;margin-right:4px}
-.get{background:#00d4aa33;color:#00d4aa}.post{background:#58a6ff33;color:#58a6ff}.grpc{background:#a371f733;color:#a371f7}
-.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 16px;overflow-x:auto;font-size:11px;margin:8px 0;color:#c8d1d9}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:14px 18px;margin:10px 0}
+.method{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;margin-right:4px}
+.get{background:#00d4aa33;color:#00d4aa}.post{background:#58a6ff33;color:#58a6ff}
+.nodes{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.node{flex:1;min-width:140px;background:#0d1117;border:2px solid #1a1f2b;border-radius:10px;padding:12px;text-align:center}
+.node h4{font-size:13px;margin-bottom:4px}
+.node p{font-size:10px;color:#8b949e;line-height:1.5}
+.n0{border-color:#d4a800}.n0 h4{color:#d4a800}
+.n1{border-color:#58a6ff}.n1 h4{color:#58a6ff}
+.n2{border-color:#00d4aa}.n2 h4{color:#00d4aa}
+.n10{border-color:#f0a500}.n10 h4{color:#f0a500}
+.n11{border-color:#a371f7}.n11 h4{color:#a371f7}
+.pipeline{display:flex;flex-wrap:wrap;gap:4px;align-items:center;justify-content:center;font-size:10px;margin:12px 0}
+.step{border:2px solid;border-radius:6px;padding:6px 10px;text-align:center;min-width:80px;background:#0d1117}
+.s1{border-color:#58a6ff;color:#58a6ff}.s2{border-color:#3fb950;color:#3fb950}.s3{border-color:#f0a500;color:#f0a500}.s4{border-color:#a371f7;color:#a371f7}.s5{border-color:#ff6b6b;color:#ff6b6b}
+.arr{color:#444;font-weight:700;font-size:12px}
+.footer{text-align:center;padding:24px;color:#8b949e;font-size:10px;border-top:1px solid #1a1f2b;margin-top:32px}
+.tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700}
+.t-blue{background:#58a6ff22;color:#58a6ff}.t-green{background:#3fb95022;color:#3fb950}.t-orange{background:#f0a50022;color:#f0a500}.t-purple{background:#a371f722;color:#a371f7}.t-red{background:#ff6b6b22;color:#ff6b6b}
+@media(max-width:768px){.wrap{padding:16px 10px}h1{font-size:20px}.node{min-width:100px}}
 </style>
+<script src="/dds-global.js"></script>
+<script src="/zmax-auth.js"></script>
 </head>
 <body>
 <div class="wrap">
-<a href="/kanban.html" class="back-home">← 返回看板</a>
-<h1>🔌 Z-MAX 系统接口总览</h1>
-<p class="sub">Sys0 · Sys1 · Sys2 · Sys11 · Sys12 全切换接口 · 2026-07-12</p>
 
-<h2>一、系统架构</h2>
-<div class="arch">
-<div class="arch-box sys0"><h3>Sys0</h3><p>Orin Nano<br>ROS2·SR5-C<br>6轴·8传感器</p></div>
-<div class="arch-box sys1"><h3>Sys1</h3><p>4060 WSL<br>ACT 1.2ms<br>192.168.23.26</p></div>
-<div class="arch-box sys12"><h3>Sys12</h3><p>4060 WSL<br>LeWorld 1.9ms<br>世界模型</p></div>
-<div class="arch-box sys2"><h3>Sys2</h3><p>4090<br>VLA-T 284ms<br>10.23.24.0:50052</p></div>
+<a href="/" class="back-home">← 返回主页</a>
+<h1>🔌 DDS 系统接口总览</h1>
+<p class="sub">条件→模型→动作 · 端到端推理管线 · DDS v2.7.5</p>
+
+<!-- Pipeline overview -->
+<h2>一、DDS 五阶段推理管线</h2>
+<div class="pipeline">
+  <div class="step s1">📷 条件输入<br>5传感器</div><span class="arr">→</span>
+  <div class="step s2">🔀 模型路由<br>5模型池</div><span class="arr">→</span>
+  <div class="step s3">⚡ 动作解码<br>48动作</div><span class="arr">→</span>
+  <div class="step s4">🤖 执行层<br>4机器人</div><span class="arr">→</span>
+  <div class="step s5">🔄 数据闭环<br>训练回流</div>
 </div>
-<div class="arrow-row">
-Sys0(Orin) ──gRPC──→ Sys1(4060) ──HTTP──→ Sys2(4090) ──返回→ Sys0
+
+<!-- System Nodes -->
+<h2>二、系统节点</h2>
+<div class="nodes">
+  <div class="node n0">
+    <h4>Sys0</h4>
+    <p>Orin Nano<br>ROS2 · SR5-C<br>实时控制 1-5ms<br>边缘执行节点</p>
+  </div>
+  <div class="node n10">
+    <h4>Sys10</h4>
+    <p>4060<br>ACT · 取料扫码<br>本地推理 &lt;5ms<br>低延迟操作</p>
+  </div>
+  <div class="node n11">
+    <h4>Sys11</h4>
+    <p>4060<br>SmolVLA · VLA-T ⭐<br>本地推理 &lt;5ms<br>主力推理节点</p>
+  </div>
+  <div class="node n1">
+    <h4>Sys1</h4>
+    <p>4090<br>H-JEPA zFlow · 11MB<br>本地推理 &lt;5ms<br>精密操作专用</p>
+  </div>
+  <div class="node n2">
+    <h4>Sys2</h4>
+    <p>4090<br>GR00T N1.7 · 6.5G<br>远程推理 ~280ms<br>ECS隧道穿透</p>
+  </div>
 </div>
 
-<h2>二、引擎切换 (set_engine)</h2>
-<pre><code># xspace 实现 · GUI下拉框五选一
-set_engine('act')      # Sys1 本地 · 52M · 1.2ms · 800FPS
-set_engine('smolvla')  # Sys11 本地 · 450M · 50ms
-set_engine('lew')      # Sys12 本地 · 5.5M · 1.9ms
-set_engine('vtla')     # Sys2 远程 · 450M · 284ms · gRPC→10.23.24.0:50052
-set_engine('groot')    # Sys2 远程 · 7B · 1137ms · gRPC→10.23.24.0:50052</code></pre>
-
-<h2>三、Sys1 ↔ Sys2 切换接口</h2>
+<!-- Node Specs -->
+<h2>三、节点规格</h2>
 <table>
-<tr><th>引擎</th><th>位置</th><th>IP:Port</th><th>协议</th><th>延迟</th><th>VRAM</th></tr>
-<tr><td>ACT</td><td>Sys1 (4060)</td><td>本地</td><td>内存</td><td>1.2ms</td><td>—</td></tr>
-<tr><td>SmolVLA</td><td>Sys11 (4060)</td><td>本地</td><td>内存</td><td>50ms</td><td>—</td></tr>
-<tr><td>LeWorld</td><td>Sys12 (4060)</td><td>本地</td><td>内存</td><td>1.9ms</td><td>0.03GB</td></tr>
-<tr><td>VLA-T</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>284ms</td><td>0.93GB</td></tr>
-<tr><td>GR00T</td><td>Sys2 (4090)</td><td>10.23.24.0:50052</td><td>HTTP JSON</td><td>1137ms</td><td>6.4GB</td></tr>
+<tr><th>节点</th><th>GPU</th><th>模型</th><th>大小</th><th>延迟</th><th>协议</th><th>场景</th></tr>
+<tr><td><span class="tag t-purple">Sys0</span></td><td>Orin Nano</td><td>ROS2 Control</td><td>—</td><td>1-5ms</td><td>ROS2 Action</td><td>实时执行</td></tr>
+<tr><td><span class="tag t-orange">Sys10</span></td><td>RTX 4060</td><td>ACT</td><td>52M</td><td>&lt;5ms</td><td>本地内存</td><td>取料·扫码·放置</td></tr>
+<tr><td><span class="tag t-purple">Sys11</span></td><td>RTX 4060</td><td>SmolVLA / VLA-T</td><td>450M</td><td>&lt;5ms</td><td>本地内存</td><td>测试·AOI·力控插拔</td></tr>
+<tr><td><span class="tag t-blue">Sys1</span></td><td>RTX 4090</td><td>H-JEPA zFlow</td><td>11MB</td><td>&lt;5ms</td><td>本地内存</td><td>透镜对准·耦合焊</td></tr>
+<tr><td><span class="tag t-green">Sys2</span></td><td>RTX 4090</td><td>GR00T N1.7</td><td>6.5GB</td><td>~280ms</td><td>HTTP/gRPC</td><td>复杂操作·泛化</td></tr>
 </table>
 
-<h2>四、Sys2 HTTP API (4090:50052)</h2>
+<!-- DDS Skill Dispatch -->
+<h2>四、DDS Skill Dispatch API</h2>
 <div class="card">
-<h3 style="color:#00d4aa;margin-bottom:8px"><span class="api-method get">GET</span> /health</h3>
-<pre><code>curl http://10.23.24.0:50052/health
-# → {"status":"ok","gpu":"RTX 4090","vram_gb":25.3,"models":["vtla"],"ready":true}</code></pre>
-</div>
-<div class="card">
-<h3 style="color:#00d4aa;margin-bottom:8px"><span class="api-method post">POST</span> /predict</h3>
-<pre><code>curl -X POST http://10.23.24.0:50052/predict \
+<h3 style="color:#f0a500;margin-bottom:8px"><span class="method post">POST</span> /dds/dispatch</h3>
+<pre>curl -X POST https://datadrive.world/api/dds/dispatch \
   -H 'Content-Type: application/json' \
-  -d '{"engine":"vtla","observation":{"task":"insert optical module"}}'
-# → {"action":[0.12,-0.03,0.45,...],"model_used":"vtla","latency_ms":284}</code></pre>
+  -d '{"condition_id":"C014","sensors":{"force_6d":[0.1,0.3,...],"joint_pos":[...]}}'
+
+# → {"model":"vla-t","action_id":"A14","node":"Sys11","latency_ms":3.2}</pre>
 </div>
 
-<h2>五、gRPC 断连回退</h2>
-<pre><code># xspace implement · 三引擎自动降级
-VLA-T unreachable → 自动回退 ACT (零动作安全输出)
-GR00T unreachable → 自动回退 ACT
-# 连接恢复 → 自动切回远程引擎</code></pre>
-
-<h2>六、Sys2 服务端启动 (4090)</h2>
-<pre><code>cd /root/lerobot-smolvla-lew
-~/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12 sys2_prod_server.py
-# 服务端代码:
-#   - modeling_zmax_sys2.py   VLA-T+GR00T推理引擎
-#   - sys2_prod_server.py     HTTP JSON-RPC服务
-#   - configuration_zmax_sys2.py  模型配置</code></pre>
-
-<h2>七、Sys2 客户端调用 (4060侧)</h2>
-<pre><code># xspace implement · _get_grpc_client() 懒加载
-from src.lerobot.policies.zmax_sys2.sys2_server import Sys2Client
-client = Sys2Client("10.23.24.0:50052")
-result = client.infer("vtla", observation)
-
-# 内部调用 _infer_remote():
-#   try: gRPC→4090
-#   except: return ACT zero_action (断连回退)</code></pre>
-
-<h2>八、Orin → Sys1 → Sys2 全链路</h2>
-<pre><code>Orin(抓取位姿)──→ Sys1 ACT(1.2ms)──→ 抓取放置
-                                    └──→ Sys2 VLA-T(284ms)──→ 力控插拔
-Orin(AOI×6)  ←── 测试结果 ←── 拔出 ←── </code></pre>
-
-<h2>九、数据闭环方案</h2>
-<div class="card" style="border-color:#d4a80044">
-<pre><code>┌─────────────┐     ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
-│  Orin Nano  │────→│  Mac (小芳)  │────→│  4060(xspace)│────→│  4090 (web)  │
-│ 192.168.23.10│     │  订阅rosbag  │     │ Sys11/Sys12  │     │ VLA-T+GR00T   │
-│ RealSense   │     │  ACT仿真推理 │     │  整体推理    │     │   持续训练    │
-└─────────────┘     └─────────────┘     └──────────────┘     └──────────────┘
-
-数据流: Orin(采集) → ROS2/rosbag → Mac(订阅)→ 混合数据 → 4060(推理)
-训练流: 4060(数据汇总) → ECS/SCP中转 → 4090(训练) → 权重回传ECS → 线上部署</code></pre>
+<div class="card">
+<h3 style="color:#00d4aa;margin-bottom:8px"><span class="method get">GET</span> /api/dds-all.php</h3>
+<pre>curl https://datadrive.world/api/dds-all.php
+# → {"company":{...},"kpi":{...},"robots":{...},"systems":{...},"skills":{...}}</pre>
 </div>
 
-<div class="footer">Z-MAX · 静界科技 · 系统接口总览 v1.0 · 2026-07-12</div>
+<!-- Inference API -->
+<h2>五、模型推理 API</h2>
+<table>
+<tr><th>端点</th><th>方法</th><th>节点</th><th>模型</th><th>延迟</th></tr>
+<tr><td>/infer/act</td><td><span class="method post">POST</span></td><td>Sys10 · 4060</td><td>ACT</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/smolvla</td><td><span class="method post">POST</span></td><td>Sys11 · 4060</td><td>SmolVLA</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/vla-t</td><td><span class="method post">POST</span></td><td>Sys11 · 4060</td><td>VLA-T ⭐</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/hjepa</td><td><span class="method post">POST</span></td><td>Sys1 · 4090</td><td>H-JEPA</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/groot</td><td><span class="method post">POST</span></td><td>Sys2 · 4090</td><td>GR00T</td><td>~280ms</td></tr>
+</table>
+
+<div class="card">
+<h3 style="color:#58a6ff;margin-bottom:8px">推理请求格式</h3>
+<pre>POST /infer/{model}
+Content-Type: application/json
+
+{
+  "condition_id": "C014",
+  "sensors": {
+    "force_6d": [0.1, 0.3, -0.5, 0.02, 0.01, 0.0],
+    "joint_pos": [0.12, -0.45, 1.23, 0.01, 0.87, -0.33],
+    "image_b64": "base64_encoded_rgb_image..."
+  }
+}
+
+Response:
+{
+  "action_id": "A14",
+  "trajectory": [[0.1,0.2,...], ...],
+  "force_profile": [0.5, 0.5, ...],
+  "model_used": "vla-t",
+  "latency_ms": 3.2
+}</pre>
+</div>
+
+<!-- Data Loop -->
+<h2>六、数据闭环链路</h2>
+<div class="nodes">
+  <div class="node n0">
+    <h4>① Orin 采集</h4>
+    <p>MCAP · npz<br>300帧/次<br>RGB-D+力+关节</p>
+  </div>
+  <div class="node n10">
+    <h4>② MAC 转发</h4>
+    <p>HTTP心跳 5s<br>ECS隧道穿透<br>192.168.23.1</p>
+  </div>
+  <div class="node n2">
+    <h4>③ 4090 训练</h4>
+    <p>H-JEPA · GR00T<br>每100iter更新<br>39.102.211.79</p>
+  </div>
+  <div class="node n11">
+    <h4>④ 模型部署</h4>
+    <p>权重→Sys1/Sys2<br>DDS映射表更新<br>条件→模型优化</p>
+  </div>
+</div>
+
+<!-- API Quick Reference -->
+<h2>七、DDS 数据 API</h2>
+<table>
+<tr><th>端点</th><th>方法</th><th>说明</th></tr>
+<tr><td>/api/dds-all.php</td><td><span class="method get">GET</span></td><td>全量DDS数据 (company/kpi/robots/systems/skills)</td></tr>
+<tr><td>/dds-api.php</td><td><span class="method post">POST</span></td><td>DDS 数据 CRUD (条件/模型/动作/技能)</td></tr>
+<tr><td>/api/dds-atomic-api.php</td><td><span class="method get">GET</span></td><td>242条原子技能查询 (分类筛选/优先级)</td></tr>
+<tr><td>/save-drawio.php</td><td><span class="method get">GET</span> <span class="method post">POST</span></td><td>架构图存储 (GET列表/GET?file=加载/POST保存)</td></tr>
+<tr><td>ws://datadrive.world/ws</td><td>WebSocket</td><td>团队实时聊天 (ws-server.py:8765)</td></tr>
+</table>
+
+<div class="footer">Z-MAX · 静界科技 · DDS 系统接口 v2.7.5 · 2026-07-28</div>
+
 </div>
 </body>
 </html>

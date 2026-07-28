@@ -149,7 +149,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   <rect x="30" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="95" y="68" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">📷 视觉 D405</text><text x="95" y="83" fill="#666" font-size="8" text-anchor="middle">RGB-D·端面·插座</text>
   <rect x="175" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="240" y="68" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">🖐️ 触觉力觉</text><text x="240" y="83" fill="#666" font-size="8" text-anchor="middle">六维力 Fx/y/z·Mx/y/z</text>
   <rect x="320" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#22880066"/><text x="385" y="68" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">🔧 关节状态</text><text x="385" y="83" fill="#666" font-size="8" text-anchor="middle">6轴角度·末端位姿</text>
-  <rect x="465" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="530" y="68" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">📡 MES信号</text><text x="530" y="83" fill="#666" font-size="8" text-anchor="middle">扫码SN·工位状态</text>
+  <rect x="465" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="530" y="68" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">📡 源自技能/MES</text><text x="530" y="83" fill="#666" font-size="8" text-anchor="middle">扫码SN·工位状态</text>
   <rect x="610" y="48" width="110" height="55" rx="6" fill="#0d1117" stroke="#cc000066"/><text x="665" y="68" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">⚡ 安全信号</text><text x="665" y="83" fill="#666" font-size="8" text-anchor="middle">急停·碰撞·SOC</text>
   <!-- Encoder -->
   <rect x="760" y="48" width="160" height="55" rx="8" fill="#3366cc18" stroke="#58a6ff" stroke-width="2"/><text x="840" y="70" fill="#58a6ff" font-size="11" font-weight="700" text-anchor="middle">条件编码器</text><text x="840" y="88" fill="#6699dd" font-size="8" text-anchor="middle">多模态融合 → C001-C054</text>
@@ -238,7 +238,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
     <h3 style="color:#58a6ff">条件输入</h3>
     <div class="desc">产线传感器实时数据通过ROS2 Topic总线汇聚，经多模态融合编码器生成条件向量。DDS Lookup将条件向量映射为唯一的condition_id（C001-C054），作为后续模型调度的输入。</div>
     <div class="items">
-      <span class="item">RGB-D 128²</span><span class="item">六维力 F/M</span><span class="item">关节7维</span><span class="item">MES工位</span><span class="item">安全状态</span><span class="item">ROS2 Topic</span>
+      <span class="item">RGB-D 128²</span><span class="item">六维力 F/M</span><span class="item">关节7维</span><span class="item">源自技能/MES</span><span class="item">安全状态</span><span class="item">ROS2 Topic</span>
     </div>
   </div>
   <div class="phase-card p2">
