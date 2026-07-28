@@ -121,16 +121,18 @@ function handleMessage(e){
   
   if (d.event === 'export'){
     if (_pendingAction === 'save'){
-      saveToServer(currentFile, d.data);
+      // xml 格式只返回 <mxGraphModel>，包装为完整 .drawio 再保存
+      var wrapped = wrapDrawioXml(d.data);
+      saveToServer(currentFile, wrapped);
       _pendingAction = null;
     } else if (_pendingAction === 'export-svg'){
       downloadBlob(d.data, (currentFile||'architecture').replace('.drawio','')+'.svg', 'image/svg+xml');
       _pendingAction = null;
     } else if (_pendingAction === 'export-drawio'){
       // 保存到服务器，然后下载完整 .drawio 文件
-      saveToServer(currentFile, d.data);
+      var wrapped2 = wrapDrawioXml(d.data);
+      saveToServer(currentFile, wrapped2);
       _pendingAction = null;
-      // 短暂延迟后从服务器下载（确保写入完成）
       setTimeout(function(){
         downloadDrawioFile(currentFile);
       }, 500);
@@ -157,7 +159,7 @@ function saveDiagram(){
   if (!name.endsWith('.drawio')) name += '.drawio';
   currentFile = name;
   _pendingAction = 'save';
-  postMsg({action:'export', format:'xmlpng'});
+  postMsg({action:'export', format:'xml'});
   setStatus('正在保存...');
 }
 
@@ -168,13 +170,12 @@ function exportSVG(){
 }
 
 function exportDrawio(){
-  // 先保存当前内容到服务器（用 xmlpng），再下载完整 .drawio
+  // 先保存当前内容到服务器（用 xml），再下载完整 .drawio
   if (currentFile){
     _pendingAction = 'export-drawio';
-    postMsg({action:'export', format:'xmlpng'});
+    postMsg({action:'export', format:'xml'});
     setStatus('正在导出.drawio...');
   } else {
-    // 未保存：先触发保存流程
     setStatus('⚠️ 请先保存文件，再导出 .drawio');
   }
 }
@@ -247,6 +248,18 @@ function downloadBlob(data, filename, mime){
   a.download = filename;
   a.click();
   setStatus('📥 已下载: '+filename);
+}
+
+// draw.io export format='xml' 只返回 <mxGraphModel>...</mxGraphModel>
+// 包装为完整的 .drawio 文件格式
+function wrapDrawioXml(graphXml){
+  var now = new Date().toISOString();
+  return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<mxfile host="Z-MAX" modified="' + now + '" agent="web" version="v2.7.5">\n' +
+    '  <diagram name="Page-1" id="1">\n' +
+    '    ' + graphXml.trim() + '\n' +
+    '  </diagram>\n' +
+    '</mxfile>';
 }
 
 function downloadDrawioFile(name){
