@@ -151,7 +151,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
 
 <h1>DDS 系统设计</h1>
 <p class="sub">Data-Driven System · 条件驱动的端到端具身智能架构</p>
-<p class="version">v2.7.6 · 2026-07-29 · Z-MAX</p>
+<p class="version">v2.7.7 · 2026-07-29 · Z-MAX</p>
 
 <!-- Philosophy -->
 <div class="philosophy">
@@ -183,18 +183,31 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   <!-- Background -->
   <rect width="1200" height="700" fill="url(#bgGrad)" rx="12"/>
 
-  <!-- Phase 1: Condition -->
+  <!-- Phase 1: Condition (updated: +多模态编码适配 +条件编码适配) -->
   <rect x="15" y="15" width="1170" height="110" rx="8" fill="#3366cc08" stroke="#3366cc33" stroke-dasharray="6,3"/>
-  <text x="25" y="36" fill="#58a6ff" font-size="13" font-weight="700">① 条件输入 Condition Input</text>
-  <rect x="30" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="95" y="68" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">📷 视觉 D405</text><text x="95" y="83" fill="#666" font-size="8" text-anchor="middle">RGB-D·端面·插座</text>
-  <rect x="175" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="240" y="68" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">🖐️ 触觉力觉</text><text x="240" y="83" fill="#666" font-size="8" text-anchor="middle">六维力 Fx/y/z·Mx/y/z</text>
-  <rect x="320" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#22880066"/><text x="385" y="68" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">🔧 关节状态</text><text x="385" y="83" fill="#666" font-size="8" text-anchor="middle">6轴角度·末端位姿</text>
-  <rect x="465" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="530" y="68" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">📡 源自技能/MES</text><text x="530" y="83" fill="#666" font-size="8" text-anchor="middle">扫码SN·工位状态</text>
-  <rect x="610" y="48" width="110" height="55" rx="6" fill="#0d1117" stroke="#cc000066"/><text x="665" y="68" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">⚡ 安全信号</text><text x="665" y="83" fill="#666" font-size="8" text-anchor="middle">急停·碰撞·SOC</text>
-  <!-- Encoder -->
-  <rect x="760" y="48" width="160" height="55" rx="8" fill="#3366cc18" stroke="#58a6ff" stroke-width="2"/><text x="840" y="70" fill="#58a6ff" font-size="11" font-weight="700" text-anchor="middle">条件编码器</text><text x="840" y="88" fill="#6699dd" font-size="8" text-anchor="middle">多模态融合 → C001-C054</text>
+  <text x="25" y="36" fill="#58a6ff" font-size="13" font-weight="700">① 条件输入 Condition Input — 传感器→多模态适配→编码→条件适配→查表</text>
+  <!-- 5 Sensors -->
+  <rect x="15" y="48" width="90" height="55" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="60" y="68" fill="#58a6ff" font-size="9" font-weight="700" text-anchor="middle">📷 视觉</text><text x="60" y="83" fill="#666" font-size="7" text-anchor="middle">D405 RGB-D</text>
+  <rect x="112" y="48" width="90" height="55" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="157" y="68" fill="#f0a500" font-size="9" font-weight="700" text-anchor="middle">🖐️ 触觉</text><text x="157" y="83" fill="#666" font-size="7" text-anchor="middle">六维力F/M</text>
+  <rect x="209" y="48" width="90" height="55" rx="6" fill="#0d1117" stroke="#22880066"/><text x="254" y="68" fill="#3fb950" font-size="9" font-weight="700" text-anchor="middle">🔧 关节</text><text x="254" y="83" fill="#666" font-size="7" text-anchor="middle">6轴·位姿</text>
+  <rect x="306" y="48" width="90" height="55" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="351" y="68" fill="#a371f7" font-size="9" font-weight="700" text-anchor="middle">📡 MES</text><text x="351" y="83" fill="#666" font-size="7" text-anchor="middle">SN·工位</text>
+  <rect x="403" y="48" width="75" height="55" rx="6" fill="#0d1117" stroke="#cc000066"/><text x="440" y="68" fill="#ff4444" font-size="9" font-weight="700" text-anchor="middle">⚡安全</text><text x="440" y="83" fill="#666" font-size="7" text-anchor="middle">急停·SOC</text>
+  <!-- Arrow sensors→多模态适配 -->
+  <line x1="478" y1="75" x2="498" y2="75" stroke="#4488cc" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- 多模态编码适配 (GREEN) -->
+  <rect x="500" y="48" width="100" height="55" rx="8" fill="#22880014" stroke="#3fb950" stroke-width="2"/><text x="550" y="68" fill="#3fb950" font-size="9" font-weight="700" text-anchor="middle">多模态编码</text><text x="550" y="83" fill="#669966" font-size="7" text-anchor="middle">适配器</text>
+  <!-- Arrow 多模态→编码器 -->
+  <line x1="600" y1="75" x2="625" y2="75" stroke="#3fb950" stroke-width="1.5" marker-end="url(#g)"/>
+  <!-- 条件编码器 -->
+  <rect x="627" y="48" width="140" height="55" rx="8" fill="#3366cc18" stroke="#58a6ff" stroke-width="2"/><text x="697" y="68" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">条件编码器</text><text x="697" y="84" fill="#6699dd" font-size="7" text-anchor="middle">融合→Vector C001-C054</text>
+  <!-- Arrow 编码器→条件适配 -->
+  <line x1="767" y1="75" x2="787" y2="75" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- 条件编码适配 (RED) -->
+  <rect x="789" y="48" width="100" height="55" rx="8" fill="#cc000014" stroke="#ff4444" stroke-width="2"/><text x="839" y="68" fill="#ff4444" font-size="9" font-weight="700" text-anchor="middle">条件编码</text><text x="839" y="83" fill="#cc6666" font-size="7" text-anchor="middle">适配器</text>
+  <!-- Arrow 条件适配→DDS Lookup -->
+  <line x1="889" y1="75" x2="914" y2="75" stroke="#ff4444" stroke-width="1.5" marker-end="url(#r)"/>
   <!-- DDS Lookup -->
-  <rect x="950" y="48" width="220" height="55" rx="8" fill="#cc880018" stroke="#f0a500" stroke-width="2"/><text x="1060" y="68" fill="#f0a500" font-size="11" font-weight="700" text-anchor="middle">DDS Skill Dispatch 查表</text><text x="1060" y="86" fill="#cc9966" font-size="8" text-anchor="middle">condition_id → model + action</text>
+  <rect x="916" y="48" width="255" height="55" rx="8" fill="#cc880018" stroke="#f0a500" stroke-width="2"/><text x="1043" y="68" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">DDS Skill Dispatch 查表</text><text x="1043" y="84" fill="#cc9966" font-size="7" text-anchor="middle">condition_id → model + action_id</text>
 
   <!-- Arrow Phase 1→2 -->
   <line x1="600" y1="125" x2="600" y2="165" stroke="#4488cc" stroke-width="2" marker-end="url(#a)"/>
@@ -255,7 +268,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
 
   <!-- Bottom summary -->
   <rect x="15" y="630" width="1170" height="36" rx="8" fill="#3366cc10" stroke="#58a6ff" stroke-width="2"/>
-  <text x="600" y="654" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">端到端闭环：📷传感器 → 🔀DDS Dispatch → 🧠多模型池 → ⚡动作解码 → 🤖机器人执行 → 📊结果回灌 → 🔄训练更新</text>
+  <text x="600" y="654" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">端到端闭环：📷传感器 → 🔄多模态适配 → 🔀条件编码 → 🎯DDS Dispatch → 🧠多模型池 → ⚡动作解码 → 🤖机器人执行 → 📊结果回灌 → 🔄训练更新</text>
 </svg>
 <div class="cap">DDS 五阶段端到端推理管线 · 点击下方按钮在 draw.io 中编辑完整版</div>
 </div>
@@ -265,6 +278,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   <div class="kpi-card"><div class="kpi-val">54</div><div class="kpi-lab">条件场景</div></div>
   <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lab">模型池</div></div>
   <div class="kpi-card"><div class="kpi-val">48</div><div class="kpi-lab">原子动作</div></div>
+  <div class="kpi-card"><div class="kpi-val">2</div><div class="kpi-lab">编码适配器</div></div>
   <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lab">安全动作</div></div>
   <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lab">机器人型号</div></div>
   <div class="kpi-card"><div class="kpi-val">&lt;5ms</div><div class="kpi-lab">本地推理延迟</div></div>
@@ -276,9 +290,9 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   <div class="phase-card p1">
     <span class="phase-num">PHASE 1</span>
     <h3 style="color:#58a6ff">条件输入</h3>
-    <div class="desc">产线传感器实时数据通过ROS2 Topic总线汇聚，经多模态融合编码器生成条件向量。DDS Lookup将条件向量映射为唯一的condition_id（C001-C054），作为后续模型调度的输入。</div>
+    <div class="desc">5路产线传感器数据（视觉/触觉/关节/MES/安全）通过ROS2 Topic总线汇聚，经<b style="color:#3fb950">多模态编码适配器</b>统一为结构化张量，送入条件编码器融合为Condition Vector。再经<b style="color:#ff4444">条件编码适配器</b>归一化后，DDS Lookup查表映射为唯一的condition_id（C001-C054），驱动后续模型调度。</div>
     <div class="items">
-      <span class="item">RGB-D 128²</span><span class="item">六维力 F/M</span><span class="item">关节7维</span><span class="item">源自技能/MES</span><span class="item">安全状态</span><span class="item">ROS2 Topic</span>
+      <span class="item">RGB-D 128²</span><span class="item">六维力 F/M</span><span class="item">关节7维</span><span class="item">MES/源自技能</span><span class="item">安全状态</span><span class="item">多模态编码适配</span><span class="item">条件编码适配</span><span class="item">ROS2 Topic</span>
     </div>
   </div>
   <div class="phase-card p2">
@@ -370,7 +384,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   </div>
 </div>
 
-<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.6 · Data-Driven System Architecture</div>
+<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.7 · Data-Driven System Architecture</div>
 
 </div>
 </body>
