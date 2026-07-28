@@ -7,7 +7,7 @@ window.DDS = {
   company: {
     name: "智蜂创元",
     name_en: "ZFCY",
-    product: "Z-MAX",
+    product: "Z-700",
     product_tag: "具身智能 · 光模块精密制造",
     domain: "datadrive.world",
     year: "2026",
@@ -20,10 +20,10 @@ window.DDS = {
     cycle_time: { value:"<15", unit:"s", label:"单次插拔节拍", icon:"⏱️" },
   },
   robots: {
-    Z700: { id:"Z700", name:"Z700 轮式双臂机器人", level:"L4", level_label:"L4 旗舰", desc:"轮式底盘自主导航，双臂协同精细操作。覆盖老化箱插拔、产线巡检、多工位联动作业。全自主执行+自适应+自恢复。", icon:"🤖", page:"/robot2.html", color:"#00d4aa" },
-    Z700F: { id:"Z700F", name:"Z700F 固定式精密插拔", level:"L2", level_label:"L2 基线", desc:"单工位高精度插拔产线。珞石SR5-C机械臂+DH夹爪，5工位循环：入料→扫码→刷程序→AOI检测→出料。", icon:"🔧", page:"/robot.html", color:"#ff6b35" },
-    Z100L: { id:"Z100L", name:"Z100L 料笼搬运机器人", level:"L2", level_label:"L2 搬运", desc:"上下料+料笼搬运专用，负载>50kg。OE区统一配置。", icon:"📦", page:"", color:"#58a6ff" },
-    Z700F_AOI: { id:"Z700F_AOI", name:"Z700F + AOI 目检机器人", level:"L2", level_label:"L2 目检", desc:"精密AOI目检专用。显微镜检、外观检查、缺陷判定。", icon:"🔬", page:"", color:"#a371f7" },
+    Z700: { id:"Z700", name:"Z700 轮式双臂机器人", level:"L4", level_label:"L4 旗舰 立项中", desc:"轮式底盘自主导航，双臂协同精细操作。覆盖老化箱插拔、产线巡检、多工位联动作业。全自主执行+自适应+自恢复。", icon:"🤖", page:"/robot2.html", color:"#00d4aa" },
+    Z700F: { id:"Z700F", name:"Z700F 固定式精密插拔", level:"L2", level_label:"L2 基线，已到货", desc:"单工位高精度插拔产线。珞石SR5-C机械臂+DH夹爪，5工位循环：入料→扫码→刷程序→AOI检测→出料。", icon:"🔧", page:"/robot.html", color:"#ff6b35" },
+    Z100L: { id:"Z100L", name:"Z100L 轮式双臂搬运机器人", level:"L3", level_label:"已立项", desc:"轮式双臂·料笼/料盘搬运专用，双臂负载≤10kg。", icon:"📦", page:"", color:"#58a6ff" },
+    Z700F_AOI: { id:"Z700F_AOI", name:"Z系列 + AOI 目检机器人", level:"L2", level_label:"适配中", desc:"精密AOI目检专用。显微镜检、外观检查、缺陷判定。", icon:"🔬", page:"", color:"#a371f7" },
   },
   systems: {
     sys0: { id:"Sys0", name:"Sys0 · 硬件基座", hardware:"Orin Nano", gpu:"—", ram:"8GB", role:"终端执行 · 传感器采集 · 机械臂控制", model:"ROS2 · SR5-C · 6轴+8传感器", color:"#d4a800" },
@@ -58,12 +58,15 @@ window.DDS = {
     final_inspection: "I500",
   },
   dds_skills: {
-    conditions: { count:38, id_range:"C001-C038", color:"#a371f7", icon:"🟣", label:"condition条件", desc:"环境输入→模型感知" },
-    models: { count:7, id_range:"M01-M07", color:"#58a6ff", icon:"🔵", label:"model模型", desc:"多模态数据→训练输入" },
-    actions_100g: { count:0, id_range:"", color:"#58a6ff", icon:"🔵", label:"100G动作", desc:"" },
-    actions_400g: { count:0, id_range:"", color:"#00d4aa", icon:"🟢", label:"400G动作", desc:"" },
-    actions_800g: { count:0, id_range:"", color:"#d4a800", icon:"🟡", label:"800G动作", desc:"" },
-    safety: { count:4, id_range:"", color:"#ff4444", icon:"🛡️", label:"安全", desc:"五层主动安全保护" },
+    XPO高密可插拔光学: { count:59, id_range:"", color:"#ff6b35", icon:"🔌", label:"XPO高密可插拔光学", desc:"59条 · 均优先382分" },
+    NPO近封装光学: { count:51, id_range:"", color:"#a371f7", icon:"🔮", label:"NPO近封装光学", desc:"51条 · 均优先376分" },
+    感知定位: { count:15, id_range:"", color:"#58a6ff", icon:"👁️", label:"感知定位", desc:"15条 · 均优先261分" },
+    视觉检测: { count:10, id_range:"", color:"#a371f7", icon:"🔬", label:"视觉检测", desc:"10条 · 均优先299分" },
+    安全集成: { count:10, id_range:"", color:"#ff4444", icon:"🛡️", label:"安全集成", desc:"10条 · 均优先309分" },
+    载具物流: { count:9, id_range:"", color:"#ff6b35", icon:"🚛", label:"载具物流", desc:"9条 · 均优先387分" },
+    学习泛化: { count:8, id_range:"", color:"#00d4aa", icon:"🧠", label:"学习泛化", desc:"8条 · 均优先256分" },
+    移动导航: { count:7, id_range:"", color:"#58a6ff", icon:"🗺️", label:"移动导航", desc:"7条 · 均优先237分" },
+    操作动作: { count:73, id_range:"None", color:"#f0a500", icon:"🤖", label:"操作动作", desc:"机器人操作与载具动作" },
   },
   pipeline: {
     name: "数据流水线 · Orin→MAC→4090", version: "2.0",
@@ -105,3 +108,5 @@ window.DDS.getRobot = function(id) { return this.robots[id]; };
 window.DDS.getSystem = function(id) { return this.systems[id]; };
 window.DDS.getModel = function(id) { return this.models[id]; };
 window.DDS.getZone = function(id) { return this.factory.zones.find(function(z){return z.id===id;}); };
+
+console.log("DDS Global · SQLite同步 · v" + window.DDS.company.year + " · " + window.DDS.factory.product);
