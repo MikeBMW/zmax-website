@@ -151,7 +151,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
 
 <h1>DDS 系统设计</h1>
 <p class="sub">Data-Driven System · 条件驱动的端到端具身智能架构</p>
-<p class="version">v2.7.8 · 2026-07-29 · Z-MAX</p>
+<p class="version">v2.7.9 · 2026-07-29 · Z-MAX</p>
 
 <!-- Philosophy -->
 <div class="philosophy">
@@ -183,90 +183,90 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   <!-- Background -->
   <rect width="1200" height="700" fill="url(#bgGrad)" rx="12"/>
 
-  <!-- Phase 1: Condition (v2.7.8: 双路并行→汇聚) -->
-  <rect x="15" y="15" width="1170" height="155" rx="8" fill="#3366cc08" stroke="#3366cc33" stroke-dasharray="6,3"/>
-  <text x="25" y="36" fill="#58a6ff" font-size="13" font-weight="700">① 条件输入 Condition Input — 双路并行适配→编码器汇聚→DDS查表</text>
+  <!-- Phase 1: Condition (v2.7.9: 纯水平箭头·双行并行→统一汇聚) -->
+  <rect x="15" y="10" width="1170" height="150" rx="10" fill="#3366cc06" stroke="#3366cc22" stroke-dasharray="6,3"/>
+  <text x="25" y="32" fill="#58a6ff" font-size="13" font-weight="700">① 条件输入 Condition Input — 传感器链+信号链 → 编码器汇聚 → DDS查表</text>
 
-  <!-- ── ROW 1: Sensor data chain (top) ── -->
-  <rect x="25" y="52" width="90" height="48" rx="6" fill="#0d1117" stroke="#3366cc66"/>
-  <text x="70" y="72" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">📷 视觉 D405</text>
-  <text x="70" y="87" fill="#666" font-size="7" text-anchor="middle">RGB-D·端面</text>
+  <!-- ═══ 上行：传感器数据链 ═══ -->
+  <!-- s1 视觉 -->
+  <rect x="25" y="50" width="85" height="44" rx="6" fill="#0d1117" stroke="#3366cc66"/>
+  <text x="67" y="68" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">📷 视觉</text>
+  <text x="67" y="82" fill="#555" font-size="7" text-anchor="middle">D405 RGB-D</text>
+  <!-- → -->
+  <line x1="110" y1="72" x2="128" y2="72" stroke="#4488cc" stroke-width="1.5" marker-end="url(#a)"/>
 
-  <rect x="140" y="52" width="90" height="48" rx="6" fill="#0d1117" stroke="#cc660066"/>
-  <text x="185" y="72" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">🖐️ 触觉力觉</text>
-  <text x="185" y="87" fill="#666" font-size="7" text-anchor="middle">6维力F/M</text>
+  <!-- s2 触觉 -->
+  <rect x="132" y="50" width="85" height="44" rx="6" fill="#0d1117" stroke="#cc660066"/>
+  <text x="174" y="68" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">🖐️ 触觉</text>
+  <text x="174" y="82" fill="#555" font-size="7" text-anchor="middle">六维力 F/M</text>
+  <!-- → -->
+  <line x1="217" y1="72" x2="235" y2="72" stroke="#4488cc" stroke-width="1.5" marker-end="url(#a)"/>
 
-  <rect x="255" y="52" width="90" height="48" rx="6" fill="#0d1117" stroke="#22880066"/>
-  <text x="300" y="72" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">🔧 关节状态</text>
-  <text x="300" y="87" fill="#666" font-size="7" text-anchor="middle">6轴·位姿</text>
+  <!-- s3 关节 -->
+  <rect x="239" y="50" width="85" height="44" rx="6" fill="#0d1117" stroke="#22880066"/>
+  <text x="281" y="68" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">🔧 关节</text>
+  <text x="281" y="82" fill="#555" font-size="7" text-anchor="middle">6轴·位姿</text>
+  <!-- → -->
+  <line x1="324" y1="72" x2="352" y2="72" stroke="#228800" stroke-width="1.5" marker-end="url(#g)"/>
 
-  <!-- Arrow s1→s2→s3 -->
-  <line x1="115" y1="76" x2="135" y2="76" stroke="#4488cc" stroke-width="1.2" marker-end="url(#a)"/>
-  <line x1="230" y1="76" x2="250" y2="76" stroke="#4488cc" stroke-width="1.2" marker-end="url(#a)"/>
+  <!-- 多模态编码适配 (GREEN) -->
+  <rect x="356" y="50" width="120" height="44" rx="8" fill="#22880012" stroke="#3fb950" stroke-width="2"/>
+  <text x="416" y="68" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">多模态编码适配</text>
+  <text x="416" y="82" fill="#558855" font-size="7" text-anchor="middle">传感器→结构化张量</text>
 
-  <!-- ── ROW 2: System signal chain (bottom) ── -->
-  <rect x="25" y="112" width="90" height="48" rx="6" fill="#0d1117" stroke="#8844cc66"/>
-  <text x="70" y="132" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">📡 源自技能/MES</text>
-  <text x="70" y="147" fill="#666" font-size="7" text-anchor="middle">SN·工位·BERT</text>
+  <!-- ═══ 下行：系统信号链 ═══ -->
+  <!-- s4 MES -->
+  <rect x="25" y="108" width="85" height="44" rx="6" fill="#0d1117" stroke="#8844cc66"/>
+  <text x="67" y="126" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">📡 MES</text>
+  <text x="67" y="140" fill="#555" font-size="7" text-anchor="middle">SN·工位·BERT</text>
+  <!-- → -->
+  <line x1="110" y1="130" x2="128" y2="130" stroke="#a371f7" stroke-width="1.5" marker-end="url(#p)"/>
 
-  <rect x="140" y="112" width="90" height="48" rx="6" fill="#0d1117" stroke="#cc000066"/>
-  <text x="185" y="132" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">⚡ 安全信号</text>
-  <text x="185" y="147" fill="#666" font-size="7" text-anchor="middle">急停·SOC</text>
+  <!-- s5 安全 -->
+  <rect x="132" y="108" width="85" height="44" rx="6" fill="#0d1117" stroke="#cc000066"/>
+  <text x="174" y="126" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">⚡ 安全</text>
+  <text x="174" y="140" fill="#555" font-size="7" text-anchor="middle">急停·SOC</text>
+  <!-- → -->
+  <line x1="217" y1="130" x2="235" y2="130" stroke="#cc0000" stroke-width="1.5" marker-end="url(#r)"/>
 
-  <!-- Arrow s4→s5 -->
-  <line x1="115" y1="136" x2="135" y2="136" stroke="#a371f7" stroke-width="1.2" marker-end="url(#p)"/>
+  <!-- 条件编码适配 (RED) -->
+  <rect x="239" y="108" width="120" height="44" rx="8" fill="#cc000012" stroke="#ff4444" stroke-width="2"/>
+  <text x="299" y="126" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">条件编码适配</text>
+  <text x="299" y="140" fill="#aa5555" font-size="7" text-anchor="middle">MES·安全→编码输入</text>
 
-  <!-- ── ROS2 bus text ── -->
-  <text x="365" y="76" fill="#3366cc88" font-size="8" text-anchor="middle">ROS2 Topic 总线: /zmax/sensors/* · /zmax/state/*</text>
-  <text x="365" y="136" fill="#8844cc88" font-size="8" text-anchor="middle">ROS2 Topic 总线: /dds/cond/* · /zmax/mes/*</text>
+  <!-- ═══ 两路水平汇聚 → 条件编码器 ═══ -->
+  <!-- 上行→编码器上半部 -->
+  <line x1="476" y1="72" x2="528" y2="72" stroke="#3fb950" stroke-width="2" marker-end="url(#g)"/>
+  <!-- 下行→编码器下半部 -->
+  <line x1="359" y1="130" x2="526" y2="130" stroke="#ff4444" stroke-width="2" marker-end="url(#r)"/>
 
-  <!-- ── Arrow s3→多模态编码适配 ── -->
-  <line x1="345" y1="76" x2="385" y2="76" stroke="#228800" stroke-width="1.5" marker-end="url(#g)"/>
+  <!-- 条件编码器 (BLUE · 跨两行 · 融合汇总) -->
+  <rect x="532" y="50" width="175" height="102" rx="10" fill="#3366cc15" stroke="#58a6ff" stroke-width="2.5"/>
+  <text x="619" y="72" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">条件编码器</text>
+  <text x="619" y="90" fill="#6699dd" font-size="9" font-weight="600" text-anchor="middle">多模态融合</text>
+  <text x="619" y="106" fill="#6699dd" font-size="9" font-weight="600" text-anchor="middle">→ Condition Vector</text>
+  <text x="619" y="124" fill="#3366cc66" font-size="7" text-anchor="middle">适配器融合汇总 · C001-C054</text>
+  <text x="619" y="140" fill="#3366cc44" font-size="7" text-anchor="middle">条件驱动推理入口</text>
 
-  <!-- 多模态编码适配 (GREEN · 传感器数据路径) -->
-  <rect x="390" y="52" width="110" height="48" rx="8" fill="#22880014" stroke="#3fb950" stroke-width="2"/>
-  <text x="445" y="72" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">多模态编码适配</text>
-  <text x="445" y="87" fill="#669966" font-size="7" text-anchor="middle">传感器→结构化张量</text>
+  <!-- → DDS Lookup -->
+  <line x1="707" y1="101" x2="748" y2="101" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#a)"/>
 
-  <!-- ── Arrow s5→条件编码适配 ── -->
-  <line x1="230" y1="136" x2="385" y2="108" stroke="#ff4444" stroke-width="1.5" marker-end="url(#r)"/>
+  <!-- DDS Lookup (GOLD) -->
+  <rect x="752" y="50" width="255" height="102" rx="10" fill="#cc880012" stroke="#f0a500" stroke-width="2"/>
+  <text x="879" y="72" fill="#f0a500" font-size="12" font-weight="700" text-anchor="middle">DDS Skill Dispatch</text>
+  <text x="879" y="90" fill="#cc9966" font-size="9" text-anchor="middle">condition_id → model + action_id</text>
+  <text x="879" y="108" fill="#cc996666" font-size="8" text-anchor="middle">C001→ACT · C004→VLA-T · C006→SmolVLA</text>
+  <text x="879" y="124" fill="#cc996666" font-size="8" text-anchor="middle">C014→GR00T · C039→H-JEPA · C050→Rule</text>
+  <text x="879" y="142" fill="#cc996644" font-size="7" text-anchor="middle">54种条件 · 5模型池 · 48原子动作</text>
 
-  <!-- 条件编码适配 (RED · 系统信号路径) -->
-  <rect x="390" y="112" width="110" height="48" rx="8" fill="#cc000014" stroke="#ff4444" stroke-width="2"/>
-  <text x="445" y="132" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">条件编码适配</text>
-  <text x="445" y="147" fill="#cc6666" font-size="7" text-anchor="middle">MES·安全→编码输入</text>
-
-  <!-- ── BOTH adapters → 条件编码器 (converge) ── -->
-  <line x1="500" y1="76" x2="545" y2="76" stroke="#3fb950" stroke-width="2" marker-end="url(#g)"/>
-  <line x1="500" y1="136" x2="545" y2="108" stroke="#ff4444" stroke-width="2" marker-end="url(#r)"/>
-
-  <!-- 条件编码器 (BLUE · 融合汇总 = 两个适配器汇聚点) -->
-  <rect x="550" y="52" width="170" height="108" rx="10" fill="#3366cc18" stroke="#58a6ff" stroke-width="2.5"/>
-  <text x="635" y="74" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">条件编码器</text>
-  <text x="635" y="92" fill="#6699dd" font-size="9" font-weight="600" text-anchor="middle">多模态融合</text>
-  <text x="635" y="108" fill="#6699dd" font-size="9" font-weight="600" text-anchor="middle">→ Condition Vector</text>
-  <text x="635" y="128" fill="#4488cc" font-size="7" text-anchor="middle">适配器融合汇总点</text>
-  <text x="635" y="146" fill="#3366cc66" font-size="7" text-anchor="middle">C001-C054</text>
-
-  <!-- ── Arrow 编码器→DDS Lookup ── -->
-  <line x1="720" y1="106" x2="765" y2="106" stroke="#58a6ff" stroke-width="2" marker-end="url(#a)"/>
-
-  <!-- DDS Lookup -->
-  <rect x="770" y="52" width="260" height="108" rx="10" fill="#cc880018" stroke="#f0a500" stroke-width="2"/>
-  <text x="900" y="78" fill="#f0a500" font-size="12" font-weight="700" text-anchor="middle">DDS Skill Dispatch 查表</text>
-  <text x="900" y="100" fill="#cc9966" font-size="9" text-anchor="middle">condition_id → model + action_id</text>
-  <text x="900" y="118" fill="#cc996688" font-size="8" text-anchor="middle">C001→ACT · C004→VLA-T</text>
-  <text x="900" y="134" fill="#cc996688" font-size="8" text-anchor="middle">C006→SmolVLA · C039→H-JEPA</text>
-  <text x="900" y="150" fill="#cc996688" font-size="8" text-anchor="middle">C050→Rule Engine</text>
-
-  <!-- ── Right side: API example ── -->
-  <rect x="1060" y="52" width="110" height="108" rx="8" fill="#0d1117" stroke="#3366cc44"/>
-  <text x="1115" y="74" fill="#8b949e" font-size="8" text-anchor="middle">API 调用示例</text>
-  <text x="1115" y="90" fill="#6699dd" font-size="7" text-anchor="middle">POST /infer/vla-t</text>
-  <text x="1115" y="106" fill="#6699dd88" font-size="6" text-anchor="middle">{condition_id"C014"}</text>
-  <text x="1115" y="120" fill="#6699dd88" font-size="6" text-anchor="middle">sensors:{force_6d..</text>
-  <text x="1115" y="134" fill="#6699dd88" font-size="6" text-anchor="middle">joint_pos:...}</text>
-  <text x="1115" y="152" fill="#4488cc66" font-size="7" text-anchor="middle">→{action"A14"...}</text>
+  <!-- API 示例 -->
+  <rect x="1035" y="50" width="135" height="102" rx="8" fill="#0d1117" stroke="#3366cc33"/>
+  <text x="1102" y="68" fill="#888" font-size="8" text-anchor="middle">API 调用示例</text>
+  <text x="1102" y="84" fill="#6699dd" font-size="7" text-anchor="middle">POST /infer/vla-t</text>
+  <text x="1102" y="100" fill="#5588aa" font-size="6" text-anchor="middle">{condition_id:"C014"</text>
+  <text x="1102" y="114" fill="#5588aa" font-size="6" text-anchor="middle">sensors:{force_6d:</text>
+  <text x="1102" y="128" fill="#5588aa" font-size="6" text-anchor="middle">[...],joint_pos:[...]}}</text>
+  <text x="1102" y="146" fill="#4488aa44" font-size="7" text-anchor="middle">→ {action_id:"A14"...}</text>
   <!-- Arrow Phase 1→2 -->
   <line x1="600" y1="125" x2="600" y2="165" stroke="#4488cc" stroke-width="2" marker-end="url(#a)"/>
 
@@ -442,7 +442,7 @@ h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spaci
   </div>
 </div>
 
-<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.8 · Data-Driven System Architecture</div>
+<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.9 · Data-Driven System Architecture</div>
 
 </div>
 </body>
