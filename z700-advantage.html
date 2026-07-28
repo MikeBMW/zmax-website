@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z700 AI算法竞争力 · Z-MAX</title>
+<script src="/zmax-auth.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06080d;color:#c8d1d9;font-family:Arial,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;font-size:16px}
+  .wrap{max-width:1100px;margin:0 auto;padding:40px 24px 80px}
+
+  header{margin-bottom:48px;text-align:center}
+  header h1{font-size:36px;font-weight:800;color:#fff;margin-bottom:8px}
+  header .sub{font-size:18px;color:#8b949e}
+
+  .back{display:inline-block;color:#00d4aa;text-decoration:none;font-size:14px;margin-bottom:24px;border:1px solid #00d4aa44;padding:8px 18px;border-radius:20px;transition:background .2s}
+  .back:hover{background:#00d4aa15}
+
+  section{margin-bottom:48px}
+  section h2{font-size:24px;font-weight:700;color:#fff;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #1a1f2e}
+  section h2 .num{color:#00d4aa;margin-right:8px}
+
+  .intro{font-size:18px;color:#e6edf3;line-height:1.9;background:linear-gradient(135deg,#0d1a2a,#06080d);border:1px solid #1a2a3a;border-radius:12px;padding:28px 32px;margin-bottom:32px}
+
+  table{width:100%;border-collapse:collapse;font-size:15px;margin:16px 0 24px}
+  th{background:#0d1a2a;color:#00d4aa;font-weight:700;text-align:left;padding:12px 16px;border-bottom:2px solid #00d4aa33}
+  td{padding:12px 16px;border-bottom:1px solid #1a1f2e;vertical-align:top}
+  tr:hover td{background:#0d1117}
+
+  .diff-table th:first-child,.diff-table td:first-child{color:#8b949e;width:200px}
+  .diff-table td:last-child{color:#00d4aa;font-weight:600}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .kpi-card{background:linear-gradient(135deg,#0d1a2a,#06080d);border:1px solid #1a2a3a;border-radius:12px;padding:20px 24px;text-align:center}
+  .kpi-card .val{font-size:40px;font-weight:800;color:#00d4aa;margin-bottom:4px}
+  .kpi-card .label{font-size:14px;color:#8b949e}
+
+  .arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .arch-card{background:#0d1117;border:1px solid #1a2a3a;border-radius:10px;padding:20px}
+  .arch-card h3{font-size:17px;color:#fff;margin-bottom:8px}
+  .arch-card .val{font-size:14px;color:#58a6ff;margin-bottom:8px}
+  .arch-card p{font-size:14px;color:#8b949e}
+
+  .footer{margin-top:60px;text-align:center;color:#484f58;font-size:13px}
+
+  @media(max-width:768px){
+    .wrap{padding:20px 16px 60px}
+    header h1{font-size:26px}
+    table{font-size:13px}
+    th,td{padding:8px 10px}
+    .kpi-card .val{font-size:30px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<a href="/" class="back">← 返回主页</a>
+
+<header>
+  <h1>Z700 AI算法核心竞争力</h1>
+  <p class="sub">VLA-T 多模态融合算法 · zFlow 世界模型 · 光模块智能插拔</p>
+</header>
+
+<!-- 第一层：总体定位 -->
+<section>
+  <h2><span class="num">01</span>总体定位</h2>
+  <div class="intro">
+    Z700 基于自主研发的 <strong style="color:#00d4aa">VLA-T（视觉-语言-动作-触觉）多模态融合算法</strong>，结合 <strong style="color:#00d4aa">H-JEPA zFlow 分层预测世界模型</strong>，实现光模块插拔场景的端到端智能操作。算法在 800G DR8 真实产线环境下已完成验证，支持跨本体迁移和持续自进化。
+  </div>
+</section>
+
+<!-- 第二层：技术架构 -->
+<section>
+  <h2><span class="num">02</span>技术架构</h2>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h3>🔍 多模态感知融合</h3>
+      <div class="val">RGB-D + 触觉 + 六维力</div>
+      <p>融合视觉（D405深度）、触觉（压力分布）、力觉（六维力传感器）的统一感知网络，在视觉遮挡工况下仍可稳定感知，弥补单一传感器不足。</p>
+    </div>
+    <div class="arch-card">
+      <h3>🧠 VLA-T 端到端模型</h3>
+      <div class="val">推理延迟 &lt;50ms</div>
+      <p>端到端 VLA 架构，直接处理图像+语言指令+触觉反馈，输出高精度动作序列。减少中间环节，响应速度快。</p>
+    </div>
+    <div class="arch-card">
+      <h3>🌐 zFlow 世界模型</h3>
+      <div class="val">H-JEPA 三层潜空间预测</div>
+      <p>z₁空间/z₂物体/z₃语义三层分层预测，交叉注意力注入 VLA-T 主干，赋予机器人物理世界理解和长程规划能力，异常工况自适应。</p>
+    </div>
+    <div class="arch-card">
+      <h3>🦾 力-位混合控制</h3>
+      <div class="val">模糊PID 阻抗控制</div>
+      <p>结合六维力传感器的阻抗控制策略，实时调节插拔力度，保护金手指和测试座，避免硬接触损伤。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 第三层：核心差异化 -->
+<section>
+  <h2><span class="num">03</span>核心差异化</h2>
+  <table class="diff-table">
+    <tr><th>对比维度</th><th>通用机器人 AI 方案</th><th>Z700 算法方案</th></tr>
+    <tr><td>感知模态</td><td>纯视觉</td><td>视觉 + 触觉 + 力觉 多模态融合</td></tr>
+    <tr><td>场景适配</td><td>需二次开发</td><td>原生适配光模块插拔（电口 + 光口）</td></tr>
+    <tr><td>物理理解</td><td>无世界模型</td><td>zFlow 世界模型支持物理推演</td></tr>
+    <tr><td>跨本体迁移</td><td>不支持</td><td>支持 Z700 / Z700F / 它石整机迁移</td></tr>
+    <tr><td>交付方式</td><td>黑盒 API</td><td>完整白盒（源码 + 权重 + 工具链）</td></tr>
+    <tr><td>数据主权</td><td>数据上云</td><td>产线数据本地化，客户完全掌控</td></tr>
+  </table>
+</section>
+
+<!-- 第四层：量化指标 -->
+<section>
+  <h2><span class="num">04</span>量化指标</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="val">≥95%</div>
+      <div class="label">电口插拔成功率（一阶段）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">≥99%</div>
+      <div class="label">电口插拔成功率（二阶段目标）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">≤30s</div>
+      <div class="label">单颗插拔节拍（一阶段）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">≤15s</div>
+      <div class="label">单颗插拔节拍（二阶段目标）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">±0.05mm</div>
+      <div class="label">末端定位精度</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">±0.1N</div>
+      <div class="label">力控精度</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">≤0.5h</div>
+      <div class="label">换型时间（纯软件切换）</div>
+    </div>
+    <div class="kpi-card">
+      <div class="val">24h</div>
+      <div class="label">连续无人化运行</div>
+    </div>
+  </div>
+</section>
+
+<!-- 已适配型号 -->
+<section>
+  <h2><span class="num">05</span>已适配光模块型号</h2>
+  <table>
+    <tr><th>型号</th><th>金手指/接口</th><th>典型测试</th><th>状态</th></tr>
+    <tr><td>100G QSFP28</td><td>30pin</td><td>Eye 测试 15s</td><td>✅ 已验证</td></tr>
+    <tr><td>400G QSFP-DD</td><td>76pin</td><td>BERT 60s</td><td>✅ 核心主力</td></tr>
+    <tr><td>800G OSFP</td><td>MPO 多芯</td><td>EVB 120s</td><td>🔄 开发中</td></tr>
+  </table>
+</section>
+
+<div class="footer">Z-MAX 静界科技 · datadrive.world · 产线数据本地化 · 白盒交付</div>
+
+</div>
+</body>
+</html>
