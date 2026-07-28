@@ -37,6 +37,30 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 1
 .tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700}
 .t-blue{background:#58a6ff22;color:#58a6ff}.t-green{background:#3fb95022;color:#3fb950}.t-orange{background:#f0a50022;color:#f0a500}.t-purple{background:#a371f722;color:#a371f7}.t-red{background:#ff6b6b22;color:#ff6b6b}
 @media(max-width:768px){.wrap{padding:16px 10px}h1{font-size:20px}.node{min-width:100px}}
+
+@media print {
+  body{background:#fff!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .back-home,.export-btn{display:none!important}
+  .wrap{max-width:100%;padding:20px}
+  h1{color:#000!important;font-size:20px}.sub{border-bottom:1px solid #ccc;padding-bottom:12px}
+  h2{color:#000!important;border-bottom-color:#ccc!important;font-size:14px}
+  table{background:#fff!important;font-size:9px}
+  th{background:#eee!important;color:#000!important}
+  td{border-bottom:1px solid #ddd!important}
+  tr:nth-child(even) td{background:#f9f9f9!important}
+  .card{background:#fafafa!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  pre{background:#f5f5f5!important;border:1px solid #ddd!important;page-break-inside:avoid;font-size:9px}
+  .node{background:#fafafa!important;border:1px solid #ddd!important;page-break-inside:avoid}
+  .node h4{color:#000!important}.node p{color:#555!important}
+  .footer{display:none!important}
+  .method{background:#f0f0f0!important;color:#000!important;border:1px solid #999!important}
+  .tag{background:#f0f0f0!important;color:#000!important;border:1px solid #999!important}
+  .arr{color:#888!important}
+  .step{background:#fff!important}.s1{color:#000!important;border-color:#000!important}
+  .s2{color:#000!important;border-color:#000!important}.s3{color:#000!important;border-color:#000!important}
+  .s4{color:#000!important;border-color:#000!important}.s5{color:#000!important;border-color:#000!important}
+}
+
 </style>
 <script src="/dds-global.js"></script>
 <script src="/zmax-auth.js"></script>
@@ -46,6 +70,8 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 1
 
 <a href="/" class="back-home">← 返回主页</a>
 <h1>🔌 DDS 系统接口总览</h1>
+<a href="javascript:window.print()" class="export-btn" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#f0a50018;border:1px solid #f0a50044;border-radius:6px;color:#f0a500;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:16px;margin-left:8px">🖨️ 导出 PDF</a>
+
 <p class="sub">条件→模型→动作 · 端到端推理管线 · DDS v2.7.5</p>
 
 <!-- Pipeline overview -->
@@ -178,7 +204,7 @@ Response:
 <tr><td>ws://datadrive.world/ws</td><td>WebSocket</td><td>团队实时聊天 (ws-server.py:8765)</td></tr>
 </table>
 
-<div class="footer">Z-MAX · 静界科技 · DDS 系统接口 v2.7.5 · 2026-07-28</div>
+<div class="footer">Z-MAX · 静界科技 · DDS 系统接口 v2.7.6 · 2026-07-29</div>
 
 </div>
 </body>
