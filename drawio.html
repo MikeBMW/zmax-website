@@ -36,6 +36,7 @@
     #file-list{max-width:200px}
   }
 </style>
+<script src="/zmax-auth.js"></script>
 </head>
 <body>
 <div id="toolbar">
@@ -45,7 +46,8 @@
   <input id="fname" value="architecture" placeholder="文件名">
   <button class="btn-save" onclick="saveDiagram()">💾 保存</button>
   <button class="btn-dark" onclick="loadDiagram()">📂 加载</button>
-  <button class="btn-dark" onclick="exportDiagram()">📥 导出SVG</button>
+  <button class="btn-dark" onclick="exportSVG()">📥 导出SVG</button>
+  <button class="btn-dark" onclick="exportDrawio()">📦 导出.drawio</button>
   <button class="btn-dark" onclick="newDiagram()">＋ 新建</button>
   <span class="sep"></span>
   <div id="file-list"></div>
@@ -124,6 +126,14 @@ function handleMessage(e){
     } else if (_pendingAction === 'export-svg'){
       downloadBlob(d.data, (currentFile||'architecture').replace('.drawio','')+'.svg', 'image/svg+xml');
       _pendingAction = null;
+    } else if (_pendingAction === 'export-drawio'){
+      // 保存到服务器，然后下载完整 .drawio 文件
+      saveToServer(currentFile, d.data);
+      _pendingAction = null;
+      // 短暂延迟后从服务器下载（确保写入完成）
+      setTimeout(function(){
+        downloadDrawioFile(currentFile);
+      }, 500);
     }
   }
 }
@@ -151,10 +161,22 @@ function saveDiagram(){
   setStatus('正在保存...');
 }
 
-function exportDiagram(){
+function exportSVG(){
   _pendingAction = 'export-svg';
   postMsg({action:'export', format:'svg'});
   setStatus('正在导出SVG...');
+}
+
+function exportDrawio(){
+  // 先保存当前内容到服务器（用 xmlpng），再下载完整 .drawio
+  if (currentFile){
+    _pendingAction = 'export-drawio';
+    postMsg({action:'export', format:'xmlpng'});
+    setStatus('正在导出.drawio...');
+  } else {
+    // 未保存：先触发保存流程
+    setStatus('⚠️ 请先保存文件，再导出 .drawio');
+  }
 }
 
 function loadDiagram(){ refreshList(); }
@@ -225,6 +247,17 @@ function downloadBlob(data, filename, mime){
   a.download = filename;
   a.click();
   setStatus('📥 已下载: '+filename);
+}
+
+function downloadDrawioFile(name){
+  fetch('/save-drawio.php?file='+encodeURIComponent(name)).then(function(r){
+    if (!r.ok) throw new Error('file not found');
+    return r.text();
+  }).then(function(xml){
+    downloadBlob(xml, name, 'application/xml');
+  }).catch(function(e){
+    setStatus('❌ 导出失败: '+e.message+' — 请先保存文件');
+  });
 }
 </script>
 </body>
