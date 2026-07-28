@@ -143,7 +143,8 @@ tr:nth-child(even) td{background:#080c14}
 
 <div class="toolbar">
   <a href="/" class="back-btn">← 返回主页</a>
-  <a href="javascript:window.print()" class="export-btn">🖨️ 导出 PDF（完整立项总指导书）</a>
+  <a href="javascript:window.print()" class="export-btn">🖨️ 导出 PDF</a>
+  <a href="javascript:exportMD()" class="export-btn" style="background:#3fb95018;border-color:#3fb95044;color:#3fb950" onmouseover="this.style.borderColor='#3fb950';this.style.background='#3fb95022'" onmouseout="this.style.borderColor='#3fb95044';this.style.background='#3fb95018'">📝 导出 Markdown</a>
 </div>
 
 <div class="wrap">
@@ -153,7 +154,7 @@ tr:nth-child(even) td{background:#080c14}
   <h1>Z700 产品立项总指导书</h1>
   <p class="sub">具身智能 · 光模块精密制造</p>
   <p class="sub">Z-MAX Data-Driven System</p>
-  <p class="meta">智蜂创元（ZFCY）· datadrive.world · v2.8.0 · 2026-07-29</p>
+  <p class="meta">智蜂创元（ZFCY）· datadrive.world · v2.8.1 · 2026-07-29</p>
   <p class="meta">密级：内部 · 文档编号：ZMAX-MDB-2026-001</p>
 </div>
 
@@ -643,5 +644,86 @@ tr:nth-child(even) td{background:#080c14}
 <div class="footer">© 2026 智蜂创元（ZFCY）· datadrive.world · Z700 产品立项总指导书 v2.8.0 · 密级：内部</div>
 
 </div>
+
+<script>
+function exportMD(){
+  var md=[],el=document.querySelector('.wrap');
+  function walk(n){
+    if(!n||n.classList.contains('toolbar'))return;
+    if(n.nodeType===3){var t=n.textContent.trim();if(t)md.push(t);return}
+    var tag=n.tagName;
+    if(tag==='H2'){md.push('','## '+n.textContent.trim(),'');return}
+    if(tag==='H3'){md.push('','### '+n.textContent.trim(),'');return}
+    if(tag==='H4'){md.push('','#### '+n.textContent.trim(),'');return}
+    if(tag==='P'){md.push(n.textContent.trim(),'');return}
+    if(tag==='STRONG'||tag==='B'){md.push('**'+n.textContent.trim()+'**');return}
+    if(tag==='CODE'){md.push('`'+n.textContent.trim()+'`');return}
+    if(tag==='TABLE'){
+      var rows=n.querySelectorAll('tr'),cols=[];
+      rows.forEach(function(r,i){
+        var cells=r.querySelectorAll('th,td'),row=[];
+        cells.forEach(function(c){row.push(c.textContent.trim().replace(/\|/g,'\\|'))});
+        cols.push('| '+row.join(' | ')+' |');
+        if(i===0)cols.push('|'+row.map(function(){return'---'}).join('|')+'|');
+      });
+      md.push('',cols.join('\n'),'');
+      return;
+    }
+    if(tag==='LI'){md.push('- '+n.textContent.trim());return}
+    if(n.classList.contains('info-box')){
+      md.push('> '+n.textContent.trim().replace(/\n/g,'\n> '),'');
+      return;
+    }
+    if(n.classList.contains('kpi-row')){
+      var kpis=n.querySelectorAll('.kpi-card'),row=[];
+      kpis.forEach(function(k){
+        var v=k.querySelector('.kpi-val'),l=k.querySelector('.kpi-lab');
+        row.push((v?v.textContent.trim():'')+' '+(l?l.textContent.trim():''));
+      });
+      md.push('**'+row.join(' | ')+'**','');
+      return;
+    }
+    if(n.classList.contains('pipe-row')){
+      var steps=n.querySelectorAll('.pipe-step'),row=[];
+      steps.forEach(function(s){row.push(s.textContent.trim())});
+      md.push(row.join(' → '),'');
+      return;
+    }
+    if(n.classList.contains('model-row')){
+      var cards=n.querySelectorAll('.model-card');
+      cards.forEach(function(c){
+        var h=c.querySelector('h4'),s=c.querySelector('.spec');
+        var t=h?h.textContent.trim():'',d=s?s.textContent.trim():'';
+        md.push('**'+t+'**: '+d.replace(/\n/g,' · '),'');
+      });
+      md.push('');
+      return;
+    }
+    if(n.classList.contains('sys-row')){
+      var nodes=n.querySelectorAll('.sys-node');
+      nodes.forEach(function(nd){
+        var h=nd.querySelector('h4'),p=nd.querySelector('p');
+        md.push('- **'+(h?h.textContent.trim():'')+'**: '+(p?p.textContent.trim().replace(/\n/g,' · '):''),'');
+      });
+      md.push('');
+      return;
+    }
+    if(n.classList.contains('val-list')){
+      var items=n.querySelectorAll('li');
+      items.forEach(function(li){md.push('- '+li.textContent.trim())});
+      md.push('');
+      return;
+    }
+    for(var i=0;i<n.childNodes.length;i++)walk(n.childNodes[i]);
+  }
+  walk(el);
+  var title=document.title.replace(' · Z-MAX','')||'Z700 产品立项总指导书';
+  var text='# '+title+'\n\n> 智蜂创元（ZFCY）· datadrive.world · v2.8.1 · 2026-07-29\n\n'+md.join('\n');
+  var blob=new Blob([text],{type:'text/markdown;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='Z700_产品立项总指导书_v2.8.0.md';a.click();
+}
+</script>
+
 </body>
 </html>
