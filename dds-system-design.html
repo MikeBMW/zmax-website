@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DDS 系统设计 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.65}
+.wrap{max-width:1300px;margin:0 auto;padding:20px 16px}
+h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px;letter-spacing:1px}
+.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:8px}
+.version{text-align:center;color:#444;font-size:10px;margin-bottom:24px}
+
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#0d1117;border:1px solid #00d4aa33;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;font-weight:600;margin-bottom:18px;transition:all .2s}
+.back-home:hover{border-color:#00d4aa;background:#00d4aa11}
+
+/* Philosophy block */
+.philosophy{background:linear-gradient(135deg,#0d1117 0%,#0a1620 100%);border:1px solid #1a2a3a;border-radius:12px;padding:20px 24px;margin-bottom:28px}
+.philosophy h2{color:#58a6ff;font-size:16px;margin-bottom:10px}
+.philosophy p{color:#8b949e;font-size:12px;line-height:1.8}
+.philosophy .hl{color:#00d4aa;font-weight:600}
+
+/* Pipeline SVG container */
+.pipeline-wrap{background:#0a0d18;border:1px solid #1a2a3a;border-radius:12px;padding:20px 8px;margin-bottom:28px;overflow-x:auto}
+.pipeline-wrap svg{display:block;margin:0 auto;min-width:900px}
+.pipeline-wrap .cap{text-align:center;color:#8b949e;font-size:10px;margin-top:6px}
+
+/* Phase cards */
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin-bottom:28px}
+.phase-card{background:#0d1117;border:1px solid #1a2a3a;border-radius:12px;padding:18px 20px;transition:border-color .3s}
+.phase-card:hover{border-color:#1a2a3a}
+.phase-card .phase-num{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;margin-bottom:10px}
+.p1 .phase-num{background:#3366cc22;color:#58a6ff;border:1px solid #3366cc33}
+.p2 .phase-num{background:#22880022;color:#3fb950;border:1px solid #22880033}
+.p3 .phase-num{background:#cc660022;color:#f0a500;border:1px solid #cc660033}
+.p4 .phase-num{background:#8844cc22;color:#a371f7;border:1px solid #8844cc33}
+.p5 .phase-num{background:#cc000022;color:#ff4444;border:1px solid #cc000033}
+.phase-card h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.phase-card .desc{font-size:11px;color:#8b949e;line-height:1.7;margin-bottom:12px}
+.phase-card .items{display:flex;flex-wrap:wrap;gap:4px}
+.phase-card .item{font-size:10px;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.p1 .item{background:#3366cc14;color:#58a6ff;border:1px solid #3366cc22}
+.p2 .item{background:#22880014;color:#3fb950;border:1px solid #22880022}
+.p3 .item{background:#cc660014;color:#f0a500;border:1px solid #cc660022}
+.p4 .item{background:#8844cc14;color:#a371f7;border:1px solid #8844cc22}
+.p5 .item{background:#cc000014;color:#ff6b6b;border:1px solid #cc000022}
+
+/* Dispatch table */
+.dispatch-table{background:#0d1117;border:1px solid #1a2a3a;border-radius:12px;padding:18px 20px;margin-bottom:28px}
+.dispatch-table h3{color:#f0a500;font-size:14px;margin-bottom:14px}
+.dispatch-table table{width:100%;border-collapse:collapse;font-size:11px}
+.dispatch-table th{background:#1a1f2b;padding:7px 10px;text-align:left;color:#8b949e;font-weight:600;font-size:10px;white-space:nowrap}
+.dispatch-table td{padding:6px 10px;border-bottom:1px solid #121824}
+.dispatch-table tr:nth-child(even) td{background:#080c14}
+.dispatch-table tr:hover td{background:#0d1a2a}
+.dispatch-table .cond{color:#58a6ff;font-family:monospace;font-weight:600}
+.dispatch-table .model{color:#00d4aa;font-weight:600}
+.dispatch-table .host{color:#a371f7;font-size:10px}
+.dispatch-table .act{color:#f0a500;font-family:monospace}
+
+/* Data loop */
+.data-loop{background:#0d1117;border:1px solid #1a2a3a;border-radius:12px;padding:18px 20px;margin-bottom:28px}
+.data-loop h3{color:#ff6b6b;font-size:14px;margin-bottom:14px}
+.loop-flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font-size:10px;margin-bottom:16px}
+.loop-node{border:2px solid;border-radius:8px;padding:8px 14px;text-align:center;min-width:100px;background:#080c14}
+.ln1{border-color:#8844cc;color:#a371f7}
+.ln2{border-color:#3366cc;color:#58a6ff}
+.ln3{border-color:#cc6600;color:#f0a500}
+.ln4{border-color:#228800;color:#3fb950}
+.ln5{border-color:#cc0000;color:#ff6b6b}
+.loop-arrow{color:#444;font-size:14px;font-weight:700}
+.loop-desc{font-size:11px;color:#8b949e;text-align:center;line-height:1.7}
+
+/* KPI row */
+.kpi-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:28px}
+.kpi-card{background:#0d1117;border:1px solid #1a2a3a;border-radius:10px;padding:14px 20px;text-align:center;min-width:120px}
+.kpi-card .kpi-val{font-size:28px;font-weight:900;color:#00d4aa}
+.kpi-card .kpi-lab{font-size:10px;color:#8b949e;margin-top:4px}
+
+/* Related links */
+.related{background:#0d1117;border:1px solid #1a2a3a;border-radius:12px;padding:18px 20px;margin-bottom:28px}
+.related h3{color:#8b949e;font-size:13px;margin-bottom:12px}
+.related .links{display:flex;flex-wrap:wrap;gap:8px}
+.related a{display:inline-block;padding:6px 14px;border-radius:6px;font-size:11px;text-decoration:none;border:1px solid #1a2a3a;color:#58a6ff;background:#0d1117;transition:all .2s}
+.related a:hover{border-color:#58a6ff;background:#58a6ff11}
+.related a.edit{border-color:#00d4aa44;color:#00d4aa}
+.related a.edit:hover{border-color:#00d4aa;background:#00d4aa11}
+
+.footer{text-align:center;padding:24px;color:#8b949e;font-size:10px;border-top:1px solid #1a1f2b;margin-top:32px}
+
+/* Mobile */
+@media(max-width:768px){
+  .wrap{padding:12px 8px}
+  h1{font-size:20px}
+  .phase-grid{grid-template-columns:1fr}
+  .kpi-card{min-width:80px;padding:10px 14px}
+  .kpi-card .kpi-val{font-size:22px}
+  .pipeline-wrap{padding:10px 4px}
+  .dispatch-table table{font-size:9px}
+  .dispatch-table td,.dispatch-table th{padding:4px 6px}
+}
+</style>
+<script src="/dds-global.js"></script>
+<script src="/zmax-auth.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+<a href="/" class="back-home">← 返回主页</a>
+
+<h1>DDS 系统设计</h1>
+<p class="sub">Data-Driven System · 条件驱动的端到端具身智能架构</p>
+<p class="version">v2.7.5 · 2026-07-28 · Z-MAX</p>
+
+<!-- Philosophy -->
+<div class="philosophy">
+  <h2>核心设计思想</h2>
+  <p>
+    DDS（Data-Driven System）是 datadrive.world 的架构内核——<span class="hl">一切由数据定义，一切由条件驱动</span>。
+    不做通用大模型，而是把产线拆解为<span class="hl">54种条件场景</span>，每种条件映射到最优的<span class="hl">专用小模型</span>，
+    输出<span class="hl">48种原子动作</span>，由<span class="hl">4款机器人</span>执行。执行结果<span class="hl">自动回灌</span>到训练管道，
+    形成<span class="hl">感知→推理→执行→回流</span>的完整闭环。
+  </p>
+  <p style="margin-top:10px">
+    设计原则：① 条件驱动，非任务编程 ② 多模型池，非单一通用模型 ③ 原子技能组合，非端到端黑箱
+    ④ 数据闭环自进化 ⑤ 边缘-云端协同推理
+  </p>
+</div>
+
+<!-- Pipeline SVG -->
+<div class="pipeline-wrap">
+<svg viewBox="0 0 1200 700" width="1200" height="700">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4"><polygon points="0,0 8,4 0,8" fill="#4488cc"/></marker>
+    <marker id="g" markerWidth="8" markerHeight="8" refX="6" refY="4"><polygon points="0,0 8,4 0,8" fill="#3fb950"/></marker>
+    <marker id="o" markerWidth="8" markerHeight="8" refX="6" refY="4"><polygon points="0,0 8,4 0,8" fill="#f0a500"/></marker>
+    <marker id="p" markerWidth="8" markerHeight="8" refX="6" refY="4"><polygon points="0,0 8,4 0,8" fill="#a371f7"/></marker>
+    <marker id="r" markerWidth="8" markerHeight="8" refX="6" refY="4"><polygon points="0,0 8,4 0,8" fill="#ff4444"/></marker>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0a0d18"/><stop offset="100%" stop-color="#060810"/></linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="700" fill="url(#bgGrad)" rx="12"/>
+
+  <!-- Phase 1: Condition -->
+  <rect x="15" y="15" width="1170" height="110" rx="8" fill="#3366cc08" stroke="#3366cc33" stroke-dasharray="6,3"/>
+  <text x="25" y="36" fill="#58a6ff" font-size="13" font-weight="700">① 条件输入 Condition Input</text>
+  <rect x="30" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="95" y="68" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">📷 视觉 D405</text><text x="95" y="83" fill="#666" font-size="8" text-anchor="middle">RGB-D·端面·插座</text>
+  <rect x="175" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="240" y="68" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">🖐️ 触觉力觉</text><text x="240" y="83" fill="#666" font-size="8" text-anchor="middle">六维力 Fx/y/z·Mx/y/z</text>
+  <rect x="320" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#22880066"/><text x="385" y="68" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">🔧 关节状态</text><text x="385" y="83" fill="#666" font-size="8" text-anchor="middle">6轴角度·末端位姿</text>
+  <rect x="465" y="48" width="130" height="55" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="530" y="68" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">📡 MES信号</text><text x="530" y="83" fill="#666" font-size="8" text-anchor="middle">扫码SN·工位状态</text>
+  <rect x="610" y="48" width="110" height="55" rx="6" fill="#0d1117" stroke="#cc000066"/><text x="665" y="68" fill="#ff4444" font-size="10" font-weight="700" text-anchor="middle">⚡ 安全信号</text><text x="665" y="83" fill="#666" font-size="8" text-anchor="middle">急停·碰撞·SOC</text>
+  <!-- Encoder -->
+  <rect x="760" y="48" width="160" height="55" rx="8" fill="#3366cc18" stroke="#58a6ff" stroke-width="2"/><text x="840" y="70" fill="#58a6ff" font-size="11" font-weight="700" text-anchor="middle">条件编码器</text><text x="840" y="88" fill="#6699dd" font-size="8" text-anchor="middle">多模态融合 → C001-C054</text>
+  <!-- DDS Lookup -->
+  <rect x="950" y="48" width="220" height="55" rx="8" fill="#cc880018" stroke="#f0a500" stroke-width="2"/><text x="1060" y="68" fill="#f0a500" font-size="11" font-weight="700" text-anchor="middle">DDS Skill Dispatch 查表</text><text x="1060" y="86" fill="#cc9966" font-size="8" text-anchor="middle">condition_id → model + action</text>
+
+  <!-- Arrow Phase 1→2 -->
+  <line x1="600" y1="125" x2="600" y2="165" stroke="#4488cc" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- Phase 2: Model Router -->
+  <rect x="15" y="135" width="1170" height="135" rx="8" fill="#22880008" stroke="#22880033" stroke-dasharray="6,3"/>
+  <text x="25" y="156" fill="#3fb950" font-size="13" font-weight="700">② 模型路由 Model Router</text>
+
+  <rect x="30" y="170" width="175" height="80" rx="6" fill="#3366cc14" stroke="#3366cc66"/><text x="117" y="193" fill="#58a6ff" font-size="10" font-weight="700" text-anchor="middle">ACT</text><text x="117" y="210" fill="#666" font-size="8" text-anchor="middle">Action Chunking · 取料扫码</text><text x="117" y="225" fill="#3366cc88" font-size="7" text-anchor="middle">Sys10 · 4060</text>
+  <rect x="225" y="170" width="175" height="80" rx="6" fill="#22880014" stroke="#22880066"/><text x="312" y="193" fill="#3fb950" font-size="10" font-weight="700" text-anchor="middle">SmolVLA</text><text x="312" y="210" fill="#666" font-size="8" text-anchor="middle">VLA · 测试AOI目检</text><text x="312" y="225" fill="#22880088" font-size="7" text-anchor="middle">Sys11 · 4060</text>
+  <rect x="420" y="170" width="195" height="80" rx="6" fill="#cc660014" stroke="#f0a500" stroke-width="2"/><text x="517" y="193" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">⭐ VLA-T 主力</text><text x="517" y="210" fill="#666" font-size="8" text-anchor="middle">力控VLA · 精密插拔</text><text x="517" y="225" fill="#cc660088" font-size="7" text-anchor="middle">Sys11 · 4060</text>
+  <rect x="635" y="170" width="200" height="80" rx="6" fill="#8844cc14" stroke="#8844cc66"/><text x="735" y="193" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">GR00T N1.7</text><text x="735" y="210" fill="#666" font-size="8" text-anchor="middle">通用机器人 · 复杂泛化</text><text x="735" y="225" fill="#8844cc88" font-size="7" text-anchor="middle">Sys2 · 4090 · 6.5G</text>
+  <rect x="855" y="170" width="195" height="80" rx="6" fill="#cc880014" stroke="#cc880066"/><text x="952" y="193" fill="#d4a800" font-size="10" font-weight="700" text-anchor="middle">H-JEPA zFlow</text><text x="952" y="210" fill="#666" font-size="8" text-anchor="middle">预测编码 · 透镜耦合</text><text x="952" y="225" fill="#cc880088" font-size="7" text-anchor="middle">Sys1 · 4090 · 11MB</text>
+
+  <!-- Arrow Phase 2→3 -->
+  <line x1="600" y1="270" x2="600" y2="310" stroke="#3fb950" stroke-width="2" marker-end="url(#g)"/>
+
+  <!-- Phase 3: Action Decoder -->
+  <rect x="15" y="280" width="1170" height="100" rx="8" fill="#cc660008" stroke="#cc660033" stroke-dasharray="6,3"/>
+  <text x="25" y="301" fill="#f0a500" font-size="13" font-weight="700">③ 动作解码 Action Decoder</text>
+
+  <rect x="30" y="314" width="170" height="50" rx="6" fill="#cc660014" stroke="#f0a500" stroke-width="2"/><text x="115" y="335" fill="#f0a500" font-size="10" font-weight="700" text-anchor="middle">动作解码器</text><text x="115" y="350" fill="#888" font-size="8" text-anchor="middle">潜空间z → action_id查表</text>
+  <rect x="230" y="314" width="180" height="50" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="320" y="334" fill="#58a6ff" font-size="9" font-weight="700" text-anchor="middle">A01-A30 取料→FQC</text><text x="320" y="350" fill="#666" font-size="8" text-anchor="middle">全流程操作动作</text>
+  <rect x="435" y="314" width="185" height="50" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="527" y="334" fill="#f0a500" font-size="9" font-weight="700" text-anchor="middle">A31-A42 透镜·耦合·焊接</text><text x="527" y="350" fill="#666" font-size="8" text-anchor="middle">光引擎精密操作</text>
+  <rect x="645" y="314" width="185" height="50" rx="6" fill="#0d1117" stroke="#22880066"/><text x="737" y="334" fill="#3fb950" font-size="9" font-weight="700" text-anchor="middle">A43-A48 眼图·FQC</text><text x="737" y="350" fill="#666" font-size="8" text-anchor="middle">模块组装终检</text>
+  <rect x="855" y="314" width="150" height="50" rx="6" fill="#0d1117" stroke="#cc000066"/><text x="930" y="334" fill="#ff4444" font-size="9" font-weight="700" text-anchor="middle">S01-S04 安全</text><text x="930" y="350" fill="#666" font-size="8" text-anchor="middle">急停·抓败·力限</text>
+
+  <!-- Arrow Phase 3→4 -->
+  <line x1="600" y1="380" x2="600" y2="420" stroke="#f0a500" stroke-width="2" marker-end="url(#o)"/>
+
+  <!-- Phase 4: Execution -->
+  <rect x="15" y="390" width="1170" height="105" rx="8" fill="#8844cc08" stroke="#8844cc33" stroke-dasharray="6,3"/>
+  <text x="25" y="411" fill="#a371f7" font-size="13" font-weight="700">④ 执行层 Execution</text>
+
+  <rect x="30" y="424" width="200" height="55" rx="6" fill="#8844cc14" stroke="#a371f7" stroke-width="2"/><text x="130" y="446" fill="#a371f7" font-size="10" font-weight="700" text-anchor="middle">🤖 Orin Nano · Sys0</text><text x="130" y="462" fill="#888" font-size="8" text-anchor="middle">ROS2 · 实时控制 1-5ms</text>
+  <rect x="260" y="424" width="145" height="55" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="332" y="445" fill="#f0a500" font-size="9" font-weight="700" text-anchor="middle">Z700F · L2</text><text x="332" y="461" fill="#666" font-size="8" text-anchor="middle">精密插拔 · SR5-C</text>
+  <rect x="425" y="424" width="125" height="55" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="487" y="445" fill="#58a6ff" font-size="9" font-weight="700" text-anchor="middle">Z100L · L2</text><text x="487" y="461" fill="#666" font-size="8" text-anchor="middle">搬运·上下料</text>
+  <rect x="570" y="424" width="140" height="55" rx="6" fill="#0d1117" stroke="#22880066"/><text x="640" y="445" fill="#3fb950" font-size="9" font-weight="700" text-anchor="middle">Z700+AOI · L2</text><text x="640" y="461" fill="#666" font-size="8" text-anchor="middle">目检·显微镜</text>
+  <rect x="730" y="424" width="145" height="55" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="802" y="445" fill="#a371f7" font-size="9" font-weight="700" text-anchor="middle">Z700 · L4</text><text x="802" y="461" fill="#666" font-size="8" text-anchor="middle">轮式双臂·巡检</text>
+  <rect x="900" y="424" width="270" height="55" rx="6" fill="#cc000014" stroke="#ff4444" stroke-width="2"/><text x="1035" y="445" fill="#ff6b6b" font-size="10" font-weight="700" text-anchor="middle">📊 结果回灌 DDS</text><text x="1035" y="462" fill="#888" font-size="8" text-anchor="middle">成功/失败/耗时/力曲线 → dds.db</text>
+
+  <!-- Arrow Phase 4→5 (feedback loop) -->
+  <path d="M 15 450 L 5 450 L 5 540 L 15 540" fill="none" stroke="#ff4444" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#r)"/>
+
+  <!-- Phase 5: Data Loop -->
+  <rect x="15" y="505" width="1170" height="105" rx="8" fill="#cc000008" stroke="#cc000033" stroke-dasharray="6,3"/>
+  <text x="25" y="526" fill="#ff4444" font-size="13" font-weight="700">⑤ 数据闭环 Data Loop</text>
+
+  <rect x="30" y="540" width="145" height="52" rx="6" fill="#0d1117" stroke="#8844cc66"/><text x="102" y="560" fill="#a371f7" font-size="9" font-weight="700" text-anchor="middle">Orin 采集</text><text x="102" y="577" fill="#666" font-size="8" text-anchor="middle">MCAP·npz · 300帧/次</text>
+  <rect x="200" y="540" width="155" height="52" rx="6" fill="#0d1117" stroke="#3366cc66"/><text x="277" y="560" fill="#58a6ff" font-size="9" font-weight="700" text-anchor="middle">MAC 转发</text><text x="277" y="577" fill="#666" font-size="8" text-anchor="middle">HTTP心跳5s·隧道穿透</text>
+  <rect x="380" y="540" width="165" height="52" rx="6" fill="#0d1117" stroke="#cc660066"/><text x="462" y="560" fill="#f0a500" font-size="9" font-weight="700" text-anchor="middle">4090 训练</text><text x="462" y="577" fill="#666" font-size="8" text-anchor="middle">H-JEPA·GR00T·100iter</text>
+  <rect x="570" y="540" width="165" height="52" rx="6" fill="#0d1117" stroke="#22880066"/><text x="652" y="560" fill="#3fb950" font-size="9" font-weight="700" text-anchor="middle">模型部署</text><text x="652" y="577" fill="#666" font-size="8" text-anchor="middle">权重→Sys1/Sys2</text>
+  <rect x="760" y="540" width="180" height="52" rx="6" fill="#0d1117" stroke="#cc000066"/><text x="850" y="560" fill="#ff6b6b" font-size="9" font-weight="700" text-anchor="middle">DDS 同步更新</text><text x="850" y="577" fill="#666" font-size="8" text-anchor="middle">条件→模型映射优化</text>
+
+  <!-- Feedback to models -->
+  <path d="M 940 566 L 1150 566 L 1150 210 L 1060 210" fill="none" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="8,4" marker-end="url(#r)"/>
+  <text x="1100" y="390" fill="#ff4444" font-size="9" text-anchor="middle" transform="rotate(-90,1100,390)">训练回流</text>
+
+  <!-- Bottom summary -->
+  <rect x="15" y="630" width="1170" height="36" rx="8" fill="#3366cc10" stroke="#58a6ff" stroke-width="2"/>
+  <text x="600" y="654" fill="#58a6ff" font-size="12" font-weight="700" text-anchor="middle">端到端闭环：📷传感器 → 🔀DDS Dispatch → 🧠多模型池 → ⚡动作解码 → 🤖机器人执行 → 📊结果回灌 → 🔄训练更新</text>
+</svg>
+<div class="cap">DDS 五阶段端到端推理管线 · 点击下方按钮在 draw.io 中编辑完整版</div>
+</div>
+
+<!-- KPI -->
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-val">54</div><div class="kpi-lab">条件场景</div></div>
+  <div class="kpi-card"><div class="kpi-val">5</div><div class="kpi-lab">模型池</div></div>
+  <div class="kpi-card"><div class="kpi-val">48</div><div class="kpi-lab">原子动作</div></div>
+  <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lab">安全动作</div></div>
+  <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lab">机器人型号</div></div>
+  <div class="kpi-card"><div class="kpi-val">&lt;5ms</div><div class="kpi-lab">本地推理延迟</div></div>
+  <div class="kpi-card"><div class="kpi-val">242</div><div class="kpi-lab">原子技能</div></div>
+</div>
+
+<!-- Phase detail cards -->
+<div class="phase-grid">
+  <div class="phase-card p1">
+    <span class="phase-num">PHASE 1</span>
+    <h3 style="color:#58a6ff">条件输入</h3>
+    <div class="desc">产线传感器实时数据通过ROS2 Topic总线汇聚，经多模态融合编码器生成条件向量。DDS Lookup将条件向量映射为唯一的condition_id（C001-C054），作为后续模型调度的输入。</div>
+    <div class="items">
+      <span class="item">RGB-D 128²</span><span class="item">六维力 F/M</span><span class="item">关节7维</span><span class="item">MES工位</span><span class="item">安全状态</span><span class="item">ROS2 Topic</span>
+    </div>
+  </div>
+  <div class="phase-card p2">
+    <span class="phase-num">PHASE 2</span>
+    <h3 style="color:#3fb950">模型路由</h3>
+    <div class="desc">DDS Skill Dispatch 根据condition_id查表，将推理请求路由到最优模型。不同模型运行在不同计算节点上——Sys1(4060)处理本地低延迟推理，Sys2(4090)通过ECS隧道处理大模型推理。</div>
+    <div class="items">
+      <span class="item">ACT 取料</span><span class="item">SmolVLA AOI</span><span class="item">VLA-T 力控</span><span class="item">GR00T 泛化</span><span class="item">H-JEPA 精密</span><span class="item">gRPC/HTTP</span>
+    </div>
+  </div>
+  <div class="phase-card p3">
+    <span class="phase-num">PHASE 3</span>
+    <h3 style="color:#f0a500">动作解码</h3>
+    <div class="desc">模型输出的潜空间表征或action chunk，通过动作解码器映射为具体的机器人指令。48种原子动作(A01-A48)覆盖从取料到FQC的全流程，4种安全动作(S01-S04)处理异常情况。</div>
+    <div class="items">
+      <span class="item">A01-A30 产线</span><span class="item">A31-A42 光引擎</span><span class="item">A43-A48 终检</span><span class="item">S01-S04 安全</span><span class="item">ROS2 Trajectory</span>
+    </div>
+  </div>
+  <div class="phase-card p4">
+    <span class="phase-num">PHASE 4</span>
+    <h3 style="color:#a371f7">执行层</h3>
+    <div class="desc">Orin Nano(Sys0)作为边缘计算节点，接收ROS2 Action指令，实时控制4款机器人执行操作。执行结果（成功/失败、耗时、力曲线）实时回灌到DDS数据库。</div>
+    <div class="items">
+      <span class="item">Z700F 插拔</span><span class="item">Z100L 搬运</span><span class="item">Z700+AOI 目检</span><span class="item">Z700 巡检</span><span class="item">Orin Nano</span><span class="item">ROS2 Control</span>
+    </div>
+  </div>
+  <div class="phase-card p5">
+    <span class="phase-num">PHASE 5</span>
+    <h3 style="color:#ff4444">数据闭环</h3>
+    <div class="desc">执行数据通过Orin采集(MCAP/npz) → MAC转发(HTTP心跳穿透ECS隧道) → 4090训练(H-JEPA/GR00T) → 模型部署到Sys1/Sys2 → DDS映射表更新，形成持续进化的自学习闭环。</div>
+    <div class="items">
+      <span class="item">MCAP采集</span><span class="item">隧道穿透</span><span class="item">4090训练</span><span class="item">权重部署</span><span class="item">映射优化</span>
+    </div>
+  </div>
+</div>
+
+<!-- Dispatch Table -->
+<div class="dispatch-table">
+  <h3>🔀 DDS Skill Dispatch 映射表（部分示例）</h3>
+  <table>
+    <thead>
+      <tr><th>条件ID</th><th>场景描述</th><th>→ 模型</th><th>运行节点</th><th>→ 动作</th><th>典型延迟</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="cond">C001</td><td>料盘取料·视觉定位</td><td class="model">ACT</td><td class="host">Sys10 · 4060</td><td class="act">A01-A04</td><td>&lt;5ms</td></tr>
+      <tr><td class="cond">C004</td><td>力控插入·400G力反馈</td><td class="model">VLA-T ⭐</td><td class="host">Sys11 · 4060</td><td class="act">A07-A10</td><td>&lt;5ms</td></tr>
+      <tr><td class="cond">C006</td><td>BERT测试仓·AOI目检</td><td class="model">SmolVLA</td><td class="host">Sys11 · 4060</td><td class="act">A15-A18</td><td>&lt;5ms</td></tr>
+      <tr><td class="cond">C014</td><td>400G光口·力控插拔</td><td class="model">GR00T N1.7</td><td class="host">Sys2 · 4090</td><td class="act">A22-A25</td><td>~280ms</td></tr>
+      <tr><td class="cond">C039</td><td>透镜对准·亚微米耦合</td><td class="model">H-JEPA zFlow</td><td class="host">Sys1 · 4090</td><td class="act">A35-A38</td><td>&lt;5ms</td></tr>
+      <tr><td class="cond">C050</td><td>异常检测·安全停止</td><td class="model">Rule Engine</td><td class="host">Sys0 · Orin</td><td class="act">S01-S04</td><td>&lt;1ms</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Data Loop -->
+<div class="data-loop">
+  <h3>🔄 数据闭环流程</h3>
+  <div class="loop-flow">
+    <div class="loop-node ln1">Orin 采集<br>MCAP/npz</div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node ln2">MAC 转发<br>HTTP心跳5s</div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node ln3">4090 训练<br>H-JEPA/GR00T</div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node ln4">模型部署<br>Sys1/Sys2</div>
+    <span class="loop-arrow">→</span>
+    <div class="loop-node ln5">DDS 更新<br>映射表优化</div>
+  </div>
+  <div class="loop-desc">
+    执行数据自动回流到训练管道 → 每100次迭代更新模型权重 → 部署到推理节点 → DDS条件-模型映射表自动优化。<br>
+    形成「执行越多、模型越准、映射越优」的正向飞轮。
+  </div>
+</div>
+
+<!-- Related links -->
+<div class="related">
+  <h3>📎 相关页面</h3>
+  <div class="links">
+    <a href="/drawio.html?file=dds-model-pipeline.drawio" class="edit">✏️ 在 draw.io 中编辑完整架构图</a>
+    <a href="/drawio.html?file=dds-architecture.drawio">📐 DDS 五层架构图</a>
+    <a href="/dds-data-space.html">🌐 DDS 数据空间</a>
+    <a href="/dds-skill-master.html">📋 原子技能库 (242条)</a>
+    <a href="/dds-skill-map.html">🗺️ 技能映射地图</a>
+    <a href="/dds-editor.html">⚙️ DDS 数据编辑器</a>
+    <a href="/hybrid-arch.html">🔀 视触觉混合架构</a>
+    <a href="/hjepa-arch.html">🔄 H-JEPA zFlow</a>
+    <a href="/kanban.html">📊 项目看板</a>
+    <a href="/system-interfaces.html">🔌 系统接口</a>
+  </div>
+</div>
+
+<div class="footer">© 2026 智蜂创元 · datadrive.world · DDS v2.7.5 · Data-Driven System Architecture</div>
+
+</div>
+</body>
+</html>
