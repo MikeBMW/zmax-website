@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z700 产品立项总指导书 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.8;font-size:15px}
+.wrap{max-width:1100px;margin:0 auto;padding:30px 20px}
+
+/* Cover */
+.cover{text-align:center;padding:60px 20px 40px;border-bottom:3px solid #00d4aa;margin-bottom:40px}
+.cover h1{font-size:36px;color:#00d4aa;letter-spacing:2px;margin-bottom:10px}
+.cover .sub{font-size:18px;color:#8b949e;margin-bottom:6px}
+.cover .meta{font-size:13px;color:#555;margin-top:20px}
+
+/* TOC */
+.toc{background:#0d1117;border:1px solid #1a2a3a;border-radius:12px;padding:24px 28px;margin-bottom:40px;page-break-after:always}
+.toc h2{color:#f0a500;font-size:20px;margin-bottom:16px;text-align:center}
+.toc ol{padding-left:20px;columns:2;column-gap:30px}
+.toc li{font-size:13px;color:#8b949e;margin-bottom:6px;break-inside:avoid}
+.toc li a{color:#58a6ff;text-decoration:none}
+
+/* Chapters */
+.chapter{margin-bottom:50px;page-break-before:always}
+.chapter:first-of-type{page-break-before:auto}
+.chapter h2{font-size:24px;color:#00d4aa;border-bottom:2px solid #00d4aa33;padding-bottom:10px;margin-bottom:20px}
+.chapter h3{font-size:17px;color:#58a6ff;margin:20px 0 10px}
+.chapter h4{font-size:14px;color:#a371f7;margin:14px 0 8px}
+.chapter p{font-size:14px;color:#8b949e;margin-bottom:12px}
+.chapter strong{color:#c8d1d9}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;margin:14px 0;font-size:13px}
+th{background:#1a2233;padding:10px 12px;text-align:left;color:#00d4aa;font-weight:700;font-size:12px}
+td{padding:9px 12px;border-bottom:1px solid #141a24}
+tr:nth-child(even) td{background:#080c14}
+
+/* KPI cards */
+.kpi-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:16px 0}
+.kpi-card{background:#0d1117;border:1px solid #1a2a3a;border-radius:10px;padding:16px 24px;text-align:center;min-width:110px;flex:1}
+.kpi-card .kpi-val{font-size:32px;font-weight:900;color:#00d4aa}
+.kpi-card .kpi-lab{font-size:11px;color:#8b949e;margin-top:4px}
+
+/* Info boxes */
+.info-box{background:#0d1117;border-left:3px solid #58a6ff;border-radius:6px;padding:14px 18px;margin:12px 0;font-size:13px}
+.info-box.gold{border-left-color:#f0a500}
+.info-box.green{border-left-color:#3fb950}
+.info-box.red{border-left-color:#ff4444}
+
+/* Sys nodes */
+.sys-row{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.sys-node{flex:1;min-width:150px;background:#0d1117;border:2px solid #1a2a3a;border-radius:10px;padding:14px;text-align:center}
+.sys-node h4{font-size:14px;margin-bottom:4px}
+.sys-node p{font-size:11px;color:#8b949e;line-height:1.5}
+.sys-node.s0{border-color:#d4a800}.sys-node.s0 h4{color:#d4a800}
+.sys-node.s10{border-color:#f0a500}.sys-node.s10 h4{color:#f0a500}
+.sys-node.s11{border-color:#a371f7}.sys-node.s11 h4{color:#a371f7}
+.sys-node.s1{border-color:#58a6ff}.sys-node.s1 h4{color:#58a6ff}
+.sys-node.s2{border-color:#00d4aa}.sys-node.s2 h4{color:#00d4aa}
+
+/* Pipeline */
+.pipe-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:16px 0;font-size:12px}
+.pipe-step{border:2px solid;border-radius:8px;padding:10px 16px;text-align:center;min-width:90px;background:#0d1117}
+.pipe-arr{color:#555;font-size:16px;font-weight:700}
+.ps1{border-color:#58a6ff;color:#58a6ff}.ps2{border-color:#3fb950;color:#3fb950}
+.ps3{border-color:#f0a500;color:#f0a500}.ps4{border-color:#a371f7;color:#a371f7}
+.ps5{border-color:#ff6b6b;color:#ff6b6b}
+
+/* Model cards */
+.model-row{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0}
+.model-card{flex:1;min-width:160px;background:#0d1117;border:1px solid #1a2a3a;border-radius:10px;padding:18px 16px;text-align:center}
+.model-card h4{font-size:15px;margin-bottom:6px}
+.model-card .spec{font-size:11px;color:#8b949e;line-height:1.6}
+
+/* Value list */
+.val-list{list-style:none;padding:0}
+.val-list li{padding:6px 0;font-size:13px;color:#8b949e;border-bottom:1px solid #141a24}
+.val-list li::before{content:'▸ ';color:#00d4aa}
+
+/* Appendix */
+.appendix{background:#0d1117;border:1px solid #1a2a3a;border-radius:12px;padding:20px 24px;margin-bottom:20px}
+.appendix h3{color:#f0a500;font-size:15px;margin-bottom:12px}
+
+/* Toolbar */
+.toolbar{text-align:center;padding:12px;margin-bottom:20px}
+.export-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;background:#f0a50018;border:2px solid #f0a50044;border-radius:8px;color:#f0a500;text-decoration:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.export-btn:hover{border-color:#f0a500;background:#f0a50022}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#0d1117;border:1px solid #00d4aa33;border-radius:6px;color:#00d4aa;text-decoration:none;font-size:12px;margin-right:12px}
+
+.footer{text-align:center;padding:30px;color:#555;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
+
+/* Print */
+@media print {
+  body{background:#fff!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .wrap{max-width:100%;padding:15px}
+  .toolbar,.back-btn,.export-btn{display:none!important}
+  .cover{border-bottom:3px solid #000!important;padding:30px 10px}
+  .cover h1{color:#000!important;font-size:28px}
+  .cover .sub{color:#555!important}
+  .toc{background:#fafafa!important;border:1px solid #ccc!important}
+  .toc h2{color:#000!important}
+  .chapter h2{color:#000!important;border-bottom-color:#999!important;font-size:20px}
+  .chapter h3{color:#000!important;font-size:15px}
+  .chapter h4{color:#444!important}
+  .chapter p{color:#333!important}
+  table{background:#fff!important;font-size:10px}
+  th{background:#e8e8e8!important;color:#000!important}
+  td{border-bottom:1px solid #ccc!important}
+  tr:nth-child(even) td{background:#f8f8f8!important}
+  .kpi-card{background:#f5f5f5!important;border:1px solid #ddd!important}
+  .kpi-val{color:#000!important}
+  .kpi-lab{color:#555!important}
+  .info-box{background:#fafafa!important;border-left-color:#999!important;color:#333!important}
+  .sys-node{background:#fafafa!important;border-color:#999!important}
+  .sys-node h4{color:#000!important}
+  .sys-node p{color:#555!important}
+  .pipe-step{background:#fafafa!important;border-color:#999!important;color:#000!important}
+  .model-card{background:#fafafa!important;border-color:#ccc!important}
+  .model-card h4{color:#000!important}
+  .model-card .spec{color:#555!important}
+  .val-list li{color:#333!important}
+  .appendix{background:#fafafa!important;border:1px solid #ddd!important}
+  .appendix h3{color:#000!important}
+  .footer{display:none!important}
+  .chapter{page-break-before:always}
+  .chapter:first-of-type,.ch1{page-break-before:auto}
+  @page{size:A4;margin:18mm}
+}
+
+@media(max-width:768px){
+  .wrap{padding:14px 10px}
+  .cover h1{font-size:24px}
+  .toc ol{columns:1}
+  .kpi-card{min-width:80px;padding:10px}
+  .kpi-val{font-size:24px}
+}
+</style>
+<script src="/zmax-auth.js"></script>
+</head>
+<body>
+
+<div class="toolbar">
+  <a href="/" class="back-btn">← 返回主页</a>
+  <a href="javascript:window.print()" class="export-btn">🖨️ 导出 PDF（完整立项总指导书）</a>
+</div>
+
+<div class="wrap">
+
+<!-- ═══════════════ COVER ═══════════════ -->
+<div class="cover">
+  <h1>Z700 产品立项总指导书</h1>
+  <p class="sub">具身智能 · 光模块精密制造</p>
+  <p class="sub">Z-MAX Data-Driven System</p>
+  <p class="meta">智蜂创元（ZFCY）· datadrive.world · v2.8.0 · 2026-07-29</p>
+  <p class="meta">密级：内部 · 文档编号：ZMAX-MDB-2026-001</p>
+</div>
+
+<!-- ═══════════════ TOC ═══════════════ -->
+<div class="toc">
+  <h2>目 录</h2>
+  <ol>
+    <li><a href="#ch1">产品定义</a></li>
+    <li><a href="#ch2">工厂与工台场景</a></li>
+    <li><a href="#ch3">流程管理</a></li>
+    <li><a href="#ch4">合作模式</a></li>
+    <li><a href="#ch5">原子技能体系</a></li>
+    <li><a href="#ch6">全局数据空间（DDS）</a></li>
+    <li><a href="#ch7">系统设计</a></li>
+    <li><a href="#ch8">系统接口</a></li>
+    <li><a href="#ch9">模型混合架构</a></li>
+    <li><a href="#ch10">测试验证</a></li>
+    <li><a href="#ch11">投资回报（ROI）</a></li>
+    <li><a href="#ch12">价值总结</a></li>
+    <li><a href="#appendix">附录</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════ CH1 · 产品定义 ═══════════════ -->
+<div class="chapter ch1" id="ch1">
+<h2>一、产品定义</h2>
+
+<h3>1.1 公司概况</h3>
+<table>
+<tr><th style="width:140px">项目</th><th>内容</th></tr>
+<tr><td>公司名称</td><td>智蜂创元（ZFCY）</td></tr>
+<tr><td>产品品牌</td><td><strong>Z-MAX</strong> · 具身智能精密制造</td></tr>
+<tr><td>旗舰型号</td><td><strong>Z700</strong> 轮式双臂机器人</td></tr>
+<tr><td>产品域名</td><td>datadrive.world</td></tr>
+<tr><td>创立年份</td><td>2026</td></tr>
+</table>
+
+<h3>1.2 产品定位</h3>
+<p>Z-MAX Z700 是面向<strong>光模块精密制造</strong>的具身智能机器人系统。不做通用大模型，而是将产线拆解为<strong>54种条件场景</strong>，每种场景映射到最优<strong>专用小模型</strong>（5模型池），输出<strong>48种原子动作</strong>，由<strong>4款机器人</strong>执行，形成<strong>感知→推理→执行→回流</strong>的完整数据闭环。</p>
+
+<h3>1.3 核心 KPI</h3>
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-val">±0.02mm</div><div class="kpi-lab">重复定位精度</div></div>
+  <div class="kpi-card"><div class="kpi-val">&gt;99%</div><div class="kpi-lab">关键工序良率</div></div>
+  <div class="kpi-card"><div class="kpi-val">&gt;10kHz</div><div class="kpi-lab">力控闭环带宽</div></div>
+  <div class="kpi-card"><div class="kpi-val">&lt;15s</div><div class="kpi-lab">单次插拔节拍</div></div>
+  <div class="kpi-card"><div class="kpi-val">&lt;5ms</div><div class="kpi-lab">本地推理延迟</div></div>
+  <div class="kpi-card"><div class="kpi-val">242</div><div class="kpi-lab">原子技能</div></div>
+</div>
+
+<h3>1.4 产品线</h3>
+<table>
+<tr><th>型号</th><th>级别</th><th>形态</th><th>负载</th><th>核心场景</th></tr>
+<tr><td><strong>Z700</strong></td><td>L4</td><td>轮式双臂</td><td>≥7kg</td><td>老化箱插拔·产线巡检·多工位联动</td></tr>
+<tr><td><strong>Z700F</strong></td><td>L2</td><td>固定式</td><td>—</td><td>单工位精密插拔·SR5-C+DH夹爪</td></tr>
+<tr><td><strong>Z100L</strong></td><td>L2</td><td>固定式</td><td>10kg</td><td>上下料·料笼/料盘搬运</td></tr>
+<tr><td><strong>Z700F+AOI</strong></td><td>L2</td><td>固定式</td><td>—</td><td>精密AOI目检·显微镜检·缺陷判定</td></tr>
+</table>
+
+<h3>1.5 AI 技术竞争力</h3>
+<div class="info-box">
+  <strong>四层架构壁垒：</strong>① 多模态感知融合（视觉+触觉+力觉+关节+MES）→ ② VLA-T 力控视觉语言动作模型 → ③ zFlow 潜空间流式推理 → ④ 力位混合控制闭环
+</div>
+<p>与传统方案对比：端到端条件驱动（非任务编程）、多模型池（非单一通用模型）、原子技能组合（非端到端黑箱）、数据闭环自进化、边缘-云端协同推理。</p>
+</div>
+
+<!-- ═══════════════ CH2 · 工厂与工台场景 ═══════════════ -->
+<div class="chapter" id="ch2">
+<h2>二、工厂与工台场景</h2>
+
+<h3>2.1 产线四区总览</h3>
+<table>
+<tr><th>区域</th><th>代号</th><th>工站范围</th><th>工序定位</th><th>人员规模</th></tr>
+<tr><td>COC 基板区</td><td>COC</td><td>I101-I124 (24站)</td><td>DA贴片→WB金线键合→PEI Cover</td><td>~15人</td></tr>
+<tr><td>OE 光引擎区</td><td>OE</td><td>I125-I196 (72站)</td><td>IPSN绑定→拆包→显微镜检→点胶→烘烤→FW烧录</td><td>~75人</td></tr>
+<tr><td>MOD 模块组装区</td><td>MOD</td><td>I197-I222 (26站)</td><td>模块组装→测试→终检→包装</td><td>~114人</td></tr>
+<tr><td>WH 仓库物流区</td><td>WH</td><td>I223-I228+I500</td><td>入库→存储→出库→FQC终检</td><td>—</td></tr>
+</table>
+
+<h3>2.2 光模块产线三阶段</h3>
+<table>
+<tr><th>阶段</th><th>工序数</th><th>地点</th><th>人数</th><th>核心设备</th></tr>
+<tr><td>COC（基板）</td><td>18道</td><td>储翰</td><td>~15</td><td>DA贴片机·WB键合机·等离子清洗</td></tr>
+<tr><td>OE（光引擎）</td><td>26站（72子工序）</td><td>苏州</td><td>75</td><td>贴片·点胶·烘烤·FW烧录·显微镜</td></tr>
+<tr><td>模块（组装）</td><td>29道</td><td>苏州/铜陵</td><td>114</td><td>ATS4125台·BERT·眼图·温循</td></tr>
+</table>
+
+<h3>2.3 机器人分配规则</h3>
+<div class="info-box green">
+  <strong>机器人分配原则（子工序级别）：</strong><br>
+  · 含"目检/显微镜检/镜检" → <strong>Z700F+AOI</strong>（精密目检）<br>
+  · 含"上料/下料/料笼/料盘" → <strong>Z100L</strong>（搬运）<br>
+  · 纯自动设备（DA贴片/Plasma/烘烤/FW烧录）→ 不配机器人
+</div>
+
+<h3>2.4 800G DR8 产品规格</h3>
+<table>
+<tr><th>项目</th><th>规格</th></tr>
+<tr><td>产品型号</td><td>800G DR8</td></tr>
+<tr><td>料号</td><td>260-B4103</td></tr>
+<tr><td>连接器</td><td>MPO多芯 · OSFP</td></tr>
+<tr><td>测试设备</td><td>BERT · 眼图仪 · EVB · 温循箱</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ CH3 · 流程管理 ═══════════════ -->
+<div class="chapter" id="ch3">
+<h2>三、流程管理</h2>
+
+<h3>3.1 开发体系</h3>
+<p>采用<strong>ASPICE V-Model</strong>开发流程，覆盖需求分析→系统设计→软件设计→单元实现→集成测试→系统测试→验收全生命周期。双公司架构（智蜂×它石/他山），含RASI责任矩阵、WBS工作分解、技术协议管理。</p>
+
+<div class="info-box">
+  <strong>核心页面：</strong>V-Model 智蜂版（aspice-vmodel.html）· 它石/他山版（vmodel-tshan.html）· 项目看板（kanban.html）· 复盘（retrospective.html）· 验收（acceptance.html）
+</div>
+
+<h3>3.2 项目管理看板</h3>
+<table>
+<tr><th>角色</th><th>成员</th><th>职责</th></tr>
+<tr><td>总工/总架构</td><td>xspace（静静）</td><td>整体系统+Sys1+Sys11+Sys12+4060</td></tr>
+<tr><td>PM+产品+模型</td><td>web</td><td>Sys2(VTLA+GR00T)+zmax-website+看板</td></tr>
+<tr><td>硬件+安全+测试</td><td>小芳</td><td>Sys0+Mac+Orin Nano+测试报告</td></tr>
+</table>
+
+<h3>3.3 Git 版本协同</h3>
+<table>
+<tr><th>规模</th><th>操作</th><th>Tag</th><th>示例</th></tr>
+<tr><td>小改</td><td>只推分支 commit</td><td>不打</td><td>[v2.4.1] 修按钮颜色</td></tr>
+<tr><td>中改</td><td>三工程同步打 tag</td><td>v2.4-sync-0719</td><td>三库联动</td></tr>
+<tr><td>大改</td><td>tag + Release Note</td><td>v2.5.0</td><td>里程碑</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ CH4 · 合作模式 ═══════════════ -->
+<div class="chapter" id="ch4">
+<h2>四、合作模式</h2>
+
+<h3>4.1 三方协作架构</h3>
+<table>
+<tr><th>公司</th><th>角色</th><th>核心能力</th><th>负责模块</th></tr>
+<tr><td><strong>智蜂创元（ZFCY）</strong></td><td>主承包商</td><td>具身智能·VLA模型·系统集成</td><td>整体方案·AI引擎·DDS平台</td></tr>
+<tr><td>它石（供应商A）</td><td>硬件供应</td><td>机械臂·传感器·执行器</td><td>机械本体·SR5-C·六维力传感器</td></tr>
+<tr><td>他山（供应商B）</td><td>软件供应</td><td>视觉检测·MES对接</td><td>AOI算法·产线信息化</td></tr>
+</table>
+
+<h3>4.2 RASI 责任矩阵（摘要）</h3>
+<table>
+<tr><th>工作包</th><th>智蜂</th><th>它石</th><th>他山</th></tr>
+<tr><td>系统架构设计</td><td>R</td><td>C</td><td>C</td></tr>
+<tr><td>AI模型训练</td><td>R</td><td>—</td><td>—</td></tr>
+<tr><td>机械本体</td><td>A</td><td>R</td><td>—</td></tr>
+<tr><td>视觉检测</td><td>A</td><td>—</td><td>R</td></tr>
+<tr><td>产线集成</td><td>R</td><td>S</td><td>S</td></tr>
+</table>
+<p style="font-size:11px;color:#555">R=负责 · A=审批 · S=支持 · C=咨询 · I=知情</p>
+</div>
+
+<!-- ═══════════════ CH5 · 原子技能 ═══════════════ -->
+<div class="chapter" id="ch5">
+<h2>五、原子技能体系</h2>
+
+<h3>5.1 总览</h3>
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-val">242</div><div class="kpi-lab">原子技能</div></div>
+  <div class="kpi-card"><div class="kpi-val">11</div><div class="kpi-lab">大类</div></div>
+  <div class="kpi-card"><div class="kpi-val">48</div><div class="kpi-lab">产线动作</div></div>
+  <div class="kpi-card"><div class="kpi-val">4</div><div class="kpi-lab">安全动作</div></div>
+  <div class="kpi-card"><div class="kpi-val">54</div><div class="kpi-lab">条件场景</div></div>
+</div>
+
+<h3>5.2 技能分类（11大类）</h3>
+<table>
+<tr><th>分类</th><th>编号</th><th>说明</th></tr>
+<tr><td>XPO 高密可插拔光学</td><td>XPO001-XPO059</td><td>光模块插拔·对准·耦合·焊接</td></tr>
+<tr><td>NPO 近封装光学</td><td>NPO001-NPO051</td><td>透镜安装·光纤耦合·老炼</td></tr>
+<tr><td>载具动作</td><td>AO001-AO043</td><td>料盘/料笼/Tray/Magazine操作</td></tr>
+<tr><td>装配工艺</td><td>—</td><td>零件安装·紧固·压合·点胶</td></tr>
+<tr><td>操作执行</td><td>—</td><td>机械臂路径·末端执行</td></tr>
+<tr><td>感知定位</td><td>—</td><td>视觉对准·力觉搜索·扫码</td></tr>
+<tr><td>质量检测</td><td>—</td><td>AOI·目检·显微镜·BERT</td></tr>
+<tr><td>安全集成</td><td>S01-S04</td><td>急停·力超限·碰撞·温度保护</td></tr>
+<tr><td>载具物流</td><td>—</td><td>AGV搬运·料笼串线</td></tr>
+<tr><td>学习泛化</td><td>—</td><td>新品类迁移·参数自适应</td></tr>
+<tr><td>移动导航</td><td>—</td><td>Z700自主导航·路径规划</td></tr>
+</table>
+
+<h3>5.3 核心工序链</h3>
+<div class="info-box gold">
+  <strong>100G QSFP28 → 400G QSFP-DD → 800G OSFP</strong><br>
+  每种型号10步标准工序：取料→扫码→预插定位→力控插入→二次推入→测试→拔出→AOI检测→合格品放置→不良品放置
+</div>
+<p>API 端点：<code>/api/dds-atomic-api.php</code>（GET查询 · 分类筛选 · 优先级排序）</p>
+</div>
+
+<!-- ═══════════════ CH6 · DDS ═══════════════ -->
+<div class="chapter" id="ch6">
+<h2>六、全局数据空间（DDS）</h2>
+
+<h3>6.1 DDS 架构</h3>
+<div class="pipe-row">
+  <div class="pipe-step ps1">dds.db<br>SQLite</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps2">dds-api.php<br>CRUD</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps3">dds-export.py<br>cron/2min</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps4">dds-global.js<br>12KB·压缩</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps5">全站63页面<br>window.DDS.*</div>
+</div>
+
+<h3>6.2 DDS 数据层</h3>
+<table>
+<tr><th>模块</th><th>内容</th><th>示例</th></tr>
+<tr><td>company</td><td>公司信息</td><td>智蜂创元·Z700·datadrive.world</td></tr>
+<tr><td>kpi</td><td>KPI 指标</td><td>±0.02mm · &gt;99% · &gt;10kHz · &lt;15s</td></tr>
+<tr><td>robots</td><td>机器人产品线</td><td>Z700(L4)·Z700F(L2)·Z100L(L2)·Z700F+AOI(L2)</td></tr>
+<tr><td>systems</td><td>系统节点</td><td>Sys0(Orin)·Sys10(4060ACT)·Sys11(4060SmolVLA)·Sys1(4090H-JEPA)·Sys2(4090GR00T)</td></tr>
+<tr><td>factory_zones</td><td>工厂四区</td><td>COC(I101-I124)·OE(I125-I196)·MOD(I197-I222)·WH(I223-I500)</td></tr>
+<tr><td>skills</td><td>原子技能计数</td><td>242条·11大类·9分类</td></tr>
+<tr><td>roadmap</td><td>产品路线图</td><td>v1.0→v2.0→v3.0</td></tr>
+</table>
+
+<h3>6.3 改一处全站同步</h3>
+<p>全站63个页面中硬编码数据通过 <code>dds-global.js</code> 统一管理。修改共享数据只改一个文件，cp 部署后所有引用页面自动生效。通过 dds-editor.html 可在线编辑，自动保存 + 操作记录 + 一键恢复。</p>
+
+<div class="info-box">
+  <strong>API 端点：</strong>GET /api/dds-all.php（全量数据）· POST /dds-api.php（CRUD）· GET /api/dds-atomic-api.php（原子技能）
+</div>
+</div>
+
+<!-- ═══════════════ CH7 · 系统设计 ═══════════════ -->
+<div class="chapter" id="ch7">
+<h2>七、系统设计</h2>
+
+<h3>7.1 DDS 五阶段推理管线</h3>
+<div class="pipe-row">
+  <div class="pipe-step ps1">📷 条件输入<br>5传感器→双路适配</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps2">🔀 模型路由<br>5模型池</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps3">⚡ 动作解码<br>48动作</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps4">🤖 执行层<br>4机器人</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps5">🔄 数据闭环<br>训练回流</div>
+</div>
+
+<h3>7.2 条件输入 · 双路并行汇聚</h3>
+<div class="info-box">
+  <strong>传感器数据链：</strong>📷视觉D405 → 🖐️触觉六维力 → 🔧关节6轴 → <span style="color:#3fb950">多模态编码适配</span>（结构化张量）<br>
+  <strong>系统信号链：</strong>📡MES信号 → ⚡安全信号 → <span style="color:#ff4444">条件编码适配</span>（编码输入）<br>
+  <strong>两路汇聚 → </strong><span style="color:#58a6ff">条件编码器</span>（多模态融合→Condition Vector C001-C054）→ DDS Skill Dispatch 查表
+</div>
+
+<h3>7.3 模型池</h3>
+<div class="model-row">
+  <div class="model-card"><h4 style="color:#58a6ff">ACT</h4><div class="spec">Action Chunking<br>取料·扫码·放置<br>Sys10 · 4060<br>&lt;5ms</div></div>
+  <div class="model-card"><h4 style="color:#3fb950">SmolVLA</h4><div class="spec">VLA 视觉语言动作<br>测试·AOI·目检<br>Sys11 · 4060<br>&lt;5ms</div></div>
+  <div class="model-card"><h4 style="color:#f0a500">VLA-T ⭐</h4><div class="spec">力控VLA · 主力<br>精密插拔·核心<br>Sys11 · 4060<br>&lt;5ms</div></div>
+  <div class="model-card"><h4 style="color:#a371f7">GR00T N1.7</h4><div class="spec">通用机器人基础模型<br>复杂操作·泛化<br>Sys2 · 4090<br>~280ms</div></div>
+  <div class="model-card"><h4 style="color:#d4a800">H-JEPA zFlow</h4><div class="spec">预测编码·潜空间<br>透镜对准·耦合<br>Sys1 · 4090<br>&lt;5ms · 11MB</div></div>
+</div>
+
+<h3>7.4 Dispatch 映射（示例）</h3>
+<table>
+<tr><th>条件ID</th><th>场景描述</th><th>→ 模型</th><th>运行节点</th><th>→ 动作</th><th>延迟</th></tr>
+<tr><td>C001</td><td>料盘取料·视觉定位</td><td>ACT</td><td>Sys10·4060</td><td>A01-A04</td><td>&lt;5ms</td></tr>
+<tr><td>C004</td><td>力控插入·400G力反馈</td><td>VLA-T</td><td>Sys11·4060</td><td>A07-A10</td><td>&lt;5ms</td></tr>
+<tr><td>C006</td><td>BERT测试仓·AOI目检</td><td>SmolVLA</td><td>Sys11·4060</td><td>A15-A18</td><td>&lt;5ms</td></tr>
+<tr><td>C014</td><td>400G光口·力控插拔</td><td>GR00T N1.7</td><td>Sys2·4090</td><td>A22-A25</td><td>~280ms</td></tr>
+<tr><td>C039</td><td>透镜对准·亚微米耦合</td><td>H-JEPA zFlow</td><td>Sys1·4090</td><td>A35-A38</td><td>&lt;5ms</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ CH8 · 系统接口 ═══════════════ -->
+<div class="chapter" id="ch8">
+<h2>八、系统接口</h2>
+
+<h3>8.1 系统节点拓扑</h3>
+<div class="sys-row">
+  <div class="sys-node s0"><h4>Sys0</h4><p>Orin Nano<br>ROS2 · SR5-C<br>实时控制 1-5ms<br>边缘执行节点</p></div>
+  <div class="sys-node s10"><h4>Sys10</h4><p>RTX 4060<br>ACT · 取料扫码<br>本地推理 &lt;5ms<br>低延迟操作</p></div>
+  <div class="sys-node s11"><h4>Sys11</h4><p>RTX 4060<br>SmolVLA · VLA-T ⭐<br>本地推理 &lt;5ms<br>主力推理节点</p></div>
+  <div class="sys-node s1"><h4>Sys1</h4><p>RTX 4090<br>H-JEPA zFlow · 11MB<br>本地推理 &lt;5ms<br>精密操作专用</p></div>
+  <div class="sys-node s2"><h4>Sys2</h4><p>RTX 4090<br>GR00T N1.7 · 6.5G<br>远程推理 ~280ms<br>ECS隧道穿透</p></div>
+</div>
+
+<h3>8.2 模型推理 API</h3>
+<table>
+<tr><th>端点</th><th>方法</th><th>节点</th><th>模型</th><th>延迟</th></tr>
+<tr><td>/infer/act</td><td>POST</td><td>Sys10·4060</td><td>ACT</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/smolvla</td><td>POST</td><td>Sys11·4060</td><td>SmolVLA</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/vla-t</td><td>POST</td><td>Sys11·4060</td><td>VLA-T</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/hjepa</td><td>POST</td><td>Sys1·4090</td><td>H-JEPA</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/groot</td><td>POST</td><td>Sys2·4090</td><td>GR00T</td><td>~280ms</td></tr>
+</table>
+
+<h3>8.3 DDS Skill Dispatch</h3>
+<div class="info-box gold">
+  <strong>POST /dds/dispatch</strong><br>
+  <code>{"condition_id":"C014","sensors":{"force_6d":[...],"joint_pos":[...],"image_b64":"..."}}</code><br>
+  → <code>{"model":"vla-t","action_id":"A14","node":"Sys11","latency_ms":3.2}</code>
+</div>
+
+<h3>8.4 数据闭环链路</h3>
+<div class="pipe-row">
+  <div class="pipe-step ps4">Orin 采集<br>MCAP·npz</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps1">MAC 转发<br>HTTP心跳5s</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps3">4090 训练<br>H-JEPA·GR00T</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps2">模型部署<br>Sys1/Sys2</div><span class="pipe-arr">→</span>
+  <div class="pipe-step ps5">DDS 更新<br>映射表优化</div>
+</div>
+</div>
+
+<!-- ═══════════════ CH9 · 模型混合架构 ═══════════════ -->
+<div class="chapter" id="ch9">
+<h2>九、模型混合架构</h2>
+
+<h3>9.1 视触觉多模态混合架构</h3>
+<p>多模态感知融合系统：RGB-D视觉（D405）提供空间定位和端面检测，六维力/触觉传感器提供接触力反馈，关节编码器提供本体感知。三路信号经<strong>多模态编码适配器</strong>统一为结构化张量，进入模型池进行条件匹配推理。</p>
+
+<h3>9.2 模型引擎选择策略</h3>
+<table>
+<tr><th>场景特征</th><th>选用模型</th><th>原因</th></tr>
+<tr><td>重复性取料放置</td><td>ACT</td><td>Action Chunking，低延迟简单操作</td></tr>
+<tr><td>视觉判断+常规操作</td><td>SmolVLA</td><td>视觉语言动作，AOI目检场景</td></tr>
+<tr><td>力控精密操作</td><td>VLA-T</td><td>Force-Control VLA，插拔核心</td></tr>
+<tr><td>未见过的复杂场景</td><td>GR00T N1.7</td><td>通用泛化能力，远程大模型</td></tr>
+<tr><td>亚微米级对准</td><td>H-JEPA zFlow</td><td>预测编码潜空间，透镜耦合</td></tr>
+</table>
+
+<h3>9.3 训练基础设施</h3>
+<table>
+<tr><th>节点</th><th>GPU</th><th>训练模型</th><th>数据源</th></tr>
+<tr><td>4090 云端</td><td>RTX 4090 24GB</td><td>H-JEPA · GR00T</td><td>Orin采集→MAC转发→ECS隧道</td></tr>
+<tr><td>4060 端侧</td><td>RTX 4060 8GB</td><td>ACT · SmolVLA · VLA-T</td><td>本地实时数据</td></tr>
+</table>
+</div>
+
+<!-- ═══════════════ CH10 · 测试验证 ═══════════════ -->
+<div class="chapter" id="ch10">
+<h2>十、测试验证</h2>
+
+<h3>10.1 性能指标体系</h3>
+<table>
+<tr><th>指标</th><th>目标值</th><th>当前值</th><th>验证方法</th></tr>
+<tr><td>重复定位精度</td><td>≤±0.05mm</td><td>±0.02mm</td><td>激光跟踪仪·千分表</td></tr>
+<tr><td>关键工序良率</td><td>≥99%</td><td>&gt;99%</td><td>AOI+人工抽检</td></tr>
+<tr><td>力控闭环带宽</td><td>≥5kHz</td><td>&gt;10kHz</td><td>力传感器标定台</td></tr>
+<tr><td>单次插拔节拍</td><td>≤20s</td><td>&lt;15s</td><td>高速摄像+时序分析</td></tr>
+<tr><td>模型推理延迟（本地）</td><td>≤10ms</td><td>&lt;5ms</td><td>ROS2 timestamp差值</td></tr>
+<tr><td>模型推理延迟（远程）</td><td>≤500ms</td><td>~280ms</td><td>HTTP往返测量</td></tr>
+</table>
+
+<h3>10.2 监控体系</h3>
+<div class="info-box green">
+  <strong>实时监控页面：</strong>monitor.html（系统运行状态）· performance.html（性能仪表盘）· data-quality.html（数据质量评估）· data-loop.html（数据闭环追踪）
+</div>
+
+<h3>10.3 测试场景覆盖</h3>
+<ul class="val-list">
+  <li>100G QSFP28：10步标准工序 × 3型号 = 30场景</li>
+  <li>400G QSFP-DD：10步标准工序 × 核心主力 = 10场景</li>
+  <li>800G OSFP：10步标准工序 × MPO多芯 = 10场景</li>
+  <li>异常场景：抓取失败·插入失败·力超限·急停 = 4场景</li>
+  <li><strong>合计：54种条件场景全覆盖</strong></li>
+</ul>
+</div>
+
+<!-- ═══════════════ CH11 · ROI ═══════════════ -->
+<div class="chapter" id="ch11">
+<h2>十一、投资回报（ROI）</h2>
+
+<h3>11.1 人工替代分析</h3>
+<table>
+<tr><th>岗位类型</th><th>现状</th><th>Z-MAX方案</th><th>替代率</th></tr>
+<tr><td>目检岗（显微镜/AOI目视）</td><td>~50人</td><td>Z700F+AOI自动判定</td><td>≥90%</td></tr>
+<tr><td>上下料岗（料盘搬运）</td><td>~20人</td><td>Z100L自动上下料</td><td>100%</td></tr>
+<tr><td>插拔测试岗（BERT/眼图）</td><td>~30人</td><td>Z700F力控插拔</td><td>≥80%</td></tr>
+<tr><td>巡检岗（产线走动检查）</td><td>~10人</td><td>Z700轮式自主巡检</td><td>100%</td></tr>
+<tr><td><strong>合计</strong></td><td><strong>~110人</strong></td><td><strong>4款机器人协同</strong></td><td><strong>~90人</strong></td></tr>
+</table>
+
+<h3>11.2 效率提升</h3>
+<table>
+<tr><th>指标</th><th>人工</th><th>Z-MAX</th><th>提升</th></tr>
+<tr><td>单次插拔节拍</td><td>~30s</td><td>&lt;15s</td><td>2×</td></tr>
+<tr><td>目检效率</td><td>~60s/件</td><td>&lt;5s/件</td><td>12×</td></tr>
+<tr><td>24h连续作业</td><td>3班倒</td><td>不间断</td><td>3×产能</td></tr>
+<tr><td>换型时间</td><td>~2h</td><td>&lt;30min（DDS条件重配）</td><td>4×</td></tr>
+</table>
+
+<h3>11.3 投资回报测算</h3>
+<div class="info-box red">
+  <strong>替代90人 × 年均成本15万 = 节省1,350万/年</strong><br>
+  设备投入：4款机器人 × 产线配置 ≈ 500-800万（一次性）<br>
+  <strong>投资回收期：&lt;1年</strong><br>
+  持续收益：AI模型持续进化，良率提升→减少返工→降低物料损耗
+</div>
+</div>
+
+<!-- ═══════════════ CH12 · 价值总结 ═══════════════ -->
+<div class="chapter" id="ch12">
+<h2>十二、价值总结</h2>
+
+<h3>12.1 技术壁垒</h3>
+<ul class="val-list">
+  <li><strong>条件驱动架构：</strong>54种场景×5模型池×48动作×4机器人，非通用大模型，而是产线深度优化的专用方案</li>
+  <li><strong>数据闭环自进化：</strong>Orin采集→4090训练→模型部署→DDS映射更新，执行越多模型越准</li>
+  <li><strong>边缘-云端协同：</strong>本地&lt;5ms实时控制 + 远程280ms复杂推理，兼顾精度和泛化</li>
+  <li><strong>原子技能可组合：</strong>242条原子技能，11大类，标准化接口，新品类快速适配</li>
+  <li><strong>242条产线验证：</strong>基于真实800G DR8产线数据，非仿真场景</li>
+</ul>
+
+<h3>12.2 落地能力</h3>
+<ul class="val-list">
+  <li>COC基板区 24站 · OE光引擎区 72站 · MOD模块区 26站 · WH仓库区 7站</li>
+  <li>ATS4125台测试设备 · BERT/眼图/EVB/温循全流程覆盖</li>
+  <li>V-Model开发体系 · RASI矩阵 · WBS · 技术协议管理</li>
+  <li>ASPICE合规 · 三方协作成熟模式</li>
+</ul>
+
+<h3>12.3 产品路线图</h3>
+<table>
+<tr><th>版本</th><th>时间线</th><th>里程碑</th><th>标准</th></tr>
+<tr><td>v1.0 原型验证</td><td>2026 Q2-Q3</td><td>单工位精密插拔·力控VLA-T</td><td>±0.05mm·95%良率</td></tr>
+<tr><td>v2.0 产线部署</td><td>2026 Q3-Q4</td><td>全线覆盖·4机器人协同·DDS全链路</td><td>±0.02mm·99%良率</td></tr>
+<tr><td>v3.0 智能工厂</td><td>2027</td><td>多工厂复制·自进化·无人值守</td><td>全自动·自恢复</td></tr>
+</ul>
+
+<h3>12.4 一句话价值</h3>
+<div class="info-box gold" style="font-size:16px;text-align:center;padding:24px">
+  <strong>Z-MAX Z700 — 用54种条件场景的专用AI，替代110人的光模块产线，±0.02mm精度、&gt;99%良率、&lt;15s节拍、1年内回本。</strong>
+</div>
+</div>
+
+<!-- ═══════════════ APPENDIX ═══════════════ -->
+<div class="chapter" id="appendix">
+<h2>附录</h2>
+
+<div class="appendix">
+<h3>A. 全站导航索引</h3>
+<table>
+<tr><th>分类</th><th>核心页面</th></tr>
+<tr><td>数字工厂</td><td>factory-3d.html · factory-fpv.html · factory-game.html · factory-mobile.html · factory-nav.html</td></tr>
+<tr><td>产线工艺</td><td>coc-process.html · oe-process.html · mod-process.html · wh-process.html</td></tr>
+<tr><td>产品与工位</td><td>robot.html · robot2.html · z700-advantage.html · station-i120.html · station-i142.html · station-i201.html</td></tr>
+<tr><td>智能引擎</td><td>dds-system-design.html · dds-data-space.html · dds-skill-master.html · dds-skill-map.html · dds-3d-space.html · dds-editor.html · hybrid-arch.html · hjepa-arch.html · comfyui.html</td></tr>
+<tr><td>运营监控</td><td>monitor.html · performance.html · data-loop.html · data-quality.html · tensor-flow.html</td></tr>
+<tr><td>工程管理</td><td>kanban.html · retrospective.html · acceptance.html · docs.html · project-hub.html</td></tr>
+<tr><td>开发体系</td><td>aspice-vmodel.html · vmodel-tshan.html · v-development.html · bypass-validation.html</td></tr>
+<tr><td>协作空间</td><td>chat.html · forum.html · app.html · console.html</td></tr>
+<tr><td>技术研究</td><td>neuromorphic.html · patent.html · survey.html · simulation.html · robogen.html · autonomous.html</td></tr>
+<tr><td>系统维护</td><td>recovery.html · orin_camera_view.html · offline.html · download-offline.html · readme.html</td></tr>
+</table>
+</div>
+
+<div class="appendix">
+<h3>B. DDS API 参考</h3>
+<table>
+<tr><th>端点</th><th>方法</th><th>说明</th></tr>
+<tr><td>/api/dds-all.php</td><td>GET</td><td>全量DDS数据JSON</td></tr>
+<tr><td>/dds-api.php</td><td>POST</td><td>DDS数据CRUD</td></tr>
+<tr><td>/api/dds-atomic-api.php</td><td>GET</td><td>242条原子技能查询</td></tr>
+<tr><td>/api/dds-changelog.php</td><td>GET</td><td>最近100条操作记录</td></tr>
+<tr><td>/save-drawio.php</td><td>GET/POST</td><td>架构图存储</td></tr>
+<tr><td>/generate-pptx.php</td><td>GET</td><td>导出PPT立项材料</td></tr>
+</table>
+</div>
+
+<div class="appendix">
+<h3>C. 项目仓库</h3>
+<table>
+<tr><th>仓库</th><th>说明</th></tr>
+<tr><td>MikeBMW/zmax-website</td><td>datadrive.world 全站源码（web维护）</td></tr>
+<tr><td>MikeBMW/lerobot-smolvla-lew</td><td>推理引擎（web分支=Sys2）</td></tr>
+<tr><td>MikeBMW/Isaac-GR00T</td><td>NVIDIA GR00T N1.7</td></tr>
+</table>
+</div>
+
+<div class="appendix">
+<h3>D. 版本历史</h3>
+<table>
+<tr><th>版本</th><th>日期</th><th>变更摘要</th></tr>
+<tr><td>v2.7.6</td><td>2026-07-29</td><td>system-interfaces + dds-system-design PDF导出</td></tr>
+<tr><td>v2.7.7</td><td>2026-07-29</td><td>dds-system-design 多模态编码适配 + 条件编码适配</td></tr>
+<tr><td>v2.7.8</td><td>2026-07-29</td><td>双路并行→汇聚架构·完全对齐drawio</td></tr>
+<tr><td>v2.7.9</td><td>2026-07-29</td><td>Phase1箭头全部水平化·UI规整</td></tr>
+<tr><td><strong>v2.8.0</strong></td><td><strong>2026-07-29</strong></td><td><strong>立项总指导书 master-doc.html 创建</strong></td></tr>
+</table>
+</div>
+</div>
+
+<div class="footer">© 2026 智蜂创元（ZFCY）· datadrive.world · Z700 产品立项总指导书 v2.8.0 · 密级：内部</div>
+
+</div>
+</body>
+</html>
