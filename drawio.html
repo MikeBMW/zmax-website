@@ -84,7 +84,15 @@ function doSave(){
   if(!n.endsWith('.drawio'))n+='.drawio';
   curFile=n;_pending='save';post({action:'export',format:'xmlsvg'});setSt('保存中...')
 }
-function doLoad(){refreshSelect();setSt('文件列表已刷新')}
+function doLoad(){
+  var n=document.getElementById('fn').value.trim();
+  if(!n){refreshSelect();setSt('文件列表已刷新');return}
+  if(!n.endsWith('.drawio'))n+='.drawio';
+  curFile=n;document.getElementById('fn').value=n;
+  document.getElementById('load').style.display='flex';
+  loadFile(n);
+  refreshSelect();
+}
 function doExport(){
   if(!curFile){msg('请先保存，再导出','err');return}
   fetch(API+'?file='+encodeURIComponent(curFile)).then(function(r){
