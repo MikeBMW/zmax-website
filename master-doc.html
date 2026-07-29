@@ -727,30 +727,29 @@ function exportMD(){
   p('# Z700 产品立项总指导书');p('');
   p('> 智蜂创元（ZFCY）· datadrive.world · v2.8.1 · 2026-07-29');p('');p('---');p('');
 
-  // TOC
   p('## 目录');p('');
   var toc=document.querySelectorAll('.toc li a');
   for(var i=0;i<toc.length;i++){p('- ['+toc[i].innerText+']('+toc[i].getAttribute('href')+')')}
   p('');p('---');p('');
 
-  // Each chapter
   var chapters=document.querySelectorAll('.chapter');
   for(var ci=0;ci<chapters.length;ci++){
     var ch=chapters[ci];
     var h2=ch.querySelector('h2');if(h2)p('## '+h2.innerText);p('');
-
     var kids=ch.children;
     for(var ki=0;ki<kids.length;ki++){
       var n=kids[ki],t=n.tagName,c=n.className||'',txt=n.innerText||'';
-
       if(t==='H3'){p('### '+txt);p('');}
       else if(t==='H4'){p('#### '+txt);p('');}
-      else if(t==='P'){if(txt.trim())p(txt.trim());p('');}
+      else if(t==='P'){var tx=txt.trim();if(tx)p(tx);p('');}
       else if(t==='TABLE'){
         var rows=n.querySelectorAll('tr');
         for(var ri=0;ri<rows.length;ri++){
           var cells=rows[ri].querySelectorAll('th,td'),row=[];
-          for(var ci2=0;ci2<cells.length;ci2++)row.push(cells[ci2].innerText.replace(/\|/g,'\\|').replace(/\n/g,' ').trim());
+          for(var ci2=0;ci2<cells.length;ci2++){
+            var ct=cells[ci2].innerText.replace(/\|/g,'\\|');
+            row.push(ct.replace(/\n/g,' ').trim());
+          }
           p('| '+row.join(' | ')+' |');
           if(ri===0)p('|'+row.map(function(){return'---'}).join('|')+'|');
         }
@@ -766,7 +765,10 @@ function exportMD(){
         for(var li=0;li<lis.length;li++)p((li+1)+'. '+lis[li].innerText);
         p('');
       }
-      else if(c.indexOf('info-box')>=0){p('> '+txt.replace(/\n/g,'\n> '));p('');}
+      else if(c.indexOf('info-box')>=0){
+        var bt=txt.replace(/\n/g,'\n> ');
+        p('> '+bt);p('');
+      }
       else if(c.indexOf('kpi-row')>=0){
         var kps=n.querySelectorAll('.kpi-card'),row=[];
         for(var ki2=0;ki2<kps.length;ki2++){
@@ -783,14 +785,16 @@ function exportMD(){
       else if(c.indexOf('model-row')>=0){
         var mds=n.querySelectorAll('.model-card');
         for(var mi=0;mi<mds.length;mi++){
-          p('- **'+mds[mi].querySelector('h4').innerText+'**: '+mds[mi].querySelector('.spec').innerText.replace(/\n/g,' · '));
+          var sp=mds[mi].querySelector('.spec').innerText.replace(/\n/g,' · ');
+          p('- **'+mds[mi].querySelector('h4').innerText+'**: '+sp);
         }
         p('');
       }
       else if(c.indexOf('sys-row')>=0){
         var nds=n.querySelectorAll('.sys-node');
         for(var ni=0;ni<nds.length;ni++){
-          p('- **'+nds[ni].querySelector('h4').innerText+'**: '+nds[ni].querySelector('p').innerText.replace(/\n/g,' · '));
+          var sp2=nds[ni].querySelector('p').innerText.replace(/\n/g,' · ');
+          p('- **'+nds[ni].querySelector('h4').innerText+'**: '+sp2);
         }
         p('');
       }
@@ -801,23 +805,12 @@ function exportMD(){
           var rows=tabs[ti].querySelectorAll('tr');
           for(var ri2=0;ri2<rows.length;ri2++){
             var cells=rows[ri2].querySelectorAll('th,td'),row=[];
-            for(var ci3=0;ci3<cells.length;ci3++)row.push(cells[ci3].innerText.replace(/\|/g,'\\|').replace(/\n/g,' ').trim());
+            for(var ci3=0;ci3<cells.length;ci3++){
+              var ct2=cells[ci3].innerText.replace(/\|/g,'\\|');
+              row.push(ct2.replace(/\n/g,' ').trim());
+            }
             p('| '+row.join(' | ')+' |');
             if(ri2===0)p('|'+row.map(function(){return'---'}).join('|')+'|');
-          }
-          p('');
-        }
-      }
-      // catch nested tables in divs
-      else if(t==='DIV'){
-        var tabs=n.querySelectorAll('table');
-        for(var ti2=0;ti2<tabs.length;ti2++){
-          var rows=tabs[ti2].querySelectorAll('tr');
-          for(var ri3=0;ri3<rows.length;ri3++){
-            var cells=rows[ri3].querySelectorAll('th,td'),row=[];
-            for(var ci4=0;ci4<cells.length;ci4++)row.push(cells[ci4].innerText.replace(/\|/g,'\\|').replace(/\n/g,' ').trim());
-            p('| '+row.join(' | ')+' |');
-            if(ri3===0)p('|'+row.map(function(){return'---'}).join('|')+'|');
           }
           p('');
         }
@@ -832,9 +825,6 @@ function exportMD(){
   a.download='Z700_产品立项总指导书_v2.8.1.md';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
   }catch(e){alert('MD导出失败: '+e.message)}
-}
-}
-}
 }
 </script>
 
