@@ -312,23 +312,10 @@ tr:nth-child(even) td{background:#080c14}
 </table>
 <p style="font-size:11px;color:#555">R=负责 · A=审批 · S=支持 · C=咨询 · I=知情</p>
 
-<h3>4.3 智蜂内部协作：控制台（Console）</h3>
+<h3>4.3 系统控制台</h3>
 <p><strong>控制台</strong>是智蜂团队内部使用的统一工程管理平台，贯穿"数据→训练→推理→部署→监控"全链路。支持 4060（研发）与 4090（量产）双环境。</p>
 
-<h4>4.3.1 模块矩阵</h4>
-<table>
-<tr><th>模块</th><th>功能</th><th>负责人</th></tr>
-<tr><td><strong>数据集</strong></td><td>HuggingFace LeRobot 数据集浏览、下载、缓存管理，支持 PushT / MetaWorld / 自定义数据集</td><td>静静</td></tr>
-<tr><td><strong>训练</strong></td><td>SmolVLA / ACT / ZmaxHybrid 模型训练调度，训练参数配置、进度跟踪、自动评估</td><td>静静 • web</td></tr>
-<tr><td><strong>推理服务</strong></td><td>gRPC 推理 Server/Client，支持 Sys-11 SmolVLA、Sys-12 LeWorldModel、Sys-2 VTLA 远程调用</td><td>静静</td></tr>
-<tr><td><strong>硬件仿真</strong></td><td>Z700 14-DOF 双机械臂仿真引擎，支持 Sim / Local / Real 三模式切换</td><td>静静 • 小芳</td></tr>
-<tr><td><strong>评估</strong></td><td>模型性能基准测试、推理延迟/精度评测、对比报告生成</td><td>静静 • web</td></tr>
-<tr><td><strong>配置中心</strong></td><td>版本同步、参数管理、工作模式切换（Sys-11 纯动作 / Sys-11+Sys-12 混合）</td><td>静静</td></tr>
-<tr><td><strong>实时监控</strong></td><td>Rerun / RViz 双模式 3D 可视化，Topic/Node 面板，信号追踪示波器</td><td>静静 • 小芳</td></tr>
-<tr><td><strong>插拔场景</strong></td><td>Z700 光模块插拔 L2/L3/L4 三级场景模拟 + ROI 投资回报计算器</td><td>静静</td></tr>
-</table>
-
-<h4>4.3.2 数据链路</h4>
+<h4>4.3.1 数据链路</h4>
 <div class="pipe-row">
 <div class="pipe-step ps1">Orin<br><small>采集</small></div>
 <div class="pipe-arr">→</div>
@@ -339,7 +326,7 @@ tr:nth-child(even) td{background:#080c14}
 <div class="pipe-step ps4">4090<br><small>训练</small></div>
 </div>
 
-<h4>4.3.3 RASI 补充（内部团队）</h4>
+<h4>4.3.2 RASI 补充（内部团队）</h4>
 <table>
 <tr><th>工作包</th><th>静静（总工）</th><th>web（PM）</th><th>小芳（硬件）</th></tr>
 <tr><td>数据集管理</td><td>R</td><td>C</td><td>—</td></tr>
