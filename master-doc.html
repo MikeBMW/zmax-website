@@ -201,7 +201,7 @@ tr:nth-child(even) td{background:#080c14}
   <div class="kpi-card"><div class="kpi-val">&gt;99%</div><div class="kpi-lab">关键工序良率</div></div>
   <div class="kpi-card"><div class="kpi-val">&gt;10kHz</div><div class="kpi-lab">力控闭环带宽</div></div>
   <div class="kpi-card"><div class="kpi-val">&lt;15s</div><div class="kpi-lab">单次插拔节拍</div></div>
-  <div class="kpi-card"><div class="kpi-val">&lt;5ms</div><div class="kpi-lab">本地推理延迟</div></div>
+  <div class="kpi-card"><div class="kpi-val">&lt;70ms</div><div class="kpi-lab">本地推理延迟</div></div>
   <div class="kpi-card"><div class="kpi-val">242</div><div class="kpi-lab">原子技能</div></div>
 </div>
 
@@ -405,21 +405,21 @@ tr:nth-child(even) td{background:#080c14}
 
 <h3>7.3 模型池</h3>
 <div class="model-row">
-  <div class="model-card"><h4 style="color:#58a6ff">ACT</h4><div class="spec">Action Chunking<br>取料·扫码·放置<br>Sys10 · 4060<br>&lt;5ms</div></div>
-  <div class="model-card"><h4 style="color:#3fb950">SmolVLA</h4><div class="spec">VLA 视觉语言动作<br>测试·AOI·目检<br>Sys11 · 4060<br>&lt;5ms</div></div>
-  <div class="model-card"><h4 style="color:#f0a500">VLA-T ⭐</h4><div class="spec">力控VLA · 主力<br>精密插拔·核心<br>Sys11 · 4060<br>&lt;5ms</div></div>
+  <div class="model-card"><h4 style="color:#58a6ff">ACT</h4><div class="spec">Action Chunking<br>取料·扫码·放置<br>Sys10 · 4060<br>&lt;70ms</div></div>
+  <div class="model-card"><h4 style="color:#3fb950">SmolVLA</h4><div class="spec">VLA 视觉语言动作<br>测试·AOI·目检<br>Sys11 · 4060<br>&lt;70ms</div></div>
+  <div class="model-card"><h4 style="color:#f0a500">VLA-T ⭐</h4><div class="spec">力控VLA · 主力<br>精密插拔·核心<br>Sys11 · 4060<br>&lt;70ms</div></div>
   <div class="model-card"><h4 style="color:#a371f7">GR00T N1.7</h4><div class="spec">通用机器人基础模型<br>复杂操作·泛化<br>Sys2 · 4090<br>~280ms</div></div>
-  <div class="model-card"><h4 style="color:#d4a800">H-JEPA zFlow</h4><div class="spec">预测编码·潜空间<br>透镜对准·耦合<br>Sys1 · 4090<br>&lt;5ms · 11MB</div></div>
+  <div class="model-card"><h4 style="color:#d4a800">H-JEPA zFlow</h4><div class="spec">预测编码·潜空间<br>透镜对准·耦合<br>Sys1 · 4090<br>&lt;70ms · 11MB</div></div>
 </div>
 
 <h3>7.4 Dispatch 映射（示例）</h3>
 <table>
 <tr><th>条件ID</th><th>场景描述</th><th>→ 模型</th><th>运行节点</th><th>→ 动作</th><th>延迟</th></tr>
-<tr><td>C001</td><td>料盘取料·视觉定位</td><td>ACT</td><td>Sys10·4060</td><td>A01-A04</td><td>&lt;5ms</td></tr>
-<tr><td>C004</td><td>力控插入·400G力反馈</td><td>VLA-T</td><td>Sys11·4060</td><td>A07-A10</td><td>&lt;5ms</td></tr>
-<tr><td>C006</td><td>BERT测试仓·AOI目检</td><td>SmolVLA</td><td>Sys11·4060</td><td>A15-A18</td><td>&lt;5ms</td></tr>
+<tr><td>C001</td><td>料盘取料·视觉定位</td><td>ACT</td><td>Sys10·4060</td><td>A01-A04</td><td>&lt;70ms</td></tr>
+<tr><td>C004</td><td>力控插入·400G力反馈</td><td>VLA-T</td><td>Sys11·4060</td><td>A07-A10</td><td>&lt;70ms</td></tr>
+<tr><td>C006</td><td>BERT测试仓·AOI目检</td><td>SmolVLA</td><td>Sys11·4060</td><td>A15-A18</td><td>&lt;70ms</td></tr>
 <tr><td>C014</td><td>400G光口·力控插拔</td><td>GR00T N1.7</td><td>Sys2·4090</td><td>A22-A25</td><td>~280ms</td></tr>
-<tr><td>C039</td><td>透镜对准·亚微米耦合</td><td>H-JEPA zFlow</td><td>Sys1·4090</td><td>A35-A38</td><td>&lt;5ms</td></tr>
+<tr><td>C039</td><td>透镜对准·亚微米耦合</td><td>H-JEPA zFlow</td><td>Sys1·4090</td><td>A35-A38</td><td>&lt;70ms</td></tr>
 </table>
 </div>
 
@@ -430,19 +430,19 @@ tr:nth-child(even) td{background:#080c14}
 <h3>8.1 系统节点拓扑</h3>
 <div class="sys-row">
   <div class="sys-node s0"><h4>Sys0</h4><p>Orin Nano<br>ROS2 · SR5-C<br>实时控制 1-5ms<br>边缘执行节点</p></div>
-  <div class="sys-node s10"><h4>Sys10</h4><p>RTX 4060<br>ACT · 取料扫码<br>本地推理 &lt;5ms<br>低延迟操作</p></div>
-  <div class="sys-node s11"><h4>Sys11</h4><p>RTX 4060<br>SmolVLA · VLA-T ⭐<br>本地推理 &lt;5ms<br>主力推理节点</p></div>
-  <div class="sys-node s1"><h4>Sys1</h4><p>RTX 4090<br>H-JEPA zFlow · 11MB<br>本地推理 &lt;5ms<br>精密操作专用</p></div>
+  <div class="sys-node s10"><h4>Sys10</h4><p>RTX 4060<br>ACT · 取料扫码<br>本地推理 &lt;70ms<br>低延迟操作</p></div>
+  <div class="sys-node s11"><h4>Sys11</h4><p>RTX 4060<br>SmolVLA · VLA-T ⭐<br>本地推理 &lt;70ms<br>主力推理节点</p></div>
+  <div class="sys-node s1"><h4>Sys1</h4><p>RTX 4090<br>H-JEPA zFlow · 11MB<br>本地推理 &lt;70ms<br>精密操作专用</p></div>
   <div class="sys-node s2"><h4>Sys2</h4><p>RTX 4090<br>GR00T N1.7 · 6.5G<br>远程推理 ~280ms<br>ECS隧道穿透</p></div>
 </div>
 
 <h3>8.2 模型推理 API</h3>
 <table>
 <tr><th>端点</th><th>方法</th><th>节点</th><th>模型</th><th>延迟</th></tr>
-<tr><td>/infer/act</td><td>POST</td><td>Sys10·4060</td><td>ACT</td><td>&lt;5ms</td></tr>
-<tr><td>/infer/smolvla</td><td>POST</td><td>Sys11·4060</td><td>SmolVLA</td><td>&lt;5ms</td></tr>
-<tr><td>/infer/vla-t</td><td>POST</td><td>Sys11·4060</td><td>VLA-T</td><td>&lt;5ms</td></tr>
-<tr><td>/infer/hjepa</td><td>POST</td><td>Sys1·4090</td><td>H-JEPA</td><td>&lt;5ms</td></tr>
+<tr><td>/infer/act</td><td>POST</td><td>Sys10·4060</td><td>ACT</td><td>&lt;70ms</td></tr>
+<tr><td>/infer/smolvla</td><td>POST</td><td>Sys11·4060</td><td>SmolVLA</td><td>&lt;70ms</td></tr>
+<tr><td>/infer/vla-t</td><td>POST</td><td>Sys11·4060</td><td>VLA-T</td><td>&lt;70ms</td></tr>
+<tr><td>/infer/hjepa</td><td>POST</td><td>Sys1·4090</td><td>H-JEPA</td><td>&lt;70ms</td></tr>
 <tr><td>/infer/groot</td><td>POST</td><td>Sys2·4090</td><td>GR00T</td><td>~280ms</td></tr>
 </table>
 
@@ -499,7 +499,7 @@ tr:nth-child(even) td{background:#080c14}
 <tr><td>关键工序良率</td><td>≥99%</td><td>&gt;99%</td><td>AOI+人工抽检</td></tr>
 <tr><td>力控闭环带宽</td><td>≥5kHz</td><td>&gt;10kHz</td><td>力传感器标定台</td></tr>
 <tr><td>单次插拔节拍</td><td>≤20s</td><td>&lt;15s</td><td>高速摄像+时序分析</td></tr>
-<tr><td>模型推理延迟（本地）</td><td>≤10ms</td><td>&lt;5ms</td><td>ROS2 timestamp差值</td></tr>
+<tr><td>模型推理延迟（本地）</td><td>≤10ms</td><td>&lt;70ms</td><td>ROS2 timestamp差值</td></tr>
 <tr><td>模型推理延迟（远程）</td><td>≤500ms</td><td>~280ms</td><td>HTTP往返测量</td></tr>
 </table>
 
@@ -558,7 +558,7 @@ tr:nth-child(even) td{background:#080c14}
 <ul class="val-list">
   <li><strong>条件驱动架构：</strong>54种场景×5模型池×48动作×4机器人，非通用大模型，而是产线深度优化的专用方案</li>
   <li><strong>数据闭环自进化：</strong>Orin采集→4090训练→模型部署→DDS映射更新，执行越多模型越准</li>
-  <li><strong>边缘-云端协同：</strong>本地&lt;5ms实时控制 + 远程280ms复杂推理，兼顾精度和泛化</li>
+  <li><strong>边缘-云端协同：</strong>本地&lt;70ms实时控制 + 远程280ms复杂推理，兼顾精度和泛化</li>
   <li><strong>原子技能可组合：</strong>242条原子技能，11大类，标准化接口，新品类快速适配</li>
   <li><strong>242条产线验证：</strong>基于真实800G DR8产线数据，非仿真场景</li>
 </ul>
