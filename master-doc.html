@@ -679,139 +679,115 @@ tr:nth-child(even) td{background:#080c14}
 
 <script>
 function exportMD(){
-  var md=[],el=document.querySelector('.wrap');
+  var lines=[];
+  lines.push('# Z700 产品立项总指导书');
+  lines.push('');
+  lines.push('> 智蜂创元（ZFCY）· datadrive.world · v2.8.1 · 2026-07-29');
+  lines.push('');
 
-  function getText(n){
-    if(!n)return'';
-    if(n.nodeType===3)return n.textContent;
-    var t='';
-    for(var i=0;i<n.childNodes.length;i++){
-      var c=n.childNodes[i];
-      if(c.tagName==='STRONG'||c.tagName==='B')t+='**'+getText(c)+'**';
-      else if(c.tagName==='CODE')t+='`'+getText(c)+'`';
-      else if(c.tagName==='BR')t+='\n';
-      else if(c.tagName==='A')t+='['+getText(c)+']('+c.getAttribute('href')+')';
-      else if(c.nodeType===3)t+=c.textContent;
-      else t+=getText(c);
-    }
-    return t;
-  }
+  var el=document.querySelector('.wrap');
+  var kids=el.children;
 
-  function tableMD(tbl){
-    var rows=tbl.querySelectorAll('tr'),out=[];
-    rows.forEach(function(r,i){
-      var cells=r.querySelectorAll('th,td'),row=[];
-      cells.forEach(function(c){row.push(getText(c).replace(/\|/g,'\\|').replace(/\n/g,' '))});
+  function tbl(t){
+    var out=[],rows=t.querySelectorAll('tr');
+    for(var i=0;i<rows.length;i++){
+      var r=rows[i],cells=r.querySelectorAll('th,td'),row=[];
+      for(var j=0;j<cells.length;j++)row.push(cells[j].innerText.replace(/\n/g,' ').replace(/\|/g,'\\|').trim());
       out.push('| '+row.join(' | ')+' |');
       if(i===0)out.push('|'+row.map(function(){return'---'}).join('|')+'|');
-    });
+    }
     return out.join('\n');
   }
 
-  function walk(n,depth){
-    if(!n||n.nodeType===8)return;
-    if(n.classList&&(n.classList.contains('toolbar')||n.classList.contains('footer')))return;
-    if(n.nodeType===3){var t=n.textContent.trim();if(t)md.push(t);return;}
+  function txt(n){return n?n.innerText.replace(/\s+/g,' ').trim():''}
 
-    var tag=n.tagName,cls=n.classList||{};
-    if(tag==='H1'){md.push('','# '+getText(n),'');return}
-    if(tag==='H2'){md.push('','## '+getText(n),'');return}
-    if(tag==='H3'){md.push('','### '+getText(n),'');return}
-    if(tag==='H4'){md.push('','#### '+getText(n),'');return}
+  function push(s){if(s)lines.push(s)}
 
-    // Tables
-    if(tag==='TABLE'){md.push('',tableMD(n),'');return}
+  for(var i=0;i<kids.length;i++){
+    var n=kids[i],tag=n.tagName,cls=n.className||'';
 
-    // Paragraphs and text blocks
-    if(tag==='P'){var t=getText(n).trim();if(t)md.push(t,'');return}
-
-    // Lists
-    if(tag==='OL'){
-      var items=n.querySelectorAll('li');items.forEach(function(li,i){md.push((i+1)+'. '+getText(li).trim())});
-      md.push('');return;
-    }
-    if(tag==='UL'||cls.contains('val-list')){
-      var items=n.querySelectorAll('li');items.forEach(function(li){md.push('- '+getText(li).trim())});
-      md.push('');return;
-    }
-    if(tag==='LI'){md.push('- '+getText(n).trim());return}
-
-    // Blockquotes / info boxes
-    if(cls.contains('info-box')){
-      var t=getText(n).trim().replace(/\n/g,'\n> ');
-      md.push('','> '+t,'');return;
+    if(cls==='cover'){
+      var h1=n.querySelector('h1');if(h1)push('# '+txt(h1));
+      push('');
+      n.querySelectorAll('.sub').forEach(function(s){push('> '+txt(s))});
+      push('');
+      n.querySelectorAll('.meta').forEach(function(m){var t=txt(m);if(t)push('*'+t+'*')});
+      push('');push('---');push('');
+      continue;
     }
 
-    // KPI row
-    if(cls.contains('kpi-row')){
-      var kpis=n.querySelectorAll('.kpi-card'),row=[];
-      kpis.forEach(function(k){
-        var v=k.querySelector('.kpi-val'),l=k.querySelector('.kpi-lab');
-        row.push((v?getText(v):'')+' '+(l?getText(l):''));
+    if(cls==='toc'){
+      push('## 目录');push('');
+      n.querySelectorAll('li a').forEach(function(a){push('- ['+txt(a)+']('+a.getAttribute('href')+')')});
+      push('');push('---');push('');
+      continue;
+    }
+
+    if(cls.indexOf('chapter')>=0){
+      var id=n.getAttribute('id')||'';
+      var h2=n.querySelector('h2');if(h2)push('## '+txt(h2));
+      push('');
+
+      Array.from(n.children).forEach(function(ch){
+        var tg=ch.tagName,cl=ch.className||'';
+
+        if(tg==='H3'){push('### '+txt(ch));push('');return}
+        if(tg==='H4'){push('#### '+txt(ch));push('');return}
+        if(tg==='P'){var t=txt(ch);if(t)push(t);push('');return}
+        if(tg==='TABLE'){push(tbl(ch));push('');return}
+        if(tg==='UL'||cl.indexOf('val-list')>=0){
+          ch.querySelectorAll('li').forEach(function(li){push('- '+txt(li))});
+          push('');return;
+        }
+        if(tg==='OL'){
+          var items=ch.querySelectorAll('li');
+          items.forEach(function(li,j){push((j+1)+'. '+txt(li))});
+          push('');return;
+        }
+        if(cl.indexOf('info-box')>=0){push('> '+txt(ch).replace(/\n/g,'\n> '));push('');return}
+        if(cl.indexOf('kpi-row')>=0){
+          var row=[];
+          ch.querySelectorAll('.kpi-card').forEach(function(k){
+            var v=k.querySelector('.kpi-val'),l=k.querySelector('.kpi-lab');
+            row.push(txt(v)+' '+txt(l));
+          });
+          push('**'+row.join(' | ')+'**');push('');return;
+        }
+        if(cl.indexOf('pipe-row')>=0){
+          var row=[];
+          ch.querySelectorAll('.pipe-step').forEach(function(s){row.push(txt(s))});
+          push(row.join(' → '));push('');return;
+        }
+        if(cl.indexOf('model-row')>=0){
+          ch.querySelectorAll('.model-card').forEach(function(card){
+            push('- **'+txt(card.querySelector('h4'))+'**: '+txt(card.querySelector('.spec')).replace(/\n/g,' · '));
+          });
+          push('');return;
+        }
+        if(cl.indexOf('sys-row')>=0){
+          ch.querySelectorAll('.sys-node').forEach(function(nd){
+            push('- **'+txt(nd.querySelector('h4'))+'**: '+txt(nd.querySelector('p')).replace(/\n/g,' · '));
+          });
+          push('');return;
+        }
+        if(cl.indexOf('appendix')>=0){
+          var h3=ch.querySelector('h3');if(h3)push('### '+txt(h3));
+          push('');
+          ch.querySelectorAll('table').forEach(function(t){push(tbl(t));push('')});
+          return;
+        }
+        // catch-all: tables inside divs
+        ch.querySelectorAll('table').forEach(function(t){push(tbl(t));push('')});
       });
-      md.push('**'+row.join(' | ')+'**','');return;
+      push('');push('---');push('');
     }
-
-    // Pipeline
-    if(cls.contains('pipe-row')){
-      var steps=n.querySelectorAll('.pipe-step'),row=[];
-      steps.forEach(function(s){row.push(getText(s).trim())});
-      md.push(row.join(' → '),'');return;
-    }
-
-    // Model cards
-    if(cls.contains('model-row')){
-      var cards=n.querySelectorAll('.model-card');
-      cards.forEach(function(card){
-        var h=card.querySelector('h4'),s=card.querySelector('.spec');
-        md.push('- **'+getText(h)+'**: '+getText(s).replace(/\n/g,' · '));
-      });
-      md.push('');return;
-    }
-
-    // System nodes
-    if(cls.contains('sys-row')){
-      var nodes=n.querySelectorAll('.sys-node');
-      nodes.forEach(function(nd){
-        var h=nd.querySelector('h4'),p=nd.querySelector('p');
-        md.push('- **'+getText(h)+'**: '+getText(p).replace(/\n/g,' · '));
-      });
-      md.push('');return;
-    }
-
-    // Appendix
-    if(cls.contains('appendix')){
-      for(var i=0;i<n.childNodes.length;i++)walk(n.childNodes[i]);
-      md.push('');return;
-    }
-
-    // Cover
-    if(cls.contains('cover')){
-      var h1=n.querySelector('h1'),subs=n.querySelectorAll('.sub'),meta=n.querySelectorAll('.meta');
-      if(h1)md.push('# '+getText(h1),'');
-      subs.forEach(function(s){md.push('> '+getText(s).trim())});
-      meta.forEach(function(m){var t=getText(m).trim();if(t)md.push('*'+t+'*')});
-      md.push('');return;
-    }
-
-    // TOC
-    if(cls.contains('toc')){
-      md.push('## 目录','');
-      var items=n.querySelectorAll('li a');
-      items.forEach(function(a){md.push('- ['+getText(a)+']('+a.getAttribute('href')+')')});
-      md.push('');return;
-    }
-
-    // Default: recurse
-    for(var i=0;i<n.childNodes.length;i++)walk(n.childNodes[i]);
   }
 
-  walk(el,0);
-  var title='Z700 产品立项总指导书';
-  var text='# '+title+'\n\n> 智蜂创元（ZFCY）· datadrive.world · v2.8.1 · 2026-07-29\n\n'+md.join('\n');
+  var text=lines.join('\n');
   var blob=new Blob([text],{type:'text/markdown;charset=utf-8'});
   var a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='Z700_产品立项总指导书_v2.8.1.md';a.click();
+}
 }
 }
 </script>
