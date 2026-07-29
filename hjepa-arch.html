@@ -26,8 +26,8 @@ th{background:#1a1f33;color:#58a6ff}
 <body>
 <a href="/" style="display:inline-block;margin:12px 0 8px;color:#00d4aa;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #1a1f2b;border-radius:4px;background:#0d1117">← 返回主页</a>
 
-<h1>🔄 H-JEPA zFlow v3.1 · 双架构对比</h1>
-<div class="sub">图1: z流架构 | 图2: 逐层交叉融合架构</div>
+<h1>🔄 H-JEPA zFlow v3.2 · 训练模式</h1>
+<div class="sub">训练模式：编码器→潜空间→预测器→反向传播 · 三级级联</div>
 
 <svg viewBox="0 0 800 560" width="800" height="560">
   <defs>
@@ -58,10 +58,10 @@ th{background:#1a1f33;color:#58a6ff}
     <rect x="20" y="170" width="200" height="90" rx="8" fill="#1a0a0a" stroke="#ff6b6b" stroke-width="1.5"/>
     <text x="120" y="192" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">z₁ · 空间 (256D)</text>
     <line x1="40" y1="200" x2="200" y2="200" stroke="#ff6b6b" stroke-width="0.5" opacity="0.3"/>
-    <text x="60" y="218" fill="#c8d1d9" font-size="9">JEPA₁ Enc → z₁</text>
-    <text x="60" y="234" fill="#c8d1d9" font-size="9">JEPA₁ Pred → ẑ₁(t+1)</text>
-    <text x="60" y="250" fill="#ff6b6b" font-size="9">L_jepa₁ 反向传播 ⬆</text>
-    <text x="180" y="250" fill="#ff6b6b" font-size="9" text-anchor="end">回路③</text>
+    <text x="60" y="216" fill="#c8d1d9" font-size="9">Encoder₁ → z₁</text>
+    <text x="60" y="230" fill="#00d4aa" font-size="9">Predictor₁ → ẑ₁(t+1)</text>
+    <text x="60" y="244" fill="#ff6b6b" font-size="9">L_jepa₁ ← 反向传播</text>
+    <text x="180" y="244" fill="#ff6b6b" font-size="9" text-anchor="end">回路③</text>
   </g>
 
   <!-- Layer 2: z₂ 物体 -->
@@ -69,10 +69,10 @@ th{background:#1a1f33;color:#58a6ff}
     <rect x="300" y="170" width="200" height="90" rx="8" fill="#1a0f0a" stroke="#ff6b6b" stroke-width="1.5"/>
     <text x="400" y="192" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">z₂ · 物体 (256D)</text>
     <line x1="320" y1="200" x2="480" y2="200" stroke="#ff6b6b" stroke-width="0.5" opacity="0.3"/>
-    <text x="340" y="218" fill="#c8d1d9" font-size="9">JEPA₂ Enc → z₂</text>
-    <text x="340" y="234" fill="#c8d1d9" font-size="9">← z₃' 级联先验</text>
-    <text x="340" y="250" fill="#ff6b6b" font-size="9">L_jepa₂ 反向传播 ⬆</text>
-    <text x="460" y="250" fill="#ff6b6b" font-size="9" text-anchor="end">回路②</text>
+    <text x="340" y="216" fill="#c8d1d9" font-size="9">Encoder₂ → z₂</text>
+    <text x="340" y="230" fill="#00d4aa" font-size="9">Predictor₂ → ẑ₂(t+1)</text>
+    <text x="340" y="244" fill="#ff6b6b" font-size="9">L_jepa₂ ← 反向传播</text>
+    <text x="460" y="244" fill="#ff6b6b" font-size="9" text-anchor="end">回路②</text>
   </g>
 
   <!-- Layer 3: z₃ 语义 -->
@@ -80,10 +80,10 @@ th{background:#1a1f33;color:#58a6ff}
     <rect x="580" y="170" width="200" height="90" rx="8" fill="#1a0a1a" stroke="#ff6b6b" stroke-width="1.5"/>
     <text x="680" y="192" text-anchor="middle" fill="#ff6b6b" font-size="12" font-weight="700">z₃ · 语义 (128D)</text>
     <line x1="600" y1="200" x2="760" y2="200" stroke="#ff6b6b" stroke-width="0.5" opacity="0.3"/>
-    <text x="620" y="218" fill="#c8d1d9" font-size="9">JEPA₃ Enc → z₃</text>
-    <text x="620" y="234" fill="#c8d1d9" font-size="9">独立 · 无上级先验</text>
-    <text x="620" y="250" fill="#ff6b6b" font-size="9">L_jepa₃ 反向传播 ⬆</text>
-    <text x="740" y="250" fill="#ff6b6b" font-size="9" text-anchor="end">回路①</text>
+    <text x="620" y="216" fill="#c8d1d9" font-size="9">Encoder₃ → z₃</text>
+    <text x="620" y="230" fill="#00d4aa" font-size="9">Predictor₃ → ẑ₃(t+1)</text>
+    <text x="620" y="244" fill="#ff6b6b" font-size="9">L_jepa₃ ← 反向传播</text>
+    <text x="740" y="244" fill="#ff6b6b" font-size="9" text-anchor="end">回路①</text>
   </g>
 
   <!-- 级联反馈连线 -->
@@ -135,7 +135,7 @@ th{background:#1a1f33;color:#58a6ff}
   <g class="loop">
     <rect x="610" y="90" width="160" height="36" rx="6" fill="#1a0f0a" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="3,2"/>
     <text x="690" y="105" text-anchor="middle" fill="#ff6b6b" font-size="10">门控 gate×0.1ˡ</text>
-    <text x="690" y="119" text-anchor="middle" fill="#8b949e" font-size="8">训练:激活 | 推理:归零</text>
+    <text x="690" y="119" text-anchor="middle" fill="#8b949e" font-size="8">训练模式 · 激活</text>
   </g>
 </svg>
 
