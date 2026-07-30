@@ -3,136 +3,474 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DDS 5维时空数据空间 | Z-MAX</title>
+<title>DDS 5维时空数据空间 · 原子技能打标方案 | Z-MAX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-#bar{background:#0d1117;padding:6px 12px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:8px;flex-shrink:0;z-index:10;flex-wrap:wrap}
-#bar h1{font-size:14px;color:#00d4aa}
-#bar a{font-size:10px;color:#484f58;border:1px solid #1a1f2b;border-radius:4px;padding:2px 7px;text-decoration:none}
-.badge{padding:2px 6px;font-size:9px;border-radius:3px}
-#canvas-wrap{flex:1;position:relative;cursor:grab}
-#canvas-wrap canvas{display:block}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+/* ── Top: 3D View ── */
+#view3d{height:55vh;position:relative;cursor:grab;border-bottom:1px solid #1a1f2b;overflow:hidden}
+#view3d canvas{display:block}
 #hud{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:12px;background:rgba(13,17,23,.9);border:1px solid #1a1f2b;border-radius:8px;padding:6px 12px;font-size:10px;z-index:5;flex-wrap:wrap}
 #hud span{display:flex;align-items:center;gap:4px}
 #hud .dot{width:7px;height:7px;border-radius:4px}
 #tip{position:absolute;pointer-events:none;background:rgba(13,17,23,.95);border:1px solid #00d4aa44;border-radius:8px;padding:8px 12px;font-size:10px;z-index:10;display:none;max-width:280px}
 .dim-legend{position:absolute;top:12px;right:12px;background:rgba(13,17,23,.9);border:1px solid #1a1f2b;border-radius:8px;padding:10px 14px;font-size:10px;z-index:5;line-height:1.8}
 .dim-legend .dim{display:flex;align-items:center;gap:6px;margin:3px 0}
-@media(max-width:768px){#bar h1{font-size:12px}#hud{font-size:8px;gap:6px;padding:4px 8px}.dim-legend{font-size:8px;padding:6px 10px;top:40px;right:4px}}
+.view-bar{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;z-index:5}
+.view-bar a{font-size:10px;color:#484f58;border:1px solid #1a1f2b;border-radius:4px;padding:2px 7px;text-decoration:none}
+.view-bar h1{font-size:13px;color:#00d4aa}
+/* ── Bottom: Scheme ── */
+#scheme{max-width:1200px;margin:0 auto;padding:30px 24px 60px}
+h2{color:#00d4aa;font-size:20px;margin:30px 0 12px;padding-bottom:8px;border-bottom:1px solid #1a1f2b}
+h3{color:#fff;font-size:15px;margin:20px 0 8px}
+p{color:#8b949e;font-size:13px;line-height:1.8;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;margin:12px 0;font-size:11px;overflow:hidden}
+th{background:#00d4aa12;padding:8px 10px;text-align:left;color:#00d4aa;font-weight:600;font-size:10px}
+td{padding:7px 10px;border-bottom:1px solid #121824;font-size:11px;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#0a1a15}
+.mono{font-family:"SF Mono","Consolas",monospace;font-size:10px}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:700}
+.card-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:16px 0}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px}
+.card h4{color:#fff;font-size:13px;margin-bottom:6px}
+.card p{font-size:11px;color:#8b949e;line-height:1.6}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#00d4aa22;color:#00d4aa;font-weight:900;font-size:13px;margin-right:8px;flex-shrink:0}
+.step-row{display:flex;align-items:flex-start;gap:10px;margin:12px 0}
+.code-block{background:#0a0d14;border:1px solid #1a1f2b;border-radius:8px;padding:14px;font-family:"SF Mono","Consolas",monospace;font-size:11px;line-height:1.6;overflow-x:auto;color:#c8d1d9;white-space:pre;margin:10px 0}
+@media(max-width:768px){
+  #view3d{height:40vh}
+  #scheme{padding:16px 12px 40px}
+  h2{font-size:16px}h3{font-size:13px}
+  .card-row{grid-template-columns:1fr}
+}
 </style>
 <script src="/zmax-auth.js"></script>
 </head>
 <body>
-<div id="bar">
-  <a href="/">← 主页</a>
-  <h1>🌐 DDS 5维时空数据空间</h1>
-  <span class="badge" style="background:#1a1033;color:#a371f7">5D 时空</span>
-  <span class="badge" style="background:#0d3320;color:#00d4aa">X·Y·Z 空间</span>
-  <span class="badge" style="background:#1a1a2e;color:#f0a500">T 时间轴</span>
-  <span class="badge" style="background:#331a1a;color:#ff6b35">S 语义层</span>
-</div>
-<div id="canvas-wrap">
+
+<!-- ═══════════════════════════ 5D 3D View ═══════════════════════════ -->
+<div id="view3d">
   <div id="tip"></div>
+  <div class="view-bar">
+    <a href="/">← 主页</a>
+    <h1>🌐 DDS 5维时空数据空间</h1>
+  </div>
   <div class="dim-legend">
     <div style="color:#fff;font-weight:700;margin-bottom:4px">5维时空</div>
-    <div class="dim"><span class="dot" style="background:#58a6ff"></span> X·Y·Z — 空间位置</div>
-    <div class="dim"><span class="dot" style="background:#f0a500"></span> T — 时间轴 ↑</div>
-    <div class="dim"><span class="dot" style="background:#a371f7"></span> S — 语义层</div>
+    <div class="dim"><span class="dot" style="background:#58a6ff"></span> X·Y·Z 空间</div>
+    <div class="dim"><span class="dot" style="background:#f0a500"></span> T 时间轴 ↑</div>
+    <div class="dim"><span class="dot" style="background:#a371f7"></span> S 语义层</div>
     <div style="margin-top:6px;padding-top:4px;border-top:1px solid #1a1f2b;color:#484f58;font-size:9px">
-      <div>📍 感知层 · 传感器数据</div>
-      <div>🔍 特征层 · 提取特征</div>
-      <div>🧠 条件层 · 语义理解</div>
-      <div>🎯 动作层 · 决策执行</div>
-      <div>✅ 反馈层 · 闭环学习</div>
+      <div>📍 感知 · 👁 特征 · 🧠 条件</div>
+      <div>🎯 动作 · ✅ 反馈</div>
     </div>
   </div>
   <div id="hud">
-    <span><span class="dot" style="background:#58a6ff"></span>X·Y·Z 空间</span>
-    <span><span class="dot" style="background:#f0a500"></span>T 时间</span>
-    <span><span class="dot" style="background:#00d4aa"></span>S 语义</span>
-    <span style="color:#484f58">🖱旋转|滚轮缩放|点击节点</span>
+    <span><span class="dot" style="background:#58a6ff"></span>X·Y·Z</span>
+    <span><span class="dot" style="background:#f0a500"></span>T时间</span>
+    <span><span class="dot" style="background:#00d4aa"></span>S语义</span>
+    <span style="color:#484f58">🖱旋转|滚轮|点击</span>
   </div>
 </div>
+
+<!-- ═══════════════════════════ 打标方案 ═══════════════════════════ -->
+<div id="scheme">
+
+<h2>📋 原子技能 → 5维时空打标方案</h2>
+<p>242条原子技能（<a href="/dds-skill-master.html" style="color:#58a6ff">查看全部</a>）如何转化为全局数据空间的可查询条件数据？每条原子技能天然携带 输入条件+所需传感器+成功标准+工位场景，这正是5维打标的完整素材。</p>
+
+<!-- ── 五步打标流程 ── -->
+<h3>🔧 操作流程：5步将一条原子技能拆解为5维数据点</h3>
+
+<div class="step-row">
+  <span class="step-num">1</span>
+  <div style="flex:1">
+    <h4 style="color:#58a6ff">提取传感器数据点 (S=sensor, Y=-6)</h4>
+    <p>从 <code class="mono">sensors</code> 字段提取传感器类型列表，拆分生成感知层数据点。每个传感器一个点：位置=工位坐标，时间=采集时刻，语义=感知层。</p>
+    <div class="code-block"># 示例：P004 缺陷识别
+sensors = "高分辨率相机、显微镜、颗粒传感"
+→ D010: {s:"sensor", name:"高分辨率相机@I-103", x:-4, z:2, desc:"缺陷图像采集"}
+→ D011: {s:"sensor", name:"显微镜@I-103", x:-4, z:1, desc:"显微放大检测"}
+→ D012: {s:"sensor", name:"颗粒传感器@I-103", x:-3, z:2, desc:"异物颗粒计数"}</div>
+  </div>
+</div>
+
+<div class="step-row">
+  <span class="step-num">2</span>
+  <div style="flex:1">
+    <h4 style="color:#3fb950">分解输入条件为特征提取点 (S=feature, Y=-2)</h4>
+    <p>从 <code class="mono">input_cond</code> 字段提取前置条件，每个条件对应一个特征提取步骤。将原始传感器数据加工为结构化特征。</p>
+    <div class="code-block"># 示例：P004 缺陷识别
+input_cond = "图像/显微图/污染与异物传感"
+→ D020: {s:"feature", name:"缺陷边缘检测", links:["D010","D011"]}
+→ D021: {s:"feature", name:"异物颗粒计数", links:["D012"]}
+→ D022: {s:"feature", name:"污染面积计算", links:["D010"]}</div>
+  </div>
+</div>
+
+<div class="step-row">
+  <span class="step-num">3</span>
+  <div style="flex:1">
+    <h4 style="color:#a371f7">生成条件判断点 (S=condition, Y=2)</h4>
+    <p>从 <code class="mono">output_criteria</code> 提取判定阈值，生成布尔条件节点。每个阈值一个条件点，含空间位置+时间戳+语义标签。</p>
+    <div class="code-block"># 示例：P004 缺陷识别
+output_criteria = "漏检率、误判率、缺陷分级一致性"
+→ C004: {s:"condition", name:"缺陷检测·AOI", desc:"漏检率<0.5%·误判率<1%"}
+  links:["A008"]  → 触发动作</div>
+  </div>
+</div>
+
+<div class="step-row">
+  <span class="step-num">4</span>
+  <div style="flex:1">
+    <h4 style="color:#00d4aa">映射动作执行点 (S=action, Y=6)</h4>
+    <p>原子技能本身就是动作模板。技能名称→动作节点，场景(<code class="mono">scene</code>)字段→工位空间坐标。</p>
+    <div class="code-block"># 示例：P004 → A008
+A008: {s:"action", name:"AOI缺陷检测", desc:"3D缺陷识别·分类·分级"}
+  st:"I-103", links:["F004"]</div>
+  </div>
+</div>
+
+<div class="step-row">
+  <span class="step-num">5</span>
+  <div style="flex:1">
+    <h4 style="color:#ff6b35">闭环反馈点 (S=feedback, Y=10)</h4>
+    <p>从 <code class="mono">output_criteria</code> + <code class="mono">maturity_now→maturity_target</code> 生成反馈度量。</p>
+    <div class="code-block"># 示例：P004 缺陷识别
+F004: {s:"feedback", name:"AOI检出率", desc:">99.7%·漏检率<0.3%"}
+  maturity: "成熟度3→5", links:[]</div>
+  </div>
+</div>
+
+<!-- ── 9大类打标映射表 ── -->
+<h3>📊 9大技能分类 → 5维打标映射表</h3>
+<p>每个分类按上述5步流程自动批量生成条件数据。下表给出每类的典型维度和数据点数量预估。</p>
+
+<table>
+<tr><th>技能分类</th><th>技能数</th><th style="color:#58a6ff">感知点/条</th><th style="color:#3fb950">特征点/条</th><th style="color:#a371f7">条件点/条</th><th style="color:#00d4aa">动作点/条</th><th style="color:#ff6b35">反馈点/条</th><th>预计总数</th></tr>
+<tr>
+  <td style="color:#f0a500;font-weight:700">感知定位</td><td class="mono">15</td>
+  <td class="mono">2~3</td><td class="mono">2~4</td><td class="mono">2~3</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~120</td>
+</tr>
+<tr>
+  <td style="color:#ff6b35;font-weight:700">操作动作</td><td class="mono">73</td>
+  <td class="mono">1~2</td><td class="mono">1~3</td><td class="mono">2~4</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~580</td>
+</tr>
+<tr>
+  <td style="color:#58a6ff;font-weight:700">视觉检测</td><td class="mono">10</td>
+  <td class="mono">2~3</td><td class="mono">2~3</td><td class="mono">3~5</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~90</td>
+</tr>
+<tr>
+  <td style="color:#a371f7;font-weight:700">NPO近封装光学</td><td class="mono">51</td>
+  <td class="mono">2~3</td><td class="mono">2~4</td><td class="mono">2~3</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~410</td>
+</tr>
+<tr>
+  <td style="color:#a371f7;font-weight:700">XPO高密可插拔光学</td><td class="mono">59</td>
+  <td class="mono">2~3</td><td class="mono">2~4</td><td class="mono">2~3</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~470</td>
+</tr>
+<tr>
+  <td style="color:#3fb950;font-weight:700">安全集成</td><td class="mono">10</td>
+  <td class="mono">1~2</td><td class="mono">1~2</td><td class="mono">2~4</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~70</td>
+</tr>
+<tr>
+  <td style="color:#58a6ff;font-weight:700">移动导航</td><td class="mono">7</td>
+  <td class="mono">2~3</td><td class="mono">2~3</td><td class="mono">2~3</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~55</td>
+</tr>
+<tr>
+  <td style="color:#3fb950;font-weight:700">载具物流</td><td class="mono">9</td>
+  <td class="mono">1~2</td><td class="mono">1~3</td><td class="mono">2~3</td><td class="mono">1</td><td class="mono">1</td>
+  <td class="mono" style="color:#00d4aa">~65</td>
+</tr>
+<tr>
+  <td style="color:#f0a500;font-weight:700">学习泛化</td><td class="mono">8</td>
+  <td class="mono">0</td><td class="mono">1~2</td><td class="mono">1~2</td><td class="mono">0</td><td class="mono">2~3</td>
+  <td class="mono" style="color:#00d4aa">~35</td>
+</tr>
+<tr style="background:#0d1a2a">
+  <td style="color:#fff;font-weight:700">合计</td><td class="mono" style="color:#fff">242</td>
+  <td></td><td></td><td></td><td></td><td></td>
+  <td style="color:#00d4aa;font-weight:900" class="mono">~1900</td>
+</tr>
+</table>
+
+<!-- ── 数据结构规范 ── -->
+<h3>🗂️ 数据表结构（SQLite → 5D时空）</h3>
+<p>在 dds.db 中新建 <code class="mono">dds_5d_points</code> 表，作为5维数据空间的持久化存储。每个数据点一行，9个字段对应5维+元数据。</p>
+
+<div class="code-block">CREATE TABLE dds_5d_points (
+  id        TEXT PRIMARY KEY,       -- D001, C004, A008, F004
+  skill_id  TEXT NOT NULL,          -- 关联原子技能 P001~M073
+  s_layer   TEXT NOT NULL,          -- sensor|feature|condition|action|feedback
+  x         REAL NOT NULL,          -- 空间X坐标 (工厂坐标系)
+  y         REAL NOT NULL,          -- T时间维度 (语义层高度)
+  z         REAL NOT NULL,          -- 空间Z坐标
+  name      TEXT NOT NULL,          -- 显示名称
+  desc      TEXT,                   -- 描述
+  links     TEXT,                   -- JSON数组: 关联的下游节点ID
+  station   TEXT,                   -- 工位编号 I-103
+  zone      TEXT,                   -- 产线区域 COC/OE/MOD/WH
+  confidence REAL DEFAULT 1.0,      -- 条件置信度
+  threshold TEXT,                   -- 判定阈值
+  created   DATETIME DEFAULT CURRENT_TIMESTAMP
+);</div>
+
+<!-- ── 批量生成脚本 ── -->
+<h3>🐍 批量打标Python脚本</h3>
+<p>以下脚本从 dds.db 的 atomic_skills 表读取242条技能，按5步流程自动生成5维数据点，写入 dds_5d_points 表。</p>
+
+<div class="code-block">#!/usr/bin/env python3
+"""atomic_skills → 5D spacetime data points batch labeling"""
+import sqlite3, json, re
+
+conn = sqlite3.connect('dds.db')
+cur = conn.cursor()
+
+# 确保表存在
+cur.execute('''CREATE TABLE IF NOT EXISTS dds_5d_points (
+  id TEXT PRIMARY KEY, skill_id TEXT, s_layer TEXT,
+  x REAL, y REAL, z REAL, name TEXT, desc TEXT,
+  links TEXT, station TEXT, zone TEXT,
+  confidence REAL DEFAULT 1.0, threshold TEXT
+)''')
+
+# 语义层高度映射
+LAYER_Y = {"sensor":-6, "feature":-2, "condition":2, "action":6, "feedback":10}
+
+# 传感器关键词 → 数据点映射
+SENSOR_MAP = {
+  "相机": ("RGB-D图像采集", "2D/3D视觉输入"),
+  "显微镜": ("显微放大采集", "高倍率缺陷检测"),
+  "力": ("力/力矩传感", "六维力数据流"),
+  "触觉": ("触觉阵列", "4×4压力分布"),
+  "激光": ("激光轮廓仪", "3D点云扫描"),
+  "温度": ("温度传感", "红外热成像"),
+  "扫码": ("条码/RFID读取", "MES追溯绑定"),
+}
+
+cur.execute("SELECT id,name,category,input_cond,sensors,output_criteria,scene,phase FROM atomic_skills")
+skills = cur.fetchall()
+
+def parse_sensors(sensors_str):
+    """拆分传感器字段提取数据点"""
+    points = []
+    if not sensors_str: return points
+    for kw, (name, desc) in SENSOR_MAP.items():
+        if kw in sensors_str:
+            points.append({"name": name, "desc": desc, "layer": "sensor"})
+    return points
+
+def parse_conditions(input_str, output_str):
+    """从输入条件和输出标准提取特征+条件点"""
+    points = []
+    if input_str:
+        # 按 /、 分割提取独立条件
+        parts = re.split(r'[/、,，]', input_str)
+        for p in parts[:3]:  # 最多3个
+            p = p.strip()
+            if len(p) > 2:
+                points.append({"name": p + "检测", "desc": "特征提取", "layer": "feature"})
+    if output_str:
+        thresholds = re.findall(r'[\d.]+%|[\d.]+ms|[\d.]+μm|[\d.]+mm|[\d.]+N|[\d.]+dB', output_str)
+        if thresholds:
+            points.append({
+                "name": "判定:" + ",".join(thresholds[:3]),
+                "desc": output_str[:60],
+                "layer": "condition",
+                "threshold": ",".join(thresholds[:3])
+            })
+    return points
+
+count = 0
+for s in skills:
+    sid, name, cat, input_c, sensors, output_c, scene, phase = s
+    
+    # Step 1: 传感器 → 感知层
+    for pt in parse_sensors(sensors):
+        pid = f"D{count:04d}"
+        cur.execute(
+            "INSERT OR REPLACE INTO dds_5d_points VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (pid, sid, "sensor", 0, LAYER_Y["sensor"], 0,
+             pt["name"], pt["desc"], json.dumps([]), None, None, 1.0, None))
+        count += 1
+    
+    # Step 2-3: 条件 → 特征层+条件层
+    for pt in parse_conditions(input_c, output_c):
+        pid = f"D{count:04d}"
+        cur.execute(
+            "INSERT OR REPLACE INTO dds_5d_points VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (pid, sid, pt["layer"], 0, LAYER_Y.get(pt["layer"], 2), 0,
+             pt["name"], pt.get("desc",""), json.dumps([]), None, None,
+             1.0, pt.get("threshold")))
+        count += 1
+    
+    # Step 4: 技能本身 → 动作层
+    aid = f"A{count:04d}"
+    cur.execute(
+        "INSERT OR REPLACE INTO dds_5d_points VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        (aid, sid, "action", 0, LAYER_Y["action"], 0,
+         name, scene or "", json.dumps([]), None, cat, 1.0, None))
+    count += 1
+    
+    # Step 5: 成功标准 → 反馈层
+    fid = f"F{count:04d}"
+    cur.execute(
+        "INSERT OR REPLACE INTO dds_5d_points VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        (fid, sid, "feedback", 0, LAYER_Y["feedback"], 0,
+         name + "·验收", output_c[:60] if output_c else "",
+         json.dumps([]), None, cat, 1.0, None))
+    count += 1
+
+conn.commit()
+print(f"✅ 批量打标完成: {count} 个5维数据点 (来自 {len(skills)} 条原子技能)")
+conn.close()</div>
+
+<!-- ── 操作卡片 ── -->
+<h3>🚀 执行方式</h3>
+<div class="card-row">
+  <div class="card">
+    <h4 style="color:#00d4aa">方式一：终端执行</h4>
+    <p style="font-size:11px">将上述Python脚本保存为 <code>/root/zmax-website/label_5d.py</code>，在ECS上运行：</p>
+    <div class="code-block" style="font-size:10px">python3 /root/zmax-website/label_5d.py</div>
+    <p style="font-size:11px;margin-top:8px">输出：~1900个5维数据点写入 dds.db → dds_5d_points 表</p>
+  </div>
+  <div class="card">
+    <h4 style="color:#f0a500">方式二：API触发</h4>
+    <p style="font-size:11px">新增 PHP API 端点：</p>
+    <div class="code-block" style="font-size:10px">POST /api/dds-label.php
+{ "skill_ids": ["P001","P004","A001"] }
+→ 按需打标指定技能</div>
+  </div>
+  <div class="card">
+    <h4 style="color:#a371f7">方式三：Cron自动</h4>
+    <p style="font-size:11px">原子技能更新后自动重新打标：</p>
+    <div class="code-block" style="font-size:10px"># cron: 每30分钟检查atomic_skills变更
+*/30 * * * * python3 label_5d.py</div>
+    <p style="font-size:11px;margin-top:8px">仅增量更新变更的技能，不重建全表</p>
+  </div>
+</div>
+
+<!-- ── 查询示例 ── -->
+<h3>🔍 查询：从5维时空反查原子技能</h3>
+<p>打标完成后，全局数据空间的每个条件节点都可追溯到原子技能：</p>
+
+<div class="code-block">-- 查询"力控插入"相关的所有5维数据点
+SELECT s_layer, name, desc, station
+FROM dds_5d_points
+WHERE skill_id IN (
+  SELECT id FROM atomic_skills WHERE name LIKE '%力控%插入%'
+)
+ORDER BY s_layer, id;
+
+-- 查询某个工位的全部条件
+SELECT id, s_layer, name, desc, threshold
+FROM dds_5d_points
+WHERE station = 'I-103'
+ORDER BY y, id;
+
+-- 查询所有P0优先级的动作点
+SELECT dp.name, dp.station, a.phase
+FROM dds_5d_points dp
+JOIN atomic_skills a ON dp.skill_id = a.id
+WHERE dp.s_layer = 'action' AND a.phase LIKE 'P0%';</div>
+
+<!-- ── 下一步 ── -->
+<h3>📈 下一步：实时数据接入</h3>
+<div class="card-row">
+  <div class="card">
+    <h4 style="color:#58a6ff">OT实时数据流</h4>
+    <p>PLC/传感器 → MQTT/Kafka → dds_5d_points 实时写入。每个数据包自动获得 X·Y·Z·T·S 5维标签。</p>
+  </div>
+  <div class="card">
+    <h4 style="color:#3fb950">3D可视化动态更新</h4>
+    <p>5维时空场景从 dds_5d_points 表动态加载。新数据点实时推送到3D视图中，颜色随语义层变化。</p>
+  </div>
+  <div class="card">
+    <h4 style="color:#ff6b35">模型训练数据导出</h4>
+    <p>从 dds_5d_points 按 (semantic layer, station, time_range) 导出标注数据集，直接喂入 SmolVLA/ACT 训练管线。</p>
+  </div>
+</div>
+
+<p style="text-align:center;padding:30px 0;color:#484f58;font-size:11px">
+  📋 <a href="/dds-skill-master.html" style="color:#58a6ff">原子技能库 (242条)</a> ·
+  🌐 <a href="/dds-data-space.html" style="color:#58a6ff">全局数据空间</a> ·
+  🧠 <a href="/dds-system-design.html" style="color:#58a6ff">系统设计</a>
+</p>
+
+</div><!-- /#scheme -->
+
+<!-- ═══════ THREE.JS 5D Visualization ═══════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ═══════════════════════════════════════
-// DDS v4.0 — 5维时空数据空间
-// 每个数据点包含: X·Y·Z(空间) + T(时间) + S(语义)
-// ═══════════════════════════════════════
-
-// Semantic layers (S 维度)
+// ═══════ SEMANTIC LAYERS ═══════
 const SEMANTIC = {
-  sensor:   {label:"📍 感知层",  y:-6, color:0x58a6ff, desc:"传感器原始数据 — 位置·力·图像·温度"},
-  feature:  {label:"🔍 特征层",  y:-2, color:0x3fb950, desc:"特征提取 — 边缘·力峰·光谱·模式"},
-  condition:{label:"🧠 条件层",  y:2,  color:0xa371f7, desc:"语义理解 — 场景识别·异常检测·状态判断"},
-  action:   {label:"🎯 动作层",  y:6,  color:0x00d4aa, desc:"决策执行 — 力控插入·AOI·推入·分拣"},
-  feedback: {label:"✅ 反馈层",  y:10, color:0xff6b35, desc:"闭环学习 — 成功率·轨迹优化·模型更新"}
+  sensor:   {label:"📍 感知层",  y:-6, color:0x58a6ff},
+  feature:  {label:"👁 特征层",  y:-2, color:0x3fb950},
+  condition:{label:"🧠 条件层",  y:2,  color:0xa371f7},
+  action:   {label:"🎯 动作层",  y:6,  color:0x00d4aa},
+  feedback: {label:"✅ 反馈层",  y:10, color:0xff6b35}
 };
 
-// Data points — each has all 5 dimensions
-// x,z = spatial position (映射到工厂产线坐标)
-// y   = time progression (时间推进)
-// s   = semantic layer
+// ═══════ DATA POINTS (demo subset) ═══════
 const DATA_POINTS = [
-  // ═══ 感知层 — 传感器采集 ═══
-  {id:"D001",x:-8,z:4,y:SEMANTIC.sensor.y,s:"sensor",name:"入料位 RGB-D",desc:"D405 深度图+RGB",links:["D010"]},
-  {id:"D002",x:-4,z:4,y:SEMANTIC.sensor.y,s:"sensor",name:"入料位 力觉",desc:"六维力/力矩传感器",links:["D011"]},
-  {id:"D003",x:0,z:4,y:SEMANTIC.sensor.y,s:"sensor",name:"工位1 触觉",desc:"触觉阵列 4×4",links:["D012"]},
-  {id:"D004",x:4,z:4,y:SEMANTIC.sensor.y,s:"sensor",name:"工位2 温度",desc:"红外热成像",links:["D013"]},
-  {id:"D005",x:8,z:4,y:SEMANTIC.sensor.y,s:"sensor",name:"工位3 激光",desc:"3D激光轮廓仪",links:["D014"]},
-  {id:"D006",x:-8,z:0,y:SEMANTIC.sensor.y,s:"sensor",name:"COC区 扫码",desc:"二维码·MES绑定",links:["D015"]},
-  {id:"D007",x:-4,z:0,y:SEMANTIC.sensor.y,s:"sensor",name:"OE区 光功率",desc:"光功率计实时监测",links:["D016"]},
-  {id:"D008",x:4,z:0,y:SEMANTIC.sensor.y,s:"sensor",name:"MOD区 电测",desc:"BERT/BER/眼图",links:["D017"]},
-  {id:"D009",x:8,z:0,y:SEMANTIC.sensor.y,s:"sensor",name:"WH区 RFID",desc:"出入库RFID扫描",links:["D018"]},
-
-  // ═══ 特征层 — 信号处理 ═══
-  {id:"D010",x:-7,z:3,y:SEMANTIC.feature.y,s:"feature",name:"深度边缘检测",desc:"Canny边缘·目标分割",links:["D019"]},
-  {id:"D011",x:-3,z:3,y:SEMANTIC.feature.y,s:"feature",name:"力曲线特征",desc:"力峰检测·接触判断",links:["D019","D020"]},
-  {id:"D012",x:1,z:3,y:SEMANTIC.feature.y,s:"feature",name:"触觉纹理",desc:"滑移检测·压力分布",links:["D020"]},
-  {id:"D013",x:5,z:3,y:SEMANTIC.feature.y,s:"feature",name:"热特征提取",desc:"热点检测·温度梯度",links:["D021"]},
-  {id:"D014",x:9,z:3,y:SEMANTIC.feature.y,s:"feature",name:"3D点云特征",desc:"平面拟合·位姿估计",links:["D022"]},
-  {id:"D015",x:-7,z:0,y:SEMANTIC.feature.y,s:"feature",name:"序列号解析",desc:"OCR·型号匹配",links:["D023"]},
-  {id:"D016",x:-3,z:0,y:SEMANTIC.feature.y,s:"feature",name:"光功率趋势",desc:"IL/RL时域变化率",links:["D024"]},
-  {id:"D017",x:5,z:0,y:SEMANTIC.feature.y,s:"feature",name:"BER统计",desc:"误码率时间序列",links:["D025"]},
-  {id:"D018",x:9,z:0,y:SEMANTIC.feature.y,s:"feature",name:"物流轨迹",desc:"AGV路径·停留时间",links:["D026"]},
-
-  // ═══ 条件层 — 语义理解 ═══
-  {id:"D019",x:-5,z:2,y:SEMANTIC.condition.y,s:"condition",name:"C001 插入就绪",desc:"位置对齐·姿态正确",links:["D027","D028"]},
-  {id:"D020",x:0,z:2,y:SEMANTIC.condition.y,s:"condition",name:"C004 力控插入",desc:"Z向力 3N/6N/8N阈值",links:["D029"]},
-  {id:"D021",x:4,z:2,y:SEMANTIC.condition.y,s:"condition",name:"C031 温度异常",desc:">60°C·自动降速",links:["D030"]},
-  {id:"D022",x:8,z:2,y:SEMANTIC.condition.y,s:"condition",name:"C008 AOI触发",desc:"缺陷置信度>0.85",links:["D031"]},
-  {id:"D023",x:-7,z:-1,y:SEMANTIC.condition.y,s:"condition",name:"C039 OE对准",desc:"透镜对准±0.5μm",links:["D032"]},
-  {id:"D024",x:-3,z:-1,y:SEMANTIC.condition.y,s:"condition",name:"C045 IL超限",desc:"IL>0.5dB·标记NG",links:["D033"]},
-  {id:"D025",x:5,z:-1,y:SEMANTIC.condition.y,s:"condition",name:"C051 BERT通过",desc:"BER<1E-12·PRBS31",links:["D034"]},
-  {id:"D026",x:9,z:-1,y:SEMANTIC.condition.y,s:"condition",name:"C038 电池低电量",desc:"SOC<15%·回充",links:["D035"]},
-
-  // ═══ 动作层 — 决策执行 ═══
-  {id:"D027",x:-6,z:1,y:SEMANTIC.action.y,s:"action",name:"A01 取料执行",desc:"吸嘴取料·Z100L执行",links:["D036"]},
-  {id:"D028",x:-2,z:1,y:SEMANTIC.action.y,s:"action",name:"A03 预插定位",desc:"视觉引导·对准笼口",links:["D036"]},
-  {id:"D029",x:2,z:1,y:SEMANTIC.action.y,s:"action",name:"A04 力控插入⭐",desc:"核心力控 Z3N·闭环",links:["D037"]},
-  {id:"D030",x:5,z:1,y:SEMANTIC.action.y,s:"action",name:"A01 急停安全",desc:"立即停止·回安全位",links:["D038"]},
-  {id:"D031",x:8,z:1,y:SEMANTIC.action.y,s:"action",name:"A08 AOI检测",desc:"3D缺陷识别·分类",links:["D039"]},
-  {id:"D032",x:-6,z:-2,y:SEMANTIC.action.y,s:"action",name:"A31 透镜耦合",desc:"有源对准·UV固化",links:["D040"]},
-  {id:"D033",x:-2,z:-2,y:SEMANTIC.action.y,s:"action",name:"A10 放不良品",desc:"NG仓·标记批次",links:["D041"]},
-  {id:"D034",x:4,z:-2,y:SEMANTIC.action.y,s:"action",name:"A42 BERT测试",desc:"PRBS31·60s·BERT",links:["D042"]},
-  {id:"D035",x:9,z:-2,y:SEMANTIC.action.y,s:"action",name:"A47 AGV回充",desc:"自主导航·充电桩",links:["D043"]},
-
-  // ═══ 反馈层 — 闭环学习 ═══
-  {id:"D036",x:-4,z:-3,y:SEMANTIC.feedback.y,s:"feedback",name:"F01 插拔成功率",desc:"99.2%·+0.3% MoM",links:[]},
-  {id:"D037",x:1,z:-3,y:SEMANTIC.feedback.y,s:"feedback",name:"F02 力控精度",desc:"±0.02mm·稳定",links:[]},
-  {id:"D038",x:5,z:-3,y:SEMANTIC.feedback.y,s:"feedback",name:"F03 安全事件",desc:"0事故·365天",links:[]},
-  {id:"D039",x:8,z:-3,y:SEMANTIC.feedback.y,s:"feedback",name:"F04 AOI检出率",desc:">99.7%·漏检0",links:[]},
-  {id:"D040",x:-6,z:-4,y:SEMANTIC.feedback.y,s:"feedback",name:"F05 OE良率",desc:"98.5%·目标99%",links:[]},
-  {id:"D041",x:-2,z:-4,y:SEMANTIC.feedback.y,s:"feedback",name:"F06 NG分类",desc:"自动分类·根因",links:[]},
-  {id:"D042",x:4,z:-4,y:SEMANTIC.feedback.y,s:"feedback",name:"F07 BERT通过率",desc:"97.8%·800G",links:[]},
-  {id:"D043",x:9,z:-4,y:SEMANTIC.feedback.y,s:"feedback",name:"F08 模型更新",desc:"每周增量训练",links:[]}
+  {id:"D001",x:-8,z:4,y:-6,s:"sensor",name:"入料位 RGB-D",desc:"D405 深度图",links:["D010"]},
+  {id:"D002",x:-4,z:4,y:-6,s:"sensor",name:"力觉传感器",desc:"六维力/力矩",links:["D011"]},
+  {id:"D003",x:0,z:4,y:-6,s:"sensor",name:"触觉阵列",desc:"4×4 触觉",links:["D012"]},
+  {id:"D004",x:4,z:4,y:-6,s:"sensor",name:"温度传感器",desc:"红外热成像",links:["D013"]},
+  {id:"D005",x:8,z:4,y:-6,s:"sensor",name:"激光轮廓仪",desc:"3D点云",links:["D014"]},
+  {id:"D006",x:-8,z:0,y:-6,s:"sensor",name:"扫码枪",desc:"MES二维码",links:["D015"]},
+  {id:"D007",x:-4,z:0,y:-6,s:"sensor",name:"光功率计",desc:"实时IL/RL",links:["D016"]},
+  {id:"D008",x:4,z:0,y:-6,s:"sensor",name:"BERT测试仪",desc:"BER/眼图",links:["D017"]},
+  {id:"D009",x:8,z:0,y:-6,s:"sensor",name:"RFID读取器",desc:"出入库扫描",links:["D018"]},
+  // feature
+  {id:"D010",x:-7,z:3,y:-2,s:"feature",name:"深度边缘检测",desc:"Canny·分割",links:["C001"]},
+  {id:"D011",x:-3,z:3,y:-2,s:"feature",name:"力曲线特征",desc:"力峰·接触",links:["C002","C003"]},
+  {id:"D012",x:1,z:3,y:-2,s:"feature",name:"触觉纹理",desc:"滑移·压力",links:["C002"]},
+  {id:"D013",x:5,z:3,y:-2,s:"feature",name:"热特征提取",desc:"热点·梯度",links:["C004"]},
+  {id:"D014",x:9,z:3,y:-2,s:"feature",name:"3D点云特征",desc:"平面拟合",links:["C005"]},
+  {id:"D015",x:-7,z:0,y:-2,s:"feature",name:"序列号解析",desc:"OCR·型号",links:["C006"]},
+  {id:"D016",x:-3,z:0,y:-2,s:"feature",name:"光功率趋势",desc:"IL时域变化",links:["C007"]},
+  {id:"D017",x:5,z:0,y:-2,s:"feature",name:"BER统计",desc:"误码率序列",links:["C008"]},
+  {id:"D018",x:9,z:0,y:-2,s:"feature",name:"物流轨迹",desc:"AGV路径",links:["C009"]},
+  // condition
+  {id:"C001",x:-5,z:2,y:2,s:"condition",name:"C001 插入就绪",desc:"位置对齐·姿态OK",links:["A001","A003"]},
+  {id:"C002",x:0,z:2,y:2,s:"condition",name:"C002 力控插入",desc:"Z向力 3N/6N/8N",links:["A004"]},
+  {id:"C003",x:4,z:2,y:2,s:"condition",name:"C003 温度异常",desc:">60°C·降速",links:["A031"]},
+  {id:"C004",x:8,z:2,y:2,s:"condition",name:"C004 AOI触发",desc:"缺陷置信度>0.85",links:["A008"]},
+  {id:"C005",x:-6,z:0,y:2,s:"condition",name:"C005 OE对准",desc:"透镜±0.5μm",links:["A031"]},
+  {id:"C006",x:-2,z:0,y:2,s:"condition",name:"C006 IL超限",desc:"IL>0.5dB·NG",links:["A010"]},
+  {id:"C007",x:4,z:0,y:2,s:"condition",name:"C007 BERT通过",desc:"BER<1E-12",links:["A042"]},
+  {id:"C008",x:9,z:0,y:2,s:"condition",name:"C008 电池低电",desc:"SOC<15%",links:["A047"]},
+  // action
+  {id:"A001",x:-6,z:1,y:6,s:"action",name:"A001 取料执行",desc:"吸嘴取料",links:["F001"]},
+  {id:"A003",x:-2,z:1,y:6,s:"action",name:"A003 预插定位",desc:"视觉引导",links:["F001"]},
+  {id:"A004",x:2,z:1,y:6,s:"action",name:"A004 力控插入⭐",desc:"Z3N闭环",links:["F002"]},
+  {id:"A008",x:8,z:1,y:6,s:"action",name:"A008 AOI检测",desc:"3D缺陷识别",links:["F004"]},
+  {id:"A010",x:-6,z:-2,y:6,s:"action",name:"A010 放不良品",desc:"NG仓·标记",links:["F006"]},
+  {id:"A031",x:4,z:-2,y:6,s:"action",name:"A031 急停安全",desc:"回安全位",links:["F003"]},
+  {id:"A042",x:9,z:-2,y:6,s:"action",name:"A042 BERT测试",desc:"PRBS31·60s",links:["F007"]},
+  {id:"A047",x:-4,z:-4,y:6,s:"action",name:"A047 AGV回充",desc:"自主导航",links:["F008"]},
+  // feedback
+  {id:"F001",x:-4,z:-3,y:10,s:"feedback",name:"F001 插拔成功率",desc:"99.2%",links:[]},
+  {id:"F002",x:1,z:-3,y:10,s:"feedback",name:"F002 力控精度",desc:"±0.02mm",links:[]},
+  {id:"F003",x:5,z:-3,y:10,s:"feedback",name:"F003 安全事件",desc:"0事故",links:[]},
+  {id:"F004",x:8,z:-3,y:10,s:"feedback",name:"F004 AOI检出率",desc:">99.7%",links:[]},
+  {id:"F006",x:-2,z:-4,y:10,s:"feedback",name:"F006 NG分类",desc:"自动分类",links:[]},
+  {id:"F007",x:4,z:-4,y:10,s:"feedback",name:"F007 BERT通过率",desc:"97.8%",links:[]},
+  {id:"F008",x:9,z:-4,y:10,s:"feedback",name:"F008 模型更新",desc:"每周增量",links:[]}
 ];
 
-// ═══════ THREE.JS SETUP ═══════
-const wrap=document.getElementById("canvas-wrap"),W=wrap.clientWidth,H=wrap.clientHeight;
+// ═══════ THREE.JS ═══════
+const wrap=document.getElementById("view3d"),W=wrap.clientWidth,H=wrap.clientHeight;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);
-scene.fog=new THREE.FogExp2(0x06080d,0.0004);
+scene.fog=new THREE.FogExp2(0x06080d,0.0005);
 const camera=new THREE.PerspectiveCamera(50,W/H,.5,80);
 camera.position.set(0,2,28);camera.lookAt(0,2,0);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W,H);
@@ -141,123 +479,85 @@ wrap.appendChild(renderer.domElement);
 scene.add(new THREE.AmbientLight(0x334466,.5));
 const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(5,15,10);scene.add(dl);
 
-// ═══ 5D 时空框架 ═══
+// Time axis
+const tAxis=new THREE.Mesh(
+  new THREE.CylinderGeometry(.08,.08,20,16),
+  new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.6,roughness:.3})
+);tAxis.position.y=2;scene.add(tAxis);
 
-// 1. 时间轴 — 中央垂直光柱 (T 维度)
-const timeAxisGeom=new THREE.CylinderGeometry(.08,.08,20,16);
-const timeAxisMat=new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.6,roughness:.3,metalness:.6});
-const timeAxis=new THREE.Mesh(timeAxisGeom,timeAxisMat);timeAxis.position.y=2;scene.add(timeAxis);
-
-// 时间刻度环
-for(let y=SEMANTIC.sensor.y;y<=SEMANTIC.feedback.y+1;y+=1){
-  const ring=new THREE.Mesh(
-    new THREE.TorusGeometry(.25,.02,8,16),
-    new THREE.MeshBasicMaterial({color:y%4===0?0xf0a500:0x4a3a1a,opacity:.4,transparent:true})
-  );
-  ring.position.y=y;scene.add(ring);
-}
-
-// 2. 语义层级平面 — 透明圆盘 (S 维度)
+// Semantic discs
 Object.values(SEMANTIC).forEach(s=>{
-  const discGeom=new THREE.RingGeometry(.5,11,64);
-  const disc=new THREE.Mesh(discGeom,new THREE.MeshBasicMaterial({
-    color:s.color,side:THREE.DoubleSide,opacity:.04,transparent:true
-  }));
+  const disc=new THREE.Mesh(new THREE.RingGeometry(.5,11,64),
+    new THREE.MeshBasicMaterial({color:s.color,side:THREE.DoubleSide,opacity:.04,transparent:true}));
   disc.rotation.x=-Math.PI/2;disc.position.y=s.y;scene.add(disc);
-
-  // 语义层标签浮点
-  const canvas=document.createElement("canvas");canvas.width=256;canvas.height=32;
-  const ctx=canvas.getContext("2d");
-  ctx.fillStyle="#ffffff";ctx.font="bold 14px sans-serif";ctx.textAlign="center";
+  const cvs=document.createElement("canvas");cvs.width=256;cvs.height=32;
+  const ctx=cvs.getContext("2d");ctx.fillStyle="#fff";ctx.font="bold 14px sans-serif";ctx.textAlign="center";
   ctx.fillText(s.label,128,20);
-  const tex=new THREE.CanvasTexture(canvas);
-  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,opacity:.7}));
-  sprite.scale.set(5,0.6,1);sprite.position.set(11.5,s.y,0);scene.add(sprite);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cvs),transparent:true,opacity:.7}));
+  sp.scale.set(5,.6,1);sp.position.set(11.5,s.y,0);scene.add(sp);
 });
 
-// 3. 空间参考网格 (X-Z 维度)
-const grid=new THREE.GridHelper(24,20,0x1a2a3a,0x0a0f15);grid.position.y=SEMANTIC.sensor.y-1.5;scene.add(grid);
+// Grid
+const grid=new THREE.GridHelper(24,20,0x1a2a3a,0x0a0f15);grid.position.y=-7;scene.add(grid);
 
-// 4. Stars background
-const starsGeom=new THREE.BufferGeometry();
-const starPos=new Float32Array(600*3);
-for(let i=0;i<600*3;i+=3){starPos[i]=(Math.random()-.5)*50;starPos[i+1]=Math.random()*22-4;starPos[i+2]=(Math.random()-.5)*50}
-starsGeom.setAttribute("position",new THREE.BufferAttribute(starPos,3));
-scene.add(new THREE.Points(starsGeom,new THREE.PointsMaterial({color:0x334466,size:.04})));
+// Stars
+const sg=new THREE.BufferGeometry(),sp=new Float32Array(600*3);
+for(let i=0;i<600*3;i+=3){sp[i]=(Math.random()-.5)*50;sp[i+1]=Math.random()*22-4;sp[i+2]=(Math.random()-.5)*50}
+sg.setAttribute("position",new THREE.BufferAttribute(sp,3));
+scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0x334466,size:.04})));
 
-// ═══ 创建数据点 ═══
+// Nodes
 const allNodes=[],nodeMap={};
-
-function mkDataPoint(dp){
+function mkNode(dp){
   const s=SEMANTIC[dp.s];
   const g=new THREE.Group();
-  // 主体
   const geom=dp.s==="sensor"?new THREE.OctahedronGeometry(.25):
              dp.s==="feature"?new THREE.IcosahedronGeometry(.22):
              dp.s==="condition"?new THREE.SphereGeometry(.28,16,16):
              dp.s==="action"?new THREE.BoxGeometry(.3,.3,.3):
              new THREE.TorusKnotGeometry(.2,.06,32,8);
-  const mat=new THREE.MeshStandardMaterial({
-    color:s.color,roughness:.2,metalness:.5,
-    emissive:s.color,emissiveIntensity:.25
-  });
-  const mesh=new THREE.Mesh(geom,mat);g.add(mesh);
-  // 光环
-  const ring=new THREE.Mesh(
-    new THREE.TorusGeometry(.4,.015,8,16),
-    new THREE.MeshBasicMaterial({color:s.color,opacity:.5,transparent:true})
-  );
-  g.add(ring);
+  const mat=new THREE.MeshStandardMaterial({color:s.color,roughness:.2,metalness:.5,emissive:s.color,emissiveIntensity:.25});
+  g.add(new THREE.Mesh(geom,mat));
+  g.add(new THREE.Mesh(new THREE.TorusGeometry(.4,.015,8,16),new THREE.MeshBasicMaterial({color:s.color,opacity:.5,transparent:true})));
   g.position.set(dp.x,dp.y,dp.z);
-  g.userData={id:dp.id,label:dp.id+" "+dp.name,color:"#"+s.color.toString(16).padStart(6,"0"),desc:dp.desc+" ["+s.label+"]",links:dp.links,s:dp.s};
+  g.userData={id:dp.id,label:dp.id+" "+dp.name,color:"#"+s.color.toString(16).padStart(6,"0"),desc:dp.desc,links:dp.links,s:dp.s};
   scene.add(g);allNodes.push(g);nodeMap[dp.id]=g;
 }
-DATA_POINTS.forEach(mkDataPoint);
+DATA_POINTS.forEach(mkNode);
 
-// ═══ 数据流连线 — 跨语义层+时间推进 ═══
+// Edge curves
 DATA_POINTS.forEach(dp=>{
   if(!dp.links||!dp.links.length)return;
   const src=nodeMap[dp.id];if(!src)return;
   dp.links.forEach(tid=>{
     const tgt=nodeMap[tid];if(!tgt)return;
-    // 曲线连接 — 体现时间流动
     const midY=(src.position.y+tgt.position.y)/2;
-    const midX=(src.position.x+tgt.position.x)/2;
-    const midZ=(src.position.z+tgt.position.z)/2;
-    const curve=new THREE.QuadraticBezierCurve3(
-      src.position,
-      new THREE.Vector3(midX+1,midY,midZ),
-      tgt.position
-    );
-    const points=curve.getPoints(32);
-    const lineGeom=new THREE.BufferGeometry().setFromPoints(points);
-    const sColor=SEMANTIC[dp.s].color;
-    scene.add(new THREE.Line(lineGeom,new THREE.LineBasicMaterial({color:sColor,opacity:.08,transparent:true})));
+    const curve=new THREE.QuadraticBezierCurve3(src.position,
+      new THREE.Vector3((src.position.x+tgt.position.x)/2+1,midY,(src.position.z+tgt.position.z)/2),tgt.position);
+    const pts=curve.getPoints(32);
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineBasicMaterial({color:SEMANTIC[dp.s].color,opacity:.08,transparent:true})));
   });
 });
 
-// ═══ 流动粒子 — T维度时间推进可视化 ═══
-const flowParticles=[];
+// Flow particles
+const flows=[];
 DATA_POINTS.filter(dp=>dp.links&&dp.links.length).forEach(dp=>{
   dp.links.forEach(tid=>{
     const src=nodeMap[dp.id],tgt=nodeMap[tid];
     if(!src||!tgt)return;
-    const pGeom=new THREE.SphereGeometry(.06,4,4);
-    const pMat=new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.8});
     for(let j=0;j<3;j++){
-      const p=new THREE.Mesh(pGeom,pMat);
+      const p=new THREE.Mesh(new THREE.SphereGeometry(.06,4,4),new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.8}));
       p.userData={src:src.position.clone(),tgt:tgt.position.clone(),t:j*.3,speed:.002+.001*j};
-      p.position.copy(src.position);
-      scene.add(p);
-      flowParticles.push(p);
+      p.position.copy(src.position);scene.add(p);flows.push(p);
     }
   });
 });
 
-// ═══ Camera control ═══
+// Camera
 let drag=false,prev={x:0,y:0},ct=Math.PI/4,cp=.7,cd=28;
 function uc(){
-  camera.position.set(cd*Math.sin(cp)*Math.cos(ct), cd*Math.cos(cp)+2, cd*Math.sin(cp)*Math.sin(ct));
+  camera.position.set(cd*Math.sin(cp)*Math.cos(ct),cd*Math.cos(cp)+2,cd*Math.sin(cp)*Math.sin(ct));
   camera.lookAt(0,2,0);
 }
 wrap.addEventListener("mousedown",e=>{if(e.button===0){drag=true;prev={x:e.clientX,y:e.clientY}}});
@@ -268,7 +568,7 @@ wrap.addEventListener("touchstart",e=>{if(e.touches.length===1){drag=true;prev={
 wrap.addEventListener("touchmove",e=>{if(!drag||e.touches.length!==1)return;ct+=(e.touches[0].clientX-prev.x)*.004;cp=Math.max(.1,Math.min(1.5,cp-(e.touches[0].clientY-prev.y)*.004));prev={x:e.touches[0].clientX,y:e.touches[0].clientY};uc()});
 wrap.addEventListener("touchend",()=>drag=false);
 
-// ═══ Click — 展示5维信息 ═══
+// Click
 const rc=new THREE.Raycaster(),ms=new THREE.Vector2();
 wrap.addEventListener("click",e=>{
   ms.x=(e.clientX/wrap.clientWidth)*2-1;ms.y=-(e.clientY/wrap.clientHeight)*2+1;
@@ -278,39 +578,34 @@ wrap.addEventListener("click",e=>{
     let o=hits[0].object;while(o&&!o.userData.label)o=o.parent;
     if(o&&o.userData.label){
       const d=o.userData,t=document.getElementById("tip");
-      const sLayer=SEMANTIC[d.s];
+      const sl=SEMANTIC[d.s];
       t.innerHTML=
         '<b style="color:'+d.color+'">'+d.label+'</b>'+
         '<div style="color:#8b949e;margin-top:2px">'+d.desc+'</div>'+
         '<div style="margin-top:4px;font-size:9px;display:flex;gap:8px;flex-wrap:wrap">'+
         '<span style="color:#58a6ff">📍 X:'+o.position.x.toFixed(1)+' Z:'+o.position.z.toFixed(1)+'</span>'+
         '<span style="color:#f0a500">⏱ T:'+o.position.y.toFixed(1)+'</span>'+
-        '<span style="color:#'+sLayer.color.toString(16).padStart(6,'0')+'">🔖 S:'+sLayer.label+'</span>'+
+        '<span style="color:#'+sl.color.toString(16).padStart(6,'0')+'">🔖 '+sl.label+'</span>'+
         '</div>';
-      t.style.display="block";t.style.left=Math.min(e.clientX+15,wrap.clientWidth-290)+"px";
-      t.style.top=(e.clientY-50)+"px";
+      t.style.display="block";t.style.left=Math.min(e.clientX+15,wrap.clientWidth-290)+"px";t.style.top=(e.clientY-50)+"px";
       setTimeout(()=>t.style.display="none",4000);
     }
   }
 });
 
-// ═══ Animate ═══
+// Animate
 let time=0;
 function anim(){
   requestAnimationFrame(anim);time+=.016;
-  // 时间轴脉冲
-  timeAxis.scale.y=1+Math.sin(time*1.5)*.03;
-  timeAxis.material.emissiveIntensity=.5+Math.sin(time*2)*.15;
-  // 数据点动画
+  tAxis.scale.y=1+Math.sin(time*1.5)*.03;
+  tAxis.material.emissiveIntensity=.5+Math.sin(time*2)*.15;
   allNodes.forEach(n=>{
-    const s=n.userData.s;
-    if(s==="sensor")n.rotation.y+=.003;
-    else if(s==="condition"){n.rotation.y+=.005;n.children[1]&&(n.children[1].rotation.z+=.008)}
-    else if(s==="action"){n.rotation.y+=.004;n.rotation.x+=.002}
-    else if(s==="feedback")n.children[1]&&(n.children[1].rotation.z-=.006);
+    if(n.userData.s==="sensor")n.rotation.y+=.003;
+    else if(n.userData.s==="condition"){n.rotation.y+=.005;n.children[1]&&(n.children[1].rotation.z+=.008)}
+    else if(n.userData.s==="action"){n.rotation.y+=.004;n.rotation.x+=.002}
+    else if(n.userData.s==="feedback")n.children[1]&&(n.children[1].rotation.z-=.006);
   });
-  // 流动粒子 — 沿时间轴推进
-  flowParticles.forEach(p=>{
+  flows.forEach(p=>{
     p.userData.t+=p.userData.speed;
     if(p.userData.t>1)p.userData.t=0;
     p.position.lerpVectors(p.userData.src,p.userData.tgt,p.userData.t);
