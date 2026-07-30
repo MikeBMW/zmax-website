@@ -55,7 +55,7 @@ tr:nth-child(even) td{background:#080c14}
 <h1>系统分层设计</h1>
 <p class="sub">原型→仿真→实机 · 三级部署验证体系</p>
 <!-- OLD: 系统分层设计</h1>
-<p class="sub">Sys1(4060) → Sys2(4090) → Edge(Orin/Mac) 三级验证链 · 软件定义升级路径</p>
+<p class="sub">Sys1(4060) → Sys2(4090) → Sys0(Orin Nano) 三级验证链 · 软件定义升级路径</p>
 <div class="divider"></div>
 
 <!-- 数据流 -->
@@ -66,7 +66,7 @@ tr:nth-child(even) td{background:#080c14}
   <div class="flow-arrow">→</div>
   <div class="flow-n fa">☁️ Sys2 云端智能<br><small>RTX 4090 · SmolVLA 450M</small></div>
   <div class="flow-arrow">←</div>
-  <div class="flow-n fc">📱 Edge 端侧执行<br><small>Mac M1 · Orin Nano</small></div>
+  <div class="flow-n fc">📱 Sys0 端侧执行<br><small>Orin Nano</small></div>
 </div>
 
 <!-- 三级卡片 -->
@@ -84,10 +84,10 @@ tr:nth-child(even) td{background:#080c14}
     <h3>大模型推理</h3>
     <div class="spec">RTX 4090 · 24GB</div>
     <div class="desc">SmolVLA 450M + GR00T 7B。复杂任务自主决策，多产线调度。</div>
-    <div class="link">← Sys1 gRPC调用 → Edge下发</div>
+    <div class="link">← Sys1 gRPC调用 → Sys0下发</div>
   </div>
   <div class="card">
-    <div class="tag">Edge · 端侧</div>
+    <div class="tag">Sys0 · 端侧</div>
     <h3>现场执行</h3>
     <div class="spec">Mac M1 · Orin Nano</div>
     <div class="desc">SmolVLA-INT8量化模型，&lt;15ms推理。即插即用智能硬件连接，7×24可靠运行。</div>
@@ -98,13 +98,13 @@ tr:nth-child(even) td{background:#080c14}
 <!-- 详细验证矩阵 -->
 <h2>验证链路矩阵</h2>
 <table>
-<tr><th>验证项</th><th>Sys1 (4060)</th><th>Sys2 (4090)</th><th>Edge (Orin/Mac)</th></tr>
+<tr><th>验证项</th><th>Sys1 (4060)</th><th>Sys2 (4090)</th><th>Sys0 (Orin Nano)</th></tr>
 <tr><td>模型引擎</td><td>ACT 52M · VLA-T</td><td>SmolVLA 450M · GR00T 7B</td><td>SmolVLA-INT8</td></tr>
 <tr><td>推理延迟</td><td>&lt;10ms</td><td>~150ms</td><td>&lt;15ms</td></tr>
 <tr><td>力控闭环</td><td>&gt;1kHz · 实时</td><td>— (离线训练)</td><td>&gt;1kHz · 实时</td></tr>
 <tr><td>传感器</td><td>6轴关节+力控</td><td>全模态融合</td><td>Realsense D405+力+触觉</td></tr>
 <tr><td>精度</td><td>±0.02mm</td><td>—</td><td>±0.02mm</td></tr>
-<tr><td>部署方式</td><td>gRPC → Sys2</td><td>HTTP ← Sys1 / → Edge</td><td>gRPC ← Sys1</td></tr>
+<tr><td>部署方式</td><td>gRPC → Sys2</td><td>HTTP ← Sys1 / → Sys0</td><td>gRPC ← Sys1 · Sys0</td></tr>
 <tr><td>升级路径</td><td>L2→L3→L4 软件定义</td><td>云端持续训练</td><td>OTA量化模型更新</td></tr>
 </table>
 
