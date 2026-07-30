@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z-MAX DDS 数据质量管理 · Z-MAX</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.8}
+.wrap{max-width:1100px;margin:0 auto;padding:60px 20px}
+.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:24px}
+h1{color:#00d4aa;font-size:30px;margin-bottom:4px}
+.sub{color:#8b949e;font-size:14px;margin-bottom:32px}
+h2{color:#fff;font-size:22px;margin:40px 0 16px;padding-bottom:8px;border-bottom:1px solid #1a1f2b}
+h3{color:#e0e0e0;font-size:16px;margin:24px 0 12px}
+.divider{width:56px;height:3px;background:#00d4aa;margin:14px 0 30px;border-radius:2px}
+
+/* 原则卡片 */
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:20px 0}
+.pcard{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:22px;border-left:3px solid #00d4aa}
+.pcard strong{color:#00d4aa;display:block;margin-bottom:6px;font-size:15px}
+.pcard span{font-size:13px;color:#8b949e}
+
+/* 架构框图 */
+.arch-box{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:28px;margin:20px 0;text-align:center}
+.arch-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.arch-node{border:2px solid;border-radius:10px;padding:14px 20px;text-align:center;min-width:120px;background:#0a0f18}
+.arch-node.nc{border-color:#58a6ff;color:#58a6ff}
+.arch-node.nm{border-color:#a371f7;color:#a371f7}
+.arch-node.na{border-color:#f0a500;color:#f0a500}
+.arch-node.ne{border-color:#3fb950;color:#3fb950}
+.arch-node.nf{border-color:#ff4444;color:#ff4444}
+.arch-node strong{display:block;font-size:15px;margin-bottom:4px}
+.arch-node small{font-size:11px;color:#8b949e}
+.arch-node .desc{font-size:12px;margin-top:6px;color:#c8d1d9}
+.arch-arrow{color:#8b949e;font-weight:700;font-size:18px;display:flex;align-items:center}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+th{background:#0d1117;color:#00d4aa;padding:10px 14px;text-align:left;font-weight:700;font-size:12px;letter-spacing:1px;border-bottom:2px solid #00d4aa33}
+td{padding:10px 14px;border-bottom:1px solid #1a1f2b;vertical-align:top}
+tr:hover td{background:#0a0f18}
+
+/* 打标示例 */
+.tag-example{background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;padding:24px;margin:16px 0}
+.tag-step{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #1a1f2b;font-size:13px}
+.tag-step:last-child{border-bottom:none}
+.tag-step .step-icon{min-width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.tag-step .step-icon.s1{background:#58a6ff22;color:#58a6ff;border:1px solid #58a6ff44}
+.tag-step .step-icon.s2{background:#3fb95022;color:#3fb950;border:1px solid #3fb95044}
+.tag-step .step-icon.s3{background:#f0a50022;color:#f0a500;border:1px solid #f0a50044}
+.tag-step .step-icon.s4{background:#a371f722;color:#a371f7;border:1px solid #a371f744}
+.tag-step .step-icon.s5{background:#ff444422;color:#ff4444;border:1px solid #ff444444}
+
+/* 总结卡片 */
+.summary-box{background:linear-gradient(135deg,#0d1117 0%,#081a14 50%,#0d1117 100%);border:2px solid #00d4aa44;border-radius:16px;padding:32px;margin:24px 0}
+.summary-box h2{color:#00d4aa;border:none;margin:0 0 16px}
+.summary-box .sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px}
+.sum-box{background:#06080d;border:1px solid #1a1f2b;border-radius:10px;padding:18px;text-align:center}
+.sum-box .num{font-size:32px;font-weight:800;color:#00d4aa;display:block}
+.sum-box .label{font-size:12px;color:#8b949e;margin-top:4px}
+
+/* 一句话总结 */
+.one-liner{background:#0d1117;border:1px solid #00d4aa44;border-radius:12px;padding:24px;margin:24px 0;text-align:center;font-size:15px;color:#00d4aa;font-weight:600;line-height:1.8}
+
+/* 门禁 */
+.gate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}
+.gate-card{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:18px}
+.gate-card strong{color:#f0a500;display:block;margin-bottom:6px}
+.gate-card .cond{font-size:12px;color:#8b949e;margin:6px 0}
+.gate-card .action{font-size:12px;color:#ff4444}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a href="/" class="back-home">← 返回首页</a>
+<h1>Z-MAX DDS 全局数据空间</h1>
+<p class="sub">全链路数据质量管理策略 · 五维时空打标 · 六步闭环</p>
+<div class="divider"></div>
+
+<!-- 一句话总结 -->
+<div class="one-liner">
+全局数据空间 = <span style="color:#58a6ff">54 种条件场景</span>（输入）→ <span style="color:#a371f7">5 个专用模型</span>（推理）→ <span style="color:#f0a500">48 种原子动作</span>（输出）→ <span style="color:#3fb950">4 款机器人</span>（执行）→ <span style="color:#ff4444">数据回灌训练</span>（进化）
+</div>
+
+<!-- ===== 一、架构 ===== -->
+<h2>一、全局数据空间的核心架构</h2>
+
+<h3>1.1 设计哲学：条件驱动，非任务编程</h3>
+<p style="font-size:14px;color:#8b949e;margin-bottom:20px">Z-MAX 不做通用大模型，而是把产线拆解为 <strong style="color:#fff">54 种条件场景</strong>，每种条件映射到最优的专用小模型，输出 <strong style="color:#fff">48 种原子动作</strong>，由 4 款机器人执行。</p>
+
+<div class="arch-box">
+<div style="font-size:13px;color:#8b949e;margin-bottom:12px">DDS 全局数据空间 · 五阶段闭环</div>
+<div class="arch-row">
+  <div class="arch-node nc"><strong>① 条件输入</strong><small>传感器 + MES信号</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node nm"><strong>② 模型路由</strong><small>DDS Lookup · 54条件</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node na"><strong>③ 动作解码</strong><small>潜空间→动作 · 48动作</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node ne"><strong>④ 执行层</strong><small>Orin Nano · 4款机器人</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node nf"><strong>⑤ 数据闭环</strong><small>MCAP→训练 · 模型更新</small></div>
+</div>
+</div>
+
+<h3>1.2 五大设计原则</h3>
+<div class="principles">
+  <div class="pcard"><strong>条件驱动</strong><span>非任务编程，由传感器条件触发推理</span></div>
+  <div class="pcard"><strong>多模型池</strong><span>非单一通用模型，54条件→5模型池</span></div>
+  <div class="pcard"><strong>原子技能组合</strong><span>非端到端黑箱，242条原子技能可组合</span></div>
+  <div class="pcard"><strong>数据闭环自进化</strong><span>执行结果回灌训练，持续迭代</span></div>
+  <div class="pcard"><strong>边缘-云端协同</strong><span>Sys1(&lt;5ms) + Sys2(~280ms) 分层推理</span></div>
+</div>
+
+<h3>1.3 五维时空数据空间</h3>
+<table>
+<tr><th>维度</th><th>定义</th><th>数据表达</th></tr>
+<tr><td><strong>X·Y·Z</strong></td><td>工位空间坐标</td><td>每台机器人/工位的物理位置</td></tr>
+<tr><td><strong>T</strong></td><td>时间轴</td><td>采集时刻、动作时间戳</td></tr>
+<tr><td><strong>S</strong></td><td>语义层</td><td>感知·特征·条件·动作·反馈 五层</td></tr>
+</table>
+
+<!-- ===== 二、原子技能打标 ===== -->
+<h2>二、原子技能 → 5维打标方案</h2>
+
+<p style="font-size:14px;color:#8b949e;margin-bottom:16px"><strong style="color:#fff">242 条原子技能</strong>天然携带 输入条件 + 所需传感器 + 成功标准 + 工位场景，按 <strong style="color:#fff">5 步法</strong> 拆解为 5 维数据点。</p>
+
+<h3>2.1 五步拆解法示例：P004「缺陷识别」</h3>
+<div class="tag-example">
+  <div class="tag-step"><div class="step-icon s1">S1</div><div><strong style="color:#58a6ff">传感器数据点</strong> (Y=-6)<br><span style="color:#8b949e">高分辨率相机@I-103 / 显微镜@I-103 / 颗粒传感器@I-103</span></div></div>
+  <div class="tag-step"><div class="step-icon s2">S2</div><div><strong style="color:#3fb950">特征提取点</strong> (Y=-2)<br><span style="color:#8b949e">缺陷边缘检测 / 异物颗粒计数 / 污染面积计算</span></div></div>
+  <div class="tag-step"><div class="step-icon s3">S3</div><div><strong style="color:#f0a500">条件判断点</strong> (Y=2)<br><span style="color:#8b949e">缺陷检测·AOI：漏检率&lt;0.5%·误判率&lt;1%</span></div></div>
+  <div class="tag-step"><div class="step-icon s4">S4</div><div><strong style="color:#a371f7">动作执行点</strong> (Y=6)<br><span style="color:#8b949e">A008：AOI缺陷检测·3D识别·分类·分级</span></div></div>
+  <div class="tag-step"><div class="step-icon s5">S5</div><div><strong style="color:#ff4444">闭环反馈点</strong> (Y=10)<br><span style="color:#8b949e">F004：AOI检出率&gt;99.7%·漏检率&lt;0.3%</span></div></div>
+</div>
+
+<h3>2.2 9大类技能打标数据量预估</h3>
+<table>
+<tr><th>技能分类</th><th style="text-align:center">技能数</th><th style="text-align:center">感知点/条</th><th style="text-align:center">特征点/条</th><th style="text-align:center">条件点/条</th><th style="text-align:center">动作点/条</th><th style="text-align:center">反馈点/条</th><th style="text-align:center">预计总数</th></tr>
+<tr><td>感知定位</td><td style="text-align:center">15</td><td style="text-align:center">2~3</td><td style="text-align:center">2~4</td><td style="text-align:center">2~3</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">~120</td></tr>
+<tr><td>操作动作</td><td style="text-align:center">73</td><td style="text-align:center">1~2</td><td style="text-align:center">1~3</td><td style="text-align:center">2~4</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">~580</td></tr>
+<tr><td>视觉检测</td><td style="text-align:center">10</td><td style="text-align:center">2~3</td><td style="text-align:center">2~3</td><td style="text-align:center">2~3</td><td style="text-align:center">1</td><td style="text-align:center">1</td><td style="text-align:center">~90</td></tr>
+<tr><td colspan="2"><strong>全部9类</strong></td><td style="text-align:center"><strong>242</strong></td><td style="text-align:center">—</td><td style="text-align:center">—</td><td style="text-align:center">—</td><td style="text-align:center">—</td><td style="text-align:center"><strong>~1800+</strong></td></tr>
+</table>
+
+<h3>2.3 条件ID与动作ID的全局映射</h3>
+<table>
+<tr><th>条件ID</th><th>场景描述</th><th>模型</th><th>动作</th><th style="text-align:center">延迟</th></tr>
+<tr><td>C001</td><td>100G取料·视觉定位</td><td>ACT</td><td>A01取料</td><td style="text-align:center">&lt;5ms</td></tr>
+<tr><td>C004</td><td>400G插入·六维力控</td><td>VLA-T ⭐</td><td>A04插入</td><td style="text-align:center">&lt;5ms</td></tr>
+<tr><td>C014</td><td>400G光口·力控插拔</td><td>GR00T N1.7</td><td>A22-A25</td><td style="text-align:center">~280ms</td></tr>
+<tr><td>C039</td><td>透镜对准·亚微米耦合</td><td>H-JEPA zFlow</td><td>—</td><td style="text-align:center">—</td></tr>
+</table>
+
+<!-- ===== 三、数据质量管理 ===== -->
+<h2>三、全链路数据质量管理策略</h2>
+
+<h3>3.1 数据质量的五个阶段</h3>
+<table>
+<tr><th>阶段</th><th>数据质量管理动作</th><th>质量指标</th></tr>
+<tr><td><strong>① 条件输入</strong></td><td>传感器校准·时间同步·异常检测</td><td>数据完整性&gt;99.9%</td></tr>
+<tr><td><strong>② 模型路由</strong></td><td>条件-模型映射验证·版本管理</td><td>映射准确率100%</td></tr>
+<tr><td><strong>③ 动作解码</strong></td><td>潜空间→动作指令校验</td><td>解码误差&lt;0.1%</td></tr>
+<tr><td><strong>④ 执行层</strong></td><td>力控闭环·轨迹跟踪·安全监控</td><td>成功率≥95%→99%</td></tr>
+<tr><td><strong>⑤ 数据闭环</strong></td><td>标注质检·训练集验证·模型回归测试</td><td>模型迭代可追溯</td></tr>
+</table>
+
+<h3>3.2 五维数据质量管理矩阵</h3>
+<table>
+<tr><th>维度</th><th>质量目标</th><th>验证方法</th><th>异常处理</th></tr>
+<tr><td><strong>X·Y·Z 空间</strong></td><td>工位坐标精度±0.05mm</td><td>手眼标定验证</td><td>坐标偏移自动校准</td></tr>
+<tr><td><strong>T 时间</strong></td><td>时间戳同步&lt;1ms</td><td>PTP协议验证</td><td>时序错位告警</td></tr>
+<tr><td><strong>S 语义-感知</strong></td><td>传感器数据完整性&gt;99.9%</td><td>数据丢包率监控</td><td>缺失数据补采</td></tr>
+<tr><td><strong>S 语义-特征</strong></td><td>特征提取准确率&gt;99%</td><td>标注质检抽样</td><td>特征漂移检测</td></tr>
+<tr><td><strong>S 语义-条件</strong></td><td>条件触发准确率100%</td><td>真值对比验证</td><td>误触发回滚</td></tr>
+<tr><td><strong>S 语义-动作</strong></td><td>动作执行成功率≥95%</td><td>力控+视觉双重验证</td><td>失败重试+数据回灌</td></tr>
+<tr><td><strong>S 语义-反馈</strong></td><td>反馈数据完整率100%</td><td>执行结果全量记录</td><td>缺失反馈补录</td></tr>
+</table>
+
+<h3>3.3 数据闭环的持续进化机制</h3>
+<div class="arch-box">
+<div style="font-size:13px;color:#8b949e;margin-bottom:12px">数据闭环：Orin采集 → MAC转发 → 4090训练 → 模型部署 → DDS映射更新</div>
+<div class="arch-row">
+  <div class="arch-node nc"><strong>Orin采集</strong><small>MCAP/npz</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node nm"><strong>MAC转发</strong><small>HTTP心跳</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node na"><strong>4090训练</strong><small>H-JEPA/GR00T</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node ne"><strong>模型部署</strong><small>Sys1/Sys2</small></div>
+  <div class="arch-arrow">→</div>
+  <div class="arch-node nf"><strong>DDS映射更新</strong><small>持续迭代</small></div>
+</div>
+</div>
+
+<h3>3.4 数据质量门禁</h3>
+<div class="gate-grid">
+  <div class="gate-card"><strong>🚪 采集门禁</strong><div class="cond">单次采集≥300帧，传感器数据完整</div><div class="action">不达标 → 重新采集</div></div>
+  <div class="gate-card"><strong>🚪 标注门禁</strong><div class="cond">标注一致性≥95%，质检抽样通过</div><div class="action">不达标 → 退回重标</div></div>
+  <div class="gate-card"><strong>🚪 训练门禁</strong><div class="cond">训练集分布与验证集无显著偏移</div><div class="action">不达标 → 扩充数据</div></div>
+  <div class="gate-card"><strong>🚪 部署门禁</strong><div class="cond">新模型在验证集成功率≥当前模型</div><div class="action">不达标 → 拒绝部署</div></div>
+</div>
+
+<!-- ===== 四、策略总结 ===== -->
+<h2>四、策略总结</h2>
+<div class="summary-box">
+<div class="sum-grid">
+  <div class="sum-box"><span class="num">54</span><span class="label">条件场景（输入）</span></div>
+  <div class="sum-box"><span class="num">5</span><span class="label">专用模型（推理）</span></div>
+  <div class="sum-box"><span class="num">48</span><span class="label">原子动作（输出）</span></div>
+  <div class="sum-box"><span class="num">4</span><span class="label">款机器人（执行）</span></div>
+</div>
+<div class="summary-box" style="background:transparent;border:none;padding:16px 0 0">
+<p style="font-size:14px;color:#8b949e;line-height:2">
+<strong style="color:#fff">一条主线：</strong>条件驱动 · 数据闭环 · 持续进化<br>
+<strong style="color:#fff">两个引擎：</strong>左侧控制流程 + 右侧质量监督<br>
+<strong style="color:#fff">三个层级：</strong>系统0(执行) → 系统1(推理) → 系统2(训练)<br>
+<strong style="color:#fff">四个核心：</strong>54条件 + 5模型 + 48动作 + 4机器人<br>
+<strong style="color:#fff">五个维度：</strong>X·Y·Z 空间 + T 时间 + S 语义(感知/特征/条件/动作/反馈)<br>
+<strong style="color:#fff">六步闭环：</strong>采集 → 标注 → 训练 → 部署 → 执行 → 回灌
+</p>
+</div>
+</div>
+
+<p style="text-align:center;margin-top:40px;color:#8b949e;font-size:12px">
+以 <strong style="color:#00d4aa">5 维时空打标</strong>（X·Y·Z·T·S）为数据质量管理基准，形成 <strong style="color:#00d4aa">感知→推理→执行→反馈</strong> 的完整闭环。
+</p>
+</div>
+</body>
+</html>
