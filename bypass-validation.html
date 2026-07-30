@@ -97,7 +97,7 @@ tr:nth-child(even) td{background:#080c14}
 <h2>原型验证链路矩阵</h2>
 <table>
 <tr><th>验证项</th><th>Sys1 (4060)</th><th>Sys2 (4090)</th><th>Sys0 (Orin Nano)</th></tr>
-<tr><td>模型引擎</td><td>ACT 52M · VLA-T</td><td>SmolVLA 450M · GR00T 7B</td><td>SmolVLA-INT8</td></tr>
+<tr><td>模型引擎</td><td>ACT 52M · SmolVLA 450M</td><td>VLA-T · GR00T 7B</td><td>SmolVLA-INT8</td></tr>
 <tr><td>推理延迟</td><td>&lt;10ms(ACT)</td><td>~70ms(SmolVLA)</td><td>&lt;70ms</td></tr>
 <tr><td>力控闭环</td><td>旁路仿真</td><td>— (离线训练)</td><td>&gt;1kHz · 实时</td></tr>
 <tr><td>传感器</td><td>6轴关节+力控采集数据</td><td>全模态融合</td><td>Realsense D405+力+触觉</td></tr>
