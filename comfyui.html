@@ -41,8 +41,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="btn" style="background:#a371f7;color:#fff" onclick="document.getElementById('fileOpen').click()">📂 打开</button>
 <input type="file" id="fileOpen" style="display:none" accept=".json" onchange="loadWorkflow(this)">
 <button class="btn btn-g" onclick="preset('smolvla')">SmolVLA</button>
-<button class="btn btn-g" onclick="preset('pipeline')">📐 模型管线</button>
-<a href="/drawio.html?file=dds-model-pipeline.drawio" style="font-size:10px;color:#f0a500;text-decoration:none;margin:0 4px;padding:5px 10px;border:1px solid #f0a50044;border-radius:6px;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#f0a50022'" onmouseout="this.style.background=''">🖊 Draw.io编辑</a>
+<select id="drawio-file" onchange="loadDrawioDAG()" style="padding:5px 8px;background:#0d1117;color:#c8d1d9;border:1px solid #1a1f2b;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;max-width:180px">
+  <option value="">📐 选择管线...</option>
+</select>
+<a id="drawio-edit-link" href="/drawio.html?file=dds-model-pipeline.drawio" style="font-size:10px;color:#f0a500;text-decoration:none;margin:0 4px;padding:5px 10px;border:1px solid #f0a50044;border-radius:6px;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#f0a50022'" onmouseout="this.style.background=''">🖊 Draw.io编辑</a>
 <span id="st" style="display:flex;gap:8px;font-size:10px;color:#8b949e">v2.5.5 · 2026-07-22 08:23 | </span><a href="/" style="font-size:10px;color:#00d4aa;text-decoration:none;margin:0 6px;padding:2px 6px;border:1px solid #1a1f2b;border-radius:3px">🏠 主页</a><span id="st2" style="display:flex;gap:8px;font-size:10px"><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-orin" style="width:8px;height:8px;border-radius:50%;background:#333"></span>🖥 Orin</span><span id="arr1" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-mac" style="width:8px;height:8px;border-radius:50%;background:#333"></span>💻 MAC</span><span id="arr2" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-4090" style="width:8px;height:8px;border-radius:50%;background:#00d4aa"></span>🧠 4090</span></span>
 </div>
 <div id="side">
@@ -712,8 +714,90 @@ function preset(t){
     var ids=(p[t]||p.insert).map(function(pp){return add(pp.t,pp.n,pp.x,pp.y)});
     for(var i=0;i<ids.length-1;i++)L.push({f:ids[i],t:ids[i+1]});
   }
-  draw()
+draw()}
+
+// ═══════ Draw.io 文件选择器 ═══════
+function initDrawioSelect(){
+  fetch('/save-drawio.php')
+    .then(function(r){ return r.json(); })
+    .then(function(files){
+      var sel = document.getElementById('drawio-file');
+      sel.innerHTML = '<option value="">📐 选择管线...</option>';
+      files.forEach(function(f){
+        var selAttr = f.name === 'dds-model-pipeline.drawio' ? ' selected' : '';
+        sel.innerHTML += '<option value="'+f.name+'"'+selAttr+'>'+f.name.replace('.drawio','')+'</option>';
+      });
+      // Auto-load default
+      var def = sel.value;
+      if(def) loadDrawioDAG();
+    })
+    .catch(function(e){
+      document.getElementById('drawio-file').innerHTML = '<option value="">📐 加载失败</option>';
+    });
 }
+
+function loadDrawioDAG(){
+  var file = document.getElementById('drawio-file').value;
+  if(!file) return;
+  // Update edit link
+  var link = document.getElementById('drawio-edit-link');
+  if(link) link.href = '/drawio.html?file=' + encodeURIComponent(file);
+
+  Lg('📐 加载管线: ' + file);
+
+  // Hand-crafted pipeline preset
+  if(file === 'dds-model-pipeline.drawio'){
+    preset('pipeline');
+    return;
+  }
+
+  // Auto-parse generic .drawio
+  fetch('/parse-drawio.php?file=' + encodeURIComponent(file))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error){ Lg('❌ '+d.error); return; }
+      N = []; L = [];
+      var nodeMap = {};
+      var colW = 180, rowH = 70;
+
+      // Infer node type from fill color in style
+      function inferType(style){
+        if(!style) return 'model';
+        var fc = style.match(/fillColor=#([0-9a-fA-F]{6})/);
+        if(!fc) return 'model';
+        var c = fc[1].toLowerCase();
+        if(c === 'a371f7' || c === '9673a6' || c.indexOf('a37')===0) return 'condition';
+        if(c === '00d4aa' || c === '3fb950' || c.indexOf('00d')===0 || c.indexOf('3f')===0) return 'action';
+        if(c === 'ff4444' || c === 'ff6b6b' || c.indexOf('ff4')===0) return 'hardware';
+        if(c === 'd4a800' || c === 'f0a500' || c.indexOf('d4a')===0 || c.indexOf('f0a')===0) return 'system';
+        return 'model';
+      }
+
+      // Sort nodes by x then y
+      var nodes = d.nodes.slice().sort(function(a,b){ return a.x - b.x || a.y - b.y; });
+
+      nodes.forEach(function(n){
+        var type = inferType(n.style);
+        var nx = n.x + 30, ny = n.y + 40;
+        var id = add(type, n.text.substring(0,40), nx, ny);
+        nodeMap[n.id] = id;
+      });
+
+      // Add edges
+      (d.edges||[]).forEach(function(e){
+        if(nodeMap[e.source] && nodeMap[e.target]){
+          L.push({f: nodeMap[e.source], t: nodeMap[e.target]});
+        }
+      });
+
+      draw();
+      Lg('✅ 加载完成: ' + N.length + '节点/' + L.length + '连线');
+    })
+    .catch(function(e){ Lg('❌ 解析失败: ' + e.message); });
+}
+
+// Auto-init on load
+setTimeout(initDrawioSelect, 200);
 
 //fetch('/api/comfy/status').then(function(r){return r.json()}).then(function(d){document.getElementById('st').innerHTML='🟢 在线·'+d.gpu}).catch(function(){document.getElementById('st').innerHTML='🔴 离线·SSH: python3 comfyui_backend.py'});
 // 自动加载默认预设
