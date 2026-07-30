@@ -325,6 +325,81 @@ canvas.onmousedown=function(e){
   selected=null;fromNode=null;draw()
 };
 canvas.onmouseup=function(){drag=null};
+
+// ═══════ 右键菜单: 节点类型变换 ═══════
+var ctxNode=null;
+canvas.addEventListener('contextmenu',function(e){
+  e.preventDefault();
+  var p=getPos(e),mx=p.x-px,my=p.y-py;
+  // Find node under cursor
+  ctxNode=null;
+  for(var i=N.length-1;i>=0;i--){
+    var n=N[i];
+    if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){ctxNode=n;break}
+  }
+  if(!ctxNode)return;
+  // Remove old menu
+  var old=document.getElementById('ctx-menu');
+  if(old)old.remove();
+  // Build menu
+  var types=[
+    {t:'condition',label:'🟣 条件',c:'#a371f7'},
+    {t:'model',label:'🔵 模型',c:'#58a6ff'},
+    {t:'action',label:'🟢 动作',c:'#00d4aa'},
+    {t:'system',label:'🟡 系统',c:'#d4a800'},
+    {t:'hardware',label:'🔴 硬件',c:'#ff4444'}
+  ];
+  var menu=document.createElement('div');
+  menu.id='ctx-menu';
+  menu.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;z-index:999;min-width:140px;box-shadow:0 4px 16px rgba(0,0,0,.6);padding:4px 0;font-size:11px';
+  types.forEach(function(ty){
+    var cur=ctxNode.t===ty.t?' ✓':'';
+    var a=document.createElement('a');
+    a.href='#';
+    a.style.cssText='display:block;padding:6px 14px;color:'+ty.c+';text-decoration:none;transition:background .15s';
+    a.textContent=ty.label+cur;
+    a.onmouseover=function(){this.style.background='#131726'};
+    a.onmouseout=function(){this.style.background=''};
+    a.onclick=function(ev){
+      ev.preventDefault();
+      if(ctxNode&&ctxNode.t!==ty.t){
+        saveState();ctxNode.t=ty.t;draw();
+        Lg('🔄 '+ctxNode.name+' → '+ty.label);
+      }
+      document.getElementById('ctx-menu').remove();
+      ctxNode=null;
+    };
+    menu.appendChild(a);
+  });
+  // Add a separator and rename option
+  var sep=document.createElement('div');
+  sep.style.cssText='border-top:1px solid #1a1f2b;margin:4px 0';
+  menu.appendChild(sep);
+  var rn=document.createElement('a');
+  rn.href='#';
+  rn.style.cssText='display:block;padding:6px 14px;color:#8b949e;text-decoration:none;transition:background .15s';
+  rn.textContent='✏️ 重命名...';
+  rn.onmouseover=function(){this.style.background='#131726'};
+  rn.onmouseout=function(){this.style.background=''};
+  rn.onclick=function(ev){
+    ev.preventDefault();
+    if(ctxNode){
+      var nn=prompt('节点名称:',ctxNode.name);
+      if(nn&&nn.trim()){saveState();ctxNode.name=nn.trim();draw();Lg('✏️ 重命名: '+nn);}
+    }
+    document.getElementById('ctx-menu').remove();
+    ctxNode=null;
+  };
+  menu.appendChild(rn);
+  document.body.appendChild(menu);
+  // Close on outside click
+  setTimeout(function(){
+    document.addEventListener('click',function closeCtx(ev){
+      if(!document.getElementById('ctx-menu')){document.removeEventListener('click',closeCtx);return}
+      if(!ev.target.closest('#ctx-menu')){document.getElementById('ctx-menu').remove();ctxNode=null;document.removeEventListener('click',closeCtx)}
+    });
+  },0);
+});
 canvas.onmousemove=function(e){
   var p=getPos(e);
   if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();connOverlays.forEach(function(o){var n=o.node;if(!n)return;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
