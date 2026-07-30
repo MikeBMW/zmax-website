@@ -185,7 +185,7 @@ function logDragStart(e){if(e.offsetY<8){logDrag=true;logSY=e.clientY;logSH=docu
 document.addEventListener('mousemove',function(e){if(!logDrag)return;var h=logSH+(logSY-e.clientY);h=Math.max(40,Math.min(500,h));document.getElementById('log').style.height=h+'px';rz()});
 document.addEventListener('mouseup',function(){logDrag=false});
 document.getElementById('log').onmousemove=function(e){this.style.cursor=e.offsetY<8?'ns-resize':'default'};
-var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1,connected=false,connOverlays=[],stage=0,pipelineTimer=null,macPackets=0,forwardedMB=0,diskGB=0,orinRecording=false,orinOnline=false;
+var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1,connected=false,connOverlays=[],stage=0,pipelineTimer=null,macPackets=0,forwardedMB=0,diskGB=0,orinRecording=false,orinOnline=false,hoverLink=-1;
 var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444'};
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
@@ -256,13 +256,20 @@ function draw(){
   ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.strokeStyle='#111';ctx.lineWidth=1;
   for(var i=0;i<canvas.width;i+=50)for(var j=0;j<canvas.height;j+=50){ctx.beginPath();ctx.arc(i+(px%50),j+(py%50),1,0,Math.PI*2);ctx.stroke()}
-  L.forEach(function(l){
+  L.forEach(function(l,i){
     var a=N.find(function(n){return n.id===l.f}),b=N.find(function(n){return n.id===l.t});
     if(!a||!b)return;
     var ax=a.x+a.w+px,ay=a.y+dh/2+py,bx=b.x+px,by=b.y+dh/2+py,c1x=ax+(bx-ax)*.5,c2x=bx-(bx-ax)*.5;
-    ctx.beginPath();ctx.strokeStyle=colors[a.t]+'88';ctx.lineWidth=2;
+    var isHover=i===hoverLink;
+    ctx.beginPath();ctx.strokeStyle=isHover?'#fff':colors[a.t]+'88';ctx.lineWidth=isHover?3:2;
     ctx.moveTo(ax,ay);ctx.bezierCurveTo(c1x,ay,c2x,by,bx,by);ctx.stroke();
-    ctx.fillStyle=colors[a.t];ctx.beginPath();ctx.arc(bx,by,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=isHover?'#fff':colors[a.t];ctx.beginPath();ctx.arc(bx,by,isHover?4:3,0,Math.PI*2);ctx.fill();
+    if(isHover){
+      // Draw delete hint
+      var mx=(ax+bx)/2,my=(ay+by)/2;
+      ctx.fillStyle='#ff4444';ctx.font='bold 11px sans-serif';
+      ctx.fillText('✕',mx-5,my-2);
+    }
   });
   N.forEach(function(n){
     var c=colors[n.t];ctx.fillStyle='#111';ctx.strokeStyle=c;ctx.lineWidth=1.5;
@@ -293,14 +300,18 @@ window.addEventListener("wheel",function(e){
 
 canvas.onmousedown=function(e){
   var p=getPos(e),mx=p.x-px,my=p.y-py,target=null;
-  // Check link hit FIRST
+  // Check link hit FIRST — click to delete
   for(var li=0;li<L.length;li++){
     var lk=L[li];
     var fn=N.find(function(nn){return nn.id===lk.f});
     var tn=N.find(function(nn){return nn.id===lk.t});
     if(!fn||!tn)continue;
     var midX=(fn.x+fn.w+tn.x)/2, midY=(fn.y+dh/2+tn.y+dh/2)/2;
-    if(Math.abs(mx-midX)<15&&Math.abs(my-midY)<15){return}
+    if(Math.abs(mx-midX)<15&&Math.abs(my-midY)<15){
+      saveState();L.splice(li,1);hoverLink=-1;draw();
+      Lg('🗑 连线已删除');
+      return
+    }
   }
   for(var i=N.length-1;i>=0;i--){
     var n=N[i];
@@ -317,6 +328,15 @@ canvas.onmouseup=function(){drag=null};
 canvas.onmousemove=function(e){
   var p=getPos(e);
   if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();connOverlays.forEach(function(o){var n=o.node;if(!n)return;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
+  // Track link hover
+  var mx=p.x-px,my=p.y-py,found=-1;
+  for(var li=0;li<L.length;li++){
+    var lk=L[li],fn=N.find(function(nn){return nn.id===lk.f}),tn=N.find(function(nn){return nn.id===lk.t});
+    if(!fn||!tn)continue;
+    var midX=(fn.x+fn.w+tn.x)/2,midY=(fn.y+dh/2+tn.y+dh/2)/2;
+    if(Math.abs(mx-midX)<15&&Math.abs(my-midY)<15){found=li;break}
+  }
+  if(found!==hoverLink){hoverLink=found;canvas.style.cursor=found>=0?'pointer':'';draw()}
   if(false){}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
