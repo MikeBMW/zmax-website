@@ -415,60 +415,37 @@ canvas.onmousemove=function(e){
   if(false){}
   if(fromNode){draw();var n=N.find(function(nn){return nn.id===fromNode});if(!n)return;ctx.beginPath();ctx.strokeStyle='#fff';ctx.setLineDash([4,4]);ctx.moveTo(n.x+n.w+px,n.y+dh/2+py);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.setLineDash([])}
 };
-canvas.ondblclick=function(e){var p=getPos(e),mx=p.x,my=p.y;for(var i=N.length-1;i>=0;i--){var n=N[i];if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
-  // 显示配置面板
-  var cfg=document.createElement('div');
-  cfg.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;background:#111;border:2px solid'+colors[n.t]+';border-radius:8px;padding:10px;z-index:999;font-size:11px;min-width:200px';
-  var incoming=L.filter(function(l){return l.t===n.id}).map(function(l){var src=N.find(function(x){return x.id===l.f});return src?src.name:'?'}).join(', ')||'(无)';
-  var outgoing=L.filter(function(l){return l.f===n.id}).map(function(l){var dst=N.find(function(x){return x.id===l.t});return dst?dst.name:'?'}).join(', ')||'(无)';
-  var info={'M01 RGB图像':'DDS: /dds/model/rgb','SmolVLA 推理引擎':'DDS: /dds/model/smolvla','A00 Action输出':'DDS: /dds/action/output'}[n.name]||'';
-  var dd='';
-  if(n.name.indexOf('W&B')>=0){
-    var connModel='smolvla';
-    var conn=L.find(function(l){return l.t===n.id});
-    if(conn){var src=N.find(function(x){return x.id===conn.f});if(src)connModel=src.name.toLowerCase().replace(/ 推理引擎/g,'').replace(/[^a-z0-9-]/g,'').replace(/-+$/,'');}
-    var projMap={smolvla:'zmax-smolvla','vla-touch':'zmax-vla-touch',gr00t:'zmax-gr00t',act:'zmax-act',lewm:'zmax-lewm'};
-    var proj=projMap[connModel]||'zmax-smolvla';
-    dd='<div style="font-size:11px;padding:8px;background:#0d1117;border-radius:6px;text-align:center"><span style="color:#8b949e;font-size:9px">'+incoming+'</span><br><a href="https://wandb.ai/xspace/'+proj+'" target="_blank" style="color:#facd3b;font-size:14px;text-decoration:none;font-weight:700">🔗 wandb.ai/xspace/'+proj+'</a></div>';}
-  if(n.name.indexOf('Sys0')>=0){
-    dd='<div style="font-size:10px;padding:8px;background:#0d1117;border-radius:8px;border:2px solid#d4a800"><div style="color:#d4a800;font-weight:700;font-size:11px">📊 Sys0管理</div><div style="color:#8b949e;margin:4px 0">路径: /root/datasets/mcab/</div><button onclick="listDatasets()" style="width:100%;padding:6px;margin-top:6px;background:#d4a80022;color:#d4a800;border:1px solid#d4a80044;border-radius:6px;cursor:pointer;font-size:10px">📂 查看数据集</button><button onclick="cleanupOld()" style="width:100%;padding:6px;margin-top:4px;background:#ff444422;color:#ff4444;border:1px solid#ff444444;border-radius:6px;cursor:pointer;font-size:10px">🗑 只保留最新3个</button><div id="ds-list" style="margin-top:6px;max-height:200px;overflow-y:auto;font-size:9px"></div></div>';
-  }else if(false){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
-  }else if(false){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据格式:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="mcap" selected>MCAP (ros2 bag)</option><option value="npz">NPZ (numpy)</option><option value="json">JSON</option><option value="db3">DB3 (sqlite3)</option></select></div>';
-  }else if(n.name==='M01 RGB图像'){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L120" selected>随机噪声 torch.randn(1,3,512,512) @ L120</option><option value="realsense">RealSense D405 实采 1920x1080@30fps</option><option value="genesis">Genesis 物理仿真</option><option value="file">本地文件上传</option></select></div>';
-  }else if(n.name==='M04 触觉阵列'){
-    dd='<div style="margin:4px 0"><span style="font-size:8px;color:#d4a800">数据源:</span><br><select onchange="Lg(this.value)" style="width:100%;padding:4px;background:#222;color:#ddd;border:1px solid#333;border-radius:4px;font-size:10px;margin-top:2px"><option value="randn_L121" selected>随机噪声 torch.randn(1,6,200) @ L121</option><option value="lissajous_real">Lissajous力控 6N×200点 实采</option><option value="sim">仿真力觉</option></select></div>';
-  }else if(n.name.indexOf('C0')===0||n.name.indexOf('C1')===0||n.name.indexOf('C2')===0||n.name.indexOf('C3')===0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#a371f7;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">示教预录轨迹 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">数据源:</div><select onchange="Lg(this.value)" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>ur5_demo 预录示教 (Orin Nano)</option><option>实时力控轨迹 (Lissajous)</option><option>手动拖拽轨迹</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">轨迹长度: 50-200步 · 6关节+夹爪</div></div>';
-  }else if(n.name.indexOf('SmolVLA')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#58a6ff;font-weight:700;margin-bottom:4px">SmolVLA 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">骨干</td><td>SmolVLM-2 500M (16层VLM)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">专家</td><td>VLA-T 450M DiT</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>3×RGB(512²)+state(7)+lang</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/smolvla_base</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>257ms(热)/800ms(冷)</td></tr></table></div>';
-  }else if(n.name.indexOf('VLA-Touch')>=0||n.name.indexOf('VLA-T')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ff6b6b;font-weight:700;margin-bottom:4px">VLA-Touch 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>DiT + Tactile Fusion (7层)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~450M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>RGB(512²)+力触觉(6,200)+state(7)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action Chunk [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/vla_touch</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~180ms (4090)</td></tr></table></div>';
-  }else if(n.name.indexOf('GR00T')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#ffa500;font-weight:700;margin-bottom:4px">GR00T N1.7 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>MoE Transformer</td></tr><tr><td style="color:#8b949e;padding:1px 4px">规模</td><td>6.9GB</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>多模态+语言+观测</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,7]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/gr00t_n1d7</td></tr><tr><td style="color:#8b949e;padding:1px 4px">VRAM</td><td>6.4GB</td></tr></table></div>';
-  }else if(n.name.indexOf('ACT')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#6a5acd;font-weight:700;margin-bottom:4px">ACT 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>CVAE Encoder-Decoder</td></tr><tr><td style="color:#8b949e;padding:1px 4px">潜空间</td><td>32维</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>图像+关节+风格</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>Action [1,50,6]</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/act_policy</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~50ms</td></tr></table></div>';
-  }else if(n.name.indexOf('LeWM')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#e8a800;font-weight:700;margin-bottom:4px">LeWM 参数</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">架构</td><td>World Model (ViT+GRU)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">参数量</td><td>~200M</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输入</td><td>RGB+State+Action历史</td></tr><tr><td style="color:#8b949e;padding:1px 4px">输出</td><td>NextRGB+NextState+Reward</td></tr><tr><td style="color:#8b949e;padding:1px 4px">路径</td><td>/root/models/le_wm</td></tr><tr><td style="color:#8b949e;padding:1px 4px">推理</td><td>~120ms</td></tr></table></div>';
-  }else if(n.name.indexOf('A00')>=0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">Action 输出</div><table style="width:100%;font-size:8px;border-collapse:collapse"><tr><td style="color:#8b949e;padding:1px 4px">shape</td><td>[1,50,6] 50步×6关节(rad)</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J1肩</td><td>±1.57rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J2臂</td><td>-0.79~0.52rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J3肘</td><td>-1.22~2.62rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J4腕</td><td>±6.28rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J5屈</td><td>±2.09rad</td></tr><tr><td style="color:#8b949e;padding:1px 4px">J6翻</td><td>±6.28rad</td></tr></table></div>';
-  }else if(n.name.indexOf('A0')===0||n.name.indexOf('A1')===0||n.name.indexOf('A2')===0||n.name.indexOf('A3')===0){
-    dd='<div style="font-size:9px;line-height:1.8;margin:4px 0;padding:6px;background:#0d1117;border-radius:6px;border:1px solid#222"><div style="color:#00d4aa;font-weight:700;margin-bottom:4px">动作轨迹</div><div style="font-size:8px;color:#8b949e">state动作序列 · [T,7] rad</div><div style="margin-top:4px;font-size:8px;color:#d4a800">输出格式:</div><select onchange="Lg(this.value)" style="width:100%;padding:3px;background:#222;color:#ddd;border:1px solid#333;border-radius:3px;font-size:9px;margin-top:2px"><option selected>Action Chunk [1,50,7] (6关节+夹爪)</option><option>单步Action [1,7] 实时控制</option></select><div style="margin-top:4px;font-size:7px;color:#8b949e">步长50 · 7维 · 频率10Hz · DDS:/dds/action/'+n.name.split(' ')[0]+'</div></div>';
+canvas.ondblclick=function(e){
+  var p=getPos(e),mx=p.x,my=p.y;
+  for(var i=N.length-1;i>=0;i--){
+    var n=N[i];
+    if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
+      // Inline edit: create input over node name
+      var oldInput=document.getElementById('inline-edit');
+      if(oldInput)oldInput.remove();
+      var inp=document.createElement('input');
+      inp.id='inline-edit';
+      inp.value=n.name;
+      inp.style.cssText='position:fixed;font-size:10px;font-weight:bold;font-family:sans-serif;background:#1a1f2b;color:#fff;border:1px solid '+colors[n.t]+';border-radius:4px;padding:2px 6px;z-index:999;min-width:120px;outline:none;box-shadow:0 2px 8px rgba(0,0,0,.5)';
+      document.body.appendChild(inp);
+      // Position over the node's name text
+      var rx=(n.x+px+22)*zoom,ry=(n.y+py+10)*zoom;
+      var cr=canvas.getBoundingClientRect();
+      inp.style.left=(cr.left+rx)+'px';
+      inp.style.top=(cr.top+ry)+'px';
+      inp.style.width=Math.max(120,(n.w-28)*zoom)+'px';
+      inp.focus();inp.select();
+      function commitRename(){
+        var nn=inp.value.trim();
+        if(nn&&nn!==n.name){saveState();n.name=nn;draw();Lg('✏️ '+nn)}
+        inp.remove();
+      }
+      inp.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();commitRename()}});
+      inp.addEventListener('blur',function(){setTimeout(commitRename,50)});
+      return;
+    }
   }
-  if(!dd)dd='';
-  cfg.innerHTML='<div style="color:'+colors[n.t]+';font-weight:700;margin-bottom:4px">'+n.name+'</div>'
-    +'<div style="font-size:9px;color:#8b949e;margin:2px 0">⬅ '+incoming+' | '+outgoing+' ➡</div>'
-    +dd+''+(info?'<div style="font-size:9px;color:#00d4aa;margin:4px 0;background:#00d4aa11;padding:4px;border-radius:4px">'+info+'</div>':'')
-    +'<div style="margin-top:6px"><button style="padding:3px 8px;background:#ff4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px" onclick="L=L.filter(function(l){return l.f!=='+n.id+'&&l.t!=='+n.id+'});N=N.filter(function(x){return x!==n});draw();this.parentElement.parentElement.remove()">删除</button>'
-    +'<button style="padding:3px 8px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="this.parentElement.parentElement.remove()">关闭</button>'
-    +'<button style="padding:3px 8px;background:#d4a800;color:#000;border:none;border-radius:4px;cursor:pointer;font-size:9px;margin-left:4px" onclick="show3D(\''+n.name+'\',\''+n.t+'\')">🧊 3D</button></div>';
-  document.body.appendChild(cfg);
-  cfg.addEventListener('click',function(e){e.stopPropagation()});
-  setTimeout(function(){document.addEventListener('click',function rm(){cfg.remove();document.removeEventListener('click',rm)},{once:true})},100);
-  return;
-}}};
+};
 canvas.tabIndex=0;canvas.focus();
 canvas.onkeydown=function(e){
   if(e.ctrlKey&&e.key==='z'){e.preventDefault();if(undoStack.length){var s=undoStack.pop();N=s.nodes;L=s.links;selected=null;draw();Lg('↩ 回退')}}
