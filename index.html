@@ -343,18 +343,37 @@
   <a href="/dds-skill-master.html" style="display:inline-block;padding:14px 32px;background:#1a1f2b;color:#c8d1d9;border-radius:8px;text-decoration:none;font-size:15px;font-weight:600">📋 原子技能</a>
 </div>
 
-<div id="data-upload" style="border:2px dashed #1a1f2b;border-radius:12px;padding:30px;text-align:center;background:#0d1117;cursor:pointer;margin-bottom:20px"
-  ondragover="this.style.borderColor='#00d4aa';this.style.background='#0a1a15';event.preventDefault()"
-  ondragleave="this.style.borderColor='#1a1f2b';this.style.background='#0d1117'"
-  ondrop="handleDataDrop(event)"
-  onclick="document.getElementById('data-file').click()">
-  <div style="font-size:32px;margin-bottom:8px">📤</div>
-  <div style="color:#fff;font-weight:600">拖拽文件上传</div>
-  <div style="color:#8b949e;font-size:11px">PDF / DOCX / PPTX / 图片</div>
-  <input type="file" id="data-file" multiple style="display:none" onchange="handleDataFiles(this.files)">
-  <div id="data-status" style="margin-top:8px;font-size:11px"></div>
+<div style="display:flex;gap:10px;align-items:stretch;margin-bottom:20px">
+  <div id="data-upload" style="flex:1;border:2px dashed #1a1f2b;border-radius:10px;padding:16px 20px;text-align:center;background:#0d1117;cursor:pointer;transition:border-color .2s,background .2s"
+    ondragover="this.style.borderColor='#00d4aa';this.style.background='#0a1a15';event.preventDefault()"
+    ondragleave="this.style.borderColor='#1a1f2b';this.style.background='#0d1117'"
+    ondrop="handleDataDrop(event)"
+    onclick="document.getElementById('data-file').click()">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+      <span style="font-size:20px">📤</span>
+      <span style="color:#fff;font-weight:600;font-size:14px">拖拽文件上传</span>
+      <span style="color:#484f58;font-size:11px">PDF / DOCX / PPTX / 图片</span>
+    </div>
+    <input type="file" id="data-file" multiple style="display:none" onchange="handleDataFiles(this.files)">
+  </div>
+  <button onclick="showFileBrowser()" style="padding:0 24px;background:#1a1f2b;color:#c8d1d9;border:1px solid #2a3040;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;transition:border-color .2s"
+    onmouseover="this.style.borderColor='#00d4aa'" onmouseout="this.style.borderColor='#2a3040'">📁 查看文件</button>
 </div>
-<div id="data-files" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px"></div>
+<div id="data-status" style="text-align:center;font-size:11px;margin-bottom:8px;min-height:16px"></div>
+
+<!-- File browser modal -->
+<div id="file-browser-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center" onclick="if(event.target===this)closeFileBrowser()">
+  <div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:12px;width:90%;max-width:700px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid #1a1f2b">
+      <span style="color:#fff;font-weight:700;font-size:16px">📁 uploads/data/ 文件列表</span>
+      <button onclick="closeFileBrowser()" style="background:none;border:none;color:#8b949e;font-size:20px;cursor:pointer;padding:0;line-height:1">&times;</button>
+    </div>
+    <div id="file-browser-list" style="flex:1;overflow-y:auto;padding:12px 20px;color:#8b949e;font-size:12px">加载中...</div>
+    <div style="padding:10px 20px;border-top:1px solid #1a1f2b;text-align:right">
+      <span id="file-count" style="color:#484f58;font-size:11px"></span>
+    </div>
+  </div>
+</div>
 </div>
 </section>
 
@@ -476,47 +495,68 @@ function handleDataDrop(e){
 function handleDataFiles(files){
   var s = document.getElementById('data-status');
   if (!files || !files.length) return;
+  var total = files.length, done = 0, failed = 0;
+  s.style.color = '#8b949e';
+  s.textContent = '上传中 0/' + total + '...';
   for (var i = 0; i < files.length; i++){
-    s.style.color = '#8b949e';
-    s.textContent = '上传中...';
-    var fd = new FormData();
-    fd.append('file', files[i]);
-    fetch('/upload-data.php', {method: 'POST', body: fd})
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d.ok){
-          s.style.color = '#00d4aa';
-          s.textContent = '已上传: ' + d.name;
-          loadDataFiles();
-        } else {
+    (function(idx){
+      var fd = new FormData();
+      fd.append('file', files[idx]);
+      fetch('/upload-data.php', {method: 'POST', body: fd})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          done++;
+          if (d.ok){
+            s.style.color = '#00d4aa';
+            s.textContent = '✓ 上传完成 ' + done + '/' + total;
+            setTimeout(function(){ s.textContent = ''; }, 2000);
+          } else {
+            failed++;
+            s.style.color = '#ff4444';
+            s.textContent = '✗ ' + (failed>0?failed+'个失败 ':'') + done + '/' + total;
+          }
+        })
+        .catch(function(e){
+          done++; failed++;
           s.style.color = '#ff4444';
-          s.textContent = '失败: ' + (d.error || '');
-        }
-      })
-      .catch(function(e){
-        s.style.color = '#ff4444';
-        s.textContent = '网络错误';
-      });
+          s.textContent = '✗ 网络错误';
+        });
+    })(i);
   }
 }
-function loadDataFiles(){
+function showFileBrowser(){
+  var overlay = document.getElementById('file-browser-overlay');
+  overlay.style.display = 'flex';
+  var list = document.getElementById('file-browser-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#8b949e">加载中...</div>';
   fetch('/upload-data.php')
     .then(function(r){ return r.json(); })
     .then(function(files){
-      var el = document.getElementById('data-files');
+      var cnt = document.getElementById('file-count');
       if (!files || !files.length){
-        el.innerHTML = '<div style="color:#8b949e;font-size:11px;grid-column:1/-1">暂无文件</div>';
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:#484f58">暂无文件</div>';
+        cnt.textContent = '0 个文件';
         return;
       }
-      var html = '';
+      cnt.textContent = files.length + ' 个文件';
+      var html = '<table style="width:100%;border-collapse:collapse">';
+      html += '<tr style="color:#484f58;font-size:10px;border-bottom:1px solid #1a1f2b"><th style="text-align:left;padding:8px 6px">文件名</th><th style="text-align:right;padding:8px 6px">大小</th><th style="text-align:right;padding:8px 6px">时间</th></tr>';
       files.forEach(function(f){
-        html += '<a href="' + f.url + '" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;text-decoration:none;color:#c8d1d9;font-size:12px">' +
-          f.name + '<span style="color:#484f58;font-size:10px;margin-left:auto">' + (f.size/1024).toFixed(1) + 'KB</span></a>';
+        var d = new Date(f.time * 1000);
+        var ts = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+        var sizeStr = f.size < 1024 ? f.size + 'B' : f.size < 1048576 ? (f.size/1024).toFixed(1) + 'KB' : (f.size/1048576).toFixed(1) + 'MB';
+        html += '<tr style="border-bottom:1px solid #0d1117"><td style="padding:8px 6px"><a href="'+f.url+'" target="_blank" style="color:#58a6ff;text-decoration:none;font-size:13px">'+f.name+'</a></td><td style="text-align:right;padding:8px 6px;color:#8b949e;font-size:12px">'+sizeStr+'</td><td style="text-align:right;padding:8px 6px;color:#484f58;font-size:11px">'+ts+'</td></tr>';
       });
-      el.innerHTML = html;
+      html += '</table>';
+      list.innerHTML = html;
+    })
+    .catch(function(e){
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:#ff4444">加载失败</div>';
     });
 }
-loadDataFiles();
+function closeFileBrowser(){
+  document.getElementById('file-browser-overlay').style.display = 'none';
+}
 </script>
 
 
