@@ -55,21 +55,23 @@ tr:hover td{background:#0a1a15}
   <div class="view-bar">
     <a href="/">← 主页</a>
     <h1>🌐 DDS 5维时空数据空间</h1>
+    <a href="#" onclick="exportImage();return false" style="color:#00d4aa;border-color:#00d4aa44;font-size:11px;padding:4px 10px;margin-left:8px">📷 导出截图</a>
   </div>
   <div class="dim-legend">
-    <div style="color:#fff;font-weight:700;margin-bottom:4px">5维时空</div>
-    <div class="dim"><span class="dot" style="background:#58a6ff"></span> X·Y·Z 空间</div>
-    <div class="dim"><span class="dot" style="background:#f0a500"></span> T 时间轴 ↑</div>
-    <div class="dim"><span class="dot" style="background:#a371f7"></span> S 语义层</div>
+    <div style="color:#fff;font-weight:700;margin-bottom:4px">5维时空映射</div>
+    <div class="dim"><span class="dot" style="background:#58a6ff"></span> X·Y·Z 真实空间</div>
+    <div class="dim"><span class="dot" style="background:#f0a500"></span> 🎨 颜色 = 语义层</div>
+    <div class="dim"><span class="dot" style="background:#a371f7"></span> ⏱ 大小 = 时间新旧</div>
     <div style="margin-top:6px;padding-top:4px;border-top:1px solid #1a1f2b;color:#484f58;font-size:9px">
-      <div>📍 感知 · 👁 特征 · 🧠 条件</div>
-      <div>🎯 动作 · ✅ 反馈</div>
+      <div style="color:#58a6ff">📍 感知</div><div style="color:#3fb950">👁 特征</div>
+      <div style="color:#a371f7">🧠 条件</div><div style="color:#00d4aa">🎯 动作</div>
+      <div style="color:#ff6b35">✅ 反馈</div>
     </div>
   </div>
   <div id="hud">
-    <span><span class="dot" style="background:#58a6ff"></span>X·Y·Z</span>
-    <span><span class="dot" style="background:#f0a500"></span>T时间</span>
-    <span><span class="dot" style="background:#00d4aa"></span>S语义</span>
+    <span><span class="dot" style="background:#58a6ff"></span>XYZ 3D空间</span>
+    <span><span class="dot" style="background:#f0a500"></span>🎨 颜色=语义层</span>
+    <span><span class="dot" style="background:#a371f7"></span>⏱ 大小=时间</span>
     <span style="color:#484f58">🖱旋转|滚轮|点击</span>
   </div>
 </div>
@@ -420,51 +422,51 @@ const SEMANTIC = {
 
 // ═══════ DATA POINTS (demo subset) ═══════
 const DATA_POINTS = [
-  {id:"D001",x:-8,z:4,y:-6,s:"sensor",name:"入料位 RGB-D",desc:"D405 深度图",links:["D010"]},
-  {id:"D002",x:-4,z:4,y:-6,s:"sensor",name:"力觉传感器",desc:"六维力/力矩",links:["D011"]},
-  {id:"D003",x:0,z:4,y:-6,s:"sensor",name:"触觉阵列",desc:"4×4 触觉",links:["D012"]},
-  {id:"D004",x:4,z:4,y:-6,s:"sensor",name:"温度传感器",desc:"红外热成像",links:["D013"]},
-  {id:"D005",x:8,z:4,y:-6,s:"sensor",name:"激光轮廓仪",desc:"3D点云",links:["D014"]},
-  {id:"D006",x:-8,z:0,y:-6,s:"sensor",name:"扫码枪",desc:"MES二维码",links:["D015"]},
-  {id:"D007",x:-4,z:0,y:-6,s:"sensor",name:"光功率计",desc:"实时IL/RL",links:["D016"]},
-  {id:"D008",x:4,z:0,y:-6,s:"sensor",name:"BERT测试仪",desc:"BER/眼图",links:["D017"]},
-  {id:"D009",x:8,z:0,y:-6,s:"sensor",name:"RFID读取器",desc:"出入库扫描",links:["D018"]},
+  {id:"D001",x:-8,z:4,y:0.3,s:"sensor",name:"入料位 RGB-D",desc:"D405 深度图",links:["D010"]},
+  {id:"D002",x:-4,z:4,y:0.3,s:"sensor",name:"力觉传感器",desc:"六维力/力矩",links:["D011"]},
+  {id:"D003",x:0,z:4,y:0.3,s:"sensor",name:"触觉阵列",desc:"4×4 触觉",links:["D012"]},
+  {id:"D004",x:4,z:4,y:0.3,s:"sensor",name:"温度传感器",desc:"红外热成像",links:["D013"]},
+  {id:"D005",x:8,z:4,y:0.3,s:"sensor",name:"激光轮廓仪",desc:"3D点云",links:["D014"]},
+  {id:"D006",x:-8,z:0,y:0.4,s:"sensor",name:"扫码枪",desc:"MES二维码",links:["D015"]},
+  {id:"D007",x:-4,z:0,y:0.4,s:"sensor",name:"光功率计",desc:"实时IL/RL",links:["D016"]},
+  {id:"D008",x:4,z:0,y:0.4,s:"sensor",name:"BERT测试仪",desc:"BER/眼图",links:["D017"]},
+  {id:"D009",x:8,z:0,y:0.4,s:"sensor",name:"RFID读取器",desc:"出入库扫描",links:["D018"]},
   // feature
-  {id:"D010",x:-7,z:3,y:-2,s:"feature",name:"深度边缘检测",desc:"Canny·分割",links:["C001"]},
-  {id:"D011",x:-3,z:3,y:-2,s:"feature",name:"力曲线特征",desc:"力峰·接触",links:["C002","C003"]},
-  {id:"D012",x:1,z:3,y:-2,s:"feature",name:"触觉纹理",desc:"滑移·压力",links:["C002"]},
-  {id:"D013",x:5,z:3,y:-2,s:"feature",name:"热特征提取",desc:"热点·梯度",links:["C004"]},
-  {id:"D014",x:9,z:3,y:-2,s:"feature",name:"3D点云特征",desc:"平面拟合",links:["C005"]},
-  {id:"D015",x:-7,z:0,y:-2,s:"feature",name:"序列号解析",desc:"OCR·型号",links:["C006"]},
-  {id:"D016",x:-3,z:0,y:-2,s:"feature",name:"光功率趋势",desc:"IL时域变化",links:["C007"]},
-  {id:"D017",x:5,z:0,y:-2,s:"feature",name:"BER统计",desc:"误码率序列",links:["C008"]},
-  {id:"D018",x:9,z:0,y:-2,s:"feature",name:"物流轨迹",desc:"AGV路径",links:["C009"]},
+  {id:"D010",x:-7,z:3,y:2.3,s:"feature",name:"深度边缘检测",desc:"Canny·分割",links:["C001"]},
+  {id:"D011",x:-3,z:3,y:2.3,s:"feature",name:"力曲线特征",desc:"力峰·接触",links:["C002","C003"]},
+  {id:"D012",x:1,z:3,y:2.3,s:"feature",name:"触觉纹理",desc:"滑移·压力",links:["C002"]},
+  {id:"D013",x:5,z:3,y:2.3,s:"feature",name:"热特征提取",desc:"热点·梯度",links:["C004"]},
+  {id:"D014",x:9,z:3,y:2.3,s:"feature",name:"3D点云特征",desc:"平面拟合",links:["C005"]},
+  {id:"D015",x:-7,z:0,y:2.4,s:"feature",name:"序列号解析",desc:"OCR·型号",links:["C006"]},
+  {id:"D016",x:-3,z:0,y:2.4,s:"feature",name:"光功率趋势",desc:"IL时域变化",links:["C007"]},
+  {id:"D017",x:5,z:0,y:2.4,s:"feature",name:"BER统计",desc:"误码率序列",links:["C008"]},
+  {id:"D018",x:9,z:0,y:2.4,s:"feature",name:"物流轨迹",desc:"AGV路径",links:["C009"]},
   // condition
-  {id:"C001",x:-5,z:2,y:2,s:"condition",name:"C001 插入就绪",desc:"位置对齐·姿态OK",links:["A001","A003"]},
-  {id:"C002",x:0,z:2,y:2,s:"condition",name:"C002 力控插入",desc:"Z向力 3N/6N/8N",links:["A004"]},
-  {id:"C003",x:4,z:2,y:2,s:"condition",name:"C003 温度异常",desc:">60°C·降速",links:["A031"]},
-  {id:"C004",x:8,z:2,y:2,s:"condition",name:"C004 AOI触发",desc:"缺陷置信度>0.85",links:["A008"]},
-  {id:"C005",x:-6,z:0,y:2,s:"condition",name:"C005 OE对准",desc:"透镜±0.5μm",links:["A031"]},
-  {id:"C006",x:-2,z:0,y:2,s:"condition",name:"C006 IL超限",desc:"IL>0.5dB·NG",links:["A010"]},
-  {id:"C007",x:4,z:0,y:2,s:"condition",name:"C007 BERT通过",desc:"BER<1E-12",links:["A042"]},
-  {id:"C008",x:9,z:0,y:2,s:"condition",name:"C008 电池低电",desc:"SOC<15%",links:["A047"]},
+  {id:"C001",x:-5,z:2,y:4.2,s:"condition",name:"C001 插入就绪",desc:"位置对齐·姿态OK",links:["A001","A003"]},
+  {id:"C002",x:0,z:2,y:4.3,s:"condition",name:"C002 力控插入",desc:"Z向力 3N/6N/8N",links:["A004"]},
+  {id:"C003",x:4,z:2,y:4.3,s:"condition",name:"C003 温度异常",desc:">60°C·降速",links:["A031"]},
+  {id:"C004",x:8,z:2,y:4.3,s:"condition",name:"C004 AOI触发",desc:"缺陷置信度>0.85",links:["A008"]},
+  {id:"C005",x:-6,z:0,y:4.3,s:"condition",name:"C005 OE对准",desc:"透镜±0.5μm",links:["A031"]},
+  {id:"C006",x:-2,z:0,y:4.3,s:"condition",name:"C006 IL超限",desc:"IL>0.5dB·NG",links:["A010"]},
+  {id:"C007",x:4,z:0,y:4.4,s:"condition",name:"C007 BERT通过",desc:"BER<1E-12",links:["A042"]},
+  {id:"C008",x:9,z:0,y:4.4,s:"condition",name:"C008 电池低电",desc:"SOC<15%",links:["A047"]},
   // action
-  {id:"A001",x:-6,z:1,y:6,s:"action",name:"A001 取料执行",desc:"吸嘴取料",links:["F001"]},
-  {id:"A003",x:-2,z:1,y:6,s:"action",name:"A003 预插定位",desc:"视觉引导",links:["F001"]},
-  {id:"A004",x:2,z:1,y:6,s:"action",name:"A004 力控插入⭐",desc:"Z3N闭环",links:["F002"]},
-  {id:"A008",x:8,z:1,y:6,s:"action",name:"A008 AOI检测",desc:"3D缺陷识别",links:["F004"]},
-  {id:"A010",x:-6,z:-2,y:6,s:"action",name:"A010 放不良品",desc:"NG仓·标记",links:["F006"]},
-  {id:"A031",x:4,z:-2,y:6,s:"action",name:"A031 急停安全",desc:"回安全位",links:["F003"]},
-  {id:"A042",x:9,z:-2,y:6,s:"action",name:"A042 BERT测试",desc:"PRBS31·60s",links:["F007"]},
-  {id:"A047",x:-4,z:-4,y:6,s:"action",name:"A047 AGV回充",desc:"自主导航",links:["F008"]},
+  {id:"A001",x:-6,z:1,y:6.2,s:"action",name:"A001 取料执行",desc:"吸嘴取料",links:["F001"]},
+  {id:"A003",x:-2,z:1,y:6.2,s:"action",name:"A003 预插定位",desc:"视觉引导",links:["F001"]},
+  {id:"A004",x:2,z:1,y:6.3,s:"action",name:"A004 力控插入⭐",desc:"Z3N闭环",links:["F002"]},
+  {id:"A008",x:8,z:1,y:6.3,s:"action",name:"A008 AOI检测",desc:"3D缺陷识别",links:["F004"]},
+  {id:"A010",x:-6,z:-2,y:6.2,s:"action",name:"A010 放不良品",desc:"NG仓·标记",links:["F006"]},
+  {id:"A031",x:4,z:-2,y:6.3,s:"action",name:"A031 急停安全",desc:"回安全位",links:["F003"]},
+  {id:"A042",x:9,z:-2,y:6.3,s:"action",name:"A042 BERT测试",desc:"PRBS31·60s",links:["F007"]},
+  {id:"A047",x:-4,z:-4,y:6.4,s:"action",name:"A047 AGV回充",desc:"自主导航",links:["F008"]},
   // feedback
-  {id:"F001",x:-4,z:-3,y:10,s:"feedback",name:"F001 插拔成功率",desc:"99.2%",links:[]},
-  {id:"F002",x:1,z:-3,y:10,s:"feedback",name:"F002 力控精度",desc:"±0.02mm",links:[]},
-  {id:"F003",x:5,z:-3,y:10,s:"feedback",name:"F003 安全事件",desc:"0事故",links:[]},
-  {id:"F004",x:8,z:-3,y:10,s:"feedback",name:"F004 AOI检出率",desc:">99.7%",links:[]},
-  {id:"F006",x:-2,z:-4,y:10,s:"feedback",name:"F006 NG分类",desc:"自动分类",links:[]},
-  {id:"F007",x:4,z:-4,y:10,s:"feedback",name:"F007 BERT通过率",desc:"97.8%",links:[]},
-  {id:"F008",x:9,z:-4,y:10,s:"feedback",name:"F008 模型更新",desc:"每周增量",links:[]}
+  {id:"F001",x:-4,z:-3,y:8.3,s:"feedback",name:"F001 插拔成功率",desc:"99.2%",links:[]},
+  {id:"F002",x:1,z:-3,y:8.3,s:"feedback",name:"F002 力控精度",desc:"±0.02mm",links:[]},
+  {id:"F003",x:5,z:-3,y:8.3,s:"feedback",name:"F003 安全事件",desc:"0事故",links:[]},
+  {id:"F004",x:8,z:-3,y:8.4,s:"feedback",name:"F004 AOI检出率",desc:">99.7%",links:[]},
+  {id:"F006",x:-2,z:-4,y:8.4,s:"feedback",name:"F006 NG分类",desc:"自动分类",links:[]},
+  {id:"F007",x:4,z:-4,y:8.4,s:"feedback",name:"F007 BERT通过率",desc:"97.8%",links:[]},
+  {id:"F008",x:9,z:-4,y:8.4,s:"feedback",name:"F008 模型更新",desc:"每周增量",links:[]}
 ];
 
 // ═══════ THREE.JS ═══════
@@ -478,24 +480,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 wrap.appendChild(renderer.domElement);
 scene.add(new THREE.AmbientLight(0x334466,.5));
 const dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(5,15,10);scene.add(dl);
-
-// Time axis
-const tAxis=new THREE.Mesh(
-  new THREE.CylinderGeometry(.08,.08,20,16),
-  new THREE.MeshStandardMaterial({color:0xf0a500,emissive:0xf0a500,emissiveIntensity:.6,roughness:.3})
-);tAxis.position.y=2;scene.add(tAxis);
-
-// Semantic discs
-Object.values(SEMANTIC).forEach(s=>{
-  const disc=new THREE.Mesh(new THREE.RingGeometry(.5,11,64),
-    new THREE.MeshBasicMaterial({color:s.color,side:THREE.DoubleSide,opacity:.04,transparent:true}));
-  disc.rotation.x=-Math.PI/2;disc.position.y=s.y;scene.add(disc);
-  const cvs=document.createElement("canvas");cvs.width=256;cvs.height=32;
-  const ctx=cvs.getContext("2d");ctx.fillStyle="#fff";ctx.font="bold 14px sans-serif";ctx.textAlign="center";
-  ctx.fillText(s.label,128,20);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cvs),transparent:true,opacity:.7}));
-  sp.scale.set(5,.6,1);sp.position.set(11.5,s.y,0);scene.add(sp);
-});
 
 // Grid
 const grid=new THREE.GridHelper(24,20,0x1a2a3a,0x0a0f15);grid.position.y=-7;scene.add(grid);
@@ -583,9 +567,8 @@ wrap.addEventListener("click",e=>{
         '<b style="color:'+d.color+'">'+d.label+'</b>'+
         '<div style="color:#8b949e;margin-top:2px">'+d.desc+'</div>'+
         '<div style="margin-top:4px;font-size:9px;display:flex;gap:8px;flex-wrap:wrap">'+
-        '<span style="color:#58a6ff">📍 X:'+o.position.x.toFixed(1)+' Z:'+o.position.z.toFixed(1)+'</span>'+
-        '<span style="color:#f0a500">⏱ T:'+o.position.y.toFixed(1)+'</span>'+
-        '<span style="color:#'+sl.color.toString(16).padStart(6,'0')+'">🔖 '+sl.label+'</span>'+
+        '<span style="color:#58a6ff">📍 X:'+o.position.x.toFixed(1)+' Y:'+o.position.y.toFixed(1)+' Z:'+o.position.z.toFixed(1)+'</span>'+
+        '<span style="color:#a371f7">🎨 '+sl.label+'</span>'+
         '</div>';
       t.style.display="block";t.style.left=Math.min(e.clientX+15,wrap.clientWidth-290)+"px";t.style.top=(e.clientY-50)+"px";
       setTimeout(()=>t.style.display="none",4000);
@@ -597,9 +580,12 @@ wrap.addEventListener("click",e=>{
 let time=0;
 function anim(){
   requestAnimationFrame(anim);time+=.016;
-  tAxis.scale.y=1+Math.sin(time*1.5)*.03;
-  tAxis.material.emissiveIntensity=.5+Math.sin(time*2)*.15;
-  allNodes.forEach(n=>{
+  allNodes.forEach((n,i)=>{
+    // ⏱ Size pulsation = time dimension (each node has unique phase)
+    var phase=i*.314+time*.8;
+    var pulse=.7+.3*Math.sin(phase);
+    n.scale.setScalar(pulse);
+    // Rotation per semantic type
     if(n.userData.s==="sensor")n.rotation.y+=.003;
     else if(n.userData.s==="condition"){n.rotation.y+=.005;n.children[1]&&(n.children[1].rotation.z+=.008)}
     else if(n.userData.s==="action"){n.rotation.y+=.004;n.rotation.x+=.002}
@@ -618,6 +604,55 @@ window.addEventListener("resize",()=>{
   renderer.setSize(wrap.clientWidth,wrap.clientHeight);
   camera.aspect=wrap.clientWidth/wrap.clientHeight;camera.updateProjectionMatrix();
 });
+
+// ═══════ EXPORT IMAGE ═══════
+function exportImage(){
+  var origBg=scene.background, origFog=scene.fog;
+  var origPR=renderer.getPixelRatio();
+  var origW=wrap.clientWidth, origH=wrap.clientHeight;
+
+  // White background
+  scene.background=new THREE.Color(0xffffff);
+  scene.fog=null;
+
+  // Bigger nodes (2x) + brighter colors for white bg
+  var origScales=[];
+  allNodes.forEach(function(n,i){
+    origScales[i]=n.scale.clone();
+    n.scale.setScalar(2.5);
+  });
+
+  // Higher resolution
+  renderer.setPixelRatio(3);
+  renderer.setSize(origW*2, origH*2);
+  camera.aspect=(origW*2)/(origH*2);
+  camera.updateProjectionMatrix();
+
+  // Render ONE frame
+  renderer.render(scene, camera);
+
+  // Capture
+  var dataURL=renderer.domElement.toDataURL("image/png");
+
+  // Restore everything
+  scene.background=origBg; scene.fog=origFog;
+  allNodes.forEach(function(n,i){
+    n.scale.copy(origScales[i]);
+  });
+  renderer.setPixelRatio(origPR);
+  renderer.setSize(origW, origH);
+  camera.aspect=origW/origH;
+  camera.updateProjectionMatrix();
+
+  // Download
+  var a=document.createElement("a");
+  a.href=dataURL;
+  a.download="dds-5d-space.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 </script>
 </body>
 </html>
