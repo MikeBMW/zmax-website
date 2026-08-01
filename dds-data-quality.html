@@ -274,7 +274,99 @@ Z-MAX 的垂域模型池策略与行业先行者的方向一致，但更进一�
 <tr><td>C047</td><td>多模态异常检测</td><td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">ThinkAct</span> 反思修正</td><td>S01-S04</td><td>&lt;10ms</td><td>Sys2·4090</td></tr>
 </table>
 
-<h3>3.4 垂直领域专用模型池</h3>
+<!-- ═══ 三.4 StageACT阶段条件编码器 ═══ -->
+<h3>3.4 StageACT 阶段条件编码器：从"开门"到"通用数据质量管理"</h3>
+
+<p style="font-size:14px;color:#c8d1d9;line-height:2;margin-bottom:16px">
+<strong style="color:#00d4aa">StageACT</strong> 提出了阶段条件化模仿学习框架——将长时域任务分解为离散阶段（S1 接近把手→S2 抓握→S3 转动→S4 拉开→S5 通过），底层策略以 One-hot 阶段向量为条件输入。核心洞见：<strong style="color:#fff">同一观测在不同阶段有完全不同的最优动作</strong>——机器人看到门把手时，是伸手还是拉回，取决于当前处于哪个阶段。这一机制天然解决了观测歧义，并赋予了策略在失败时<strong style="color:#00d4aa">自主回退到正确阶段</strong>的恢复能力。
+</p>
+
+<p style="font-size:14px;color:#c8d1d9;line-height:2;margin-bottom:16px">
+Z-MAX 将 StageACT 的阶段条件化思想<strong style="color:#00d4aa">深度集成到 DDS 数据质量管理体系</strong>中，形成三级条件编码架构：<strong style="color:#fff">① VLM 高层阶段识别</strong>（视觉语言模型自动标注当前任务阶段）→ <strong style="color:#fff">② 条件编码器中层映射</strong>（阶段标签 → 256维条件向量 → 模型路由）→ <strong style="color:#fff">③ 底层策略阶段条件化执行</strong>（每个垂域模型接收阶段条件，在正确的时间执行正确的动作）。这不仅是一种模仿学习技巧，更是一套<strong style="color:#00d4aa">通用任务结构化 + 质量可追溯 + 模型可演进</strong>的数据驱动范式。
+</p>
+
+<!-- 三级架构流程 -->
+<div class="flow-wrap"><div class="flow">
+  <div class="flow-node nc"><span class="fn-title">VLM 阶段识别</span><span class="fn-desc">视觉语言模型<br>自动标注S1~S5</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node np"><span class="fn-title">阶段条件编码</span><span class="fn-desc">One-hot→256维<br>Cross-Attention融合</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node no"><span class="fn-title">DDS Lookup 路由</span><span class="fn-desc">条件→模型池<br>5模型择1</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node ng"><span class="fn-title">阶段条件化策略</span><span class="fn-desc">底层策略+阶段输入<br>自主恢复+乱序执行</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-node nr"><span class="fn-title">闭环数据回灌</span><span class="fn-desc">成功/失败轨迹<br>→VLM标注更新</span></div>
+</div></div>
+
+<p style="text-align:center;font-size:11px;color:#555;margin:6px 0 20px">▲ 三级条件编码架构：从 VLM 语义理解到底层策略阶段条件化执行的全链路</p>
+
+<h3 style="color:#e0e0e0;font-size:17px;margin:36px 0 16px">三大技术支柱</h3>
+
+<div class="cards">
+  <div class="card">
+    <div class="card-tag" style="color:#58a6ff">① 子轨迹共享</div>
+    <h4>任务的"乐高化"分解</h4>
+    <p>不同任务之间存在大量<strong style="color:#fff">可复用的子轨迹</strong>和任务片段。例如"接近目标"（S1）在开门、开抽屉、抓取零件时几乎完全一致。将这些基础动作片段抽离为共享的阶段模板，新任务只需组合已有阶段即可快速学习，极大降低数据采集成本。DDS 原子技能体系（242条）正是这一思想的落地——每个子轨迹就是一个可检索、可复用的标准化数据单元。</p>
+  </div>
+  <div class="card">
+    <div class="card-tag" style="color:#a371f7">② VLM 自动阶段标注</div>
+    <h4>大模型充当"高层分类器"</h4>
+    <p>StageACT 论文明确指出未来将使用<strong style="color:#fff">视觉语言模型（VLM）在训练期间自动标注阶段，并最终在测试时作为高层分类器</strong>。Z-MAX 的落地路径：VLM 观察产线摄像头 → 识别当前工序阶段（"正在贴片""正在打线""正在目检"）→ 自动生成 One-hot 阶段标签 → 注入条件编码器。这彻底解决了人工标注阶段的瓶颈，形成<strong style="color:#00d4aa">"VLM 大脑 + 阶段条件化策略小脑"</strong>的分层智能架构。</p>
+  </div>
+  <div class="card">
+    <div class="card-tag" style="color:#f0a500">③ 阶段条件化泛化</div>
+    <h4>从"推门"到"拉门"，从一种门到万种门</h4>
+    <p>StageACT 的实验证明：阶段条件化框架<strong style="color:#fff">与具体物理形态解耦</strong>。只要将任务合理拆解为阶段，无论是推门/拉门、左铰链/右铰链，都能用同一套逻辑解决。Z-MAX 将此推广到产线场景：<strong style="color:#00d4aa">"取料"阶段在 100G 光模块和 400G 光模块上是同一套阶段模板</strong>，只需微调传感器参数和力控阈值。这正是 DDS 54 条件场景可覆盖数百种实际工况的根本原因。</p>
+  </div>
+</div>
+
+<h3 style="color:#e0e0e0;font-size:17px;margin:36px 0 16px">StageACT 阶段 → DDS 条件编码映射</h3>
+
+<table>
+<tr><th>StageACT 阶段</th><th>原论文定义（开门）</th><th>→ DDS 产线映射</th><th>→ 条件编码策略</th><th>→ 模型路由</th></tr>
+<tr>
+  <td><span class="tag-sm tag-blue">S1 接近</span></td>
+  <td>导航至门把手附近</td>
+  <td>工位空间定位（X·Y·Z）</td>
+  <td>视觉特征（D405 RGB-D）+ 空间坐标编码</td>
+  <td><span class="tag-sm tag-blue">ACT</span> 运动规划</td>
+</tr>
+<tr>
+  <td><span class="tag-sm tag-orange">S2 抓握</span></td>
+  <td>手部对准把手并抓握</td>
+  <td>夹爪/吸嘴对准工件</td>
+  <td>力觉特征（六维力MLP）+ 触觉确认</td>
+  <td><span class="tag-sm tag-purple">VLA-T</span> 力位混合</td>
+</tr>
+<tr>
+  <td><span class="tag-sm tag-green">S3 操作</span></td>
+  <td>转动把手解锁</td>
+  <td>插拔/点胶/打线/耦合</td>
+  <td>力控曲线 + 关节状态 + MES信号</td>
+  <td><span class="tag-sm tag-purple">VLA-T</span> / <span class="tag-sm tag-green">zFlow</span></td>
+</tr>
+<tr>
+  <td><span class="tag-sm tag-purple">S4 过渡</span></td>
+  <td>拉开门并保持</td>
+  <td>工序间物料转运</td>
+  <td>视觉跟踪 + 安全信号 + 碰撞检测</td>
+  <td><span class="tag-sm tag-blue">ACT</span> 搬运轨迹</td>
+</tr>
+<tr>
+  <td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">S5 通过</span></td>
+  <td>通过门并确认完成</td>
+  <td>质量门禁 + 数据回灌</td>
+  <td>AOI检测结果 + 力曲线分析 + 节拍记录</td>
+  <td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">ThinkAct</span> 反思验证</td>
+</tr>
+</table>
+
+<div class="callout" style="margin:24px 0">
+<strong>StageACT 对数据质量管理的核心启示</strong><br><br>
+传统的模仿学习将长时域任务视为一个整体，训练数据和模型输出都是"黑箱"——数据质量无法追溯、失败无法定位阶段、模型改进没有抓手。StageACT 证明：<strong>将任务拆解为阶段后，每个阶段都有独立的成功/失败判定、独立的数据质量标准、独立的恢复策略</strong>。这意味着 Z-MAX 的数据回流不再是"整个任务成功/失败"的粗粒度标签，而是"阶段 S3 力控超标 3 次、阶段 S1 视觉定位偏差 0.3mm"级别的<strong style="color:#00d4aa">精细诊断数据</strong>。这正是全局数据空间追求的"可解释、可审计、可进化的智能"。<br><br>
+<strong style="color:#f0a500">数据质量从粗到细的范式升级：</strong>任务级（成功/失败） → 阶段级（S1~S5 各自质量打分） → 帧级（每帧传感器数据 + 阶段条件编码 + 动作标签）
+</div>
+<h3>3.5 垂直领域专用模型池</h3>
 <table>
 <tr><th>模型</th><th>参数量</th><th>定位</th><th>适用场景</th><th>技术来源</th></tr>
 <tr><td><strong>ACT</strong></td><td>~10M</td><td>动作分块</td><td>取料·扫码·放置</td><td>CoRL 2023</td></tr>
