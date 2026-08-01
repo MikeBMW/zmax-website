@@ -1,0 +1,31 @@
+═══════════════════════════════════════
+Z-MAX 系统性能检查 · 2026-08-01 20:00 CST
+═══════════════════════════════════════
+
+【CPU】 负载 0.20 / 95.2% idle ● 正常
+【内存】 3.5G total · 1.7G available · 228M free ● 偏低
+【磁盘】 40G total · 26G used (69%) ● 正常
+【GPU】 无 (ECS节点)
+【运行时长】 8天12小时
+
+【核心服务】
+  nginx        🟢 在线 (3进程)
+  Gateway      🟢 active · 3天13小时 · PID 852193 · 305MB
+  MySQL        🟢 运行中 · 261MB
+  Mock Server  🔴 未运行 (50053无监听)
+  WebSocket    🔴 未运行 (8765无监听)
+
+【网站】
+  HTTPS        🟢 HTTP/2 200
+  DDS数据库     🟢 232KB (7/29更新)
+  Git           🟢 clean · bf0cf35 (dds-3d-space v2)
+
+【上轮任务回顾】
+  任务: ComfyUI Mock Server 部署
+  文件: comfyui_mock_server.py (6.8KB) + comfyui_mock_ecs.py (1.7KB)
+  状态: ⚠️ 当时部署成功，当前mock server进程已退出
+
+【待处理】
+  - Mock Server 需重启（如需要）
+  - 内存 free 偏低(228M)，注意监控
+  - WebSocket 服务器未运行
