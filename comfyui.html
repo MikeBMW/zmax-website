@@ -36,32 +36,48 @@ updatePipeStatus=function(d){
 </script><title>ComfyUI · Z-MAX v2.5.5 · 2026-07-22</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#c8d1d9;overflow:hidden;height:100vh}
-#bar{position:fixed;top:0;left:0;right:0;height:44px;background:linear-gradient(180deg,#0d1117,#0a0a0f);display:flex;align-items:center;padding:0 12px;gap:8px;z-index:100;border-bottom:1px solid#1e2740;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-#bar .btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all .15s;letter-spacing:.3px}#bar .btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
-.btn-r{background:#ff4444;color:#fff}.btn-g{background:#00d4aa;color:#000}.btn-b{background:#58a6ff;color:#fff}.btn-p{background:#a371f7;color:#fff}
-#st{font-size:10px;color:#8b949e;margin-left:auto}
-#side{position:fixed;top:44px;left:0;bottom:0;width:180px;background:linear-gradient(90deg,#0a0a0f,#0d1117);border-right:1px solid#1e2740;padding:8px 6px;overflow-y:auto;z-index:50;box-shadow:2px 0 8px rgba(0,0,0,.2)}
-.sn{padding:6px 8px;margin:2px 0;border-radius:6px;font-size:10px;cursor:grab;border:1px solid#1e274033;background:#0d1117;transition:all .15s;user-select:none;letter-spacing:.2px}.sn:hover{border-color:#00d4aa55;background:#131726;transform:translateX(2px)}
-.sn:hover{border-color:#00d4aa}
-.sn.c{border-left:3px solid#a371f7}.sn.m{border-left:3px solid#58a6ff}.sn.a{border-left:3px solid#00d4aa}.sn.s{border-left:3px solid#d4a800}
-#cv{position:fixed;top:44px;left:180px;right:0;bottom:0;overflow:hidden;cursor:default;background:#0a0a0f}
-#log{position:fixed;bottom:0;left:170px;right:0;height:140px;min-height:40px;background:#0d0d14;border-top:3px solid#00d4aa44;z-index:50;display:flex;flex-direction:column;overflow:hidden}
-#log-content{flex:1;overflow-y:auto;padding:4px 8px;font-size:10px;font-family:monospace;color:#8b949e;line-height:1.6;resize:vertical}
-#log-handle{display:none}
-
-#wf-panel{position:fixed;right:0;top:44px;bottom:0;width:0;background:#0d1117;border-left:2px solid#00d4aa;z-index:90;overflow:hidden;transition:width .3s}
+body{font-family:'Segoe UI',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#1e1e1e;color:#e0e0e0;overflow:hidden;height:100vh}
+/* === Top Toolbar === */
+#bar{position:fixed;top:0;left:0;right:0;height:36px;background:#2d2d2d;display:flex;align-items:center;padding:0 8px;gap:4px;z-index:100;border-bottom:1px solid#404040}
+#bar .btn{padding:4px 10px;border-radius:3px;font-size:11px;cursor:pointer;border:1px solid#555;background:#3c3c3c;color:#e0e0e0;transition:background .1s}
+#bar .btn:hover{background:#505050}
+.btn-r{background:#c44!important;color:#fff!important;border-color:#a33!important}
+.btn-g{background:#0a4!important;color:#fff!important;border-color:#083!important}
+.btn-p{background:#75c!important;color:#fff!important;border-color:#64b!important}
+#st{font-size:10px;color:#999;margin-left:auto}
+/* === Library Panel (left sidebar) === */
+#side{position:fixed;top:36px;left:0;bottom:28px;width:200px;background:#252525;border-right:1px solid#404040;padding:0;overflow-y:auto;z-index:50;user-select:none}
+.lib-cat{margin:0;border-bottom:1px solid#333}
+.lib-hdr{padding:7px 10px;font-size:10px;font-weight:700;color:#999;cursor:pointer;background:#2a2a2a;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:4px}
+.lib-hdr:hover{background:#303030;color:#ccc}
+.lib-hdr .arr{font-size:8px;width:12px;text-align:center;transition:transform .15s}
+.lib-body{display:block}
+.lib-body.collapsed{display:none}
+.lib-item{padding:5px 10px 5px 22px;font-size:10px;cursor:grab;color:#ccc;border-left:3px solid transparent;transition:all .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-item:hover{background:#333;color:#fff;border-left-color:#555}
+.lib-item.c{border-left-color:#a371f7}.lib-item.m{border-left-color:#58a6ff}.lib-item.a{border-left-color:#00d4aa}.lib-item.s{border-left-color:#d4a800}.lib-item.h{border-left-color:#ff4444}.lib-item.sub{border-left-color:#ff6b35;font-weight:700}
+/* === Canvas === */
+#cv{position:fixed;top:36px;left:200px;right:0;bottom:0;overflow:hidden;cursor:default;background:#2a2a2a}
+canvas{display:block}
+/* === Log Panel === */
+#log{position:fixed;bottom:0;left:190px;right:0;height:28px;background:#1e1e1e;border-top:1px solid#404040;z-index:50;display:flex;align-items:center}
+#log-content{flex:1;overflow:hidden;padding:0 10px;font-size:9px;font-family:'Cascadia Code',Consolas,monospace;color:#999;line-height:28px;white-space:nowrap}
+/* === Context Menu === */
+#ctx-menu a:hover{background:#094771!important}
+/* === Modal overlays === */
+#wf-panel{position:fixed;right:0;top:36px;bottom:28px;width:0;background:#252525;border-left:1px solid#404040;z-index:90;overflow:hidden;transition:width .25s}
 #wf-panel.open{width:260px}
-#wf-panel-inner{padding:16px;min-width:260px}
-.wf-card{margin:8px 0;padding:10px;background:#131726;border-radius:8px;border-left:3px solid#333}
+#wf-panel-inner{padding:12px;min-width:260px}
+.wf-card{margin:6px 0;padding:8px;background:#2d2d2d;border-radius:4px;border-left:3px solid#444}
 .wf-card.active{border-left-color:#00d4aa}
-.wf-card .name{font-weight:700;font-size:11px}
-.wf-card .status{font-size:9px;color:#8b949e;margin-top:2px}
-.wf-card .bar{height:3px;background:#1e2740;border-radius:2px;margin-top:6px;overflow:hidden}
-.wf-card .bar-fill{height:100%;background:#00d4aa;border-radius:2px;transition:width .5s}
-#wf-toggle{position:fixed;right:0;top:50%;transform:translateY(-50%);background:#0d1117;color:#00d4aa;border:1px solid#00d4aa;border-right:none;border-radius:6px 0 0 6px;padding:8px 4px;cursor:pointer;z-index:91;font-size:10px;writing-mode:vertical-rl}
-
-.g{display:block}
+.wf-card .name{font-weight:700;font-size:10px}
+.wf-card .status{font-size:8px;color:#999;margin-top:2px}
+.wf-card .bar{height:2px;background:#333;border-radius:1px;margin-top:4px;overflow:hidden}
+.wf-card .bar-fill{height:100%;background:#00d4aa;border-radius:1px;transition:width .5s}
+#wf-toggle{position:fixed;right:0;top:50%;transform:translateY(-50%);background:#252525;color:#999;border:1px solid#404040;border-right:none;border-radius:4px 0 0 4px;padding:6px 3px;cursor:pointer;z-index:91;font-size:9px;writing-mode:vertical-rl}
+/* data link pipeline status bar */
+#pipeline-status{position:fixed;bottom:0;left:0;width:200px;height:28px;background:#252525;border-right:1px solid#404040;border-top:1px solid#404040;z-index:51;display:flex;align-items:center;padding:0 8px;gap:6px;font-size:8px;color:#888}
+#pipeline-status .dot{width:6px;height:6px;border-radius:50%;background:#444}
 </style></head><body>
 <div id="bar">
 <span style="color:#00d4aa;font-weight:800;font-size:13px">🎨 Z-MAX ComfyUI</span>
@@ -108,168 +124,97 @@ document.addEventListener('click', function(e){
   if(m && !m.contains(e.target)) closeMenu();
 });
 
-function updatePipeline(d){
-  var orinOn=d&&d.orin_online, macOn=d&&d.mac_connected>0, gpuOn=d&&d.gpu;
-  var fwd=d&&d.forwarded_mb||0;
-  
-  // Orin
-  var o=document.getElementById("dl-orin"); if(o)o.style.background=orinOn?"#00d4aa":"#ff4444";
-  var ot=document.getElementById("dl-orin-txt"); if(ot)ot.textContent=orinOn?"在线":"离线";
-  var a1=document.getElementById("dl-arr1"); if(a1)a1.style.color=orinOn&&macOn?"#00d4aa":"#333";
-  
-  // Mac
-  var m=document.getElementById("dl-mac"); if(m)m.style.background=macOn?"#00d4aa":"#ff4444";
-  var mt=document.getElementById("dl-mac-txt"); if(mt)mt.textContent=macOn?"在线":"离线";
-  var mb=document.getElementById("dl-mac-buf"); if(mb)mb.textContent=fwd>0?fwd.toFixed(1)+"MB":"";
-  var a2=document.getElementById("dl-arr2"); if(a2)a2.style.color=macOn?"#00d4aa":"#333";
-  
-  // ECS (always green - we're on ECS)
-  var e=document.getElementById("dl-ecs"); if(e)e.style.background="#00d4aa";
-  var et=document.getElementById("dl-ecs-txt"); if(et)et.textContent="就绪";
-  var a3=document.getElementById("dl-arr3"); if(a3)a3.style.color=gpuOn?"#00d4aa":"#333";
-  
-  // 4060
-  var g=document.getElementById("dl-4090"); if(g)g.style.background=gpuOn?"#00d4aa":"#ff4444";
-  var gt=document.getElementById("dl-4090-txt"); if(gt)gt.textContent=gpuOn?"在线":"离线";
-  
-  // Flow
-  var fl=document.getElementById("dl-flow"); if(fl)fl.textContent=(fwd>0?fwd.toFixed(1)+" MB":"0 MB")+" · 缓冲≤100MB";
-}
-// Hook into existing status poll
-var _origUpdate=updatePipeStatus;
-updatePipeStatus=function(d){
-  if(_origUpdate)_origUpdate(d);
-  updatePipeline(d);
-};
-
 </script>
-<span id="st" style="display:flex;gap:8px;font-size:10px;color:#8b949e">v2.5.5 · 2026-07-22 08:23 | </span><a href="/" style="font-size:10px;color:#00d4aa;text-decoration:none;margin:0 6px;padding:2px 6px;border:1px solid #1a1f2b;border-radius:3px">🏠 主页</a><span id="st2" style="display:flex;gap:8px;font-size:10px"><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-orin" style="width:8px;height:8px;border-radius:50%;background:#333"></span>🖥 Orin</span><span id="arr1" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-mac" style="width:8px;height:8px;border-radius:50%;background:#333"></span>💻 MAC</span><span id="arr2" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-4090" style="width:8px;height:8px;border-radius:50%;background:#00d4aa"></span>🧠 4090</span></span>
+<span id="st" style="font-size:10px;color:#999;margin-left:auto">v2.5.5 · Simulink</span>
 </div>
 <div id="side">
-
-<div style="font-size:10px;color:#00d4aa;margin:6px 0 4px;font-weight:700;border-bottom:1px solid #00d4aa33;padding-bottom:4px">🔗 数据链路</div>
-<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:6px 8px;margin:4px 0;font-size:9px;line-height:1.6">
-  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
-    <span id="dl-orin" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
-    <span style="color:#8b949e">🖥 Orin</span>
-    <span id="dl-orin-txt" style="color:#484f58;font-size:8px">离线</span>
-  </div>
-  <span id="dl-arr1" style="color:#333;margin:0 2px">→</span>
-  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
-    <span id="dl-mac" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
-    <span style="color:#8b949e">💻 Mac</span>
-    <span id="dl-mac-txt" style="color:#484f58;font-size:8px">离线</span>
-    <span id="dl-mac-buf" style="color:#484f58;font-size:7px;margin-left:auto"></span>
-  </div>
-  <span id="dl-arr2" style="color:#333;margin:0 2px">→</span>
-  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
-    <span id="dl-ecs" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
-    <span style="color:#8b949e">☁ ECS中转</span>
-    <span id="dl-ecs-txt" style="color:#484f58;font-size:8px">就绪</span>
-  </div>
-  <span id="dl-arr3" style="color:#333;margin:0 2px">→</span>
-  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
-    <span id="dl-4090" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
-    <span style="color:#8b949e">🧠 4060训练</span>
-    <span id="dl-4090-txt" style="color:#484f58;font-size:8px">离线</span>
-  </div>
-  <div style="margin-top:4px;font-size:8px;color:#484f58;text-align:center">
-    <span id="dl-flow">0 MB</span> · 缓冲≤100MB
-  </div>
+<div style="padding:6px 10px;border-bottom:1px solid#404040">
+  <input id="lib-search" type="text" placeholder="🔍 搜索模块..." style="width:100%;padding:5px 8px;background:#333;border:1px solid#555;border-radius:3px;color:#e0e0e0;font-size:10px;outline:none"
+    oninput="var v=this.value.toLowerCase();document.querySelectorAll('.lib-item').forEach(function(el){el.style.display=!v||el.textContent.toLowerCase().indexOf(v)>=0?'':'none';document.querySelectorAll('.lib-cat').forEach(function(c){var items=c.querySelectorAll('.lib-item');var vis=Array.from(items).some(function(i){return i.style.display!=='none'});c.style.display=vis?'':'none'})})">
 </div>
 
-<div style="font-size:10px;color:#8b949e;margin:4px 0;cursor:pointer" onclick="toggle('c38')">🟣 Condition 条件 (38) ▾</div>
-<div id="c38">
-<div class="sn c" draggable="true" data-t="condition" data-n="C001 100G取料">C001 取料·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C002 100G扫码">C002 扫码·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C003 100G预插">C003 预插·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C004 100G插入">C004 插入·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C005 100G推入">C005 推入·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C006 100G测试">C006 测试·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C007 100G拔出">C007 拔出·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C008 100G AOI">C008 AOI·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C009 100G OK">C009 OK·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C010 100G NG">C010 NG·100G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C014 400G插入">C014 插入·400G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C024 800G插入">C024 插入·800G</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C031 急停">C031 急停</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C032 抓败">C032 抓败</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C033 力限">C033 力限</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C034 碰撞">C034 碰撞</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C035 电池电压">C035 电池电压</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C036 电池温度">C036 电池温度</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C037 电池过流">C037 电池过流</div>
-<div class="sn c" draggable="true" data-t="condition" data-n="C038 电池SOC">C038 电池SOC</div>
-</div>
-<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('m7')">🔵 场景数据 (7) ▾</div>
-<div id="m7">
-<div class="sn m" draggable="true" data-t="model" data-n="M01 RGB图像">M01 RGB图像</div>
-<div class="sn m" draggable="true" data-t="model" data-n="M02 深度图像">M02 深度图像</div>
-<div class="sn m" draggable="true" data-t="model" data-n="M03 六维力觉">M03 六维力觉</div>
-<div class="sn m" draggable="true" data-t="model" data-n="M04 触觉阵列">M04 触觉阵列</div>
-<div class="sn m" draggable="true" data-t="model" data-n="M05 关节状态">M05 关节状态</div>
-<div class="sn m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
-<div class="sn m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
-</div>
-<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('eng')">🧠 推理引擎 (6) ▾</div>
-<div id="eng">
-<div class="sn m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT</div>
-<div class="sn m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA</div>
-<div class="sn m" draggable="true" data-t="model" data-n="VLA-Touch">VLA-Touch</div>
-<div class="sn m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T</div>
-<div class="sn m" draggable="true" data-t="model" data-n="LeWM 推理引擎">LeWM</div>
-<div class="sn m" draggable="true" data-t="model" data-n="X-Hybrid" style="border-left:3px solid#ff6b6b">🔀 X-Hybrid</div>
-</div>
-<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" onclick="toggle('sys')">🟡 System 系统 (9) ▾</div>
-<div id="sys">
-<div class="sn" draggable="true" data-t="system" data-n="Sys0">Sys0</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys1" style="border-left:3px solid #ff6b6b">Sys1</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys10" style="border-left:3px solid #d4a800">Sys10</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys11" style="border-left:3px solid #d4a800">Sys11</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys12" style="border-left:3px solid #d4a800">Sys12</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys2">Sys2</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys20" style="border-left:3px solid #d4a800">Sys20</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys21" style="border-left:3px solid #d4a800">Sys21</div>
-<div class="sn" draggable="true" data-t="system" data-n="Sys22" style="border-left:3px solid #d4a800">Sys22</div>
-</div>
-<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px;text-transform:uppercase" <div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('hw')">🔩 硬件 (4) ▾</div>
-<div id="hw">
-<div class="sn" draggable="true" data-t="hardware" data-n="Orin Nano">🖥 Orin Nano</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="MAC">💻 MAC</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="4060 Gateway">📡 4060 Gateway</div>
-<div class="sn" draggable="true" data-t="hardware" data-n="4090 训练">🧠 4090 训练</div>
-</div>
-<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('viz')">📊 可视化 (1) ▾</div>
-<div id="viz">
-<div class="sn m" draggable="true" data-t="model" data-n="W&B 监控">📊 W&B 监控</div>
-</div>
-<div style="font-size:10px;color:#8b949e;cursor:pointer" onclick="toggle('intg')">🔌 集成 (2) ▾</div>
-<div id="intg">
-<div class="sn" draggable="true" data-t="system" data-n="🔬 验证">🔬 验证</div>
-<div class="sn" draggable="true" data-t="system" data-n="Orin 部署">🚀 Orin 部署</div>
-</div>
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🟣 Sources / 条件输入 (38)</div>
+<div class="lib-body">
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C001 100G取料">C001 取料·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C002 100G扫码">C002 扫码·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C003 100G预插">C003 预插·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C004 100G插入">C004 插入·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C005 100G推入">C005 推入·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C006 100G测试">C006 测试·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C007 100G拔出">C007 拔出·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C008 100G AOI">C008 AOI·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C009 100G OK">C009 OK·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C010 100G NG">C010 NG·100G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C014 400G插入">C014 插入·400G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C024 800G插入">C024 插入·800G</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C031 急停">C031 急停</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C032 抓败">C032 抓败</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C033 力限">C033 力限</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C034 碰撞">C034 碰撞</div>
+<div class="lib-item c" draggable="true" data-t="condition" data-n="C035 电池电压">C035 电池电压</div>
+</div></div>
 
-<div style="font-size:10px;color:#ff6b35;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px" onclick="toggle('dlink')">🔗 子系统 (1) ▾</div>
-<div id="dlink">
-<div class="sn" draggable="true" data-t="subsystem" data-n="数据链路" style="border-left:3px solid#ff6b35;font-weight:700">🔗 数据链路</div>
-</div>
-<div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px" onclick="tg('gact')">🎬 动作 (11) ▾</div>
-<div id="gact" class="g">
-<div class="sn a" draggable="true" data-t="action" data-n="A00 Action输出">A00 Action输出</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A01 取料·100G">A01 取料·100G</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A02 扫码·100G">A02 扫码·100G</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A03 放置·100G">A03 放置·100G</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A04 力控插入">A04 力控插入</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A05 推入">A05 推入</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A06 取出">A06 取出</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A07 翻转">A07 翻转</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A08 定位">A08 定位</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A09 AOI检测">A09 AOI</div>
-<div class="sn a" draggable="true" data-t="action" data-n="A10 分拣">A10 分拣</div>
-</div>
-</div>
-</div>
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🔵 场景数据 (7)</div>
+<div class="lib-body">
+<div class="lib-item m" draggable="true" data-t="model" data-n="M01 RGB图像">M01 RGB图像</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="M02 深度图像">M02 深度图像</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="M03 六维力觉">M03 六维力觉</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="M04 触觉阵列">M04 触觉阵列</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="M05 关节状态">M05 关节状态</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="M06 任务语言">M06 任务语言</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="M07 示教数据">M07 示教数据</div>
+</div></div>
 
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🧠 推理引擎 (6)</div>
+<div class="lib-body">
+<div class="lib-item m" draggable="true" data-t="model" data-n="ACT 推理引擎">ACT</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="SmolVLA 推理引擎">SmolVLA</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="VLA-Touch">VLA-Touch</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="GR00T 推理引擎">GR00T</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="LeWM 推理引擎">LeWM</div>
+<div class="lib-item m" draggable="true" data-t="model" data-n="X-Hybrid" style="border-left:3px solid#ff6b6b">X-Hybrid</div>
+</div></div>
+
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🟡 System 系统 (8)</div>
+<div class="lib-body">
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys0">Sys0</div>
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys1">Sys1</div>
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys10">Sys10</div>
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys11">Sys11</div>
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys12">Sys12</div>
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys2">Sys2</div>
+<div class="lib-item s" draggable="true" data-t="system" data-n="Sys20">Sys20</div>
+</div></div>
+
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🔩 硬件 (4)</div>
+<div class="lib-body">
+<div class="lib-item h" draggable="true" data-t="hardware" data-n="Orin Nano">Orin Nano</div>
+<div class="lib-item h" draggable="true" data-t="hardware" data-n="MAC">MAC</div>
+<div class="lib-item h" draggable="true" data-t="hardware" data-n="4060 Gateway">4060 Gateway</div>
+<div class="lib-item h" draggable="true" data-t="hardware" data-n="4090 训练">4090 训练</div>
+</div></div>
+
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🔗 子系统 (1)</div>
+<div class="lib-body">
+<div class="lib-item sub" draggable="true" data-t="subsystem" data-n="数据链路">数据链路</div>
+</div></div>
+
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🎬 动作 (11)</div>
+<div class="lib-body">
+<div class="lib-item a" draggable="true" data-t="action" data-n="A00 Action输出">A00 Action输出</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A01 取料·100G">A01 取料·100G</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A02 扫码·100G">A02 扫码·100G</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A03 放置·100G">A03 放置·100G</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A04 力控插入">A04 力控插入</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A05 推入">A05 推入</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A06 取出">A06 取出</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A07 翻转">A07 翻转</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A08 定位">A08 定位</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A09 AOI检测">A09 AOI</div>
+<div class="lib-item a" draggable="true" data-t="action" data-n="A10 分拣">A10 分拣</div>
+</div></div>
+
+</div>
 <div id="wf-toggle" onclick="toggleWFPanel()">工作流</div>
 <div id="wf-panel"><div id="wf-panel-inner">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -292,7 +237,8 @@ document.addEventListener('mousemove',function(e){if(!logDrag)return;var h=logSH
 document.addEventListener('mouseup',function(){logDrag=false});
 document.getElementById('log').onmousemove=function(e){this.style.cursor=e.offsetY<8?'ns-resize':'default'};
 var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1,connected=false,connOverlays=[],stage=0,pipelineTimer=null,macPackets=0,forwardedMB=0,diskGB=0,orinRecording=false,orinOnline=false,hoverLink=-1;
-var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444',subsystem:'#ff6b35'};
+var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444',subsystem:'#ff6b35'},GS=20;
+function snap(v){return Math.round(v/GS)*GS}
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
@@ -351,70 +297,90 @@ window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
-  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:t==='subsystem'?220:150});
+  N.push({id,t,name,x:snap(x||300+Math.random()*200),y:snap(y||150+Math.random()*200),w:t==='subsystem'?220:150});
   saveState();draw();return id;
 }
 
 function draw(){
   ctx.setTransform(dpr*zoom,0,0,dpr*zoom,0,0);
-  ctx.clearRect(px,py,(window.innerWidth-180)/zoom,(window.innerHeight-38)/zoom);
+  ctx.clearRect(px,py,(window.innerWidth-200)/zoom,(window.innerHeight-28)/zoom);
+
+  // Simulink grid
+  var gs=20;
+  ctx.fillStyle='#2a2a2a';ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Minor grid
+  ctx.strokeStyle='#303030';ctx.lineWidth=.5;
+  for(var x=px%gs;x<canvas.width;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}
+  for(var y=py%gs;y<canvas.height;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}
+  // Major grid (every 5)
+  ctx.strokeStyle='#383838';ctx.lineWidth=1;
+  var mgs=gs*5;
+  for(var x=px%mgs;x<canvas.width;x+=mgs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}
+  for(var y=py%mgs;y<canvas.height;y+=mgs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()}
   
-  ctx.fillStyle='#111';ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.strokeStyle='#111';ctx.lineWidth=1;
-  for(var i=0;i<canvas.width;i+=50)for(var j=0;j<canvas.height;j+=50){ctx.beginPath();ctx.arc(i+(px%50),j+(py%50),1,0,Math.PI*2);ctx.stroke()}
+  // Signal lines — Simulink orthogonal routing
   L.forEach(function(l,i){
     var a=N.find(function(n){return n.id===l.f}),b=N.find(function(n){return n.id===l.t});
     if(!a||!b)return;
-    var ax=a.x+a.w+px,ay=a.y+dh/2+py,bx=b.x+px,by=b.y+dh/2+py,c1x=ax+(bx-ax)*.5,c2x=bx-(bx-ax)*.5;
+    var ax=a.x+a.w+px, ay=a.y+dh/2+py, bx=b.x+px, by=b.y+dh/2+py;
+    var midX=ax+(bx-ax)*.5;
     var isHover=i===hoverLink;
-    ctx.beginPath();ctx.strokeStyle=isHover?'#fff':colors[a.t]+'88';ctx.lineWidth=isHover?3:2;
-    ctx.moveTo(ax,ay);ctx.bezierCurveTo(c1x,ay,c2x,by,bx,by);ctx.stroke();
-    ctx.fillStyle=isHover?'#fff':colors[a.t];ctx.beginPath();ctx.arc(bx,by,isHover?4:3,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();
+    ctx.strokeStyle=isHover?'#ff4444':(colors[a.t]||'#999');
+    ctx.lineWidth=isHover?2.5:1.5;
+    ctx.moveTo(ax,ay);ctx.lineTo(midX,ay);ctx.lineTo(midX,by);ctx.lineTo(bx,by);
+    ctx.stroke();
+    // Arrowhead at destination
+    ctx.fillStyle=isHover?'#ff4444':(colors[a.t]||'#999');
+    ctx.beginPath();ctx.moveTo(bx-7,by-4);ctx.lineTo(bx,by);ctx.lineTo(bx-7,by+4);ctx.fill();
     if(isHover){
-      // Draw delete hint
-      var mx=(ax+bx)/2,my=(ay+by)/2;
-      ctx.fillStyle='#ff4444';ctx.font='bold 11px sans-serif';
-      ctx.fillText('✕',mx-5,my-2);
+      ctx.fillStyle='#ff4444';ctx.font='bold 10px sans-serif';
+      ctx.fillText('✕ click',midX-14,ay-4);
     }
   });
+  
+  // Blocks — Simulink style
   N.forEach(function(n){
-    var c=colors[n.t];ctx.fillStyle=n.t==='subsystem'?'#0a0a0a':'#111';ctx.strokeStyle=c;ctx.lineWidth=n.t==='subsystem'?2.5:1.5;
-    if(n===selected)ctx.shadowColor=c;ctx.shadowBlur=8;
-    ctx.beginPath();ctx.roundRect(n.x+px,n.y+py,n.w,dh,6);ctx.fill();ctx.stroke();
-    ctx.shadowBlur=0;
-    // Subsystem node: extra visual indicators
-    if(n.t==='subsystem'){
-      ctx.fillStyle=c;ctx.font='12px sans-serif';
-      ctx.fillText('⏬',n.x+px+6,n.y+py+18);
-      ctx.fillStyle='#666';ctx.font='8px sans-serif';
-      ctx.fillText('▶In',n.x+px-22,n.y+py+dh/2+3);
-      ctx.fillText('Out▶',n.x+n.w+px+2,n.y+py+dh/2+3);
-      // Mini status dots
-      var sts=[orinOnline,macPackets>0,true,orinOnline],stx=n.x+n.w-52;
-      var dotColors=['#00d4aa','#f0a500','#58a6ff','#a371f7'];
-      for(var di=0;di<4;di++){
-        ctx.fillStyle=sts[di]?dotColors[di]:'#333';
-        ctx.beginPath();
-        ctx.arc(stx+di*12+px,n.y+py+dh-6,3,0,Math.PI*2);ctx.fill();
-      }
-      ctx.fillStyle='#ddd';ctx.font='bold 11px sans-serif';ctx.fillText(n.name,n.x+px+26,n.y+py+20);
-      ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText('子系统',n.x+px+26,n.y+py+34);
-      // Larger ports
-      ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+px,n.y+dh/2+py,6,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.arc(n.x+n.w+px,n.y+dh/2+py,6,0,Math.PI*2);ctx.fill();
-      return;
+    var c=colors[n.t], isSel=n===selected;
+    // Drop shadow
+    ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(n.x+px+2,n.y+py+2,n.w,dh);
+    // Block body
+    ctx.fillStyle='#3c3c3c';ctx.strokeStyle=isSel?'#0078d7':c;ctx.lineWidth=isSel?2.5:1;
+    ctx.fillRect(n.x+px,n.y+py,n.w,dh);ctx.strokeRect(n.x+px,n.y+py,n.w,dh);
+    // Selection highlight
+    if(isSel){
+      ctx.strokeStyle='#0078d7';ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+      ctx.strokeRect(n.x+px-4,n.y+py-4,n.w+8,dh+8);ctx.setLineDash([]);
     }
-    ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);
-    if(n.name.indexOf('Orin')>=0){var txt=orinRecording?'🟢采集':orinOnline?'⚪待机':'🔴离线';ctx.fillStyle=orinRecording?'#00d4aa':'#888';ctx.font='bold 9px sans-serif';ctx.fillText(txt,n.x+px+n.w-40,n.y+py+dh-8)}
-    if(n.name.indexOf('MAC')>=0){ctx.fillStyle='#00d4aa';ctx.font='bold 9px monospace';ctx.fillText('📦'+macPackets,n.x+px+n.w-35,n.y+py+dh-8)}
-    if(n.name.indexOf('4090')>=0){var mb=(diskGB*1024)<1?(diskGB*1024*1024).toFixed(0):(diskGB*1024).toFixed(0);ctx.fillStyle='#00d4aa';ctx.font='bold 9px monospace';ctx.fillText('💾'+mb+(diskGB*1024<1?'K':'MB'),n.x+px+n.w-50,n.y+py+dh-8)}
-    ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText({condition:'条件',model:'模型',action:'动作',system:'系统',hardware:'硬件'}[n.t],n.x+px+22,n.y+py+34);
-    // Input port (left)
-    ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+px,n.y+dh/2+py,5,0,Math.PI*2);ctx.fill();
-    // Output port (right)
-    ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+n.w+px,n.y+dh/2+py,5,0,Math.PI*2);ctx.fill();
+    // Input port (triangle →)
+    ctx.fillStyle='#1a1a1a';ctx.beginPath();
+    ctx.moveTo(n.x+px-4,n.y+py+dh/2-4);ctx.lineTo(n.x+px+2,n.y+py+dh/2);ctx.lineTo(n.x+px-4,n.y+py+dh/2+4);ctx.fill();
+    // Output port (triangle →)
+    ctx.beginPath();
+    ctx.moveTo(n.x+n.w+px-2,n.y+py+dh/2-4);ctx.lineTo(n.x+n.w+px+6,n.y+py+dh/2);ctx.lineTo(n.x+n.w+px-2,n.y+py+dh/2+4);ctx.fill();
+    // Block name (centered)
+    ctx.fillStyle=isSel?'#fff':'#e0e0e0';ctx.font='bold 10px "Segoe UI",sans-serif';
+    var tx=n.x+px+16,ty=n.y+py+dh/2+4;
+    // Truncate if too long
+    var nm=n.name;if(ctx.measureText(nm).width>n.w-20)nm=nm.substring(0,10)+'…';
+    ctx.fillText(nm,tx,ty);
+    // Type badge (bottom-right)
+    var tl={condition:'C',model:'M',action:'A',system:'S',hardware:'H',subsystem:'Sub'}[n.t]||'';
+    ctx.fillStyle='#666';ctx.font='8px monospace';ctx.fillText(tl,n.x+n.w+px-16,n.y+py+dh-5);
+    // Subsystem extra
+    if(n.t==='subsystem'){
+      ctx.fillStyle=c;ctx.font='bold 10px sans-serif';ctx.fillText('⏬',n.x+px+4,n.y+py+15);
+      var sts=[orinOnline,macPackets>0,true,orinOnline];
+      var dotC=['#00d4aa','#f0a500','#58a6ff','#a371f7'];
+      for(var di=0;di<4;di++){ctx.fillStyle=sts[di]?dotC[di]:'#444';ctx.beginPath();ctx.arc(n.x+n.w-36+di*11+px,n.y+py+dh-5,2.5,0,Math.PI*2);ctx.fill()}
+    }
+    // ACT indicator
+    if(n.name.indexOf('ACT')>=0){
+      ctx.fillStyle=c;ctx.font='8px sans-serif';ctx.fillText('🧠',n.x+px+4,n.y+py+15);
+    }
   });
 }
+
 
 function getPos(e){return{x:e.offsetX/zoom,y:e.offsetY/zoom}}
 
@@ -568,7 +534,7 @@ canvas.addEventListener('contextmenu',function(e){
 });
 canvas.onmousemove=function(e){
   var p=getPos(e);
-  if(drag){drag.x=p.x-dx;drag.y=p.y-dy;draw();connOverlays.forEach(function(o){var n=o.node;if(!n)return;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
+  if(drag){drag.x=snap(p.x-dx);drag.y=snap(p.y-dy);draw();connOverlays.forEach(function(o){var n=o.node;if(!n)return;o.el.style.left=(n.x*zoom+px*zoom-4)+"px";o.el.style.top=(n.y*zoom+py*zoom-4)+"px"})}
   // Track link hover
   var mx=p.x-px,my=p.y-py,found=-1;
   for(var li=0;li<L.length;li++){
@@ -1425,4 +1391,15 @@ function openDataLink(){
   document.body.appendChild(ov);
   Lg('📊 打开数据链路子系统拓扑 · '+(macOn?'MAC在线·已转发'+fwd+'MB':'等待MAC连接'));
 }
-</script></body></html>
+</script>
+<div id="pipeline-status">
+  <span id="dl-orin" class="dot"></span><span id="dl-orin-txt">离线</span>
+  <span id="dl-arr1" style="color:#444">→</span>
+  <span id="dl-mac" class="dot"></span><span id="dl-mac-txt">离线</span>
+  <span id="dl-arr2" style="color:#444">→</span>
+  <span id="dl-ecs" class="dot" style="background:#00d4aa"></span><span id="dl-ecs-txt">ECS</span>
+  <span id="dl-arr3" style="color:#444">→</span>
+  <span id="dl-4090" class="dot"></span><span id="dl-4090-txt">离线</span>
+  <span id="dl-flow" style="margin-left:auto"></span>
+</div>
+</body></html>
