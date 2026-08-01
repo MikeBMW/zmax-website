@@ -320,51 +320,52 @@ Z-MAX 将 StageACT 的阶段条件化思想<strong style="color:#00d4aa">深度�
   </div>
 </div>
 
-<h3 style="color:#e0e0e0;font-size:17px;margin:36px 0 16px">StageACT 阶段 → DDS 条件编码映射</h3>
+<h3 style="color:#e0e0e0;font-size:17px;margin:36px 0 16px">StageACT 阶段 → 800G DR8 产线条件编码映射</h3>
 
 <table>
-<tr><th>StageACT 阶段</th><th>原论文定义（开门）</th><th>→ DDS 产线映射</th><th>→ 条件编码策略</th><th>→ 模型路由</th></tr>
+<tr><th>StageACT 阶段</th><th>产线工序映射（800G DR8）</th><th>典型工位示例</th><th>→ 条件编码策略</th><th>→ 模型路由</th></tr>
 <tr>
-  <td><span class="tag-sm tag-blue">S1 接近</span></td>
-  <td>导航至门把手附近</td>
-  <td>工位空间定位（X·Y·Z）</td>
-  <td>视觉特征（D405 RGB-D）+ 空间坐标编码</td>
-  <td><span class="tag-sm tag-blue">ACT</span> 运动规划</td>
+  <td><span class="tag-sm tag-blue">S1 上料定位</span></td>
+  <td>物料进入工位 · 视觉定位与识别</td>
+  <td>I-101 拆包上料 · I-102 扫码绑定</td>
+  <td>视觉特征（D405 RGB-D）+ 空间坐标编码（X·Y·Z）+ MES料号验证</td>
+  <td><span class="tag-sm tag-blue">ACT</span> 视觉伺服定位</td>
 </tr>
 <tr>
-  <td><span class="tag-sm tag-orange">S2 抓握</span></td>
-  <td>手部对准把手并抓握</td>
-  <td>夹爪/吸嘴对准工件</td>
-  <td>力觉特征（六维力MLP）+ 触觉确认</td>
-  <td><span class="tag-sm tag-purple">VLA-T</span> 力位混合</td>
+  <td><span class="tag-sm tag-orange">S2 取放对准</span></td>
+  <td>夹爪/吸嘴抓取工件 · 精确定位到目标工装</td>
+  <td>I-111 DA贴片取料 · I-121 固晶点胶对准</td>
+  <td>力觉特征（六维力MLP: Fx/Fy/Fz/Mx/My/Mz）+ 触觉确认（真空吸附/夹持力）</td>
+  <td><span class="tag-sm tag-purple">VLA-T</span> 力位混合控制</td>
 </tr>
 <tr>
-  <td><span class="tag-sm tag-green">S3 操作</span></td>
-  <td>转动把手解锁</td>
-  <td>插拔/点胶/打线/耦合</td>
-  <td>力控曲线 + 关节状态 + MES信号</td>
-  <td><span class="tag-sm tag-purple">VLA-T</span> / <span class="tag-sm tag-green">zFlow</span></td>
+  <td><span class="tag-sm tag-green">S3 核心工艺</span></td>
+  <td>DA贴片 · WB金线键合 · 透镜耦合 · 等离子清洗 · UV固化</td>
+  <td>I-112 DA贴片（±5μm）· I-122 金线键合 · I-131 自动耦合（亚微米）</td>
+  <td>力控曲线（接触检测→恒力保持→释放检测）+ 关节状态（7轴角度/速度/扭矩）+ MES工艺参数</td>
+  <td><span class="tag-sm tag-purple">VLA-T</span> 精密力控 / <span class="tag-sm tag-green">zFlow</span> 亚微米对准</td>
 </tr>
 <tr>
-  <td><span class="tag-sm tag-purple">S4 过渡</span></td>
-  <td>拉开门并保持</td>
-  <td>工序间物料转运</td>
-  <td>视觉跟踪 + 安全信号 + 碰撞检测</td>
-  <td><span class="tag-sm tag-blue">ACT</span> 搬运轨迹</td>
+  <td><span class="tag-sm tag-purple">S4 工序流转</span></td>
+  <td>工位间物料传递 · 料盘/料箱/托盘转运 · 老化箱进出</td>
+  <td>I-141 贴片→打线流转 · I-151 烘烤上下料 · I-161 BI老化箱</td>
+  <td>视觉跟踪（多相机接力）+ 安全信号（区域光栅/急停）+ 碰撞检测（力阈值监控）</td>
+  <td><span class="tag-sm tag-blue">ACT</span> 搬运轨迹 / <span class="tag-sm tag-orange">Z100L</span> 轮式双臂</td>
 </tr>
 <tr>
-  <td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">S5 通过</span></td>
-  <td>通过门并确认完成</td>
-  <td>质量门禁 + 数据回灌</td>
-  <td>AOI检测结果 + 力曲线分析 + 节拍记录</td>
-  <td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">ThinkAct</span> 反思验证</td>
+  <td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">S5 质量门禁</span></td>
+  <td>AOI外观检测 · 端面检测 · OE测试 · 数据回灌训练</td>
+  <td>I-171 AOI检测 · I-181 端面清洁+检测 · I-191 OE出货检查</td>
+  <td>AOI视觉检测结果（缺陷分类+位置）+ 力曲线分析（全程力控合规率）+ 节拍记录（各阶段耗时）</td>
+  <td><span class="tag-sm" style="background:#ff444422;color:#ff4444;border:1px solid #ff444444">ThinkAct</span> 反思判定+数据回灌</td>
 </tr>
 </table>
 
 <div class="callout" style="margin:24px 0">
-<strong>StageACT 对数据质量管理的核心启示</strong><br><br>
-传统的模仿学习将长时域任务视为一个整体，训练数据和模型输出都是"黑箱"——数据质量无法追溯、失败无法定位阶段、模型改进没有抓手。StageACT 证明：<strong>将任务拆解为阶段后，每个阶段都有独立的成功/失败判定、独立的数据质量标准、独立的恢复策略</strong>。这意味着 Z-MAX 的数据回流不再是"整个任务成功/失败"的粗粒度标签，而是"阶段 S3 力控超标 3 次、阶段 S1 视觉定位偏差 0.3mm"级别的<strong style="color:#00d4aa">精细诊断数据</strong>。这正是全局数据空间追求的"可解释、可审计、可进化的智能"。<br><br>
-<strong style="color:#f0a500">数据质量从粗到细的范式升级：</strong>任务级（成功/失败） → 阶段级（S1~S5 各自质量打分） → 帧级（每帧传感器数据 + 阶段条件编码 + 动作标签）
+<strong>StageACT 对 800G DR8 产线数据质量管理的核心启示</strong><br><br>
+800G DR8 光模块产线涵盖 COC · OE · MOD · WH 四区 128 个工位，传统方案将每个工位的完整工序视为一个整体——数据质量无法按阶段追溯，DA贴片失败和WB打线失败在数据回流中混为一谈。StageACT 的<strong>阶段条件化</strong>方案为此提供了精确解法：<strong>将每个工位的生产流程拆解为 S1~S5 五个阶段，每个阶段拥有独立的质量判定标准和恢复策略</strong>。<br><br>
+以 I-121 固晶点胶工位为例，传统方案只能记录"点胶成功/失败"。引入阶段条件化后，数据回流变为：<strong style="color:#00d4aa">S1 上料定位</strong>（视觉定位偏差 0.05mm · 合格）→ <strong style="color:#00d4aa">S2 取放对准</strong>（夹持力 2.3N · 真空度 -85kPa · 合格）→ <strong style="color:#00d4aa">S3 核心工艺</strong>（点胶压力曲线偏差 +12% · ⚠️警告）→ <strong style="color:#00d4aa">S4 工序流转</strong>（未触发）→ <strong style="color:#00d4aa">S5 质量门禁</strong>（AOI胶量检测 · 合格）。如果 S3 阶段持续偏离，系统自动将该阶段标记为"待RL微调"，仅针对点胶压力控制策略进行强化学习，而不影响 S1/S2/S4/S5 的稳定策略。这正是<strong style="color:#fff">数据质量从粗到细的范式升级</strong>的核心价值。<br><br>
+<strong style="color:#f0a500">数据质量范式升级：</strong>工位级（I-121 成功率 97.3%） → 阶段级（S1:99.8% · S2:99.2% · S3:94.1%⚠️ · S4:99.5% · S5:98.7%） → 帧级（每帧传感器数据 + 阶段条件编码 + 质量门禁判定）
 </div>
 <h3>3.5 垂直领域专用模型池</h3>
 <table>
