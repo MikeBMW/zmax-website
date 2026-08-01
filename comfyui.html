@@ -249,6 +249,10 @@ updatePipeStatus=function(d){
 <div class="sn" draggable="true" data-t="system" data-n="Orin 部署">🚀 Orin 部署</div>
 </div>
 
+<div style="font-size:10px;color:#ff6b35;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px" onclick="toggle('dlink')">🔗 子系统 (1) ▾</div>
+<div id="dlink">
+<div class="sn" draggable="true" data-t="subsystem" data-n="数据链路" style="border-left:3px solid#ff6b35;font-weight:700">🔗 数据链路</div>
+</div>
 <div style="font-size:10px;color:#8b949e;margin:10px 0 4px;cursor:pointer;font-weight:600;letter-spacing:.5px" onclick="tg('gact')">🎬 动作 (11) ▾</div>
 <div id="gact" class="g">
 <div class="sn a" draggable="true" data-t="action" data-n="A00 Action输出">A00 Action输出</div>
@@ -288,7 +292,7 @@ document.addEventListener('mousemove',function(e){if(!logDrag)return;var h=logSH
 document.addEventListener('mouseup',function(){logDrag=false});
 document.getElementById('log').onmousemove=function(e){this.style.cursor=e.offsetY<8?'ns-resize':'default'};
 var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1,connected=false,connOverlays=[],stage=0,pipelineTimer=null,macPackets=0,forwardedMB=0,diskGB=0,orinRecording=false,orinOnline=false,hoverLink=-1;
-var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444'};
+var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444',subsystem:'#ff6b35'};
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
@@ -347,7 +351,7 @@ window.onresize=rz;rz();setInterval(function(){if(!connected)return;fetch("/api/
 
 function add(t,name,x,y){
   var id='n'+Date.now()+Math.random().toString(36).slice(2,5);
-  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:150});
+  N.push({id,t,name,x:x||300+Math.random()*200,y:y||150+Math.random()*200,w:t==='subsystem'?220:150});
   saveState();draw();return id;
 }
 
@@ -374,10 +378,32 @@ function draw(){
     }
   });
   N.forEach(function(n){
-    var c=colors[n.t];ctx.fillStyle='#111';ctx.strokeStyle=c;ctx.lineWidth=1.5;
+    var c=colors[n.t];ctx.fillStyle=n.t==='subsystem'?'#0a0a0a':'#111';ctx.strokeStyle=c;ctx.lineWidth=n.t==='subsystem'?2.5:1.5;
     if(n===selected)ctx.shadowColor=c;ctx.shadowBlur=8;
     ctx.beginPath();ctx.roundRect(n.x+px,n.y+py,n.w,dh,6);ctx.fill();ctx.stroke();
     ctx.shadowBlur=0;
+    // Subsystem node: extra visual indicators
+    if(n.t==='subsystem'){
+      ctx.fillStyle=c;ctx.font='12px sans-serif';
+      ctx.fillText('⏬',n.x+px+6,n.y+py+18);
+      ctx.fillStyle='#666';ctx.font='8px sans-serif';
+      ctx.fillText('▶In',n.x+px-22,n.y+py+dh/2+3);
+      ctx.fillText('Out▶',n.x+n.w+px+2,n.y+py+dh/2+3);
+      // Mini status dots
+      var sts=[orinOnline,macPackets>0,true,orinOnline],stx=n.x+n.w-52;
+      var dotColors=['#00d4aa','#f0a500','#58a6ff','#a371f7'];
+      for(var di=0;di<4;di++){
+        ctx.fillStyle=sts[di]?dotColors[di]:'#333';
+        ctx.beginPath();
+        ctx.arc(stx+di*12+px,n.y+py+dh-6,3,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle='#ddd';ctx.font='bold 11px sans-serif';ctx.fillText(n.name,n.x+px+26,n.y+py+20);
+      ctx.fillStyle=c;ctx.font='8px monospace';ctx.fillText('子系统',n.x+px+26,n.y+py+34);
+      // Larger ports
+      ctx.fillStyle=c;ctx.beginPath();ctx.arc(n.x+px,n.y+dh/2+py,6,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(n.x+n.w+px,n.y+dh/2+py,6,0,Math.PI*2);ctx.fill();
+      return;
+    }
     ctx.fillStyle='#ddd';ctx.font='bold 10px sans-serif';ctx.fillText(n.name,n.x+px+22,n.y+py+20);
     if(n.name.indexOf('Orin')>=0){var txt=orinRecording?'🟢采集':orinOnline?'⚪待机':'🔴离线';ctx.fillStyle=orinRecording?'#00d4aa':'#888';ctx.font='bold 9px sans-serif';ctx.fillText(txt,n.x+px+n.w-40,n.y+py+dh-8)}
     if(n.name.indexOf('MAC')>=0){ctx.fillStyle='#00d4aa';ctx.font='bold 9px monospace';ctx.fillText('📦'+macPackets,n.x+px+n.w-35,n.y+py+dh-8)}
@@ -512,6 +538,25 @@ canvas.addEventListener('contextmenu',function(e){
     };
     menu.appendChild(arch);
   }
+  // Subsystem node: open topology
+  if(ctxNode&&ctxNode.t==='subsystem'){
+    var sepS=document.createElement('div');
+    sepS.style.cssText='border-top:1px solid #1a1f2b;margin:4px 0';
+    menu.appendChild(sepS);
+    var opn=document.createElement('a');
+    opn.href='#';
+    opn.style.cssText='display:block;padding:6px 14px;color:#ff6b35;text-decoration:none;transition:background .15s';
+    opn.textContent='📂 打开子系统';
+    opn.onmouseover=function(){this.style.background='#131726'};
+    opn.onmouseout=function(){this.style.background=''};
+    opn.onclick=function(ev){
+      ev.preventDefault();
+      document.getElementById('ctx-menu').remove();
+      ctxNode=null;
+      openDataLink();
+    };
+    menu.appendChild(opn);
+  }
   document.body.appendChild(menu);
   // Close on outside click
   setTimeout(function(){
@@ -541,6 +586,8 @@ canvas.ondblclick=function(e){
   for(var i=N.length-1;i>=0;i--){
     var n=N[i];
     if(mx>n.x&&mx<n.x+n.w&&my>n.y&&my<n.y+dh){
+      // Subsystem: open internal topology
+      if(n.t==='subsystem'){openDataLink();return}
       // Inline edit: create input over node name
       var oldInput=document.getElementById('inline-edit');
       if(oldInput)oldInput.remove();
@@ -1286,4 +1333,96 @@ function showACTArch(){
   Lg('📊 查看 ACT 节点架构');
 }
 
+
+function openDataLink(){
+  var old=document.getElementById('datalink-overlay');
+  if(old)old.remove();
+  var ov=document.createElement('div');
+  ov.id='datalink-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9990;display:flex;align-items:center;justify-content:center';
+  ov.onclick=function(e){if(e.target===ov)ov.remove()};
+
+  var fwd=(typeof forwardedMB!=='undefined'?forwardedMB:0).toFixed(1);
+  var macOn=(typeof macPackets!=='undefined'&&macPackets>0);
+  var gpuOn=true;
+  var nodes=[
+    {id:'orin',icon:'🖥',name:'Orin Nano',role:'MCAP数据采集',status:orinOnline,clr:'#00d4aa',
+     detail:'192.168.23.10:8765\nROS2 /zmax/* 话题\n6轴力觉 + RGB-D\n采集频率 30Hz'},
+    {id:'mac',icon:'💻',name:'MAC 中转',role:'数据转发·心跳',status:macOn,clr:'#f0a500',
+     detail:'192.168.23.1:8769\nHTTP POST 每5秒\nEC2隧道穿透\n已转发 '+fwd+' MB'},
+    {id:'ecs',icon:'☁️',name:'ECS 缓冲',role:'数据队列·nginx',status:true,clr:'#58a6ff',
+     detail:'39.102.211.79\n/api/comfy/ 代理\n缓冲上限 100MB\n磁盘 13GB可用'},
+    {id:'gpu',icon:'🧠',name:'4090 训练',role:'H-JEPA·VTLA',status:gpuOn,clr:'#a371f7',
+     detail:'RTX 4090 24GB\nzFlow 3.0M参数\n247ms 推理延迟\n⏳ 训练任务队列'},
+    {id:'deploy',icon:'🚀',name:'Orin 部署',role:'模型下发·推理',status:orinOnline,clr:'#ff6b35',
+     detail:'Sys1 Hybrid引擎\n端侧实时推理\nACT 动作序列\n闭环反馈更新'}
+  ];
+
+  var h='<div style="background:#0d1117;border:1px solid #1e2740;border-radius:14px;padding:28px;max-width:980px;width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 12px 60px rgba(0,0,0,.9)">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
+  h+='<span style="color:#ff6b35;font-size:18px;font-weight:700">🔗 数据链路 · 子系统拓扑</span>';
+  h+='<button onclick="document.getElementById(\'datalink-overlay\').remove()" style="background:none;border:none;color:#8b949e;font-size:22px;cursor:pointer;line-height:1">&times;</button>';
+  h+='</div>';
+  h+='<p style="color:#8b949e;font-size:10px;margin:0 0 20px">Orin采集 → MAC转发 → ECS缓冲 → 4090训练 → Orin部署 · 闭环数据管道</p>';
+
+  // Flow cards
+  h+='<div style="display:flex;align-items:stretch;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:20px">';
+  for(var i=0;i<nodes.length;i++){
+    var nd=nodes[i];
+    var isLast=i===nodes.length-1;
+    h+='<div style="flex:1;min-width:130px;max-width:170px;text-align:center">';
+    h+='<div style="background:#1a1f2b;border:2px solid '+(nd.status?nd.clr:'#333')+';border-radius:10px;padding:14px 8px;min-height:130px;position:relative;transition:all .25s;cursor:pointer"';
+    h+=' onmouseover="this.style.borderColor=\''+nd.clr+'\';this.style.background=\'#1e2740\';this.style.transform=\'translateY(-2px)\'"';
+    h+=' onmouseout="this.style.borderColor=\''+(nd.status?nd.clr:'#333')+'\';this.style.background=\'#1a1f2b\';this.style.transform=\'\'"';
+    h+='>';
+    // Status dot
+    h+='<div style="position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:'+(nd.status?nd.clr:'#444')+';box-shadow:0 0 '+(nd.status?'6px '+nd.clr:'0')+'"></div>';
+    // Port indicators
+    if(i>0)h+='<div style="position:absolute;left:-12px;top:50%;transform:translateY(-50%);color:'+(nd.status?nd.clr:'#333')+';font-size:14px">◀</div>';
+    if(!isLast)h+='<div style="position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:'+(nd.status?nd.clr:'#333')+';font-size:14px">▶</div>';
+    // Content
+    h+='<div style="font-size:26px;margin-bottom:4px">'+nd.icon+'</div>';
+    h+='<div style="color:'+nd.clr+';font-size:12px;font-weight:700;margin-bottom:3px">'+nd.name+'</div>';
+    h+='<div style="color:#8b949e;font-size:9px;margin-bottom:6px">'+nd.role+'</div>';
+    h+='<div style="font-size:8px;color:'+(nd.status?nd.clr:'#555')+'">'+(nd.status?'● 在线':'○ 离线')+'</div>';
+    h+='</div></div>';
+    // Arrow connector
+    if(!isLast){
+      h+='<div style="display:flex;align-items:center;margin:0 -6px;z-index:1">';
+      h+='<svg width="32" height="20"><defs><marker id="dlArr'+i+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ff6b35"/></marker></defs>';
+      h+='<line x1="2" y1="10" x2="24" y2="10" stroke="'+(nd.status?'#ff6b35':'#333')+'" stroke-width="2"/><polygon points="22,6 30,10 22,14" fill="'+(nd.status?'#ff6b35':'#333')+'"/></svg>';
+      h+='</div>';
+    }
+  }
+  h+='</div>';
+
+  // Loop-back
+  h+='<div style="text-align:center;margin-bottom:18px">';
+  h+='<svg width="200" height="44"><defs><marker id="dlLoop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ff6b35"/></marker></defs>';
+  h+='<path d="M170,8 Q170,-8 100,-8 Q30,-8 30,8" stroke="#ff6b35" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>';
+  h+='<text x="100" y="-10" text-anchor="middle" fill="#ff6b35" font-size="8">闭环反馈 · 模型权重回灌</text></svg>';
+  h+='</div>';
+
+  // Detail grid
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px">';
+  for(var i=0;i<nodes.length;i++){
+    var nd=nodes[i];
+    h+='<div style="background:#0a0a0f;border:1px solid #1a1f2b;border-radius:8px;padding:10px;font-size:9px;line-height:1.6">';
+    h+='<div style="color:'+nd.clr+';font-weight:700;margin-bottom:4px;font-size:10px">'+nd.icon+' '+nd.name+'</div>';
+    h+='<div style="color:#bbb;white-space:pre-line">'+nd.detail+'</div>';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // Footer
+  h+='<div style="margin-top:14px;padding-top:10px;border-top:1px solid #1e2740;display:flex;justify-content:space-between;align-items:center;font-size:9px">';
+  h+='<span style="color:#ff6b35">📐 Simulink 子系统模式 · 双击/右键节点进入</span>';
+  h+='<span style="color:#8b949e">缓冲 ≤100MB · 心跳 5s · 数据闭环</span>';
+  h+='</div>';
+
+  h+='</div>';
+  ov.innerHTML=h;
+  document.body.appendChild(ov);
+  Lg('📊 打开数据链路子系统拓扑 · '+(macOn?'MAC在线·已转发'+fwd+'MB':'等待MAC连接'));
+}
 </script></body></html>
