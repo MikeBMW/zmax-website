@@ -1,4 +1,39 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script><title>ComfyUI · Z-MAX v2.5.5 · 2026-07-22</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#0a0a0f"><script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
+function updatePipeline(d){
+  var orinOn=d&&d.orin_online, macOn=d&&d.mac_connected>0, gpuOn=d&&d.gpu;
+  var fwd=d&&d.forwarded_mb||0;
+  
+  // Orin
+  var o=document.getElementById("dl-orin"); if(o)o.style.background=orinOn?"#00d4aa":"#ff4444";
+  var ot=document.getElementById("dl-orin-txt"); if(ot)ot.textContent=orinOn?"在线":"离线";
+  var a1=document.getElementById("dl-arr1"); if(a1)a1.style.color=orinOn&&macOn?"#00d4aa":"#333";
+  
+  // Mac
+  var m=document.getElementById("dl-mac"); if(m)m.style.background=macOn?"#00d4aa":"#ff4444";
+  var mt=document.getElementById("dl-mac-txt"); if(mt)mt.textContent=macOn?"在线":"离线";
+  var mb=document.getElementById("dl-mac-buf"); if(mb)mb.textContent=fwd>0?fwd.toFixed(1)+"MB":"";
+  var a2=document.getElementById("dl-arr2"); if(a2)a2.style.color=macOn?"#00d4aa":"#333";
+  
+  // ECS (always green - we're on ECS)
+  var e=document.getElementById("dl-ecs"); if(e)e.style.background="#00d4aa";
+  var et=document.getElementById("dl-ecs-txt"); if(et)et.textContent="就绪";
+  var a3=document.getElementById("dl-arr3"); if(a3)a3.style.color=gpuOn?"#00d4aa":"#333";
+  
+  // 4060
+  var g=document.getElementById("dl-4090"); if(g)g.style.background=gpuOn?"#00d4aa":"#ff4444";
+  var gt=document.getElementById("dl-4090-txt"); if(gt)gt.textContent=gpuOn?"在线":"离线";
+  
+  // Flow
+  var fl=document.getElementById("dl-flow"); if(fl)fl.textContent=(fwd>0?fwd.toFixed(1)+" MB":"0 MB")+" · 缓冲≤100MB";
+}
+// Hook into existing status poll
+var _origUpdate=updatePipeStatus;
+updatePipeStatus=function(d){
+  if(_origUpdate)_origUpdate(d);
+  updatePipeline(d);
+};
+
+</script><title>ComfyUI · Z-MAX v2.5.5 · 2026-07-22</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#c8d1d9;overflow:hidden;height:100vh}
@@ -72,10 +107,77 @@ document.addEventListener('click', function(e){
   var m = document.getElementById('menu-wrap');
   if(m && !m.contains(e.target)) closeMenu();
 });
+
+function updatePipeline(d){
+  var orinOn=d&&d.orin_online, macOn=d&&d.mac_connected>0, gpuOn=d&&d.gpu;
+  var fwd=d&&d.forwarded_mb||0;
+  
+  // Orin
+  var o=document.getElementById("dl-orin"); if(o)o.style.background=orinOn?"#00d4aa":"#ff4444";
+  var ot=document.getElementById("dl-orin-txt"); if(ot)ot.textContent=orinOn?"在线":"离线";
+  var a1=document.getElementById("dl-arr1"); if(a1)a1.style.color=orinOn&&macOn?"#00d4aa":"#333";
+  
+  // Mac
+  var m=document.getElementById("dl-mac"); if(m)m.style.background=macOn?"#00d4aa":"#ff4444";
+  var mt=document.getElementById("dl-mac-txt"); if(mt)mt.textContent=macOn?"在线":"离线";
+  var mb=document.getElementById("dl-mac-buf"); if(mb)mb.textContent=fwd>0?fwd.toFixed(1)+"MB":"";
+  var a2=document.getElementById("dl-arr2"); if(a2)a2.style.color=macOn?"#00d4aa":"#333";
+  
+  // ECS (always green - we're on ECS)
+  var e=document.getElementById("dl-ecs"); if(e)e.style.background="#00d4aa";
+  var et=document.getElementById("dl-ecs-txt"); if(et)et.textContent="就绪";
+  var a3=document.getElementById("dl-arr3"); if(a3)a3.style.color=gpuOn?"#00d4aa":"#333";
+  
+  // 4060
+  var g=document.getElementById("dl-4090"); if(g)g.style.background=gpuOn?"#00d4aa":"#ff4444";
+  var gt=document.getElementById("dl-4090-txt"); if(gt)gt.textContent=gpuOn?"在线":"离线";
+  
+  // Flow
+  var fl=document.getElementById("dl-flow"); if(fl)fl.textContent=(fwd>0?fwd.toFixed(1)+" MB":"0 MB")+" · 缓冲≤100MB";
+}
+// Hook into existing status poll
+var _origUpdate=updatePipeStatus;
+updatePipeStatus=function(d){
+  if(_origUpdate)_origUpdate(d);
+  updatePipeline(d);
+};
+
 </script>
 <span id="st" style="display:flex;gap:8px;font-size:10px;color:#8b949e">v2.5.5 · 2026-07-22 08:23 | </span><a href="/" style="font-size:10px;color:#00d4aa;text-decoration:none;margin:0 6px;padding:2px 6px;border:1px solid #1a1f2b;border-radius:3px">🏠 主页</a><span id="st2" style="display:flex;gap:8px;font-size:10px"><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-orin" style="width:8px;height:8px;border-radius:50%;background:#333"></span>🖥 Orin</span><span id="arr1" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-mac" style="width:8px;height:8px;border-radius:50%;background:#333"></span>💻 MAC</span><span id="arr2" style="color:#333;margin:0 4px;font-size:12px;transition:color .5s">→</span><span style="display:flex;align-items:center;gap:4px;background:#131726;padding:2px 8px;border-radius:4px"><span id="dot-4090" style="width:8px;height:8px;border-radius:50%;background:#00d4aa"></span>🧠 4090</span></span>
 </div>
 <div id="side">
+
+<div style="font-size:10px;color:#00d4aa;margin:6px 0 4px;font-weight:700;border-bottom:1px solid #00d4aa33;padding-bottom:4px">🔗 数据链路</div>
+<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:6px 8px;margin:4px 0;font-size:9px;line-height:1.6">
+  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+    <span id="dl-orin" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
+    <span style="color:#8b949e">🖥 Orin</span>
+    <span id="dl-orin-txt" style="color:#484f58;font-size:8px">离线</span>
+  </div>
+  <span id="dl-arr1" style="color:#333;margin:0 2px">→</span>
+  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+    <span id="dl-mac" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
+    <span style="color:#8b949e">💻 Mac</span>
+    <span id="dl-mac-txt" style="color:#484f58;font-size:8px">离线</span>
+    <span id="dl-mac-buf" style="color:#484f58;font-size:7px;margin-left:auto"></span>
+  </div>
+  <span id="dl-arr2" style="color:#333;margin:0 2px">→</span>
+  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+    <span id="dl-ecs" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
+    <span style="color:#8b949e">☁ ECS中转</span>
+    <span id="dl-ecs-txt" style="color:#484f58;font-size:8px">就绪</span>
+  </div>
+  <span id="dl-arr3" style="color:#333;margin:0 2px">→</span>
+  <div style="display:flex;align-items:center;gap:4px;margin:2px 0">
+    <span id="dl-4090" style="width:7px;height:7px;border-radius:4px;background:#333;flex-shrink:0"></span>
+    <span style="color:#8b949e">🧠 4060训练</span>
+    <span id="dl-4090-txt" style="color:#484f58;font-size:8px">离线</span>
+  </div>
+  <div style="margin-top:4px;font-size:8px;color:#484f58;text-align:center">
+    <span id="dl-flow">0 MB</span> · 缓冲≤100MB
+  </div>
+</div>
+
 <div style="font-size:10px;color:#8b949e;margin:4px 0;cursor:pointer" onclick="toggle('c38')">🟣 Condition 条件 (38) ▾</div>
 <div id="c38">
 <div class="sn c" draggable="true" data-t="condition" data-n="C001 100G取料">C001 取料·100G</div>
@@ -391,6 +493,25 @@ canvas.addEventListener('contextmenu',function(e){
     ctxNode=null;
   };
   menu.appendChild(rn);
+  // ACT node: show architecture option
+  if(ctxNode&&ctxNode.name.indexOf('ACT')>=0){
+    var sep2=document.createElement('div');
+    sep2.style.cssText='border-top:1px solid #1a1f2b;margin:4px 0';
+    menu.appendChild(sep2);
+    var arch=document.createElement('a');
+    arch.href='#';
+    arch.style.cssText='display:block;padding:6px 14px;color:#f0a500;text-decoration:none;transition:background .15s';
+    arch.textContent='📊 查看节点逻辑';
+    arch.onmouseover=function(){this.style.background='#131726'};
+    arch.onmouseout=function(){this.style.background=''};
+    arch.onclick=function(ev){
+      ev.preventDefault();
+      document.getElementById('ctx-menu').remove();
+      ctxNode=null;
+      showACTArch();
+    };
+    menu.appendChild(arch);
+  }
   document.body.appendChild(menu);
   // Close on outside click
   setTimeout(function(){
@@ -1060,6 +1181,109 @@ function listServerJSON(){
       });
     },50);
   }).catch(function(e){document.getElementById("jl").innerHTML="❌ "+e.message});
+}
+
+
+function updatePipeline(d){
+  var orinOn=d&&d.orin_online, macOn=d&&d.mac_connected>0, gpuOn=d&&d.gpu;
+  var fwd=d&&d.forwarded_mb||0;
+  
+  // Orin
+  var o=document.getElementById("dl-orin"); if(o)o.style.background=orinOn?"#00d4aa":"#ff4444";
+  var ot=document.getElementById("dl-orin-txt"); if(ot)ot.textContent=orinOn?"在线":"离线";
+  var a1=document.getElementById("dl-arr1"); if(a1)a1.style.color=orinOn&&macOn?"#00d4aa":"#333";
+  
+  // Mac
+  var m=document.getElementById("dl-mac"); if(m)m.style.background=macOn?"#00d4aa":"#ff4444";
+  var mt=document.getElementById("dl-mac-txt"); if(mt)mt.textContent=macOn?"在线":"离线";
+  var mb=document.getElementById("dl-mac-buf"); if(mb)mb.textContent=fwd>0?fwd.toFixed(1)+"MB":"";
+  var a2=document.getElementById("dl-arr2"); if(a2)a2.style.color=macOn?"#00d4aa":"#333";
+  
+  // ECS (always green - we're on ECS)
+  var e=document.getElementById("dl-ecs"); if(e)e.style.background="#00d4aa";
+  var et=document.getElementById("dl-ecs-txt"); if(et)et.textContent="就绪";
+  var a3=document.getElementById("dl-arr3"); if(a3)a3.style.color=gpuOn?"#00d4aa":"#333";
+  
+  // 4060
+  var g=document.getElementById("dl-4090"); if(g)g.style.background=gpuOn?"#00d4aa":"#ff4444";
+  var gt=document.getElementById("dl-4090-txt"); if(gt)gt.textContent=gpuOn?"在线":"离线";
+  
+  // Flow
+  var fl=document.getElementById("dl-flow"); if(fl)fl.textContent=(fwd>0?fwd.toFixed(1)+" MB":"0 MB")+" · 缓冲≤100MB";
+}
+// Hook into existing status poll
+var _origUpdate=updatePipeStatus;
+updatePipeStatus=function(d){
+  if(_origUpdate)_origUpdate(d);
+  updatePipeline(d);
+};
+
+
+function showACTArch(){
+  var old=document.getElementById('act-arch-modal');
+  if(old)old.remove();
+  var m=document.createElement('div');
+  m.id='act-arch-modal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center';
+  m.onclick=function(e){if(e.target===m)m.remove()};
+  m.innerHTML='<div style="background:#0d1117;border:1px solid #1e2740;border-radius:12px;padding:24px;max-width:780px;width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8)">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'+
+    '<span style="color:#00d4aa;font-size:16px;font-weight:700">📊 ACT 推理引擎 · 架构总览</span>'+
+    '<button onclick="document.getElementById('act-arch-modal').remove()" style="background:none;border:none;color:#8b949e;font-size:20px;cursor:pointer;line-height:1">&times;</button>'+
+    '</div>'+
+    '<svg viewBox="0 0 720 460" width="100%" style="max-width:720px;display:block;margin:0 auto">'+
+    '<defs>'+
+    '<marker id="aaB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#58a6ff"/></marker>'+
+    '<marker id="aaP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#a371f7"/></marker>'+
+    '<marker id="aaO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#f0a500"/></marker>'+
+    '<marker id="aaR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ff6b35"/></marker>'+
+    '</defs>'+
+    '<rect x="0" y="0" width="720" height="460" rx="8" fill="#06080d"/>'+
+    '<rect x="220" y="8" width="280" height="38" rx="6" fill="#1a1f2b" stroke="#58a6ff" stroke-width="1.5"/>'+
+    '<text x="360" y="32" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="bold" font-family="sans-serif">外部代码 / 训练脚本</text>'+
+    '<line x1="360" y1="46" x2="360" y2="80" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#aaB)"/>'+
+    '<text x="372" y="68" fill="#8b949e" font-size="9" font-family="sans-serif">导入</text>'+
+    '<rect x="220" y="80" width="280" height="40" rx="6" fill="#1a1f2b" stroke="#00d4aa" stroke-width="1.5"/>'+
+    '<text x="360" y="105" text-anchor="middle" fill="#00d4aa" font-size="14" font-weight="bold" font-family="sans-serif">__init__.py</text>'+
+    '<path d="M220,100 L120,100 L120,165" stroke="#a371f7" stroke-width="1.5" fill="none" marker-end="url(#aaP)"/>'+
+    '<text x="140" y="95" fill="#8b949e" font-size="9" font-family="sans-serif">获取类定义</text>'+
+    '<line x1="360" y1="120" x2="360" y2="165" stroke="#f0a500" stroke-width="1.5" marker-end="url(#aaO)"/>'+
+    '<text x="372" y="146" fill="#8b949e" font-size="9" font-family="sans-serif">获取模型架构</text>'+
+    '<path d="M500,100 L600,100 L600,165" stroke="#ff6b35" stroke-width="1.5" fill="none" marker-end="url(#aaR)"/>'+
+    '<text x="555" y="95" fill="#8b949e" font-size="9" font-family="sans-serif">获取数据处理</text>'+
+    '<rect x="15" y="165" width="210" height="55" rx="6" fill="#1a1f2b" stroke="#a371f7" stroke-width="1.5"/>'+
+    '<text x="120" y="188" text-anchor="middle" fill="#a371f7" font-size="13" font-weight="bold" font-family="sans-serif">configuration_act.py</text>'+
+    '<text x="120" y="208" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">类定义 · 配置参数</text>'+
+    '<rect x="255" y="165" width="210" height="55" rx="6" fill="#1a1f2b" stroke="#f0a500" stroke-width="1.5"/>'+
+    '<text x="360" y="188" text-anchor="middle" fill="#f0a500" font-size="13" font-weight="bold" font-family="sans-serif">modeling_act.py</text>'+
+    '<text x="360" y="208" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">VAE + Transformer 模型</text>'+
+    '<rect x="495" y="165" width="210" height="55" rx="6" fill="#1a1f2b" stroke="#ff6b35" stroke-width="1.5"/>'+
+    '<text x="600" y="188" text-anchor="middle" fill="#ff6b35" font-size="13" font-weight="bold" font-family="sans-serif">processor_act.py</text>'+
+    '<text x="600" y="208" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">数据预处理 · 后处理</text>'+
+    '<line x1="225" y1="192" x2="255" y2="192" stroke="#a371f7" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#aaP)"/>'+
+    '<text x="230" y="184" fill="#8b949e" font-size="8" font-family="sans-serif">config</text>'+
+    '<line x1="495" y1="178" x2="465" y2="178" stroke="#ff6b35" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#aaR)"/>'+
+    '<text x="455" y="172" fill="#8b949e" font-size="8" font-family="sans-serif">预处理</text>'+
+    '<line x1="495" y1="208" x2="465" y2="208" stroke="#ff6b35" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#aaR)"/>'+
+    '<text x="455" y="220" fill="#8b949e" font-size="8" font-family="sans-serif">后处理</text>'+
+    '<rect x="220" y="255" width="480" height="130" rx="8" fill="none" stroke="#30363d" stroke-width="1" stroke-dasharray="6,3"/>'+
+    '<text x="460" y="274" text-anchor="middle" fill="#8b949e" font-size="11" font-family="sans-serif">◈ 运行时逻辑</text>'+
+    '<rect x="250" y="290" width="420" height="78" rx="8" fill="#1a1f2b" stroke="#f0a500" stroke-width="1.5"/>'+
+    '<text x="460" y="314" text-anchor="middle" fill="#f0a500" font-size="14" font-weight="bold" font-family="sans-serif">modeling_act.py · 运行时实例</text>'+
+    '<circle cx="278" cy="340" r="4" fill="#00d4aa"/>'+
+    '<text x="292" y="344" fill="#00d4aa" font-size="11" font-family="sans-serif">实例化 VAE &amp; Transformer 编码器/解码器</text>'+
+    '<circle cx="278" cy="358" r="4" fill="#ff6b35"/>'+
+    '<text x="292" y="362" fill="#ff6b35" font-size="11" font-family="sans-serif">前向传播：计算 Loss / 推理动作序列</text>'+
+    '<line x1="550" y1="255" x2="550" y2="290" stroke="#f0a500" stroke-width="1" fill="none" marker-end="url(#aaO)"/>'+
+    '<text x="562" y="276" fill="#8b949e" font-size="8" font-family="sans-serif">实例化</text>'+
+    '<rect x="10" y="405" width="700" height="48" rx="6" fill="#0d1117" stroke="#1e2740" stroke-width="1"/>'+
+    '<text x="360" y="425" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">⚡ 数据流: 外部代码 → __init__.py 入口 → configuration_act 配置 + processor_act 处理 → modeling_act 推理</text>'+
+    '<text x="360" y="442" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="sans-serif">HuggingFace Transformers 架构 · 纯 Python 实现 · 与 LeRobot 框架兼容</text>'+
+    '</svg>'+
+    '<p style="color:#8b949e;font-size:10px;margin-top:12px;text-align:center">基于 HuggingFace Transformers 标准架构 · ACT (Action Chunking with Transformers)</p>'+
+    '</div>';
+  document.body.appendChild(m);
+  Lg('📊 查看 ACT 节点架构');
 }
 
 </script></body></html>
