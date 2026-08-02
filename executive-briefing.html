@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>立项逻辑与产品之道 · Z-MAX 执行简报</title>
+<style>
+:root{
+  --bg:#06080d;--card:#0d1117;--border:#1a2332;
+  --accent:#00d4aa;--blue:#58a6ff;--purple:#a371f7;
+  --orange:#f0a500;--red:#ff4444;--green:#3fb950;
+  --text:#c9d1d9;--text2:#8b949e;--white:#e6edf3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;font-size:16px}
+/* 幻灯片容器 */
+.slide{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:60px 80px;position:relative;page-break-after:always}
+.slide::after{content:'';position:absolute;bottom:0;left:80px;right:80px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.slide:last-child::after{display:none}
+/* 标题 */
+.slide-title{font-size:36px;font-weight:800;color:var(--white);margin-bottom:8px;letter-spacing:-0.5px}
+.slide-sub{font-size:18px;color:var(--accent);margin-bottom:36px;font-weight:500}
+/* 双栏 */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;align-items:start}
+.split-col{display:flex;flex-direction:column;gap:20px}
+.col-title{font-size:22px;font-weight:700;color:var(--white);padding-bottom:12px;border-bottom:2px solid var(--accent);display:flex;align-items:center;gap:10px}
+.col-title .icon{font-size:28px}
+/* 表格 */
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{text-align:left;color:var(--accent);font-weight:600;padding:10px 14px;background:rgba(0,212,170,.06);border-bottom:1px solid var(--border);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.tbl td{padding:10px 14px;border-bottom:1px solid rgba(26,35,50,.5);color:var(--text);vertical-align:top}
+.tbl tr:hover td{background:rgba(0,212,170,.03)}
+.tbl .num{font-family:"SF Mono","Consolas",monospace;color:var(--accent);font-weight:600;white-space:nowrap}
+.tbl .highlight{color:var(--accent);font-weight:600}
+/* 卡片 */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;transition:border-color .2s}
+.card:hover{border-color:var(--accent)}
+.card h3{font-size:17px;color:var(--white);margin-bottom:10px}
+.card p{font-size:15px;color:var(--text2);line-height:1.7}
+/* 引用块 */
+.quote{background:rgba(0,212,170,.06);border-left:3px solid var(--accent);padding:16px 20px;border-radius:0 8px 8px 0;font-size:15px;color:var(--text);margin:4px 0}
+.quote strong{color:var(--accent)}
+/* KPI行 */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.kpi-card .kpi-val{font-size:36px;font-weight:800;color:var(--accent);font-family:"SF Mono","Consolas",monospace}
+.kpi-card .kpi-label{font-size:13px;color:var(--text2);margin-top:4px}
+.kpi-card .kpi-dir{font-size:12px;color:var(--blue);margin-top:4px}
+/* 投入表 */
+.invest-table{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.invest-table th{text-align:left;color:var(--accent);font-weight:600;padding:12px 14px;background:rgba(0,212,170,.06);border-bottom:2px solid var(--border)}
+.invest-table td{padding:12px 14px;border-bottom:1px solid rgba(26,35,50,.5)}
+.invest-table .phase{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap}
+.phase-1{background:rgba(0,212,170,.15);color:var(--accent)}
+.phase-2{background:rgba(88,166,255,.15);color:var(--blue)}
+/* 标签 */
+.tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:12px;margin-right:6px;font-weight:600}
+.tag-green{background:rgba(63,185,80,.15);color:var(--green)}
+.tag-orange{background:rgba(240,165,0,.15);color:var(--orange)}
+.tag-red{background:rgba(255,68,68,.15);color:var(--red)}
+/* 总结条 */
+.summary-strip{background:linear-gradient(135deg,rgba(0,212,170,.08),rgba(163,113,247,.08));border:1px solid var(--accent);border-radius:12px;padding:20px 28px;margin-top:20px}
+.summary-strip p{font-size:16px;color:var(--white);line-height:1.8}
+.summary-strip strong{color:var(--accent)}
+/* 打印 */
+@media print{
+  body{background:#fff;color:#000}
+  .slide{min-height:auto;padding:30px 40px;page-break-after:always}
+  .slide::after{display:none}
+  :root{--bg:#fff;--card:#f8f9fa;--border:#ddd;--accent:#0066cc;--text:#333;--text2:#666;--white:#111}
+  .kpi-card,.card{background:#f8f9fa;border:1px solid #ddd}
+  .summary-strip{background:#e8f4fd;border:1px solid #0066cc}
+}
+@media(max-width:900px){
+  .slide{padding:30px 20px}
+  .split{grid-template-columns:1fr;gap:24px}
+  .slide-title{font-size:26px}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .tbl{font-size:13px}
+  .tbl td,.tbl th{padding:8px 10px}
+}
+/* 底部导航 */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,17,23,.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:8px;z-index:100}
+.nav-dot{width:12px;height:12px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.back-link{position:fixed;top:20px;left:24px;color:var(--text2);text-decoration:none;font-size:14px;z-index:100;transition:color .2s}
+.back-link:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<a href="/" class="back-link">← datadrive.world</a>
+
+<!-- ======================== 第一页：立项逻辑 ======================== -->
+<section class="slide" id="slide1">
+<div class="slide-title">为什么必须先"现场演练"才能立项？</div>
+<div class="slide-sub">ROI算不准，模型训不好——破局路径：进工厂，拿真数据</div>
+
+<div class="split">
+  <!-- 左栏 -->
+  <div class="split-col">
+    <div class="col-title"><span class="icon">📊</span> ROI需要真实数据</div>
+    <div class="card">
+      <h3>四个核心论点</h3>
+      <table class="tbl">
+        <tr><th style="width:25%">问题</th><th>说明</th></tr>
+        <tr><td><strong>ROI需要真实数据</strong></td><td>投资回报率不是靠理论推算，需要现场的<span class="highlight">真实节拍、成功率、人力替代比</span></td></tr>
+        <tr><td><strong>模型需要真实数据</strong></td><td>具身大模型的泛化能力依赖<span class="highlight">真机数据采集</span>——仿真数据无法替代产线真实工况</td></tr>
+        <tr><td><strong>行业共识</strong></td><td>2026年6月，工信部、国资委启动"实景实训专项行动"，要求产品<span class="highlight">进入真实生产环境常态化运行</span></td></tr>
+        <tr><td><strong>破局路径</strong></td><td>用机器人<span class="highlight">去现场演练</span>——采集真机数据 → 验证技术指标 → 算清ROI → 正式立项</td></tr>
+      </table>
+    </div>
+    <div class="quote">
+      无锡已建成国内首个<strong>工业场景具身智能数据采集与实训中心</strong>，可年产<strong>上千万条高质量数据</strong>。这不是"要不要做"的问题，是"现在不做就落后"的问题。
+    </div>
+  </div>
+
+  <!-- 右栏 -->
+  <div class="split-col">
+    <div class="col-title"><span class="icon">🤖</span> 进工厂干活，真的非得是人形吗？</div>
+    <div class="card">
+      <h3>达芬奇手术机器人的启示</h3>
+      <p style="margin-bottom:14px;color:var(--text2)">速度、精度、灵活性才是真正的价值——达芬奇<strong style="color:var(--accent)">不做成人形</strong>，依然统治手术机器人市场<strong style="color:var(--accent)">60%份额</strong>。</p>
+      <table class="tbl">
+        <tr><th>对比维度</th><th>达芬奇手术机器人</th><th>典型人形机器人</th><th style="color:var(--accent)">工业专用机器人</th></tr>
+        <tr><td>形态</td><td>非人形（多臂+控制台）</td><td>双足+双臂</td><td class="highlight">专用形态</td></tr>
+        <tr><td>精度</td><td>0.1mm级</td><td>~1-5mm</td><td class="highlight">±0.02-0.05mm</td></tr>
+        <tr><td>自由度</td><td>7个自由度的腕关节</td><td>全身20-40DOF</td><td class="highlight">臂6-7DOF</td></tr>
+        <tr><td>单台售价</td><td>~3000万元</td><td>30-400万</td><td class="highlight">&lt;30万</td></tr>
+        <tr><td>核心壁垒</td><td>临床数据1500万例</td><td>运动能力</td><td class="highlight">场景数据+工艺Know-How</td></tr>
+      </table>
+    </div>
+    <div class="quote">
+      <strong>达芬奇不做成人形，依然统治手术机器人市场60%份额。</strong>它的价值在于精度、灵活性、数据积累，而不是"长得像人"。
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ======================== 第二页：产品之道 ======================== -->
+<section class="slide" id="slide2">
+<div class="slide-title">Z-MAX 的产品之道</div>
+<div class="slide-sub">以终为始，从场景倒推形态——光模块插拔需要什么，我们就做什么</div>
+
+<div class="quote" style="margin-bottom:28px">
+  <strong>进工厂干活，要的是"能干活的机器人"，不是"长得像人的机器人"。</strong>资源不浪费在"长得像人"上，全部砸在"干得成事"上。
+</div>
+
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="kpi-val">99%</div>
+    <div class="kpi-label">插拔成功率</div>
+    <div class="kpi-dir">模型训练+真机数据闭环</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">&lt;15s</div>
+    <div class="kpi-label">单颗节拍</div>
+    <div class="kpi-dir">力控算法+宏微复合控制</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">±0.05mm</div>
+    <div class="kpi-label">定位精度</div>
+    <div class="kpi-dir">视觉+力觉多模态融合</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">±0.1N</div>
+    <div class="kpi-label">力控精度</div>
+    <div class="kpi-dir">六维力传感器+阻抗控制</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">≤0.5h</div>
+    <div class="kpi-label">换型时间</div>
+    <div class="kpi-dir">软件定义，无需二次编程</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">24h</div>
+    <div class="kpi-label">连续运行</div>
+    <div class="kpi-dir">硬件可靠性+异常自恢复</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px">
+  <div class="card">
+    <h3>🧠 智能驱动</h3>
+    <p>VLA-Touch 端到端感知-决策-控制大模型，从视觉输入到力控输出一体训练。真机数据闭环持续进化，每10万次插拔精度提升0.5%。</p>
+  </div>
+  <div class="card">
+    <h3>🔧 硬件本体</h3>
+    <p>7轴力控机械臂 + D405深度相机 + 六维力传感器 + 专用末端执行器。不做通用人形，做光模块插拔专用最优形态。</p>
+  </div>
+  <div class="card">
+    <h3>📊 数据闭环</h3>
+    <p>采集→中转→训练→验证→部署五阶段全链路。每一颗插拔的数据自动回流训练集，模型周级迭代。</p>
+  </div>
+  <div class="card">
+    <h3>🏭 落地路径</h3>
+    <p>800G DR8光模块产线128站 → 先验证关键工位 → 逐站推广 → 全产线覆盖。3个月出数据，6个月算清ROI。</p>
+  </div>
+</div>
+</section>
+
+<!-- ======================== 第三页：市场预判与投入 ======================== -->
+<section class="slide" id="slide3">
+<div class="slide-title">现在处于哪个阶段？马上会发生什么？</div>
+<div class="slide-sub">从"讲故事"到"交付"的分水岭——不进则退的窗口期</div>
+
+<div class="split">
+  <!-- 左栏：阶段判断 -->
+  <div class="split-col">
+    <div class="col-title"><span class="icon">⏳</span> 行业现状与预判</div>
+    <table class="tbl">
+      <tr><th style="width:30%">维度</th><th>现状</th></tr>
+      <tr><td><strong>行业共识</strong></td><td>2025年"量产元年"，2026-2027年<span class="highlight">从"讲故事时代"转向"交付时代"</span></td></tr>
+      <tr><td><strong>政策驱动</strong></td><td>具身智能连续第二年写入政府工作报告；工信部与国资委联合启动<span class="highlight">实景实训专项行动</span></td></tr>
+      <tr><td><strong>市场规模</strong></td><td>2025年<span class="num">9150亿</span>元，2026年预计突破<span class="num">1万亿</span>元</td></tr>
+      <tr><td><strong>资本热度</strong></td><td>2026上半年融资<span class="num">935亿</span>元，较2025年同期<span class="highlight">提升5倍</span></td></tr>
+      <tr><td><strong>行业痛点</strong></td><td><span class="highlight">"缺数据是共识"</span>——真机数据是最大瓶颈</td></tr>
+    </table>
+
+    <div class="card" style="margin-top:0">
+      <h3>四大预判信号</h3>
+      <table class="tbl">
+        <tr><th>信号</th><th>行动</th></tr>
+        <tr><td><span class="tag tag-red">政策</span> 实景实训已启动</td><td><strong>尽快推动Z700进工厂演练</strong>，抢占政策窗口期</td></tr>
+        <tr><td><span class="tag tag-orange">资本</span> 半年935亿</td><td><strong>快速验证ROI</strong>，用真实数据说服投资人</td></tr>
+        <tr><td><span class="tag tag-green">标杆</span> 智元已获工业订单</td><td><strong>对标头部</strong>，不等"完美方案"再进场</td></tr>
+        <tr><td><span class="tag tag-green">数据</span> 真机数据即壁垒</td><td><strong>把"现场演练"当作核心战略</strong></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 右栏：投入预估 -->
+  <div class="split-col">
+    <div class="col-title"><span class="icon">💰</span> 预计投入（针对每项指标）</div>
+    <table class="invest-table">
+      <tr><th>性能指标</th><th style="width:22%">目标</th><th>投入方向</th><th style="width:18%">预估</th></tr>
+      <tr>
+        <td><strong>插拔成功率</strong></td>
+        <td class="num">95%→99%</td>
+        <td>真机数据采集(10万次)+模型训练+闭环迭代</td>
+        <td><span class="phase phase-1">Phase1 180万</span></td>
+      </tr>
+      <tr>
+        <td><strong>单颗节拍</strong></td>
+        <td class="num">30s→15s</td>
+        <td>力控算法优化+宏微复合控制开发+高速相机标定</td>
+        <td><span class="phase phase-1">Phase1 120万</span></td>
+      </tr>
+      <tr>
+        <td><strong>定位精度</strong></td>
+        <td class="num">±0.05mm</td>
+        <td>D405深度相机+视觉标定+多模态融合模型训练</td>
+        <td><span class="phase phase-2">Phase2 90万</span></td>
+      </tr>
+      <tr>
+        <td><strong>力控精度</strong></td>
+        <td class="num">±0.1N</td>
+        <td>六维力传感器(2套)+阻抗控制算法+标定工装</td>
+        <td><span class="phase phase-2">Phase2 110万</span></td>
+      </tr>
+      <tr>
+        <td><strong>换型时间</strong></td>
+        <td class="num">≤0.5h</td>
+        <td>软件定义平台开发+视觉模板匹配+自动标定</td>
+        <td><span class="phase phase-2">Phase2 70万</span></td>
+      </tr>
+      <tr>
+        <td><strong>连续运行</strong></td>
+        <td class="num">24h</td>
+        <td>硬件可靠性测试+异常检测+自恢复逻辑+备件</td>
+        <td><span class="phase phase-1">Phase1 60万</span></td>
+      </tr>
+      <tr style="background:rgba(0,212,170,.04)">
+        <td><strong>现场演练部署</strong></td>
+        <td class="num">3站点</td>
+        <td>Z700本体×3+现场集成+产线对接+驻场支持</td>
+        <td><span class="phase phase-1">Phase1 360万</span></td>
+      </tr>
+      <tr style="background:rgba(0,212,170,.06);font-weight:700">
+        <td><strong>合计（12个月）</strong></td>
+        <td class="num" style="font-size:18px">—</td>
+        <td>Phase1(6个月)+Phase2(6个月)</td>
+        <td class="num" style="font-size:18px;color:var(--accent)">990万</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="summary-strip" style="margin-top:24px">
+  <p><strong>一句话总结：</strong>你现在处于一个"不进则退"的窗口期——不进工厂，就拿不到真机数据；拿不到真机数据，就训不出好模型；训不出好模型，就交不出货；交不出货，就会被淘汰。<strong>尽快推动Z700进工厂演练，用3个月出数据，6个月算清ROI，12个月全产线覆盖。</strong></p>
+</div>
+</section>
+
+<!-- 底部导航 -->
+<div class="nav-bar" id="navBar">
+  <div class="nav-dot active" onclick="scrollToSlide(0)"></div>
+  <div class="nav-dot" onclick="scrollToSlide(1)"></div>
+  <div class="nav-dot" onclick="scrollToSlide(2)"></div>
+</div>
+
+<script>
+var slides=document.querySelectorAll('.slide');
+var dots=document.querySelectorAll('.nav-dot');
+
+function scrollToSlide(i){
+  slides[i].scrollIntoView({behavior:'smooth'});
+}
+
+// 滚动时更新导航点
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      var idx=Array.from(slides).indexOf(e.target);
+      dots.forEach(function(d,i){d.classList.toggle('active',i===idx)});
+    }
+  });
+},{threshold:.5});
+slides.forEach(function(s){obs.observe(s)});
+
+// 键盘翻页
+document.addEventListener('keydown',function(e){
+  var cur=Array.from(slides).findIndex(function(s){
+    var r=s.getBoundingClientRect();
+    return r.top>-100&&r.top<window.innerHeight/2;
+  });
+  if(e.key==='ArrowDown'||e.key==='PageDown'){
+    e.preventDefault();
+    scrollToSlide(Math.min(cur+1,slides.length-1));
+  }else if(e.key==='ArrowUp'||e.key==='PageUp'){
+    e.preventDefault();
+    scrollToSlide(Math.max(cur-1,0));
+  }
+});
+</script>
+
+</body>
+</html>
