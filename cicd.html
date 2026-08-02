@@ -1,321 +1,104 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CI/CD 全链路监管 | Z-MAX</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CI/CD 全链路 | Z-MAX v2.6.2</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh}
 #bar{background:#0d1117;padding:8px 16px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:10px}
-#bar h1{font-size:15px;color:#00d4aa}
-#bar a{font-size:10px;color:#484f58;text-decoration:none;padding:3px 8px;border:1px solid #1a1f2b;border-radius:4px}
-#bar .ver{font-size:10px;color:#8b949e;margin-left:auto}
-.container{max-width:1100px;margin:0 auto;padding:16px}
-
-/* Pipeline flow */
-.pipeline{display:flex;align-items:center;gap:0;margin:20px 0;overflow-x:auto;padding:10px 0}
-.stage{flex:1;min-width:140px;background:#0d1117;border:2px solid #1a1f2b;border-radius:10px;padding:14px;text-align:center;position:relative;transition:all .3s}
-.stage.active{border-color:#00d4aa;box-shadow:0 0 16px rgba(0,212,170,.1)}
-.stage.done{border-color:#3fb950;background:#0d1a0d}
-.stage.err{border-color:#ff4444;background:#1a0d0d}
-.stage .icon{font-size:28px;margin-bottom:6px}
-.stage .name{font-size:12px;font-weight:700;margin-bottom:2px}
-.stage .status{font-size:10px}
-.stage .detail{font-size:9px;color:#484f58;margin-top:4px}
-.stage .dot{position:absolute;top:-8px;right:-8px;width:16px;height:16px;border-radius:8px;border:2px solid #0d1117}
-.stage .dot.ok{background:#3fb950}.stage .dot.err{background:#ff4444}.stage .dot.idle{background:#333}
-.arrow{font-size:20px;color:#1a1f2b;flex-shrink:0;margin:0 -2px}
-.arrow.flow{color:#00d4aa}
-
-/* Log panel */
-.log-panel{background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;margin:16px 0}
-.log-panel h3{padding:10px 14px;font-size:12px;color:#00d4aa;border-bottom:1px solid #1a1f2b}
-.log-panel .logs{max-height:300px;overflow-y:auto;padding:8px 14px;font-family:monospace;font-size:10px;line-height:1.7}
-.log-panel .logs .line{padding:2px 0}
-.log-panel .logs .line.info{color:#8b949e}
-.log-panel .logs .line.ok{color:#3fb950}
-.log-panel .logs .line.err{color:#ff4444}
-.log-panel .logs .line.warn{color:#f0a500}
-
-/* Version grid */
-.ver-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:16px 0}
-.ver-card{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:10px}
-.ver-card .vtag{font-size:13px;font-weight:700;color:#00d4aa}
-.ver-card .vdate{font-size:9px;color:#484f58}
-.ver-card .vmsg{font-size:10px;color:#8b949e;margin-top:4px}
-
-/* Controls */
-.controls{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
-.controls button{padding:8px 18px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
-.btn-trigger{background:#00d4aa;color:#000}
-.btn-release{background:#a371f7;color:#fff}
-.btn-refresh{background:#1a1f2b;color:#8b949e;border:1px solid #30363d}
-
-/* Metrics */
-.metrics{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
-.metric{flex:1;min-width:120px;background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px;text-align:center}
-.metric .val{font-size:20px;font-weight:800;color:#00d4aa}
-.metric .lab{font-size:10px;color:#8b949e;margin-top:2px}
-</style>
-</head>
-<body>
-<div id="bar">
-  <a href="/">← 主页</a>
-  <h1>🔗 CI/CD 全链路监管</h1>
-  <span class="ver" id="cur-ver">v2.6.1</span>
-</div>
+#bar h1{font-size:15px;color:#00d4aa}#bar a{font-size:10px;color:#484f58;text-decoration:none;padding:3px 8px;border:1px solid #1a1f2b;border-radius:4px}
+.container{max-width:1100px;margin:0 auto;padding:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:10px}
+.card h3{font-size:11px;color:#00d4aa;margin-bottom:6px;border-bottom:1px solid #1a1f2b;padding-bottom:4px}
+.metric{text-align:center;padding:6px}
+.metric .val{font-size:18px;font-weight:800;color:#00d4aa}
+.metric .lab{font-size:9px;color:#8b949e}
+.stage{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:10px}
+.stage .dot{width:8px;height:8px;border-radius:4px;flex-shrink:0;background:#333}
+.stage .dot.ok{background:#3fb950}.stage .dot.err{background:#ff4444}.stage .dot.wait{background:#f0a500}
+#cam{width:100%;max-height:400px;border-radius:4px;display:block;margin:4px auto}
+.log{max-height:200px;overflow-y:auto;font-family:monospace;font-size:9px;line-height:1.6;color:#8b949e;padding:4px 8px}
+.log .ok{color:#3fb950}.log .err{color:#ff4444}.log .warn{color:#f0a500}
+button{padding:5px 12px;border:none;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer}
+.btn-go{background:#00d4aa;color:#000}.btn-stop{background:#ff4444;color:#fff}
+</style></head><body>
+<div id="bar"><a href="/">← 主页</a><h1>🔗 CI/CD 全链路监管</h1><span style="font-size:10px;color:#8b949e;margin-left:auto" id="tick">-</span></div>
 <div class="container">
 
-<!-- Metrics -->
-<div class="metrics">
-  <div class="metric"><div class="val" id="m-pkgs">0</div><div class="lab">数据包</div></div>
-  <div class="metric"><div class="val" id="m-epochs">-</div><div class="lab">训练轮次</div></div>
-  <div class="metric"><div class="val" id="m-infer">1</div><div class="lab">Orin推理</div></div>
-  <div class="metric"><div class="val" id="m-uptime">0s</div><div class="lab">中继运行</div></div>
-  <div class="metric"><div class="val" id="m-ver">v2.6.1</div><div class="lab">当前版本</div></div>
+<div class="grid2">
+<div class="card"><h3>🤖 机器人</h3>
+<div class="grid2"><div class="metric"><div class="val" id="rb-on">-</div><div class="lab">状态</div></div><div class="metric"><div class="val" id="rb-act">IDLE</div><div class="lab">动作</div></div></div>
+</div>
+<div class="card"><h3>📋 状态机</h3>
+<div id="sm" style="display:flex;flex-wrap:wrap;gap:4px;font-size:9px;line-height:1.5"></div>
+</div>
+<div class="card"><h3>📷 实时画面</h3><img id="cam" src="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22240%22><rect fill=%22%230d1117%22 width=%22320%22 height=%22240%22/><text fill=%22%23484f58%22 x=%22160%22 y=%22120%22 text-anchor=%22middle%22 font-size=%2214%22>等待数据</text></svg>"><div style="font-size:8px;color:#484f58;text-align:center" id="cam-info">-</div></div>
 </div>
 
-<!-- Pipeline -->
-<div class="pipeline" id="pipeline">
-  <div class="stage" id="st-1"><div class="dot idle"></div><div class="icon">📡</div><div class="name">Orin采集</div><div class="status">等待数据</div><div class="detail">小芳 · 10s片段</div></div>
-  <div class="arrow" id="ar-1">→</div>
-  <div class="stage" id="st-2"><div class="dot idle"></div><div class="icon">💻</div><div class="name">Mac中转</div><div class="status">等待</div><div class="detail">转发·≤100MB</div></div>
-  <div class="arrow" id="ar-2">→</div>
-  <div class="stage active" id="st-3"><div class="dot ok"></div><div class="icon">☁</div><div class="name">ECS中继</div><div class="status">就绪</div><div class="detail">web · relay v1</div></div>
-  <div class="arrow" id="ar-3">→</div>
-  <div class="stage" id="st-4"><div class="dot idle"></div><div class="icon">🧠</div><div class="name">4060训练</div><div class="status">等待</div><div class="detail">xspace · ACT</div></div>
-  <div class="arrow" id="ar-4">→</div>
-  <div class="stage" id="st-5"><div class="dot idle"></div><div class="icon">✅</div><div class="name">Mac验证</div><div class="status">等待</div><div class="detail">小芳 · 本地测试</div></div>
-  <div class="arrow" id="ar-5">→</div>
-  <div class="stage" id="st-6"><div class="dot idle"></div><div class="icon">🚀</div><div class="name">Orin部署</div><div class="status">运行中</div><div class="detail">act_model · 1次推理</div></div>
+<div class="card"><h3>🔗 流水线</h3>
+<div class="grid3">
+<div class="stage"><span class="dot wait" id="s1"></span>📡采集<span style="font-size:8px;color:#484f58" id="s1d"></span></div>
+<div class="stage"><span class="dot wait" id="s2"></span>💻中转<span style="font-size:8px;color:#484f58" id="s2d"></span></div>
+<div class="stage"><span class="dot wait" id="s3"></span>☁中继<span style="font-size:8px;color:#484f58" id="s3d"></span></div>
+<div class="stage"><span class="dot wait" id="s4"></span>🧠训练<span style="font-size:8px;color:#484f58" id="s4d"></span></div>
+<div class="stage"><span class="dot wait" id="s5"></span>✅验证<span style="font-size:8px;color:#484f58" id="s5d"></span></div>
+<div class="stage"><span class="dot wait" id="s6"></span>🚀部署<span style="font-size:8px;color:#484f58" id="s6d"></span></div>
+</div>
 </div>
 
-<!-- Controls -->
-<div class="controls">
-  <button class="btn-trigger" onclick="triggerPipeline()">▶ 触发全链路</button>
-  <button class="btn-release" onclick="createRelease()">🏷 发布Release</button>
-  <button class="btn-refresh" onclick="refreshAll()">🔄 刷新</button>
-  <span style="font-size:10px;color:#484f58;align-self:center" id="last-refresh">-</span>
+<div class="card"><h3>📊 数据</h3>
+<div class="grid3">
+<div class="metric"><div class="val" id="m-pkg">0</div><div class="lab">数据包</div></div>
+<div class="metric"><div class="val" id="m-uptime">0s</div><div class="lab">中继运行</div></div>
+<div class="metric"><div class="val" id="m-infer">0</div><div class="lab">Orin推理</div></div>
+</div>
+<div style="font-size:9px;color:#484f58;margin-top:4px" id="extra">-</div>
 </div>
 
-<!-- Log -->
-<div class="log-panel">
-  <h3>📋 实时日志</h3>
-  <div class="logs" id="logs">
-    <div class="line info">系统就绪 · 等待数据采集</div>
-  </div>
-</div>
-
-<!-- Baseline comparison -->
-<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">📊 基线对比 · Auto-Iterate</h3>
-<div class="log-panel">
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;padding:10px 14px;font-size:10px">
-    <div style="color:#8b949e">指标</div><div style="color:#a371f7;font-weight:700">基线ACT</div><div style="color:#00d4aa;font-weight:700" id="cmp-cur">当前模型</div><div style="font-weight:700" id="cmp-delta">Δ提升</div>
-    <div>loss_act</div><div style="color:#a371f7">3.32</div><div style="color:#00d4aa" id="cmp-loss">-</div><div id="cmp-loss-d" style="color:#484f58">-</div>
-    <div>reach成功率</div><div style="color:#a371f7">68%</div><div style="color:#00d4aa" id="cmp-reach">-</div><div id="cmp-reach-d" style="color:#484f58">-</div>
-    <div>door成功率</div><div style="color:#a371f7">45%</div><div style="color:#00d4aa" id="cmp-door">-</div><div id="cmp-door-d" style="color:#484f58">-</div>
-    <div>推理延迟</div><div style="color:#a371f7">48ms</div><div style="color:#00d4aa" id="cmp-lat">-</div><div id="cmp-lat-d" style="color:#484f58">-</div>
-  </div>
-  <div style="padding:8px 14px;font-size:9px;color:#484f58;border-top:1px solid #1a1f2b" id="cmp-verdict">
-    ⏳ 等待训练完成...
-  </div>
-</div>
-
-<!-- MetaWorld Simulation -->
-<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">🎮 MetaWorld 仿真对比</h3>
-<div class="log-panel">
-  <div style="display:flex;gap:12px;padding:10px 14px;flex-wrap:wrap">
-    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-reach">-</div><div class="lab">reach-v3</div></div>
-    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-door">-</div><div class="lab">door-open</div></div>
-    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-peg">-</div><div class="lab">peg-insert</div></div>
-    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-win">-</div><div class="lab">window-open</div></div>
-  </div>
-  <div style="padding:8px 14px;font-size:9px;color:#484f58;border-top:1px solid #1a1f2b" id="mw-status">
-    ⏳ 仿真环境待启动
-  </div>
-</div>
-
-<!-- Auto-iterate controls -->
-<div class="controls">
-  <button class="btn-trigger" onclick="autoIterate()">🔄 自动迭代</button>
-  <button class="btn-trigger" style="background:#ff6b35" onclick="abortIterate()">⏹ 中止</button>
-  <span style="font-size:10px;color:#8b949e;align-self:center" id="iter-status">迭代: 0/10 · 当前: -</span>
-  <span style="font-size:10px;color:#484f58;align-self:center" id="iter-best">最佳: -</span>
-</div>
-
-<!-- Versions -->
-<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">🏷 版本历史</h3>
-<div class="ver-grid" id="ver-list">
-  <div class="ver-card"><div class="vtag">v2.6.1</div><div class="vdate">2026-08-02</div><div class="vmsg">simulink CI/CD + WebSocket Orin + relay peek</div></div>
-</div>
+<div class="card"><h3>📋 日志</h3><div class="log" id="log"></div></div>
 
 </div>
 
-<script src="/zmax-pipe.js"></script>
 <script>
-const API_RELAY="https://datadrive.world/api/relay";
-const API_ORIN="https://datadrive.world/orin/status";
+function L(m,t){var e=document.getElementById("log"),d=document.createElement("div");d.className=t||"";d.textContent="["+new Date().toLocaleTimeString()+"] "+m;e.appendChild(d);e.scrollTop=e.scrollHeight}
+function S(id,c,t){var d=document.getElementById("s"+id);if(d){d.className="dot";if(c)d.classList.add(c)}var v=document.getElementById("s"+id+"d");if(v&&t)v.textContent=t}
 
-function setStage(id,state,status,detail){
-  const el=document.getElementById("st-"+id);if(!el)return;
-  el.className="stage";
-  if(state==="done")el.classList.add("done");
-  else if(state==="err")el.classList.add("err");
-  else if(state==="active")el.classList.add("active");
-  const dot=el.querySelector(".dot");if(dot){dot.className="dot";dot.classList.add(state==="done"?"ok":state==="err"?"err":state==="active"?"ok":"idle")}
-  const st=el.querySelector(".status");if(st)st.textContent=status;
-  const dt=el.querySelector(".detail");if(dt&&detail)dt.textContent=detail;
-  const ar=document.getElementById("ar-"+(id-1));if(ar){ar.className="arrow";if(state==="done"||state==="active")ar.classList.add("flow")}
-}
-function addLog(msg,type){
-  const el=document.getElementById("logs");
-  const d=document.createElement("div");d.className="line "+type;
-  const now=new Date().toLocaleTimeString();
-  d.textContent="["+now+"] "+msg;
-  el.appendChild(d);el.scrollTop=el.scrollHeight;
-}
-
-async function refreshAll(){
-  // Relay
+async function poll(){
+  var t=new Date().toLocaleTimeString();document.getElementById("tick").textContent=t;
   try{
-    const r=await fetch(API_RELAY+"/status");const d=await r.json();
-    document.getElementById("m-uptime").textContent=d.uptime+"s";
-    document.getElementById("m-pkgs").textContent=d.packages||0;
-    setStage(3,"active","就绪",(d.packages||0)+"包");
-  }catch(e){setStage(3,"err","断连","");addLog("ECS中继断连","err")}
+   var r=await fetch("/api/relay/status"),rd=await r.json();
+   document.getElementById("m-pkg").textContent=rd.packages||0;
+   document.getElementById("m-uptime").textContent=(rd.uptime||0)+"s";
+   S(3,"ok",(rd.packages||0)+"包");
+   if(rd.packages>0){S(1,"ok","采集中");S(2,"ok","已转发")}else{S(1,"wait","静止");S(2,"wait","等待")}
+  }catch(e){S(3,"err","断")}
   
-  // Orin
   try{
-    const r2=await fetch(API_ORIN);const od=await r2.json();
-    if(od.online){
-      document.getElementById("m-infer").textContent=od.infer_count||0;
-      setStage(6,"done","运行中","推理"+od.infer_count+"次·"+od.last_infer_ms+"ms");
-    }
-  }catch(e){setStage(6,"err","离线","");addLog("Orin离线","err")}
+   var o=await fetch("/orin/status"),od=await o.json();
+   document.getElementById("m-infer").textContent=od.infer_count||0;
+   if(od.online){document.getElementById("rb-on").textContent="🟢在线";S(6,"ok","运行中")}else{S(6,"err","离线")}
+  }catch(e){S(6,"err","离线")}
   
-  document.getElementById("last-refresh").textContent=new Date().toLocaleTimeString();
-}
-
-function triggerPipeline(){
-  addLog("🚀 手动触发全链路CI/CD","warn");
-  ["st-1","st-2","st-4","st-5","st-6"].forEach(s=>document.getElementById(s)?.classList.add("active"));
-  setTimeout(()=>refreshAll(),2000);
-}
-
-function createRelease(){
-  addLog("🏷 请求发布Release到GitHub","warn");
-  fetch("https://datadrive.world/api/relay/trigger-release",{method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({version:"v2.6.1",msg:"simulink CI/CD + WebSocket + relay"})
-  }).then(r=>r.json()).then(d=>addLog("Release: "+JSON.stringify(d),"ok")).catch(()=>addLog("Release失败","err"));
-}
-
-// Auto-iterate with baseline comparison
-let iterRunning=false,iterCount=0,iterBest={loss:99,model:"-",epoch:0};
-const BASELINE={loss:3.32,reach:.68,door:.45,latency:48};
-
-async function pollCompare(){
-  if(!iterRunning)return;
   try{
-    const r=await fetch("https://datadrive.world/api/relay/training-status");const d=await r.json();
-    if(d.current_loss){
-      document.getElementById("cmp-loss").textContent=d.current_loss.toFixed(3);
-      const dl=(BASELINE.loss-d.current_loss)/BASELINE.loss*100;
-      const el=document.getElementById("cmp-loss-d");
-      el.textContent=(dl>0?"↓":"↑")+Math.abs(dl).toFixed(1)+"%";
-      el.style.color=dl>0?"#3fb950":"#ff4444";
-      document.getElementById("cmp-verdict").textContent=dl>0?"🟢 优于基线 +"+dl.toFixed(1)+"%":"🔴 劣于基线，继续迭代";
-    }
-    if(d.iteration){document.getElementById("iter-status").textContent="迭代: "+d.iteration+"/10 · loss: "+(d.current_loss||"-")}
+   var p=await fetch("/api/relay/peek"),pd=await p.json();
+   // Action + states from top-level
+   var lb=pd.current_state||pd.frames?.[0]?.label||pd.meta?.action||"IDLE";
+   document.getElementById("rb-act").textContent=lb;
+   renderSM(lb,pd.all_states);
+   // Camera: try snapshot_b64 then frames[0].camera_b64
+   var cam=pd.snapshot_b64||pd.frames?.[0]?.camera_b64||pd.camera_b64;
+   if(cam){document.getElementById("cam").src="data:image/jpeg;base64,"+cam;document.getElementById("cam-info").textContent="🟢 "+t}else{document.getElementById("cam-info").textContent="无图像"}
   }catch(e){}
 }
-
-function autoIterate(){
-  if(iterRunning)return;
-  iterRunning=true;iterCount=0;
-  addLog("🔄 自动迭代启动 · 目标: 超越基线ACT loss<3.32","warn");
-  document.getElementById("iter-status").textContent="迭代: 0/10 · 启动中";
-  setInterval(pollCompare,5000);
-  
-  fetch("https://datadrive.world/api/relay/auto-iterate",{method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({baseline:BASELINE,max_iter:10,improve_threshold:0.05})
-  }).then(r=>r.json()).then(d=>{
-    addLog("迭代配置已下发: "+JSON.stringify(d),"ok");
-  }).catch(e=>addLog("迭代启动失败","err"));
-}
-
-function abortIterate(){
-  iterRunning=false;
-  addLog("⏹ 迭代已中止 · 共完成 "+iterCount+" 轮","warn");
-  document.getElementById("iter-status").textContent="已中止 · "+iterCount+"轮";
-}
-
-// Use shared ZMAX pipeline state with per-step detail
-window.addEventListener("zmax_pipe_update",e=>{
-  const s=e.detail;const now=new Date().toLocaleTimeString();
-  document.getElementById("last-refresh").textContent=now;
-  
-  // Step 1: Orin采集 — check relay packages
-  if(s.relay){
-    const pkgs=s.relay.packages||0;
-    document.getElementById("m-uptime").textContent=(s.relay.uptime||0)+"s";
-    document.getElementById("m-pkgs").textContent=pkgs;
-    if(pkgs>0){setStage(1,"done","有数据",pkgs+"包等待转发");addLog("📡 中继收到 "+pkgs+" 个数据包","ok")}
-    else setStage(1,"active","等待采集","小芳推送数据到relay");
-  }else{setStage(1,"err","中继离线","ECS relay无响应")}
-  
-  // Step 2: Mac中转 — same as relay status
-  if(s.relay&&s.relay.packages>0)setStage(2,"done","已转发","数据经Mac→ECS");
-  else setStage(2,"wait","等待","收到数据后自动转发");
-  
-  // Step 3: ECS中继 — always active
-  setStage(3,"active","就绪",(s.relay?((s.relay.packages||0)+"包"):"running"));
-  
-  // Step 4: 4060训练 — check tunnel
-  if(s.relay&&s.relay.packages>0)setStage(4,"wait","等待拉取","xspace pull数据");
-  else setStage(4,"idle","等待数据","收到数据后触发训练");
-  
-  // Step 5: Mac验证
-  if(s.orin&&s.orin.online)setStage(5,"wait","等待部署验证","模型部署后自动测试");
-  else setStage(5,"idle","等待","模型到Orin后验证");
-  
-  // Step 6: Orin部署 — live status
-  if(s.orin&&s.orin.online){
-    document.getElementById("m-infer").textContent=s.orin.infer_count||0;
-    setStage(6,"done","运行中","模型:"+(s.orin.model||"?")+" · 推理"+(s.orin.infer_count||0)+"次 · "+(s.orin.last_infer_ms||0)+"ms");
-  }else{setStage(6,"err","离线","Orin未连接")}
-  
-  // Baseline comparison
-  if(s.orin&&s.orin.infer_count>0){
-    document.getElementById("cmp-lat").textContent=(s.orin.last_infer_ms||0)+"ms";
-    const delta=48-(s.orin.last_infer_ms||0);
-    document.getElementById("cmp-lat-d").textContent=(delta>0?"↓":"↑")+Math.abs(delta)+"ms";
-    document.getElementById("cmp-verdict").textContent="🟢 Orin在线 · 模型:"+(s.orin.model||"?");
+setInterval(poll,67);poll();
+var STATES=["料盘识别","AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK","初始化循环","取料","尝试插入第一次","循环守卫","扫码","抓取失败判定","拔出","插入完成","暂时松开","移动到治具插槽","等待测试结果"];
+function renderSM(active,all){
+  var st=all||STATES;
+  var h="";
+  for(var i=0;i<st.length;i++){
+    var s=st[i],is=s===active;
+    h+="<span style=\"padding:1px 6px;border-radius:3px;background:"+(is?"#00d4aa33":"#1a1f2b")+";color:"+(is?"#00d4aa":"#484f58")+";font-weight:"+(is?"700":"400")+";border:1px solid "+(is?"#00d4aa":"#1a1f2b")+"\">"+(is?"▶ ":"")+s+"</span>";
   }
-});
-addLog("全链路监管就绪 · 3秒实时同步","info");
-
-// Camera + Action: read from frames[0].camera_b64 and label
-async function refreshCam(){
-  try{
-    const r=await fetch("/api/relay/peek");const d=await r.json();
-    // Action from frames
-    if(d.frames?.[0]){
-      const f=d.frames[0];
-      document.getElementById("rb-action").textContent=f.label||"IDLE";
-      document.getElementById("rb-extra").textContent="状态机:"+(f.label||"IDLE");
-    }
-    // Camera from frames[0].camera_b64
-    const cam=d.frames?.[0]?.camera_b64||d.camera_b64||d.snapshot_b64;
-    if(cam){
-      document.getElementById("live-cam").src="data:image/jpeg;base64,"+cam;
-      document.getElementById("cam-info").textContent="🟢 10fps · "+new Date().toLocaleTimeString();
-    }
-  }catch(e){}
+  document.getElementById("sm").innerHTML=h;
 }
-setInterval(refreshCam,100);refreshCam();
-</script>
-</body>
-</html>
+renderSM("");
+</script></body></html>
