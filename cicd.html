@@ -81,15 +81,15 @@ async function poll(){
   try{
    var p=await fetch("/api/relay/peek"),pd=await p.json();
    // Action + states from top-level
-   var lb=pd.current_state||pd.frames?.[0]?.label||pd.meta?.action||"IDLE";
+   var lb=(pd.frames&&pd.frames[0]&&pd.frames[0].label)||pd.current_state||pd.meta.action||"IDLE";
    document.getElementById("rb-act").textContent=lb;
    renderSM(lb,pd.all_states);
    // Camera: try snapshot_b64 then frames[0].camera_b64
-   var cam=pd.snapshot_b64||pd.frames?.[0]?.camera_b64||pd.camera_b64;
+   var cam=pd.snapshot_b64||(pd.frames&&pd.frames[0]&&pd.frames[0].camera_b64)||pd.camera_b64||'';
    if(cam){document.getElementById("cam").src="data:image/jpeg;base64,"+cam;document.getElementById("cam-info").textContent="🟢 "+t}else{document.getElementById("cam-info").textContent="无图像"}
   }catch(e){}
 }
-setInterval(poll,67);poll();
+setInterval(poll,500);poll();
 var STATES=["料盘识别","AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK","初始化循环","取料","尝试插入第一次","循环守卫","扫码","抓取失败判定","拔出","插入完成","暂时松开","移动到治具插槽","等待测试结果"];
 function renderSM(active,all){
   var st=all||STATES;
