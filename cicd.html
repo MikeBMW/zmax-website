@@ -76,21 +76,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <div class="metric"><div class="val" id="m-ver">v2.6.1</div><div class="lab">当前版本</div></div>
 </div>
 
-<!-- Robot Dashboard -->
-<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">🤖 机器人实时状态</h3>
-<div class="log-panel">
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px 14px">
-    <div class="metric"><div class="val" style="font-size:18px" id="rb-online">-</div><div class="lab">在线状态</div></div>
-    <div class="metric"><div class="val" style="font-size:18px" id="rb-model">-</div><div class="lab">加载模型</div></div>
-    <div class="metric"><div class="val" style="font-size:18px" id="rb-uptime">-</div><div class="lab">运行时长</div></div>
-    <div class="metric"><div class="val" style="font-size:18px" id="rb-infer">-</div><div class="lab">推理次数</div></div>
-    <div class="metric"><div class="val" style="font-size:18px" id="rb-latency">-</div><div class="lab">推理延迟</div></div>
-    <div class="metric"><div class="val" style="font-size:18px" id="rb-action">-</div><div class="lab">当前动作</div></div>
-  </div>
-  <div style="padding:8px 14px;font-size:10px;color:#484f58;border-top:1px solid #1a1f2b" id="rb-extra">
-    等待更多数据...
-  </div>
-</div>
+<!-- Pipeline -->
 <div class="pipeline" id="pipeline">
   <div class="stage" id="st-1"><div class="dot idle"></div><div class="icon">📡</div><div class="name">Orin采集</div><div class="status">等待数据</div><div class="detail">小芳 · 10s片段</div></div>
   <div class="arrow" id="ar-1">→</div>
@@ -121,12 +107,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   </div>
 </div>
 
-<!-- Camera Feed -->
-<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">📷 现场画面 · ⚡低带宽</h3>
-<div style="background:#0d1117;border:1px solid #1a1f2b;border-radius:10px;padding:8px;text-align:center">
-  <img id="live-cam" src="/orin_realtime.jpg" style="max-width:100%;max-height:240px;border-radius:4px" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22240%22><rect fill=%22%230d1117%22 width=%22320%22 height=%22240%22/><text fill=%22%23484f58%22 x=%22160%22 y=%22120%22 text-anchor=%22middle%22 font-size=%2216%22>等待Orin推送</text></svg>'">
-  <div style="font-size:9px;color:#484f58;margin-top:3px" id="cam-info">暂停 · 检测到数据流后自动开启</div>
-</div>
+<!-- Baseline comparison -->
 <h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">📊 基线对比 · Auto-Iterate</h3>
 <div class="log-panel">
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;padding:10px 14px;font-size:10px">
@@ -276,34 +257,13 @@ window.addEventListener("zmax_pipe_update",e=>{
   const s=e.detail;const now=new Date().toLocaleTimeString();
   document.getElementById("last-refresh").textContent=now;
   
-  // Robot dashboard
-  if(s.orin){
-    document.getElementById("rb-online").textContent=s.orin.online?"🟢在线":"🔴离线";
-    document.getElementById("rb-model").textContent=s.orin.model||"-";
-    document.getElementById("rb-uptime").textContent=(s.orin.uptime||0)+"s";
-    document.getElementById("rb-infer").textContent=s.orin.infer_count||0;
-    document.getElementById("rb-latency").textContent=(s.orin.last_infer_ms||0)+"ms";
-    document.getElementById("rb-action").textContent=s.orin.current_action||"待机";
-    document.getElementById("rb-extra").textContent="最后心跳: "+(s.orin.last_seen||"-")+" · 模型:"+(s.orin.model||"-");
-  }
-  
-  // Step 1: Orin采集 — real-time collection state
+  // Step 1: Orin采集 — check relay packages
   if(s.relay){
     const pkgs=s.relay.packages||0;
-    const lastPkg=s.relay.latest_meta;
     document.getElementById("m-uptime").textContent=(s.relay.uptime||0)+"s";
     document.getElementById("m-pkgs").textContent=pkgs;
-    if(pkgs>0){
-      setStage(1,"done","采集中✅",pkgs+"包 · 最近:"+(lastPkg?.received_at?"刚":"-"));
-    }else{
-      // Check if Orin is online but not pushing
-      if(s.orin&&s.orin.online){
-        setStage(1,"active","静止中⏸","Orin在线但未推送数据 · 小芳需触发采集上传");
-      }else{
-        setStage(1,"active","静止中⏸","等待Orin连接并推送数据包");
-      }
-      }
-    }
+    if(pkgs>0){setStage(1,"done","有数据",pkgs+"包等待转发");addLog("📡 中继收到 "+pkgs+" 个数据包","ok")}
+    else setStage(1,"active","等待采集","小芳推送数据到relay");
   }else{setStage(1,"err","中继离线","ECS relay无响应")}
   
   // Step 2: Mac中转 — same as relay status
@@ -337,11 +297,25 @@ window.addEventListener("zmax_pipe_update",e=>{
 });
 addLog("全链路监管就绪 · 3秒实时同步","info");
 
-// Camera auto-refresh every 2s (live streaming)
-setInterval(()=>{
-  document.getElementById("live-cam").src="/orin_realtime.jpg?t="+Date.now();
-},2000);
-document.getElementById("cam-info").textContent="推流中 · 2s/帧 · ~28KB";
+// Camera + Action: read from frames[0].camera_b64 and label
+async function refreshCam(){
+  try{
+    const r=await fetch("/api/relay/peek");const d=await r.json();
+    // Action from frames
+    if(d.frames?.[0]){
+      const f=d.frames[0];
+      document.getElementById("rb-action").textContent=f.label||"IDLE";
+      document.getElementById("rb-extra").textContent="状态机:"+(f.label||"IDLE");
+    }
+    // Camera from frames[0].camera_b64
+    const cam=d.frames?.[0]?.camera_b64||d.camera_b64||d.snapshot_b64;
+    if(cam){
+      document.getElementById("live-cam").src="data:image/jpeg;base64,"+cam;
+      document.getElementById("cam-info").textContent="🟢 10fps · "+new Date().toLocaleTimeString();
+    }
+  }catch(e){}
+}
+setInterval(refreshCam,100);refreshCam();
 </script>
 </body>
 </html>
