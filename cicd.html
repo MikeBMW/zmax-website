@@ -1,104 +1,59 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CI/CD 全链路 | Z-MAX v2.6.2</title>
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CI/CD Z-MAX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh}
-#bar{background:#0d1117;padding:8px 16px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:10px}
-#bar h1{font-size:15px;color:#00d4aa}#bar a{font-size:10px;color:#484f58;text-decoration:none;padding:3px 8px;border:1px solid #1a1f2b;border-radius:4px}
-.container{max-width:1100px;margin:0 auto;padding:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.card{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:10px}
-.card h3{font-size:11px;color:#00d4aa;margin-bottom:6px;border-bottom:1px solid #1a1f2b;padding-bottom:4px}
-.metric{text-align:center;padding:6px}
-.metric .val{font-size:18px;font-weight:800;color:#00d4aa}
-.metric .lab{font-size:9px;color:#8b949e}
-.stage{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:10px}
-.stage .dot{width:8px;height:8px;border-radius:4px;flex-shrink:0;background:#333}
-.stage .dot.ok{background:#3fb950}.stage .dot.err{background:#ff4444}.stage .dot.wait{background:#f0a500}
-#cam{width:100%;max-height:400px;border-radius:4px;display:block;margin:4px auto}
-.log{max-height:200px;overflow-y:auto;font-family:monospace;font-size:9px;line-height:1.6;color:#8b949e;padding:4px 8px}
-.log .ok{color:#3fb950}.log .err{color:#ff4444}.log .warn{color:#f0a500}
-button{padding:5px 12px;border:none;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer}
-.btn-go{background:#00d4aa;color:#000}.btn-stop{background:#ff4444;color:#fff}
+body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans-serif}
+#bar{background:#0d1117;padding:6px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid #1a1f2b}
+#bar h1{font-size:14px;color:#00d4aa}#bar a{font-size:10px;color:#484f58;text-decoration:none}
+.row{display:flex;gap:8px;padding:8px;flex-wrap:wrap}
+.card{flex:1;min-width:180px;background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:8px}
+.card h3{font-size:10px;color:#00d4aa;margin-bottom:4px}
+.v{font-size:16px;font-weight:800;color:#00d4aa;text-align:center}.vl{font-size:9px;color:#8b949e;text-align:center}
+#cam{width:100%;min-width:200px;min-height:150px;max-height:300px;display:block;border-radius:4px;background:#111}
+.st{display:flex;flex-wrap:wrap;gap:3px;font-size:8px}
+.st span{padding:1px 5px;border-radius:2px;border:1px solid #1a1f2b;color:#484f58}
+.st .on{background:#00d4aa22;color:#00d4aa;font-weight:700;border-color:#00d4aa}
 </style></head><body>
-<div id="bar"><a href="/">← 主页</a><h1>🔗 CI/CD 全链路监管</h1><span style="font-size:10px;color:#8b949e;margin-left:auto" id="tick">-</span></div>
-<div class="container">
-
-<div class="grid2">
-<div class="card"><h3>🤖 机器人</h3>
-<div class="grid2"><div class="metric"><div class="val" id="rb-on">-</div><div class="lab">状态</div></div><div class="metric"><div class="val" id="rb-act">IDLE</div><div class="lab">动作</div></div></div>
+<div id="bar"><a href="/">←</a><h1>🔗 CI/CD</h1><span style="font-size:10px;color:#484f58;margin-left:auto" id="t">-</span></div>
+<div class="row">
+<div class="card"><h3>🤖 机器人</h3><div class="v" id="act">-</div><div class="vl">动作</div></div>
+<div class="card"><h3>📷 实时画面</h3><img id="cam"><div class="vl" id="ci">-</div></div>
+<div class="card" style="min-width:300px"><h3>📋 状态机</h3><div class="st" id="sm"></div></div>
 </div>
-<div class="card"><h3>📋 状态机</h3>
-<div id="sm" style="display:flex;flex-wrap:wrap;gap:4px;font-size:9px;line-height:1.5"></div>
-</div>
-<div class="card"><h3>📷 实时画面</h3><img id="cam" src="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22240%22><rect fill=%22%230d1117%22 width=%22320%22 height=%22240%22/><text fill=%22%23484f58%22 x=%22160%22 y=%22120%22 text-anchor=%22middle%22 font-size=%2214%22>等待数据</text></svg>"><div style="font-size:8px;color:#484f58;text-align:center" id="cam-info">-</div></div>
-</div>
-
-<div class="card"><h3>🔗 流水线</h3>
-<div class="grid3">
-<div class="stage"><span class="dot wait" id="s1"></span>📡采集<span style="font-size:8px;color:#484f58" id="s1d"></span></div>
-<div class="stage"><span class="dot wait" id="s2"></span>💻中转<span style="font-size:8px;color:#484f58" id="s2d"></span></div>
-<div class="stage"><span class="dot wait" id="s3"></span>☁中继<span style="font-size:8px;color:#484f58" id="s3d"></span></div>
-<div class="stage"><span class="dot wait" id="s4"></span>🧠训练<span style="font-size:8px;color:#484f58" id="s4d"></span></div>
-<div class="stage"><span class="dot wait" id="s5"></span>✅验证<span style="font-size:8px;color:#484f58" id="s5d"></span></div>
-<div class="stage"><span class="dot wait" id="s6"></span>🚀部署<span style="font-size:8px;color:#484f58" id="s6d"></span></div>
-</div>
-</div>
-
-<div class="card"><h3>🤖 SR5 6关节 · 笛卡尔控制</h3><div style="font-size:9px;color:#484f58">state=6D · action=6D关节/4D笛卡尔 · gripper独立</div></div><div class="card"><h3>📊 数据</h3>
-<div class="grid3">
-<div class="metric"><div class="val" id="m-pkg">0</div><div class="lab">数据包</div></div>
-<div class="metric"><div class="val" id="m-uptime">0s</div><div class="lab">中继运行</div></div>
-<div class="metric"><div class="val" id="m-infer">0</div><div class="lab">Orin推理</div></div>
-</div>
-<div style="font-size:9px;color:#484f58;margin-top:4px" id="extra">-</div>
-</div>
-
-<div class="card"><h3>📋 日志</h3><div class="log" id="log"></div></div>
-
+<div class="row">
+<div class="card"><div class="v" id="pkg">0</div><div class="vl">数据包</div></div>
+<div class="card"><div class="v" id="up">0s</div><div class="vl">中继</div></div>
+<div class="card"><div class="v" id="inf">0</div><div class="vl">推理</div></div>
 </div>
 
 <script>
-function L(m,t){var e=document.getElementById("log"),d=document.createElement("div");d.className=t||"";d.textContent="["+new Date().toLocaleTimeString()+"] "+m;e.appendChild(d);e.scrollTop=e.scrollHeight}
-function S(id,c,t){var d=document.getElementById("s"+id);if(d){d.className="dot";if(c)d.classList.add(c)}var v=document.getElementById("s"+id+"d");if(v&&t)v.textContent=t}
+var S=["料盘识别","AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK","初始化循环","取料","尝试插入第一次","循环守卫","扫码","抓取失败判定","拔出","插入完成","暂时松开","移动到治具插槽","等待测试结果"];
 
-async function poll(){
-  var t=new Date().toLocaleTimeString();document.getElementById("tick").textContent=t;
-  try{
-   var r=await fetch("/api/relay/status"),rd=await r.json();
-   document.getElementById("m-pkg").textContent=rd.packages||0;
-   document.getElementById("m-uptime").textContent=(rd.uptime||0)+"s";
-   S(3,"ok",(rd.packages||0)+"包");
-   if(rd.packages>0){S(1,"ok","采集中");S(2,"ok","已转发")}else{S(1,"wait","静止");S(2,"wait","等待")}
-  }catch(e){S(3,"err","断")}
-  
-  try{
-   var o=await fetch("/orin/status"),od=await o.json();
-   document.getElementById("m-infer").textContent=od.infer_count||0;
-   if(od.online){document.getElementById("rb-on").textContent="🟢在线";S(6,"ok","运行中")}else{S(6,"err","离线")}
-  }catch(e){S(6,"err","离线")}
-  
-  try{
-   var p=await fetch("/api/relay/peek"),pd=await p.json();
-   // Action + states from top-level
-   var lb=(pd.frames&&pd.frames[0]&&pd.frames[0].label)||pd.current_state||pd.meta.action||"IDLE";
-   document.getElementById("rb-act").textContent=lb;
-   renderSM(lb,pd.all_states);
-   // Camera: try snapshot_b64 then frames[0].camera_b64
-   var cam=pd.snapshot_b64||(pd.frames&&pd.frames[0]&&pd.frames[0].camera_b64)||pd.camera_b64||'';
-   if(cam){document.getElementById("cam").src="data:image/jpeg;base64,"+cam;document.getElementById("cam-info").textContent="🟢 "+t}else{document.getElementById("cam-info").textContent="无图像"}
-  }catch(e){}
+async function P(){
+ var t=new Date().toLocaleTimeString();document.getElementById("t").textContent=t;
+ try{
+  var r=await fetch("/api/relay/status"),d=await r.json();
+  document.getElementById("pkg").textContent=d.packages||0;
+  document.getElementById("up").textContent=(d.uptime||0)+"s";
+ }catch(e){}
+ try{
+  var o=await fetch("/orin/status"),od=await o.json();
+  document.getElementById("inf").textContent=od.infer_count||0;
+ }catch(e){}
+ try{
+  var p=await fetch("/api/relay/peek"),pd=await p.json();
+  // Action
+  var lb="IDLE";
+  if(pd.frames&&pd.frames[0])lb=pd.frames[0].label||"IDLE";
+  else if(pd.current_state)lb=pd.current_state;
+  document.getElementById("act").textContent=lb;
+  // State machine
+  var sm="";
+  for(var i=0;i<S.length;i++){var s=S[i];sm+="<span class=\""+(s===lb?"on":"")+"\">"+(s===lb?"▶ ":"")+s+"</span>"}
+  document.getElementById("sm").innerHTML=sm;
+  // Camera: prefer snapshot endpoint, fallback to frames
+  document.getElementById("cam").src="/api/snapshot/latest?t="+Date.now();
+  document.getElementById("ci").textContent="🟢 "+t;
+ }catch(e){document.getElementById("ci").textContent="JS错误:"+e.message;console.error(e)}
 }
-setInterval(poll,500);poll();
-var STATES=["料盘识别","AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK","初始化循环","取料","尝试插入第一次","循环守卫","扫码","抓取失败判定","拔出","插入完成","暂时松开","移动到治具插槽","等待测试结果"];
-function renderSM(active,all){
-  var st=all||STATES;
-  var h="";
-  for(var i=0;i<st.length;i++){
-    var s=st[i],is=s===active;
-    h+="<span style=\"padding:1px 6px;border-radius:3px;background:"+(is?"#00d4aa33":"#1a1f2b")+";color:"+(is?"#00d4aa":"#484f58")+";font-weight:"+(is?"700":"400")+";border:1px solid "+(is?"#00d4aa":"#1a1f2b")+"\">"+(is?"▶ ":"")+s+"</span>";
-  }
-  document.getElementById("sm").innerHTML=h;
-}
-renderSM("");
+setInterval(P,500);P();
 </script></body></html>
