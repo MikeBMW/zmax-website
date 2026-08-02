@@ -166,21 +166,21 @@ add_table(s3, Inches(0.5), Inches(1.5), market_rows, [Inches(1.2), Inches(3.2)],
 
 # Right: Investment
 invest_rows = [
-    [('性能指标', True, WHITE, 10), ('目标', True, WHITE, 9), ('投入方向', True, WHITE, 10), ('预估', True, WHITE, 10)],
-    [('插拔成功率', True, DARK, 10), ('95→99%', True, BLUE, 9), ('真机数据采集10万次+模型训练+闭环迭代', False, GRAY, 8), ('180万', True, ORANGE, 10)],
-    [('单颗节拍', True, DARK, 10), ('30→15s', True, BLUE, 9), ('力控算法优化+宏微复合控制+高速相机标定', False, GRAY, 8), ('120万', True, ORANGE, 10)],
-    [('定位精度', True, DARK, 10), ('±0.05mm', True, BLUE, 9), ('D405深度相机+视觉标定+多模态融合', False, GRAY, 8), ('90万', True, ORANGE, 10)],
-    [('力控精度', True, DARK, 10), ('±0.1N', True, BLUE, 9), ('六维力传感器×2+阻抗控制+标定工装', False, GRAY, 8), ('110万', True, ORANGE, 10)],
-    [('换型时间', True, DARK, 10), ('≤0.5h', True, BLUE, 9), ('软件定义平台+视觉模板匹配+自动标定', False, GRAY, 8), ('70万', True, ORANGE, 10)],
-    [('连续运行', True, DARK, 10), ('24h', True, BLUE, 9), ('硬件可靠性测试+异常检测+自恢复', False, GRAY, 8), ('60万', True, ORANGE, 10)],
-    [('现场部署', True, DARK, 10), ('3站点', True, BLUE, 9), ('Z700本体×3+现场集成+产线对接+驻场', False, GRAY, 8), ('360万', True, ORANGE, 10)],
-    [('合计', True, WHITE, 11), ('12个月', True, WHITE, 10), ('Phase1(6个月)+Phase2(6个月)', True, WHITE, 9), ('990万', True, WHITE, 13)],
+    [('指标', True, WHITE, 9), ('目标', True, WHITE, 8), ('投入方向', True, WHITE, 8), ('预估', True, WHITE, 9), ('推算理由', True, WHITE, 8)],
+    [('插拔成功率', True, DARK, 9), ('95→99%', True, BLUE, 8), ('数据采集10万次+训练+闭环', False, GRAY, 7), ('180万', True, ORANGE, 9), ('Z700×2台×3月×15万=90万；人工标注2人×6月=30万；GPU算力=30万；工程师=30万', False, GRAY, 6)],
+    [('单颗节拍', True, DARK, 9), ('30→15s', True, BLUE, 8), ('力控算法+宏微复合+高速相机', False, GRAY, 7), ('120万', True, ORANGE, 9), ('力控工程师2人=30万；控制系统开发=40万；高速相机+工装=30万；耗材=20万', False, GRAY, 6)],
+    [('定位精度', True, DARK, 9), ('±0.05mm', True, BLUE, 8), ('D405相机+视觉标定+融合训练', False, GRAY, 7), ('90万', True, ORANGE, 9), ('相机×3=1.5万；视觉标定=35万；融合训练=40万；治具=13.5万', False, GRAY, 6)],
+    [('力控精度', True, DARK, 9), ('±0.1N', True, BLUE, 8), ('六维力传感器+阻抗+标定工装', False, GRAY, 7), ('110万', True, ORANGE, 9), ('传感器(ATI)×2=30万；阻抗算法=40万；标定工装=18万；测试保护=22万', False, GRAY, 6)],
+    [('换型时间', True, DARK, 9), ('≤0.5h', True, BLUE, 8), ('软件平台+模板匹配+自动标定', False, GRAY, 7), ('70万', True, ORANGE, 9), ('低代码换型引擎=30万；模板匹配+型号适配=25万；自动标定=15万', False, GRAY, 6)],
+    [('连续运行', True, DARK, 9), ('24h', True, BLUE, 8), ('可靠性测试+异常检测+自恢复', False, GRAY, 7), ('60万', True, ORANGE, 9), ('老化测试=15万；异常检测模型=20万；自恢复逻辑=15万；备件=10万', False, GRAY, 6)],
+    [('现场部署', True, DARK, 9), ('3站点', True, BLUE, 8), ('Z700×3+集成+对接+驻场', False, GRAY, 7), ('360万', True, ORANGE, 9), ('整机×3×50万=150万；执行器×3×15万=45万；集成=60万；驻场=36万；MES=39万；运输=30万', False, GRAY, 6)],
+    [('合计', True, WHITE, 10), ('12个月', True, WHITE, 9), ('Phase1(720万)+Phase2(270万)', True, WHITE, 8), ('990万', True, WHITE, 12), ('Phase1:数据+算法+部署=720万  Phase2:精度+力控+换型=270万', True, WHITE, 7)],
 ]
-add_table(s3, Inches(5.0), Inches(1.5), invest_rows,
-          [Inches(1.15), Inches(0.85), Inches(2.0), Inches(0.7)], Inches(4.7))
+add_table(s3, Inches(0.2), Inches(1.5), invest_rows,
+          [Inches(0.85), Inches(0.7), Inches(1.3), Inches(0.6), Inches(1.85)], Inches(5.3))
 # Color total row
 tbl = s3.shapes[-1].table
-for ci in range(4):
+for ci in range(5):
     cell = tbl.cell(8, ci)
     cell.fill.solid(); cell.fill.fore_color.rgb = BLUE
 

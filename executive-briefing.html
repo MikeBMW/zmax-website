@@ -236,54 +236,62 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <div class="split-col">
     <div class="col-title"><span class="icon">💰</span> 预计投入（针对每项指标）</div>
     <table class="invest-table">
-      <tr><th>性能指标</th><th style="width:22%">目标</th><th>投入方向</th><th style="width:18%">预估</th></tr>
+      <tr><th>性能指标</th><th style="width:15%">目标</th><th>投入方向</th><th style="width:12%">预估</th><th style="width:20%">推算理由</th></tr>
       <tr>
         <td><strong>插拔成功率</strong></td>
         <td class="num">95%→99%</td>
         <td>真机数据采集(10万次)+模型训练+闭环迭代</td>
         <td><span class="phase phase-1">Phase1 180万</span></td>
+        <td style="font-size:12px;color:var(--text2)">Z700本体运行2台×3月×15万/月=90万；人工标注2人×6月×2.5万=30万；GPU算力4090×3台×6月=30万；模型迭代工程师1人×6月=30万</td>
       </tr>
       <tr>
         <td><strong>单颗节拍</strong></td>
         <td class="num">30s→15s</td>
         <td>力控算法优化+宏微复合控制开发+高速相机标定</td>
         <td><span class="phase phase-1">Phase1 120万</span></td>
+        <td style="font-size:12px;color:var(--text2)">力控算法工程师2人×6月×2.5万=30万；宏微复合控制系统开发=40万；高速相机(1000fps)+标定板+工装=30万；测试验证耗材=20万</td>
       </tr>
       <tr>
         <td><strong>定位精度</strong></td>
         <td class="num">±0.05mm</td>
         <td>D405深度相机+视觉标定+多模态融合模型训练</td>
         <td><span class="phase phase-2">Phase2 90万</span></td>
+        <td style="font-size:12px;color:var(--text2)">D405相机×3套×0.5万=1.5万；视觉标定系统开发=35万；多模态融合模型训练(GPU算力+数据标注)=40万；精度验证治具=13.5万</td>
       </tr>
       <tr>
         <td><strong>力控精度</strong></td>
         <td class="num">±0.1N</td>
         <td>六维力传感器(2套)+阻抗控制算法+标定工装</td>
         <td><span class="phase phase-2">Phase2 110万</span></td>
+        <td style="font-size:12px;color:var(--text2)">六维力传感器(ATI/OnRobot)×2套×15万=30万；阻抗控制算法开发+调试=40万；力控标定工装(砝码组+力臂台)=18万；力控测试+防过载保护=22万</td>
       </tr>
       <tr>
         <td><strong>换型时间</strong></td>
         <td class="num">≤0.5h</td>
         <td>软件定义平台开发+视觉模板匹配+自动标定</td>
         <td><span class="phase phase-2">Phase2 70万</span></td>
+        <td style="font-size:12px;color:var(--text2)">软件定义平台(低代码换型引擎)开发=30万；视觉模板匹配算法+多种光模块型号适配=25万；自动标定系统(手眼标定+工具标定)=15万</td>
       </tr>
       <tr>
         <td><strong>连续运行</strong></td>
         <td class="num">24h</td>
         <td>硬件可靠性测试+异常检测+自恢复逻辑+备件</td>
         <td><span class="phase phase-1">Phase1 60万</span></td>
+        <td style="font-size:12px;color:var(--text2)">7×24h可靠性老化测试(电费+产线占用)=15万；异常检测模型训练+边缘部署=20万；自恢复逻辑开发+故障注入测试=15万；关键备件(电机/驱动器/传感器)=10万</td>
       </tr>
       <tr style="background:rgba(0,212,170,.04)">
         <td><strong>现场演练部署</strong></td>
         <td class="num">3站点</td>
         <td>Z700本体×3+现场集成+产线对接+驻场支持</td>
         <td><span class="phase phase-1">Phase1 360万</span></td>
+        <td style="font-size:12px;color:var(--text2)">Z700整机×3台×50万=150万；末端执行器定制×3套×15万=45万；现场集成调试(电气+机械+安全围栏)=60万；驻场工程师2人×6月×3万=36万；产线MES对接+上位机=39万；运输+安装+培训=30万</td>
       </tr>
       <tr style="background:rgba(0,212,170,.06);font-weight:700">
         <td><strong>合计（12个月）</strong></td>
         <td class="num" style="font-size:18px">—</td>
         <td>Phase1(6个月)+Phase2(6个月)</td>
         <td class="num" style="font-size:18px;color:var(--accent)">990万</td>
+        <td style="font-size:12px;color:var(--text2)">Phase1: 180+120+60+360=<strong style="color:var(--accent)">720万</strong>（数据+算法+部署）<br>Phase2: 90+110+70=<strong style="color:var(--accent)">270万</strong>（精度+力控+换型）</td>
       </tr>
     </table>
   </div>
