@@ -152,6 +152,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 
 </div>
 
+<script src="/zmax-pipe.js"></script>
 <script>
 const API_RELAY="https://datadrive.world/api/relay";
 const API_ORIN="https://datadrive.world/orin/status";
@@ -251,9 +252,21 @@ function abortIterate(){
   document.getElementById("iter-status").textContent="已中止 · "+iterCount+"轮";
 }
 
-// Init
-refreshAll();setInterval(refreshAll,5000);
-addLog("全链路监管就绪 · 5秒自动刷新","info");
+// Use shared ZMAX pipeline state
+window.addEventListener("zmax_pipe_update",e=>{
+  const s=e.detail;
+  if(s.relay){
+    document.getElementById("m-uptime").textContent=(s.relay.uptime||0)+"s";
+    document.getElementById("m-pkgs").textContent=s.relay.packages||0;
+    setStage(3,"active","就绪",(s.relay.packages||0)+"包");
+  }
+  if(s.orin&&s.orin.online){
+    document.getElementById("m-infer").textContent=s.orin.infer_count||0;
+    setStage(6,"done","运行中","推理"+(s.orin.infer_count||0)+"次·"+(s.orin.last_infer_ms||0)+"ms");
+  }
+  document.getElementById("last-refresh").textContent=new Date().toLocaleTimeString();
+});
+addLog("全链路监管就绪 · 3秒实时同步","info");
 </script>
 </body>
 </html>
