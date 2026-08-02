@@ -252,19 +252,48 @@ function abortIterate(){
   document.getElementById("iter-status").textContent="已中止 · "+iterCount+"轮";
 }
 
-// Use shared ZMAX pipeline state
+// Use shared ZMAX pipeline state with per-step detail
 window.addEventListener("zmax_pipe_update",e=>{
-  const s=e.detail;
+  const s=e.detail;const now=new Date().toLocaleTimeString();
+  document.getElementById("last-refresh").textContent=now;
+  
+  // Step 1: Orin采集 — check relay packages
   if(s.relay){
+    const pkgs=s.relay.packages||0;
     document.getElementById("m-uptime").textContent=(s.relay.uptime||0)+"s";
-    document.getElementById("m-pkgs").textContent=s.relay.packages||0;
-    setStage(3,"active","就绪",(s.relay.packages||0)+"包");
-  }
+    document.getElementById("m-pkgs").textContent=pkgs;
+    if(pkgs>0){setStage(1,"done","有数据",pkgs+"包等待转发");addLog("📡 中继收到 "+pkgs+" 个数据包","ok")}
+    else setStage(1,"active","等待采集","小芳推送数据到relay");
+  }else{setStage(1,"err","中继离线","ECS relay无响应")}
+  
+  // Step 2: Mac中转 — same as relay status
+  if(s.relay&&s.relay.packages>0)setStage(2,"done","已转发","数据经Mac→ECS");
+  else setStage(2,"wait","等待","收到数据后自动转发");
+  
+  // Step 3: ECS中继 — always active
+  setStage(3,"active","就绪",(s.relay?((s.relay.packages||0)+"包"):"running"));
+  
+  // Step 4: 4060训练 — check tunnel
+  if(s.relay&&s.relay.packages>0)setStage(4,"wait","等待拉取","xspace pull数据");
+  else setStage(4,"idle","等待数据","收到数据后触发训练");
+  
+  // Step 5: Mac验证
+  if(s.orin&&s.orin.online)setStage(5,"wait","等待部署验证","模型部署后自动测试");
+  else setStage(5,"idle","等待","模型到Orin后验证");
+  
+  // Step 6: Orin部署 — live status
   if(s.orin&&s.orin.online){
     document.getElementById("m-infer").textContent=s.orin.infer_count||0;
-    setStage(6,"done","运行中","推理"+(s.orin.infer_count||0)+"次·"+(s.orin.last_infer_ms||0)+"ms");
+    setStage(6,"done","运行中","模型:"+(s.orin.model||"?")+" · 推理"+(s.orin.infer_count||0)+"次 · "+(s.orin.last_infer_ms||0)+"ms");
+  }else{setStage(6,"err","离线","Orin未连接")}
+  
+  // Baseline comparison
+  if(s.orin&&s.orin.infer_count>0){
+    document.getElementById("cmp-lat").textContent=(s.orin.last_infer_ms||0)+"ms";
+    const delta=48-(s.orin.last_infer_ms||0);
+    document.getElementById("cmp-lat-d").textContent=(delta>0?"↓":"↑")+Math.abs(delta)+"ms";
+    document.getElementById("cmp-verdict").textContent="🟢 Orin在线 · 模型:"+(s.orin.model||"?");
   }
-  document.getElementById("last-refresh").textContent=new Date().toLocaleTimeString();
 });
 addLog("全链路监管就绪 · 3秒实时同步","info");
 </script>
