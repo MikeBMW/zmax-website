@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主数据空间 · 具身智能工厂 | Z-MAX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:13px -apple-system,"PingFang SC",sans-serif;padding:16px;max-width:900px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:18px;margin:16px 0 8px}
+h2{color:#58a6ff;font-size:14px;margin:20px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:12px;margin:12px 0 4px}
+p{color:#8b949e;margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+th{background:#0d1520;color:#00d4aa;padding:6px 10px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 10px;border:1px solid #1a2030;color:#8b949e}
+td b{color:#c8d1d9}
+.code{background:#0d1520;padding:4px 8px;border-radius:4px;font:11px monospace;color:#58a6ff}
+.highlight{background:#0d1520;border-left:3px solid #00d4aa;padding:8px 12px;margin:8px 0;border-radius:4px}
+a{color:#00d4aa;text-decoration:none}
+.arch{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.arch span{background:#0d1520;border:1px solid #1a2030;padding:4px 10px;border-radius:4px;font-size:11px;color:#8b949e}
+.arch .core{border-color:#00d4aa;color:#00d4aa}
+</style>
+</head>
+<body>
+<a href="/">← 主页</a>
+<h1>🎯 主数据空间 · 具身智能工厂精细操作</h1>
+
+<div class="highlight">
+<b>设计原则：</b> 一切数据有源、有向、有态。源=传感器/控制器，向=训练/推理/验证，态=实时/历史/预测。
+</div>
+
+<h2>一、主数据定义（What）</h2>
+<p>主数据 = 驱动工厂精细操作的<b>最小完备数据集</b>。分五层：</p>
+
+<table>
+<tr><th>层级</th><th>主数据</th><th>维度</th><th>来源</th></tr>
+<tr><td>L1 物理</td><td><b>关节状态</b></td><td>state[6] 关节角 · action[6] 关节命令</td><td>Orin SR5 控制器</td></tr>
+<tr><td>L2 视觉</td><td><b>场景图像</b></td><td>320×240 JPEG · 15fps</td><td>RealSense D405</td></tr>
+<tr><td>L3 时序</td><td><b>动作轨迹</b></td><td>chunk=7步 · 20动作标签 · episode</td><td>ACT模型输出+打标</td></tr>
+<tr><td>L4 语义</td><td><b>操作状态机</b></td><td>20状态: 料盘识别→AOI_1-6→取料→插入→完成</td><td>Orin motion状态机</td></tr>
+<tr><td>L5 知识</td><td><b>模型权重</b></td><td>84MB safetensors · loss · 版本号</td><td>4060训练产出</td></tr>
+</table>
+
+<h2>二、数据流向（How）</h2>
+
+<div class="arch">
+  <span>🖥 Orin</span><span>→</span><span>💻 Mac</span><span>→</span><span>☁ ECS</span><span>→</span><span>🧠 4060</span><span>→</span><span class="core">📦 主数据</span><span>→</span><span>🚀 Orin推理</span><span>→</span><span>🖥 Orin</span>
+</div>
+
+<table>
+<tr><th>阶段</th><th>数据变换</th><th>格式</th></tr>
+<tr><td>采集</td><td>原始关节+图像 → 打标签</td><td>frames[{state,action,label,camera_b64}]</td></tr>
+<tr><td>训练</td><td>多episode → LeRobot数据集 → ACT模型</td><td>parquet+mp4 → .safetensors</td></tr>
+<tr><td>推理</td><td>state[6] → 模型 → action[6]</td><td>JSON → safetensors → JSON</td></tr>
+<tr><td>验证</td><td>预测action vs 真实action</td><td>delta = |pred - real|</td></tr>
+</table>
+
+<h2>三、数据空间拓扑（Where）</h2>
+
+<div class="code">
+┌──────────────── 全局 DDS ──────────────────┐
+│                                              │
+│  [Orin]──MCAP──[Mac]──Relay──[ECS]──Pull──[4060]──Model──[Orin] │
+│   │         │         │        │         │           │       │   │
+│  关节角   标签      缓冲     快照     权重      推理    验证  │
+│  图像     state6    <100MB  JPEG     ACT       chunk7  对比  │
+│  20状态   action6                                        │
+│                                              │
+│  主数据源: state[6]+action[6]+camera+label    │
+│  主数据流: Orin→Mac→ECS→4060→Orin            │
+│  主数据态: 实时(relay)·历史(episodes)·预测(model)  │
+└──────────────────────────────────────────────┘
+</div>
+
+<h2>四、优良数据空间的六个特质</h2>
+
+<table>
+<tr><th>#</th><th>特质</th><th>实现</th></tr>
+<tr><td>1</td><td><b>单一数据源</b></td><td>state[6]+action[6] 只从 Orin 控制器产出，不衍生副本</td></tr>
+<tr><td>2</td><td><b>时间一致性</b></td><td>每帧 timestamp 相对化，episode内从0开始递增</td></tr>
+<tr><td>3</td><td><b>语义完整性</b></td><td>每帧带 label（20状态之一），不可仅有数值</td></tr>
+<tr><td>4</td><td><b>可追溯性</b></td><td>package→episode→frame→step 四级索引，任意帧可回溯</td></tr>
+<tr><td>5</td><td><b>自描述性</b></td><td>meta字段包含 n_joint=6, n_action=6, fps=30, labels分布</td></tr>
+<tr><td>6</td><td><b>流式消费</b></td><td>relay弹栈·守护60s轮询·静态URL部署·无数据堆积</td></tr>
+</table>
+
+<h2>五、与DDS全局空间的映射</h2>
+
+<table>
+<tr><th>DDS概念</th><th>实现</th></tr>
+<tr><td>Node</td><td>Orin / Mac / ECS / 4060 / Orin推理 / CICD控制台</td></tr>
+<tr><td>Topic</td><td>MCAP采集 / Relay上传 / Pull训练 / 模型部署 / 推理反馈</td></tr>
+<tr><td>Atomic Skill</td><td>20 操作状态（料盘识别→AOI→取料→插入→完成）</td></tr>
+<tr><td>Condition</td><td>relay包数>0触发训练 · infer_count>0验证通过 · loss<2.0模型达标</td></tr>
+<tr><td>QoS</td><td>缓冲≤100MB · 快照5fps · 训练2000步 · 推理<500ms</td></tr>
+</table>
+
+<div class="highlight">
+<b>结论：</b> 主数据 = <b>state[6] + action[6] + camera + label</b>，四元组构成工厂精细操作的最小完备描述。流经6节点、6链路、20动作，形成闭环。优良数据空间的六个特质已通过 DDS 全局空间实现。
+</div>
+
+<p style="text-align:center;margin-top:20px">
+<a href="/dds-global.html">🌊 DDS全局空间</a> · 
+<a href="/cicd.html">📊 CICD控制台</a> · 
+<a href="/simulink.html">🔧 Simulink</a>
+</p>
+</body>
+</html>
