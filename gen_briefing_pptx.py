@@ -92,11 +92,11 @@ tf2 = txBox2.text_frame; p2 = tf2.paragraphs[0]
 p2.text = '进工厂干活，真的非得是人形吗？'; p2.font.size = Pt(16); p2.font.bold = True; p2.font.color.rgb = ORANGE
 
 right_rows = [
-    [('对比维度', True, WHITE, 10), ('达芬奇(手术)', True, WHITE, 10), ('人形机器人', True, WHITE, 10), ('工业专用', True, WHITE, 10)],
-    [('形态', True, DARK, 10), ('非人形(多臂)', False, GRAY, 9), ('双足+双臂', False, GRAY, 9), ('专用形态', False, BLUE, 9)],
-    [('精度', True, DARK, 10), ('0.1mm级', False, GRAY, 9), ('~1-5mm', False, GRAY, 9), ('±0.05mm', False, BLUE, 9)],
-    [('售价', True, DARK, 10), ('~3000万', False, GRAY, 9), ('30-400万', False, GRAY, 9), ('<30万', False, BLUE, 9)],
-    [('核心壁垒', True, DARK, 10), ('1500万例数据', False, GRAY, 9), ('运动能力', False, GRAY, 9), ('场景数据+工艺', False, BLUE, 9)],
+    [('对比维度', True, WHITE, 10), ('达芬奇(手术)', True, WHITE, 10), ('轮式双臂机器人', True, WHITE, 10), ('工业专用', True, WHITE, 10)],
+    [('形态', True, DARK, 10), ('非人形(多臂)', False, GRAY, 9), ('轮式底盘+双臂', False, GRAY, 9), ('专用形态', False, BLUE, 9)],
+    [('精度', True, DARK, 10), ('0.1mm级', False, GRAY, 9), ('~0.05-0.5mm', False, GRAY, 9), ('±0.05mm', False, BLUE, 9)],
+    [('售价', True, DARK, 10), ('~3000万', False, GRAY, 9), ('15-60万', False, GRAY, 9), ('<30万', False, BLUE, 9)],
+    [('核心壁垒', True, DARK, 10), ('1500万例数据', False, GRAY, 9), ('移动操作协同', False, GRAY, 9), ('场景数据+工艺', False, BLUE, 9)],
 ]
 add_table(s1, Inches(5.2), Inches(1.6), right_rows, [Inches(1.0), Inches(1.05), Inches(1.0), Inches(1.15)], Inches(4.2))
 
