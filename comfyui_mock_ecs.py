@@ -51,7 +51,11 @@ def detect_model(nodes):
     """根据节点名检测模型。节点名中可能包含 ACT/SmolVLA/VLA-T/GR00T。"""
     if not nodes:
         return "ACT"
-    node_str = " ".join(nodes) if isinstance(nodes, list) else str(nodes)
+    # simulink 兼容: 节点可能是 dict (zmax-simulink 规范)
+    if isinstance(nodes, list) and nodes and isinstance(nodes[0], dict):
+        node_str = " ".join(str(n.get("name", "")) for n in nodes)
+    else:
+        node_str = " ".join(nodes) if isinstance(nodes, list) else str(nodes)
     # 按关键词精确匹配，ACT排最后做默认
     for m in ["SmolVLA", "VLA-T", "GR00T"]:
         if m in node_str:

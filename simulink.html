@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulink · Z-MAX 数据流仿真</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#bar{background:#0d1117;padding:6px 12px;border-bottom:1px solid #1a1f2b;display:flex;align-items:center;gap:8px;flex-shrink:0;z-index:10}
+#bar h1{font-size:14px;color:#00d4aa}
+#bar a{font-size:10px;color:#484f58;text-decoration:none;padding:2px 6px;border:1px solid #1a1f2b;border-radius:3px}
+#bar .btn{padding:4px 12px;font-size:11px;border:none;border-radius:5px;cursor:pointer;font-weight:600}
+#bar .btn-stop{background:#ff4444;color:#fff}.btn-save{background:#58a6ff;color:#fff}.btn-deploy{background:#a371f7;color:#fff}
+#panel{width:240px;background:#0d1117;border-left:1px solid #1a1f2b;padding:10px;overflow-y:auto;flex-shrink:0}
+#panel h3{font-size:10px;color:#00d4aa;margin:8px 0 4px;border-bottom:1px solid #1a1f2b;padding-bottom:2px}
+.pipe-step{display:flex;align-items:center;gap:6px;padding:4px 6px;font-size:9px;margin:2px 0;border-radius:4px}
+.pipe-step .dot{width:7px;height:7px;border-radius:4px;flex-shrink:0;background:#333}
+.pipe-step .dot.ok{background:#00d4aa}.pipe-step .dot.err{background:#ff4444}.pipe-step .dot.wait{background:#f0a500}
+.pipe-step .label{flex:1;color:#8b949e}
+.pipe-step .val{color:#484f58;font-size:8px;text-align:right}
+.orin-fb{background:#0a1a1a;border:1px solid #1a2a2a;border-radius:6px;padding:6px 8px;margin:4px 0;font-size:9px;max-height:120px;overflow-y:auto;font-family:monospace;color:#00d4aa;line-height:1.5}
+#main{flex:1;display:flex;overflow:hidden}
+#lib{width:160px;background:#0d1117;border-right:1px solid #1a1f2b;padding:8px;overflow-y:auto;flex-shrink:0}
+#lib h3{font-size:10px;color:#00d4aa;margin:8px 0 4px;padding-bottom:2px;border-bottom:1px solid #1a1f2b}
+.lib-block{background:#111827;border:1px solid #1a1f2b;border-radius:5px;padding:6px 8px;margin:4px 0;font-size:9px;cursor:grab;transition:all .15s;display:flex;align-items:center;gap:4px}
+.lib-block:hover{border-color:#00d4aa44;background:#131a2a}
+.lib-block .icon{font-size:14px}
+.lib-block.src{border-left:3px solid #58a6ff}
+.lib-block.proc{border-left:3px solid #f0a500}
+.lib-block.model{border-left:3px solid #a371f7}
+.lib-block.out{border-left:3px solid #00d4aa}
+#canvas-wrap{flex:1;position:relative;overflow:hidden;background:#06080d;
+  background-image:radial-gradient(circle,#1a1f2b 1px,transparent 1px);
+  background-size:20px 20px}
+#canvas-wrap svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+#canvas-wrap svg line{pointer-events:stroke}
+.block{position:absolute;background:#111827;border:2px solid #1a1f2b;border-radius:6px;padding:8px 12px;min-width:100px;text-align:center;cursor:move;font-size:10px;z-index:2;user-select:none}
+.block.selected{border-color:#00d4aa;box-shadow:0 0 8px rgba(0,212,170,.2)}
+.block .b-icon{font-size:18px;display:block}
+.block .b-name{font-weight:600;margin:2px 0}
+.block .b-type{font-size:8px;color:#484f58}
+.block.src{border-left:4px solid #58a6ff}.block.proc{border-left:4px solid #f0a500}
+.block.model{border-left:4px solid #a371f7}.block.out{border-left:4px solid #00d4aa}
+.port{position:absolute;width:10px;height:10px;background:#00d4aa;border-radius:5px;z-index:3}
+.port.in{left:-5px;top:50%;transform:translateY(-50%)}
+.port.out{right:-5px;top:50%;transform:translateY(-50%)}
+#status{position:absolute;bottom:8px;left:8px;font-size:10px;color:#484f58;z-index:5;background:rgba(13,17,23,.8);padding:4px 8px;border-radius:4px}
+</style>
+</head>
+<body>
+<div id="bar">
+  <a href="/">← 主页</a>
+  <h1>🔧 Simulink · 数据流仿真</h1>
+  <button class="btn btn-run" onclick="runSim()">▶ 运行仿真</button>
+  <button class="btn btn-stop" onclick="stopSim()">⏹ 停止</button>
+  <button class="btn btn-deploy" onclick="deployOrin()">🚀 部署Orin</button>
+  <button class="btn btn-save" onclick="saveFlow()">💾 保存</button>
+  <span style="font-size:10px;color:#8b949e;margin-left:auto" id="sim-time">就绪</span>
+</div>
+<div id="main">
+<div id="lib">
+  <h3>📥 数据源</h3>
+  <div class="lib-block src" draggable="true" data-type="src" data-kind="orin"><span class="icon">🖥</span> Orin采集</div>
+  <div class="lib-block src" draggable="true" data-type="src" data-kind="mac"><span class="icon">💻</span> Mac数据</div>
+  <div class="lib-block src" draggable="true" data-type="src" data-kind="sim"><span class="icon">🎲</span> 仿真数据</div>
+  
+  <h3>⚙️ 处理</h3>
+  <div class="lib-block proc" draggable="true" data-type="proc" data-kind="relay"><span class="icon">☁</span> ECS中转</div>
+  <div class="lib-block proc" draggable="true" data-type="proc" data-kind="filter"><span class="icon">🔍</span> 滤波降噪</div>
+  <div class="lib-block proc" draggable="true" data-type="proc" data-kind="norm"><span class="icon">📐</span> 归一化</div>
+  <div class="lib-block proc" draggable="true" data-type="proc" data-kind="buffer"><span class="icon">💾</span> 缓冲队列</div>
+
+  <h3>🧠 模型</h3>
+  <div class="lib-block model" draggable="true" data-type="model" data-kind="act"><span class="icon">🤖</span> ACT训练</div>
+  <div class="lib-block model" draggable="true" data-type="model" data-kind="vlat"><span class="icon">🔮</span> VLA-T推理</div>
+  <div class="lib-block model" draggable="true" data-type="model" data-kind="hjepa"><span class="icon">🌊</span> H-JEPA zFlow</div>
+
+  <h3>📤 输出</h3>
+  <div class="lib-block out" draggable="true" data-type="out" data-kind="deploy"><span class="icon">🚀</span> Orin部署</div>
+  <div class="lib-block out" draggable="true" data-type="out" data-kind="viz"><span class="icon">📊</span> 可视化</div>
+  <div class="lib-block out" draggable="true" data-type="out" data-kind="log"><span class="icon">📝</span> 日志记录</div>
+</div>
+<div id="canvas-wrap">
+  <svg id="lines-svg"></svg>
+  <div id="status">拖拽左侧模块到画布 · 点击端口连线 · 按Delete删除选中</div>
+</div>
+<div id="panel">
+  <h3>🔗 CI/CD 流水线</h3>
+  <div class="pipe-step"><span class="dot" id="ci-sim"></span><span class="label">Simulink模型</span><span class="val" id="ci-sim-v">就绪</span></div>
+  <div class="pipe-step"><span class="dot" id="ci-relay"></span><span class="label">ECS中继</span><span class="val" id="ci-relay-v">-</span></div>
+  <div class="pipe-step"><span class="dot" id="ci-train"></span><span class="label">4060训练</span><span class="val" id="ci-train-v">-</span></div>
+  <div class="pipe-step"><span class="dot" id="ci-test"></span><span class="label">Mac验证</span><span class="val" id="ci-test-v">-</span></div>
+  <div class="pipe-step"><span class="dot" id="ci-deploy"></span><span class="label">Orin部署</span><span class="val" id="ci-deploy-v">-</span></div>
+  <h3>🖥 Orin 控制台</h3>
+  <div class="pipe-step"><span class="dot" id="ori-dot"></span><span class="label">Orin状态</span><span class="val" id="ori-stat">离线</span></div>
+  <div class="orin-fb" id="ori-console">等待Orin连接...</div>
+  <h3>📊 最近推理</h3>
+  <div style="font-size:9px;color:#484f58" id="last-infer">无</div>
+</div>
+</div>
+
+<script>
+const wrap=document.getElementById("canvas-wrap");
+const svg=document.getElementById("lines-svg");
+let blocks=[],connections=[],blockId=0,selectedBlock=null,dragBlock=null,dragOffX=0,dragOffY=0;
+let linkStart=null,simRunning=false,simTimer=null;
+
+// Drag from library to canvas
+document.querySelectorAll(".lib-block").forEach(el=>{
+  el.addEventListener("dragstart",e=>{
+    e.dataTransfer.setData("type",el.dataset.type);
+    e.dataTransfer.setData("kind",el.dataset.kind);
+    e.dataTransfer.setData("label",el.textContent.trim());
+  });
+});
+
+wrap.addEventListener("dragover",e=>e.preventDefault());
+wrap.addEventListener("drop",e=>{
+  e.preventDefault();
+  const type=e.dataTransfer.getData("type");
+  const kind=e.dataTransfer.getData("kind");
+  const label=e.dataTransfer.getData("label");
+  const icon=label.slice(0,2);
+  const name=label.slice(2).trim()||kind;
+  addBlock(e.clientX-wrap.getBoundingClientRect().left-50,e.clientY-wrap.getBoundingClientRect().top-25,type,kind,icon,name);
+});
+
+function addBlock(x,y,type,kind,icon,name){
+  const b=document.createElement("div");
+  b.className="block "+type;
+  b.style.left=x+"px";b.style.top=y+"px";
+  b.innerHTML=`<span class="b-icon">${icon}</span><span class="b-name">${name}</span><span class="b-type">${kind.toUpperCase()}</span>`;
+  b.dataset.id=++blockId;b.dataset.type=type;b.dataset.kind=kind;
+  
+  // Input port (left)
+  if(type!=="src"){
+    const pi=document.createElement("div");pi.className="port in";
+    pi.onmousedown=e=>{e.stopPropagation();startLink(b,"in")};
+    b.appendChild(pi);
+  }
+  // Output port (right)
+  if(type!=="out"){
+    const po=document.createElement("div");po.className="port out";
+    po.onmousedown=e=>{e.stopPropagation();startLink(b,"out")};
+    b.appendChild(po);
+  }
+  
+  b.onmousedown=e=>{
+    if(e.target.className.includes("port"))return;
+    selectBlock(b);
+    dragBlock=b;dragOffX=e.clientX-b.offsetLeft;dragOffY=e.clientY-b.offsetTop;
+  };
+  wrap.appendChild(b);
+  blocks.push(b);
+  selectBlock(b);
+}
+
+function selectBlock(b){
+  blocks.forEach(bl=>bl.classList.remove("selected"));
+  b.classList.add("selected");selectedBlock=b;
+}
+
+// Move
+wrap.addEventListener("mousemove",e=>{
+  if(dragBlock){
+    dragBlock.style.left=(e.clientX-dragOffX)+"px";
+    dragBlock.style.top=(e.clientY-dragOffY)+"px";
+    drawLines();
+  }
+  if(linkStart){
+    const r=wrap.getBoundingClientRect();
+    const l=document.createElementNS("http://www.w3.org/2000/svg","line");
+    const sp=getPortPos(linkStart.block,linkStart.dir);
+    l.setAttribute("x1",sp.x);l.setAttribute("y1",sp.y);
+    l.setAttribute("x2",e.clientX-r.left);l.setAttribute("y2",e.clientY-r.top);
+    l.setAttribute("stroke","#00d4aa");l.setAttribute("stroke-width","2");
+    l.setAttribute("stroke-dasharray","4,2");l.setAttribute("id","temp-line");
+    const old=svg.querySelector("#temp-line");if(old)old.remove();
+    svg.appendChild(l);
+  }
+});
+wrap.addEventListener("mouseup",e=>{
+  if(linkStart){
+    const old=svg.querySelector("#temp-line");if(old)old.remove();
+    const target=document.elementFromPoint(e.clientX,e.clientY);
+    if(target&&target.className.includes("port")&&target.className.includes("in")){
+      const tb=target.parentElement;
+      if(tb!==linkStart.block){
+        connections.push({from:linkStart.block,to:tb});
+        drawLines();
+      }
+    }
+    linkStart=null;
+  }
+  dragBlock=null;
+});
+
+function startLink(b,dir){linkStart={block:b,dir:dir}}
+
+function getPortPos(b,dir){
+  const r=b.getBoundingClientRect(),wr=wrap.getBoundingClientRect();
+  return {
+    x:(dir==="out"?r.right:r.left)-wr.left,
+    y:(r.top+r.bottom)/2-wr.top
+  };
+}
+
+function drawLines(){
+  svg.innerHTML="";
+  connections.forEach(c=>{
+    const l=document.createElementNS("http://www.w3.org/2000/svg","line");
+    const s=getPortPos(c.from,"out"),e=getPortPos(c.to,"in");
+    l.setAttribute("x1",s.x);l.setAttribute("y1",s.y);
+    l.setAttribute("x2",e.x);l.setAttribute("y2",e.y);
+    l.setAttribute("stroke","#00d4aa88");l.setAttribute("stroke-width","2");
+    l.setAttribute("marker-end","url(#arrow)");
+    svg.appendChild(l);
+  });
+}
+
+// Arrow marker
+const defs=document.createElementNS("http://www.w3.org/2000/svg","defs");
+const marker=document.createElementNS("http://www.w3.org/2000/svg","marker");
+marker.setAttribute("id","arrow");marker.setAttribute("markerWidth","8");marker.setAttribute("markerHeight","6");
+marker.setAttribute("refX","8");marker.setAttribute("refY","3");marker.setAttribute("orient","auto");
+const poly=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+poly.setAttribute("points","0 0, 8 3, 0 6");poly.setAttribute("fill","#00d4aa");
+marker.appendChild(poly);defs.appendChild(marker);svg.appendChild(defs);
+
+// Delete
+document.addEventListener("keydown",e=>{
+  if(e.key==="Delete"&&selectedBlock){
+    connections=connections.filter(c=>c.from!==selectedBlock&&c.to!==selectedBlock);
+    selectedBlock.remove();blocks=blocks.filter(b=>b!==selectedBlock);
+    selectedBlock=null;drawLines();
+  }
+});
+
+// Simulation
+function runSim(){
+  if(simRunning)return;
+  simRunning=true;
+  document.getElementById("sim-time").textContent="运行中...";
+  
+  // Find source blocks
+  const srcs=blocks.filter(b=>b.dataset.type==="src");
+  const models=blocks.filter(b=>b.dataset.type==="model");
+  
+  if(!srcs.length){document.getElementById("sim-time").textContent="❌ 缺少数据源";simRunning=false;return}
+  
+  let step=0;
+  simTimer=setInterval(()=>{
+    step++;
+    document.getElementById("sim-time").textContent=`仿真步: ${step} · 数据流通`;
+    
+    // Simulate data flowing through connections
+    if(step===5) fetch("https://datadrive.world/api/relay/upload",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({src:"simulink",step,data:[Math.random()*10,Math.random()*5]})
+    }).catch(()=>{});
+    
+    if(step>=100){stopSim();document.getElementById("sim-time").textContent="✅ 仿真完成 (100步)";}
+  },200);
+}
+
+function stopSim(){
+  simRunning=false;
+  if(simTimer)clearInterval(simTimer);
+}
+
+function saveFlow(){
+  const data={
+    blocks:blocks.map(b=>({id:b.dataset.id,type:b.dataset.type,kind:b.dataset.kind,x:b.style.left,y:b.style.top})),
+    connections:connections.map(c=>({from:c.from.dataset.id,to:c.to.dataset.id}))
+  };
+  localStorage.setItem("simulink-flow",JSON.stringify(data));
+  document.getElementById("sim-time").textContent="💾 已保存";
+}
+
+// CI/CD status polling
+function setCi(id,status,val){
+  const d=document.getElementById("ci-"+id);if(d){d.className="dot";if(status==="ok")d.classList.add("ok");else if(status==="err")d.classList.add("err");else d.classList.add("wait")}
+  const v=document.getElementById("ci-"+id+"-v");if(v)v.textContent=val||"-";
+}
+// CI/CD + Orin status via WebSocket (primary) + HTTP (fallback)
+let ws=null;
+function connectWS(){
+  try{
+    ws=new WebSocket("wss://datadrive.world/ws/orin");
+    ws.onopen=()=>{
+      document.getElementById("ori-dot").className="dot ok";
+      document.getElementById("ori-stat").textContent="WS已连";
+    };
+    ws.onmessage=(e)=>{
+      const d=JSON.parse(e.data);
+      document.getElementById("ori-dot").className="dot ok";
+      document.getElementById("ori-stat").textContent="运行中";
+      document.getElementById("ori-console").textContent=
+        "🟢 模型:"+(d.model||"?")+"\n推理:"+(d.infer_count||0)+"次\n延迟:"+(d.last_infer_ms||0)+"ms\nWS实时";
+      document.getElementById("last-infer").textContent=
+        "模型:"+(d.model||"?")+" · 推理:"+(d.infer_count||0)+"次 · "+(d.last_infer_ms||0)+"ms";
+      setCi("deploy","ok","完成");
+    };
+    ws.onclose=()=>{
+      document.getElementById("ori-stat").textContent="WS断开·HTTP兜底";
+    };
+  }catch(e){}
+}
+connectWS();
+// HTTP fallback every 10s
+setInterval(()=>{
+  if(ws&&ws.readyState===1)return; // WS connected, skip HTTP
+  fetch("https://datadrive.world/orin/status").then(r=>r.json()).then(od=>{
+    document.getElementById("ori-dot").className="dot ok";
+    document.getElementById("ori-stat").textContent="运行中(HTTP)";
+    document.getElementById("last-infer").textContent="HTTP:"+od.infer_count+"次";
+  }).catch(()=>{});
+},10000);
+
+// Relay status polling
+async function pollRelay(){
+  try{
+    const r=await fetch("https://datadrive.world/api/relay/status");const d=await r.json();
+    setCi("relay","ok",d.uptime+"s");
+    setCi("sim","ok","v1.0");
+    if(d.packages>0)setCi("relay","ok",d.packages+"包");
+  }catch(e){setCi("relay","err","断")}
+}
+setInterval(pollRelay,5000);pollRelay();
+
+function deployOrin(){
+  document.getElementById("sim-time").textContent="🚀 部署中...";
+  setCi("deploy","wait","部署中");
+  fetch("https://datadrive.world/api/relay/trigger-deploy",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({target:"orin",model:"act",blocks:blocks.map(b=>b.dataset.kind)})
+  }).then(r=>r.json()).then(d=>{
+    setCi("deploy","ok","完成");
+    document.getElementById("ori-console").textContent="✅ 模型已部署 · 推理就绪\\n"+JSON.stringify(d);
+  }).catch(e=>{setCi("deploy","err","失败");});
+}
+
+// Initial default pipeline
+setTimeout(()=>{
+  addBlock(80,80,"src","orin","🖥","Orin采集");
+  addBlock(280,80,"proc","relay","☁","ECS中转");
+  addBlock(480,80,"model","act","🤖","ACT训练");
+  addBlock(680,80,"out","deploy","🚀","Orin部署");
+  // Auto-connect
+  setTimeout(()=>{
+    connections.push({from:blocks[0],to:blocks[1]});
+    connections.push({from:blocks[1],to:blocks[2]});
+    connections.push({from:blocks[2],to:blocks[3]});
+    drawLines();
+  },100);
+},200);
+</script>
+</body>
+</html>
