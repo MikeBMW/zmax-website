@@ -60,7 +60,7 @@ body{font-family:'Segoe UI',-apple-system,'PingFang SC','Microsoft YaHei',sans-s
 #cv{position:fixed;top:36px;left:200px;right:0;bottom:0;overflow:hidden;cursor:default;background:#2a2a2a}
 canvas{display:block}
 /* === Log Panel === */
-#log{position:fixed;bottom:0;left:190px;right:0;height:28px;background:#1e1e1e;border-top:1px solid#404040;z-index:50;display:flex;align-items:center}
+#log{position:fixed;bottom:0;left:200px;right:0;height:28px;background:#1e1e1e;border-top:1px solid#404040;z-index:50;display:flex;align-items:center}
 #log-content{flex:1;overflow:hidden;padding:0 10px;font-size:9px;font-family:'Cascadia Code',Consolas,monospace;color:#999;line-height:28px;white-space:nowrap}
 /* === Context Menu === */
 #ctx-menu a:hover{background:#094771!important}
@@ -243,7 +243,7 @@ function snap(v){return Math.round(v/GS)*GS}
 var dpr=window.devicePixelRatio||1;
 if(!ctx.roundRect){ctx.roundRect=function(x,y,w,h,r){if(typeof r==="number")r={tl:r,tr:r,br:r,bl:r};ctx.beginPath();ctx.moveTo(x+r.tl,y);ctx.lineTo(x+w-r.tr,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r.tr);ctx.lineTo(x+w,y+h-r.br);ctx.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);ctx.lineTo(x+r.bl,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r.bl);ctx.lineTo(x,y+r.tl);ctx.quadraticCurveTo(x,y,x+r.tl,y);ctx.closePath()}}
 function saveState(){undoStack.push({nodes:JSON.parse(JSON.stringify(N)),links:JSON.parse(JSON.stringify(L))});if(undoStack.length>30)undoStack.shift()}
-function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-180),h=(window.innerHeight-38-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
+function rz(){var lh=document.getElementById('log').offsetHeight;var w=(window.innerWidth-200),h=(window.innerHeight-36-lh);canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';draw();}
 function cleanupOld(){
   if(!confirm("删除旧数据，只保留最新3个。确定？"))return;
   fetch("/api/comfy/cleanup-old").then(function(r){return r.json()}).then(function(d){
