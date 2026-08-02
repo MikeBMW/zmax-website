@@ -107,6 +107,43 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   </div>
 </div>
 
+<!-- Baseline comparison -->
+<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">📊 基线对比 · Auto-Iterate</h3>
+<div class="log-panel">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;padding:10px 14px;font-size:10px">
+    <div style="color:#8b949e">指标</div><div style="color:#a371f7;font-weight:700">基线ACT</div><div style="color:#00d4aa;font-weight:700" id="cmp-cur">当前模型</div><div style="font-weight:700" id="cmp-delta">Δ提升</div>
+    <div>loss_act</div><div style="color:#a371f7">3.32</div><div style="color:#00d4aa" id="cmp-loss">-</div><div id="cmp-loss-d" style="color:#484f58">-</div>
+    <div>reach成功率</div><div style="color:#a371f7">68%</div><div style="color:#00d4aa" id="cmp-reach">-</div><div id="cmp-reach-d" style="color:#484f58">-</div>
+    <div>door成功率</div><div style="color:#a371f7">45%</div><div style="color:#00d4aa" id="cmp-door">-</div><div id="cmp-door-d" style="color:#484f58">-</div>
+    <div>推理延迟</div><div style="color:#a371f7">48ms</div><div style="color:#00d4aa" id="cmp-lat">-</div><div id="cmp-lat-d" style="color:#484f58">-</div>
+  </div>
+  <div style="padding:8px 14px;font-size:9px;color:#484f58;border-top:1px solid #1a1f2b" id="cmp-verdict">
+    ⏳ 等待训练完成...
+  </div>
+</div>
+
+<!-- MetaWorld Simulation -->
+<h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">🎮 MetaWorld 仿真对比</h3>
+<div class="log-panel">
+  <div style="display:flex;gap:12px;padding:10px 14px;flex-wrap:wrap">
+    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-reach">-</div><div class="lab">reach-v3</div></div>
+    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-door">-</div><div class="lab">door-open</div></div>
+    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-peg">-</div><div class="lab">peg-insert</div></div>
+    <div class="metric" style="min-width:80px"><div class="val" style="font-size:16px" id="mw-win">-</div><div class="lab">window-open</div></div>
+  </div>
+  <div style="padding:8px 14px;font-size:9px;color:#484f58;border-top:1px solid #1a1f2b" id="mw-status">
+    ⏳ 仿真环境待启动
+  </div>
+</div>
+
+<!-- Auto-iterate controls -->
+<div class="controls">
+  <button class="btn-trigger" onclick="autoIterate()">🔄 自动迭代</button>
+  <button class="btn-trigger" style="background:#ff6b35" onclick="abortIterate()">⏹ 中止</button>
+  <span style="font-size:10px;color:#8b949e;align-self:center" id="iter-status">迭代: 0/10 · 当前: -</span>
+  <span style="font-size:10px;color:#484f58;align-self:center" id="iter-best">最佳: -</span>
+</div>
+
 <!-- Versions -->
 <h3 style="font-size:12px;color:#00d4aa;margin:16px 0 8px">🏷 版本历史</h3>
 <div class="ver-grid" id="ver-list">
@@ -171,6 +208,47 @@ function createRelease(){
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({version:"v2.6.1",msg:"simulink CI/CD + WebSocket + relay"})
   }).then(r=>r.json()).then(d=>addLog("Release: "+JSON.stringify(d),"ok")).catch(()=>addLog("Release失败","err"));
+}
+
+// Auto-iterate with baseline comparison
+let iterRunning=false,iterCount=0,iterBest={loss:99,model:"-",epoch:0};
+const BASELINE={loss:3.32,reach:.68,door:.45,latency:48};
+
+async function pollCompare(){
+  if(!iterRunning)return;
+  try{
+    const r=await fetch("https://datadrive.world/api/relay/training-status");const d=await r.json();
+    if(d.current_loss){
+      document.getElementById("cmp-loss").textContent=d.current_loss.toFixed(3);
+      const dl=(BASELINE.loss-d.current_loss)/BASELINE.loss*100;
+      const el=document.getElementById("cmp-loss-d");
+      el.textContent=(dl>0?"↓":"↑")+Math.abs(dl).toFixed(1)+"%";
+      el.style.color=dl>0?"#3fb950":"#ff4444";
+      document.getElementById("cmp-verdict").textContent=dl>0?"🟢 优于基线 +"+dl.toFixed(1)+"%":"🔴 劣于基线，继续迭代";
+    }
+    if(d.iteration){document.getElementById("iter-status").textContent="迭代: "+d.iteration+"/10 · loss: "+(d.current_loss||"-")}
+  }catch(e){}
+}
+
+function autoIterate(){
+  if(iterRunning)return;
+  iterRunning=true;iterCount=0;
+  addLog("🔄 自动迭代启动 · 目标: 超越基线ACT loss<3.32","warn");
+  document.getElementById("iter-status").textContent="迭代: 0/10 · 启动中";
+  setInterval(pollCompare,5000);
+  
+  fetch("https://datadrive.world/api/relay/auto-iterate",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({baseline:BASELINE,max_iter:10,improve_threshold:0.05})
+  }).then(r=>r.json()).then(d=>{
+    addLog("迭代配置已下发: "+JSON.stringify(d),"ok");
+  }).catch(e=>addLog("迭代启动失败","err"));
+}
+
+function abortIterate(){
+  iterRunning=false;
+  addLog("⏹ 迭代已中止 · 共完成 "+iterCount+" 轮","warn");
+  document.getElementById("iter-status").textContent="已中止 · "+iterCount+"轮";
 }
 
 // Init
