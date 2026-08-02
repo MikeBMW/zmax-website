@@ -23,7 +23,10 @@ body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans
 <div class="card"><div class="v" id="pkg">0</div><div class="vl">数据包</div></div>
 <div class="card"><div class="v" id="up">0s</div><div class="vl">中继</div></div>
 <div class="card"><div class="v" id="inf">0</div><div class="vl">推理</div></div>
+<div class="card"><div class="v" id="ver">-</div><div class="vl">训练版本</div></div>
+<div class="card"><div class="v" id="loss">-</div><div class="vl">loss</div></div>
 </div>
+<div class="card" style="margin:8px"><div id="meta-info" style="font-size:9px;color:#484f58">等待数据...</div></div>
 
 <script>
 var S=["料盘识别","AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK","初始化循环","取料","尝试插入第一次","循环守卫","扫码","抓取失败判定","拔出","插入完成","暂时松开","移动到治具插槽","等待测试结果"];
@@ -38,9 +41,14 @@ async function P(){
  try{
   var o=await fetch("/orin/status"),od=await o.json();
   document.getElementById("inf").textContent=od.infer_count||0;
+  document.getElementById("ver").textContent="v"+(od.infer_count||0);
  }catch(e){}
  try{
   var p=await fetch("/api/relay/peek"),pd=await p.json();
+  // Version & loss from meta
+  var meta=pd.meta||{};
+  if(meta.labels){var lbs=Object.entries(meta.labels).map(([k,v])=>k+":"+v).join(" · ");document.getElementById("meta-info").textContent="标签: "+lbs}
+  if(meta.loss){document.getElementById("loss").textContent=meta.loss.toFixed(3)}
   // Action
   var lb="IDLE";
   if(pd.frames&&pd.frames[0])lb=pd.frames[0].label||"IDLE";
