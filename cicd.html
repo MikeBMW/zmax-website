@@ -23,10 +23,24 @@ body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans
 <div class="card"><div class="v" id="pkg">0</div><div class="vl">数据包</div></div>
 <div class="card"><div class="v" id="up">0s</div><div class="vl">中继</div></div>
 <div class="card"><div class="v" id="inf">0</div><div class="vl">推理</div></div>
-<div class="card"><div class="v" id="ver">-</div><div class="vl">训练版本</div></div>
+<div class="card"><div class="v" id="ver">-</div><div class="vl">版本</div></div>
 <div class="card"><div class="v" id="loss">-</div><div class="vl">loss</div></div>
 </div>
-<div class="card" style="margin:8px"><div id="meta-info" style="font-size:9px;color:#484f58">等待数据...</div></div>
+<div class="card" style="margin:8px"><h3>🔧 Simulink 三阶段训练控制</h3>
+<div style="display:flex;gap:8px;align-items:center;padding:4px 0;flex-wrap:wrap">
+  <div class="stage"><span class="dot wait" id="s1d"></span>① 数据采集<span style="font-size:8px;color:#484f58" id="s1t"></span></div>
+  <span style="color:#333">→</span>
+  <div class="stage"><span class="dot wait" id="s2d"></span>② 训练中<span style="font-size:8px;color:#484f58" id="s2t"></span></div>
+  <span style="color:#333">→</span>
+  <div class="stage"><span class="dot wait" id="s3d"></span>③ 部署推理<span style="font-size:8px;color:#484f58" id="s3t"></span></div>
+</div>
+<div style="display:flex;gap:6px;margin-top:4px">
+  <button class="btn-go" onclick="trigger('collect')">📡 触发采集</button>
+  <button class="btn-go" onclick="trigger('train')">🧠 触发训练</button>
+  <button class="btn-go" style="background:#a371f7;color:#fff" onclick="trigger('deploy')">🚀 触发部署</button>
+</div>
+<div id="meta-info" style="font-size:9px;color:#484f58;margin-top:4px">等待数据...</div>
+</div>
 
 <script>
 var S=["料盘识别","AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK","初始化循环","取料","尝试插入第一次","循环守卫","扫码","抓取失败判定","拔出","插入完成","暂时松开","移动到治具插槽","等待测试结果"];
@@ -37,11 +51,13 @@ async function P(){
   var r=await fetch("/api/relay/status"),d=await r.json();
   document.getElementById("pkg").textContent=d.packages||0;
   document.getElementById("up").textContent=(d.uptime||0)+"s";
+  if(d.packages>0){SS(1,"ok","数据流入");SS(2,"wait","等待");}else{SS(1,"idle","静止");}
  }catch(e){}
  try{
   var o=await fetch("/orin/status"),od=await o.json();
   document.getElementById("inf").textContent=od.infer_count||0;
   document.getElementById("ver").textContent="v"+(od.infer_count||0);
+  if(od.infer_count>0){SS(3,"ok","推理中");}
  }catch(e){}
  try{
   var p=await fetch("/api/relay/peek"),pd=await p.json();
@@ -64,4 +80,13 @@ async function P(){
  }catch(e){document.getElementById("ci").textContent="JS错误:"+e.message;console.error(e)}
 }
 setInterval(P,500);P();
+
+// Three-stage status + trigger
+function SS(id,c,txt){var d=document.getElementById("s"+id+"d");if(d){d.className="dot";if(c)d.classList.add(c)}var v=document.getElementById("s"+id+"t");if(v&&txt)v.textContent=txt}
+function trigger(stage){
+  if(stage==="collect"){SS(1,"ok","采集中");fetch("/api/relay/upload",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"trigger_collect"})}).catch(()=>{});}
+  else if(stage==="train"){SS(2,"ok","训练中");fetch("/api/relay/auto-iterate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"trigger_train"})}).catch(()=>{});}
+  else if(stage==="deploy"){SS(3,"ok","部署中");fetch("/api/relay/trigger-deploy",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"trigger_deploy"})}).catch(()=>{});}
+  setTimeout(()=>P(),1000);
+}
 </script></body></html>
