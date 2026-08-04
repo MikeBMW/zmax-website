@@ -12,6 +12,12 @@ body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans
 .st{display:flex;flex-wrap:wrap;gap:3px;font-size:8px}
 .st span{padding:1px 5px;border-radius:2px;border:1px solid #1a1f2b;color:#484f58}
 .st .on{background:#00d4aa22;color:#00d4aa;font-weight:700;border-color:#00d4aa}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#333;margin-right:4px}
+.dot.idle{background:#484f58}.dot.wait{background:#f0a500}.dot.ok{background:#00d4aa}
+.btn-go{padding:3px 10px;border:1px solid #1a1f2b;border-radius:4px;background:#0d1117;color:#c8d1d9;font-size:10px;cursor:pointer}
+.btn-go:hover{background:#00d4aa22;border-color:#00d4aa}
+.stage{display:flex;align-items:center;font-size:10px}
+.metric{text-align:center;padding:4px 8px}.metric .val{font-size:18px;font-weight:800;color:#00d4aa}.metric .lab{font-size:8px;color:#484f58}
 </style></head><body>
 <div id="bar"><a href="/">←</a><h1>🔗 CI/CD</h1><span style="font-size:10px;color:#484f58;margin-left:auto" id="t">-</span></div>
 <div class="row">
@@ -26,6 +32,15 @@ body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans
 <div class="card"><div class="v" id="ver">-</div><div class="vl">版本</div></div>
 <div class="card"><div class="v" id="loss">-</div><div class="vl">loss</div></div>
 </div>
+<div class="card" style="margin:8px"><h3>🖥 Orin 系统监控</h3>
+<div class="row" style="padding:0">
+<div class="metric" style="min-width:70px"><div class="val" style="font-size:14px" id="ocpu">-</div><div class="lab">CPU</div></div>
+<div class="metric" style="min-width:70px"><div class="val" style="font-size:14px" id="ogpu">-</div><div class="lab">GPU</div></div>
+<div class="metric" style="min-width:70px"><div class="val" style="font-size:14px" id="omem">-</div><div class="lab">内存</div></div>
+<div class="metric" style="min-width:70px"><div class="val" style="font-size:14px" id="odisk">-</div><div class="lab">磁盘</div></div>
+<div class="metric" style="min-width:70px"><div class="val" style="font-size:14px" id="onet">-</div><div class="lab">带宽</div></div>
+<div class="metric" style="min-width:70px"><div class="val" style="font-size:14px" id="otmp">-</div><div class="lab">温度</div></div>
+</div></div>
 <div class="card" style="margin:8px"><h3>🔧 Simulink 三阶段训练控制</h3>
 <div style="display:flex;gap:8px;align-items:center;padding:4px 0;flex-wrap:wrap">
   <div class="stage"><span class="dot wait" id="s1d"></span>① 数据采集<span style="font-size:8px;color:#484f58" id="s1t"></span></div>
@@ -58,6 +73,14 @@ async function P(){
   document.getElementById("inf").textContent=od.infer_count||0;
   document.getElementById("ver").textContent="v"+(od.infer_count||0);
   if(od.infer_count>0){SS(3,"ok","推理中");}
+  // System metrics from Orin sys field (current format: % values)
+  var sy=od.sys||{};
+  if(sy.cpu!=null)document.getElementById("ocpu").textContent=sy.cpu+"%";
+  document.getElementById("ogpu").textContent=(sy.gpu!=null?sy.gpu+"%":"集成");
+  document.getElementById("omem").textContent=(sy.mem!=null?sy.mem+"%":"-");
+  document.getElementById("odisk").textContent=(sy.disk!=null?sy.disk+"%":"-");
+  document.getElementById("onet").textContent=(sy.net!=null?Math.round(sy.net)+"KB/s":"-");
+  if(sy.temp!=null)document.getElementById("otmp").textContent=sy.temp+"°C";
  }catch(e){}
  try{
   var p=await fetch("/api/relay/peek"),pd=await p.json();
