@@ -68,7 +68,7 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
   <span class="badge b-ok">节拍 ≤15s</span>
   <span class="badge b-ok">成功率 >99%</span>
   <span class="badge b-warn">万级洁净</span>
-<span style="color:#8b949e;font-size:9px;margin-left:4px">v2.11.0 · 2026-07-23 14:00</span>
+<span style="color:#8b949e;font-size:9px;margin-left:4px">v4.0.0 · 2026-07-23 14:00</span>
   <div class="nav">
     <button class="active" onclick="flyTo('coc')">🔩 COC</button>
     <button onclick="flyTo('oe')">🔬 OE</button>
@@ -99,146 +99,120 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 // MULTI-ZONE FACTORY LAYOUT
 // ═══════════════════════════════════════
 const ZONES=[
-{id:"coc",name:"COC基板区",color:0xf0a500,pos:{x:-16,z:-12},size:{w:14,d:12},gridCols:6,stations:[
-    {id:"I101",label:"进料检验",desc:"精度 ±5μm | 节拍 ≤3s | 质量门 无崩边/裂纹 | 良率 ≥99.5% | Z700料盘AOI检查",specs:[["显微镜","目检"],["治具","手动"]]},
-    {id:"I102",label:"贴片备料",desc:"精度 ±10μm | 节拍 ≤5s | 质量门 方向/极性 | 良率 ≥99.8% | Z700+Z700料盘搬运",specs:[["治具×3","备料"],["显微镜×3","目检"]]},
-    {id:"I103",label:"Submount打标",desc:"精度 ±5μm | 节拍 ≤2s | 质量门 码可读率100% | 良率 ≥99.9% | Z700料盘操作",specs:[["激光","打标"],["基板","标识"]]},
-    {id:"I104",label:"等离子清洗",desc:"精度 接触角<10° | 节拍 ≤10s/批 | 质量门 水滴角 | 良率 ≥99.5% | Z700料盘操作",specs:[["等离子","清洗"],["表面","活化"]]},
-    {id:"I105",label:"半自动点胶",desc:"精度 ±0.1mg | 节拍 ≤3s | 质量门 胶径±50μm | 良率 ≥99.7% | Z700料盘操作",specs:[["点胶","半自动"],["×2","并行"]]},
-    {id:"I106",label:"自动固晶点胶",desc:"精度 ±1μm贴装 | 节拍 ≤4s | 质量门 XY偏移≤3μm | 良率 ≥99.9% | Z700+Z700料盘搬运",specs:[["自动×4","固晶"],["点胶","精密"]]},
-    {id:"I107",label:"自动贴片点胶",desc:"精度 ±1.5μm | 节拍 ≤5s | 质量门 共面度≤10μm | 良率 ≥99.8% | Z700+Z700料盘搬运",specs:[["自动","贴片"],["点胶","一体"]]},
-    {id:"I108",label:"自动贴片机",desc:"精度 ±2μm | 节拍 ≤3s | 质量门 抛料率<0.1% | 良率 ≥99.9% | Z700+Z700料盘搬运",specs:[["全自动","贴片"],["高速","节拍"]]},
-    {id:"I109",label:"UV固化",desc:"精度 均匀性±5% | 节拍 ≤8s/批 | 质量门 ≥80ShoreD | 良率 ≥99.9% | Z700料盘操作",specs:[["UV","固化"],["自动","传送"]]},
-    {id:"I110",label:"二次元检验",desc:"精度 ±2μm | 节拍 ≤3s | 质量门 CPK≥1.67 | 良率 ≥99.9% | Z700料盘AOI检查",specs:[["2D","测量"],["自动","检测"]]},
-    {id:"I111",label:"WB打线",desc:"精度 ±3μm | 节拍 ≤4s/线 | 质量门 拉力≥5g | 良率 ≥99.8% | Z700+Z700料盘搬运",specs:[["Au线","键合"],["超声","焊接"]]},
-    {id:"I112",label:"COC WB打线",desc:"精度 ±3μm | 节拍 ≤4s/线 | 质量门 线弧±20μm | 良率 ≥99.8% | Z700+Z700料盘搬运",specs:[["WB","打线"],["Au线","键合"]]},
-    {id:"I113",label:"COC绑定",desc:"精度 ±1μm | 节拍 ≤6s | 质量门 剪切≥20MPa | 良率 ≥99.9% | Z700+Z700料盘搬运",specs:[["绑定","固晶"],["自动","光学"]]},
-    {id:"I114",label:"自动光学检测",desc:"精度 ±3μm | 节拍 ≤2s | 质量门 缺陷检出≥99% | 良率 ≥99.9% | Z700料盘AOI检查",specs:[["AOI","自动"],["光学","检测"]]},
-    {id:"I115",label:"COC共晶",desc:"精度 ±1μm | 节拍 ≤8s | 质量门 空洞率<5% | 良率 ≥99.7% | Z700+Z700料盘搬运",specs:[["AuSn","共晶"],["280°C","温控"]]},
-    {id:"I116",label:"外观检查清洁",desc:"精度 目检50× | 节拍 ≤5s | 质量门 无颗粒>10μm | 良率 ≥99.9% | Z700料盘操作",specs:[["显微镜","目检"],["清洁","无尘"]]},
-    {id:"I117",label:"打标外观检",desc:"精度 目检50× | 节拍 ≤3s | 质量门 码可读+外观 | 良率 ≥99.9% | Z700料盘AOI检查",specs:[["外观","检查"],["显微镜","目检"]]},
-    {id:"I118",label:"SN识别",desc:"精度 识别≥99.9% | 节拍 ≤1s | 质量门 SN唯一性 | 良率 ≥99.9% | Z700料盘操作",specs:[["自动","识别"],["×2","并行"]]},
-    {id:"I119",label:"COC上料",desc:"精度 ±0.1mm定位 | 节拍 ≤5s | 质量门 到位双确认 | 良率 ≥99.9% | Z100L料笼搬运",specs:[["上料","自动"],["MES","追溯"]]},
-    {id:"I120",label:"AOI",desc:"精度 ±3μm | 节拍 ≤2s | 质量门 缺陷检出≥99% | 良率 ≥99.9% | Z700料盘AOI检查",specs:[["AOI","自动"],["光学","检测"]]},
-    {id:"I121",label:"COC BI老化",desc:"精度 ±1°C温控 | 节拍 48h/批 | 质量门 零失效 | 良率 ≥99.5% | Z700Tray盘操作",specs:[["85°C","老化"],["BI","筛选"]]},
-    {id:"I122",label:"BI上下料",desc:"精度 目检50× | 节拍 ≤5s | 质量门 参数无漂移 | 良率 ≥99.9% | Z700Tray盘操作",specs:[["×2","并行"],["显微镜","目检"]]},
-    {id:"I123",label:"COC出货目检",desc:"精度 目检50× | 节拍 ≤5s | 质量门 零缺陷 | 良率 100% | Z700料盘AOI检查",specs:[["显微镜","目检"],["出货","终检"]]},
-    {id:"I124",label:"手动贴装×4",desc:"精度 ±5μm | 节拍 ≤10s | 质量门 全检通过 | 良率 ≥99.5% | Z700+Z700料盘搬运",specs:[["×4","工位"],["显微镜×4","对位"]]},
+{id:"coc",name:"COC基板区",color:0xf0a500,pos:{x:-11.5,z:-9.5},size:{w:20.0,d:16.0},gridCols:8,stations:[
+    {id:"I-100",label:"进料检验",desc:"Z700F+AOI"},
+    {id:"I-101",label:"贴片备料",desc:"Z700F"},
+    {id:"I-102",label:"打标",desc:"Z700F"},
+    {id:"I-103",label:"等离子清洗",desc:"Z700F"},
+    {id:"I-104",label:"点胶",desc:"Z700F"},
+    {id:"I-105",label:"固晶点胶",desc:"Z700F"},
+    {id:"I-106",label:"贴片",desc:"Z700F"},
+    {id:"I-107",label:"UV固化",desc:"Z700F"},
+    {id:"I-108",label:"二次元",desc:"Z700F+AOI"},
+    {id:"I-109",label:"WB打线",desc:"Z700F"},
+    {id:"I-110",label:"COC绑定",desc:"Z700F"},
+    {id:"I-111",label:"AOI检测",desc:"Z700F+AOI"},
+    {id:"I-112",label:"COC共晶",desc:"Z700F"},
+    {id:"I-113",label:"外观检查",desc:"Z700F+AOI"},
+    {id:"I-114",label:"SN识别",desc:"Z700F"},
+    {id:"I-115",label:"COC上料",desc:"Z100L"},
+    {id:"I-116",label:"AOI",desc:"Z700F+AOI"},
+    {id:"I-117",label:"BI老化",desc:"Z700F"},
+    {id:"I-118",label:"BI上下料",desc:"Z700F+AOI"},
+    {id:"I-119",label:"出货目检",desc:"Z700F+AOI"},
+    {id:"I-120",label:"手动贴装",desc:"Z700F"}
   ]},
-  {id:"oe",name:"OE光引擎区",color:0xff6b35,pos:{x:6,z:-12},size:{w:24,d:18},gridCols:12,stations:[
-    {id:"I125",label:"生产前物料准备",desc:"物料清点/打叉板分类",specs:[]},
-    {id:"I126",label:"进料检验&贴标签",desc:"IPSN&PCBA 绑定SN→物料拆包→显微镜检来料→打印标签→贴标签→标签遮挡打叉板Mark点*13% | Z700F + AOI",specs:[]},
-    {id:"I127",label:"连板FW烧录/IPSN写入",desc:"拿取物料/扫码→上治具压紧→启动程序→程序运行→下料装入治具载板放置料盒 | Z100L",specs:[]},
-    {id:"I128",label:"Plasma清洗-热沉(24h)",desc:"物料准备→物料摆放治具→走动(往返)→开门放料开启程序→程序运行（comon）→下料 | Z100L",specs:[]},
-    {id:"I129",label:"热沉点胶",desc:"上料启动程序（一盘）→自动点胶（黑胶）→下料（一盘） | Z100L",specs:[]},
-    {id:"I130",label:"热沉贴装&固化",desc:"镊子夹取氮化铝保护治具→拿取PCBA放入保护治具→锁紧治具卡口固定PCBA板→热沉位置调整（镊子手拨）→盖上保护治具上盖→走动→锁紧治具4颗螺丝（电动螺丝刀）→翻转治具→手动点胶（UVT79) B类",specs:[]},
-    {id:"I131",label:"外观检查",desc:"检查胶量",specs:[]},
-    {id:"I132",label:"UV固化&检外观",desc:"UV固化箱上料启动程序→程序运行(胶水T79）B类→UV固化箱下料→拆治具4颗螺丝→打开保护治具上盖→打开保护治具固定卡扣→取出物料检查外观→放入载板、装置料笼→热沉贴装过站 | Z100L",specs:[]},
-    {id:"I133",label:"热沉烘烤1(150°,0.5H)",desc:"走动=>烤箱→上料进烤箱启动程序→烘烤0.5H+0.5H升降温→走动=>工位→走动=>烤箱→下料 | Z100L",specs:[]},
-    {id:"I134",label:"烘烤后目检",desc:"目检→烘烤目检过站 | Z700F + AOI",specs:[]},
-    {id:"I135",label:"DA芯片来料目检",desc:"PD*100%→TIA*100%→COC*100%→FD Lens*100%→PIC来料检*100%→SUB垫块*5%→RX FA垫块*5%",specs:[]},
-    {id:"I136",label:"DA1垫块贴装",desc:"上料启动程序→进料设备连板识别→DA贴片PIC/TX FA/COC→出料退至料盒→下料 | Z100L",specs:[]},
-    {id:"I137",label:"DA1自动二次元&目检",desc:"上下料+程序选择→位置测量*100%→打X板识别*13%→显微镜检验*100%→DA1过站 | Z700F + AOI",specs:[]},
-    {id:"I138",label:"DA烘烤-1(150°,1.5H)",desc:"走动→选程序上料→烘烤+冷却(B类）→下料 | Z100L",specs:[]},
-    {id:"I139",label:"烘烤后目检",desc:"显微镜检验*100%→烘烤目检过站 | Z700F + AOI",specs:[]},
-    {id:"I140",label:"DA2芯片贴装",desc:"上料启动程序→进料设备连板识别→DA贴片TIA/PD/COC/PIC→出料退至料盒→下料 | Z100L",specs:[]},
-    {id:"I141",label:"COC SN与PCBA SN绑定",desc:"走动→上料→程序运行→下料→走动→过站（数据导出上传） | Z100L",specs:[]},
-    {id:"I142",label:"DA2自动二次元&目检",desc:"上下料+程序选择→位置测量*100%→打X板识别*13%→显微镜检验*100%→DA2过站 | Z700F + AOI",specs:[]},
-    {id:"I143",label:"DA烘烤-2(150°,1.5H)",desc:"走动→选程序上料→烘烤+冷却(B类）→下料 | Z100L",specs:[]},
-    {id:"I144",label:"烘烤后目检",desc:"目检→烘烤目检过站 | Z700F + AOI",specs:[]},
-    {id:"I145",label:"DA3芯片贴装",desc:"上料启动程序→进料设备连板识别→DA贴片Lens×4+电阻×2→出料退至料盒→下料 | Z100L",specs:[]},
-    {id:"I146",label:"DA3自动二次元&目检",desc:"上下料+程序选择→位置测量*100%→打X板识别*13%→显微镜检验*100%→DA3过站 | Z700F + AOI",specs:[]},
-    {id:"I147",label:"DA烘烤-3(150°,1.5H)",desc:"走动→选程序上料→烘烤+冷却(B类）→下料 | Z100L",specs:[]},
-    {id:"I148",label:"烘烤后目检",desc:"目检→烘烤目检过站 | Z700F + AOI",specs:[]},
-    {id:"I149",label:"Plasma清洗-WB(1H)",desc:"走动→上料→程序运行SUB-1→下料→走动 | Z100L",specs:[]},
-    {id:"I150",label:"首件 水滴角",desc:"检水滴角→走动多工位",specs:[]},
-    {id:"I151",label:"走动 多工位",desc:"多工位走动",specs:[]},
-    {id:"I152",label:"WB金线键合&目检",desc:"上料→进连板→打线预加热→程序运行（193根金线）→出连板→在线返工5%→下料→显微镜检验*100%→WB过站 | Z700F + AOI",specs:[]},
-    {id:"I153",label:"首件 推拉力",desc:"推拉力*3pcs",specs:[]},
-    {id:"I154",label:"Plasma清洗-Cover(4h)",desc:"走动→上料→启动程序→程序运行（comon）→下料→走动 | Z100L",specs:[]},
-    {id:"I155",label:"PEI Cover组装",desc:"料笼取下1连扳→手动点胶（3处）→cover安装→目检→装回料笼→PEI Cover过站 | Z700F + AOI",specs:[]},
-    {id:"I156",label:"PEI Cover烘烤",desc:"走动→选程序上料→烘烤SN-614（1H+0.5H升降温）B类→下料 | Z100L",specs:[]},
-    {id:"I157",label:"烘烤后目检",desc:"烘烤后目检→烘烤目检过站 | Z700F + AOI",specs:[]},
-    {id:"I158",label:"Plasma清洗-隔离器(24h)",desc:"走动→上料→启动程序→程序运行（SUB）→下料→走动 | Z100L",specs:[]},
-    {id:"I159",label:"隔离器贴装",desc:"隔离器物料摆放至PCBA*2→料笼取下物料（1连扳）→手动点胶左(胶水T16)→安装隔离器左*1→移动载板至UV光源区域启动→UV固化左（程序10秒）→目检隔离器左→手动点胶右(胶水T16)→安装隔离器右*1→移动载板至UV光源区域启动→U | Z700F + AOI",specs:[]},
-    {id:"I160",label:"隔离器烘烤",desc:"走动→选程序上料→烘烤T-55（1H+0.5H升降温）B类→下料 | Z100L",specs:[]},
-    {id:"I161",label:"烘烤后目检",desc:"目检→烘烤目检过站→走动 | Z700F + AOI",specs:[]},
-    {id:"I162",label:"DA4芯片贴装",desc:"上料启动程序→进料设备连板识别→DA贴片FD Lens×2+RX FA×2→出料退至料盒→下料 | Z100L",specs:[]},
-    {id:"I163",label:"红外测量",desc:"走动→抽检100%→走动",specs:[]},
-    {id:"I164",label:"DA4自动二次元&目检",desc:"上下料+程序选择→位置测量*100%→打X板识别*13%→显微镜检验*100%→DA4过站 | Z700F + AOI",specs:[]},
-    {id:"I165",label:"DA烘烤-4(150°,1H)",desc:"走动→选程序上料→烘烤+冷却(B类）→下料 | Z100L",specs:[]},
-    {id:"I166",label:"烘烤后目检",desc:"目检→烘烤目检过站→走动 | Z700F + AOI",specs:[]},
-    {id:"I167",label:"激光分板/目检",desc:"料笼取下连扳分开载板→物料放入保护治具/盖上盖→上料启动程序→程序运行-分板→下料→取下治具盖板/去除废料→分板后目检→物料放置料盒（黑色料盒）→分板后过站 | Z700F + AOI",specs:[]},
-    {id:"I168",label:"保护治具组装",desc:"拿取保护治具底盖放入OE→盖上保护治具上盖→打螺丝*4颗（磁吸电动螺丝刀）→物料放置托盘",specs:[]},
-    {id:"I169",label:"Plasma清洗-LD lens",desc:"上料→选程序启动→程序运行（comon）→下料→走动 | Z100L",specs:[]},
-    {id:"I170",label:"LD耦合前目检",desc:"目检（显微镜）→走动 | Z700F + AOI",specs:[]},
-    {id:"I171",label:"LD Lens AA耦合",desc:"拿取物料上设备→接电启动程序→耦合程序运行→取下放置物料",specs:[]},
-    {id:"I172",label:"LD耦合后目检",desc:"走动→目检（显微镜） | Z700F + AOI",specs:[]},
-    {id:"I173",label:"LD耦合后烘烤",desc:"走动→选程序上料→烘烤→取出烘烤后料盘 | Z100L",specs:[]},
-    {id:"I174",label:"Mpd_test_bake",desc:"物料摆放至烤台→程序预热→烤台预热（50°）→拿取物料放入保护治具→上电启动程序→程序运行→取下放置托盘",specs:[]},
-    {id:"I175",label:"TRX FA组装/面清洁",desc:"取光纤取防尘盖→装Jumper→盖上盖→拿取物料撕保护纸→TX*1 RX*2清洁检查→放置物料(摆放治具中）",specs:[]},
-    {id:"I176",label:"Plasma清洗-FA",desc:"走动→上料→选程序启动→程序运行（comon）→下料 | Z100L",specs:[]},
-    {id:"I177",label:"Plasma清洗-PCBA",desc:"走动→上料→选程序启动→程序运行（comon）→下料 | Z100L",specs:[]},
-    {id:"I178",label:"TRX耦合前目检",desc:"走动→TX FA耦合前目检→走动 | Z700F + AOI",specs:[]},
-    {id:"I179",label:"TRX FA AA耦合",desc:"拿取物料上设备→接电启动程序→设备试运行→看光纤端面*2（并行）→TX RX上料→手动安装TX FA(镊子）→程序运行→手动点胶(T410)→程序运行→手动安装左RX FA(镊子）→程序运行→手动点胶(T410)→程序运行→手动安装右RX  | Z100L",specs:[]},
-    {id:"I180",label:"TRX耦合后目检",desc:"走动→目检（显微镜） | Z700F + AOI",specs:[]},
-    {id:"I181",label:"TRX耦合后烘烤",desc:"走动→选程序上料→烘烤→取出烘烤后料盘 | Z100L",specs:[]},
-    {id:"I182",label:"TRX烘烤后目检",desc:"目检→走动 | Z700F + AOI",specs:[]},
-    {id:"I183",label:"端面清洁-1",desc:"拿料看端面→端面清洁*2（酒精棉签擦拭/吹端面）→端面检查（仪器看端面*2）→放置物料",specs:[]},
-    {id:"I184",label:"TRX Test",desc:"烤台预热（50°）→拿料放入治具金手指接电→检查安装光纤端面*2→启动程序→程序运行→取下接电坐/光纤*2放置物料",specs:[]},
-    {id:"I185",label:"TCT-12hrs",desc:"进站→走动=>TCT→上料→TCT-12hrs→登记烘烤记录→走动=>工位→走动=>TCT→取料→走动=>工位→过站 | Z100L",specs:[]},
-    {id:"I186",label:"端面清洁-2",desc:"端面清洁-2",specs:[]},
-    {id:"I187",label:"OE Test",desc:"烤台预热（50°）→拿料放入治具金手指接电→检查安装光纤端面*2→启动程序→程序运行→取下接电坐/光纤*2放置物料",specs:[]},
-    {id:"I188",label:"端面清洁-3",desc:"端面清洁-3",specs:[]},
-    {id:"I189",label:"TX ORL test",desc:"拿料放入治具金手指接电→检查安装光纤端面*2→启动程序→程序运行→取下接电坐/光纤*2放置物料",specs:[]},
-    {id:"I190",label:"端面清洁-4",desc:"端面清洁-4",specs:[]},
-    {id:"I191",label:"拆保护治具",desc:"物料摆放→取螺丝(电动螺丝刀）→取下OE放置托盘→放置保护治具上下盖",specs:[]},
-    {id:"I192",label:"出货检查",desc:"出货目检→目检完过站需电子档登记数量 | Z700F + AOI",specs:[]},
-    {id:"I193",label:"XMES过站汇总",desc:"需员工手动扫码过站",specs:[]},
-    {id:"I194",label:"线平衡损失",desc:"",specs:[]},
-    {id:"I195",label:"MES+搬运损失",desc:"搬运损失",specs:[]},
-    {id:"I196",label:"MES+搬运损失",desc:"搬运损失",specs:[]}
-  
+{id:"oe",name:"OE光引擎区",color:0xff6b35,pos:{x:11.5,z:-9.5},size:{w:20.0,d:16.0},gridCols:8,stations:[
+    {id:"I-200",label:"来料准备",desc:"Z100L"},
+    {id:"I-201",label:"进料检验",desc:"Z700F+AOI"},
+    {id:"I-202",label:"FW烧录",desc:"Z100L"},
+    {id:"I-203",label:"Plasma热沉",desc:"Z100L"},
+    {id:"I-204",label:"热沉点胶",desc:"Z100L"},
+    {id:"I-205",label:"热沉贴装",desc:"Z700F+AOI"},
+    {id:"I-206",label:"UV固化",desc:"Z100L"},
+    {id:"I-207",label:"热沉烘烤",desc:"Z100L"},
+    {id:"I-208",label:"烘烤目检",desc:"Z700F+AOI"},
+    {id:"I-209",label:"DA来料目检",desc:"Z700F+AOI"},
+    {id:"I-210",label:"DA1贴装",desc:"Z100L"},
+    {id:"I-211",label:"DA1目检",desc:"Z700F+AOI"},
+    {id:"I-212",label:"DA烘烤1",desc:"Z100L"},
+    {id:"I-213",label:"目检",desc:"Z700F+AOI"},
+    {id:"I-214",label:"DA2贴装",desc:"Z100L"},
+    {id:"I-215",label:"SN绑定",desc:"Z100L"},
+    {id:"I-216",label:"DA2目检",desc:"Z700F+AOI"},
+    {id:"I-217",label:"DA烘烤2",desc:"Z100L"},
+    {id:"I-218",label:"DA3贴装",desc:"Z100L"},
+    {id:"I-219",label:"DA3目检",desc:"Z700F+AOI"},
+    {id:"I-220",label:"DA烘烤3",desc:"Z100L"},
+    {id:"I-221",label:"PlasmaWB",desc:"Z100L"},
+    {id:"I-222",label:"WB键合",desc:"Z700F+AOI"},
+    {id:"I-223",label:"PlasmaCover",desc:"Z100L"},
+    {id:"I-224",label:"PEI Cover",desc:"Z700F+AOI"},
+    {id:"I-225",label:"Cover烘烤",desc:"Z100L"},
+    {id:"I-226",label:"Plasma隔离",desc:"Z100L"},
+    {id:"I-227",label:"隔离器贴装",desc:"Z700F+AOI"},
+    {id:"I-228",label:"隔离烘烤",desc:"Z100L"},
+    {id:"I-229",label:"DA4贴装",desc:"Z100L"},
+    {id:"I-230",label:"DA4目检",desc:"Z700F+AOI"},
+    {id:"I-231",label:"DA烘烤4",desc:"Z100L"},
+    {id:"I-232",label:"激光分板",desc:"Z700F+AOI"},
+    {id:"I-233",label:"LD耦合目检",desc:"Z700F+AOI"},
+    {id:"I-234",label:"LD耦合",desc:"Z100L"},
+    {id:"I-235",label:"LD烘烤",desc:"Z100L"},
+    {id:"I-236",label:"TRX组装",desc:"Z700F+AOI"},
+    {id:"I-237",label:"TRX耦合",desc:"Z100L"},
+    {id:"I-238",label:"TRX烘烤",desc:"Z100L"},
+    {id:"I-239",label:"端面清洁1",desc:"Z700F+AOI"},
+    {id:"I-240",label:"TRX Test",desc:"Z100L"},
+    {id:"I-241",label:"TCT",desc:"Z100L"},
+    {id:"I-242",label:"OE Test",desc:"Z100L"},
+    {id:"I-243",label:"TX ORL",desc:"Z100L"},
+    {id:"I-244",label:"拆治具",desc:"Z100L"},
+    {id:"I-245",label:"出货检查",desc:"Z700F+AOI"},
+    {id:"I-246",label:"XMES过站",desc:"Z100L"}
   ]},
-  {id:"mod",name:"模块组装区",color:0x58a6ff,pos:{x:6,z:7},size:{w:24,d:14},gridCols:5,stations:[
-    {id:"I197",label:"MPO-Housing组装",desc:"MPO-Housing组装 · 3人 · 200支/车，半成品 | Z700+Z700料盘搬运",specs:[["组装","手动"]]},
-    {id:"I198",label:"贴装防护胶带",desc:"防护胶带贴装 · 2人 · 24支/盘 | Z700+Z700料盘搬运",specs:[["贴装","手动"]]},
-    {id:"I199",label:"MPO-Housing后目检",desc:"Housing后目检 · 4人 · 24支/盘 | Z700料盘AOI检查",specs:[["目检","人工"]]},
-    {id:"I200",label:"烘烤④",desc:"四次烘烤 · 2人 · 200支/车 | Z700Tray盘操作",specs:[["烘烤","自动"]]},
-    {id:"I201",label:"端面清洁(RL前)",desc:"RL测试前端面清洁 · 2人 · 24支/盘 | Z700料盘操作",specs:[["清洁","手动"]]},
-    {id:"I202",label:"TX RL 测试",desc:"TX回波损耗测试 · 2人 · 24支/盘 | Z700料盘插拔",specs:[["测试","自动"]]},
-    {id:"I203",label:"端面清洁(V1前)",desc:"V1测试前端面清洁 · 2人 · 24支/盘 | Z700料盘操作",specs:[["清洁","手动"]]},
-    {id:"I204",label:"TRX V1测试(高温)",desc:"TRX V1高温测试 · 2人 · 200支/车 | Z700料盘插拔",specs:[["测试","自动"]]},
-    {id:"I205",label:"端面清洁(V2前)",desc:"V2测试前端面清洁 · 2人 · 24支/盘 | Z700料盘操作",specs:[["清洁","手动"]]},
-    {id:"I206",label:"TRX V2测试",desc:"TRX V2常温测试 · 2人 · 24支/盘 | Z700料盘插拔",specs:[["测试","自动"]]},
-    {id:"I207",label:"端面清洁(V3前)",desc:"V3测试前端面清洁 · 2人 · 24支/盘 | Z700料盘操作",specs:[["清洁","手动"]]},
-    {id:"I208",label:"TRX V3测试(高温)",desc:"TRX V3高温测试 · 2人 · 200支/车 | Z700料盘插拔",specs:[["测试","自动"]]},
-    {id:"I209",label:"测试数据分档",desc:"测试数据分档 · 2人 · 200支/车，成品 | Z700料盘插拔",specs:[["分档","自动"]]},
-    {id:"I210",label:"Housing平面度",desc:"Housing平面度测量 · 2人 · 200支/车 | Z700+Z700料盘搬运",specs:[["测量","自动"]]},
-    {id:"I211",label:"端面清洁(出货)",desc:"出货前端面清洁 · 2人 · 24支/盘 | Z700料盘操作",specs:[["清洁","手动"]]},
-    {id:"I212",label:"外观全检(出货)",desc:"出货前全检 · 4人 · 24支/盘 | Z700料盘AOI检查",specs:[["全检","人工"]]},
-    {id:"I213",label:"出货确认绑批",desc:"SHIPCHK出货确认 · 2人 · 24支/盘 | Z100L料笼搬运",specs:[["出货","自动"]]},
-    {id:"I214",label:"来料检验",desc:"来料检验 · 2人 · 24支/盘 | Z700料盘AOI检查",specs:[["IQC","人工"]]},
-    {id:"I215",label:"下载FW",desc:"精度 逐字节比对 | 节拍 ≤8s | 质量门 CRC32+回读 | 良率 ≥99.8% | Z700料盘操作",specs:[["FW","烧录"],["治具","手动"]]},
-    {id:"I216",label:"Quick check",desc:"快速检测 · 6人 · 24支/盘 | Z700料盘插拔",specs:[["QC","自动"]]},
-    {id:"I217",label:"Burn-In",desc:"老化测试 · 2人 · 24支/盘 | Z700Tray盘操作",specs:[["BI","自动"]]},
-    {id:"I218",label:"TCT高低温循环",desc:"TCT高低温循环 · 2人 · 24支/盘 | Z700Tray盘操作",specs:[["TCT","自动"]]},
-    {id:"I219",label:"环测",desc:"环境测试 · 5人 · 24支/盘 | Z700Tray盘操作",specs:[["环测","自动"]]},
-    {id:"I220",label:"ATS",desc:"自动测试系统 · 34人 · 24支/盘 | Z700料盘插拔",specs:[["ATS","自动"]]},
-    {id:"I221",label:"端面清洁",desc:"端面清洁 · 5人 · 24支/盘 | Z700料盘操作",specs:[["清洁","手动"]]},
-    {id:"I222",label:"外观检验",desc:"外观检验 · 4人 · 24支/盘 | Z700料盘AOI检查",specs:[["外观","人工"]]},
+{id:"mod",name:"模块组装区",color:0x58a6ff,pos:{x:11.5,z:9.5},size:{w:20.0,d:16.0},gridCols:8,stations:[
+    {id:"I-300",label:"MPO-Housing",desc:"Z700F"},
+    {id:"I-301",label:"防护胶带",desc:"Z700F"},
+    {id:"I-302",label:"Housing目检",desc:"Z700F+AOI"},
+    {id:"I-303",label:"烘烤",desc:"Z700F"},
+    {id:"I-304",label:"端面清洁",desc:"Z700F"},
+    {id:"I-305",label:"TX RL测试",desc:"Z700F"},
+    {id:"I-306",label:"清洁V1",desc:"Z700F"},
+    {id:"I-307",label:"TRX V1高温",desc:"Z700F"},
+    {id:"I-308",label:"清洁V2",desc:"Z700F"},
+    {id:"I-309",label:"TRX V2",desc:"Z700F"},
+    {id:"I-310",label:"清洁V3",desc:"Z700F"},
+    {id:"I-311",label:"TRX V3",desc:"Z700F"},
+    {id:"I-312",label:"数据分档",desc:"Z700F"},
+    {id:"I-313",label:"平面度",desc:"Z700F"},
+    {id:"I-314",label:"清洁出货",desc:"Z700F"},
+    {id:"I-315",label:"外观全检",desc:"Z700F+AOI"},
+    {id:"I-316",label:"出货确认",desc:"Z100L"},
+    {id:"I-317",label:"来料检验",desc:"Z700F+AOI"},
+    {id:"I-318",label:"下载FW",desc:"Z700F"},
+    {id:"I-319",label:"QuickCheck",desc:"Z700F"},
+    {id:"I-320",label:"Burn-In",desc:"Z700F"},
+    {id:"I-321",label:"TCT循环",desc:"Z700F"},
+    {id:"I-322",label:"环测",desc:"Z700F"},
+    {id:"I-323",label:"ATS测试",desc:"Z700F"},
+    {id:"I-324",label:"端面清洁",desc:"Z700F"},
+    {id:"I-325",label:"外观检验",desc:"Z700F+AOI"}
   ]},
-{id:"wh",name:"仓库物流区",color:0x3fb950,pos:{x:-16,z:7},size:{w:14,d:8},gridCols:3,stations:[
-    {id:"I223",label:"包装",desc:"包装出货 · 7人 · 24支/盘 ·，包装物流 | Z100L料笼搬运",specs:[["包装","手动"]]},
-    {id:"I224",label:"物料周转",desc:"物料周转 · 2人 · 24支/盘 | Z100L料笼搬运",specs:[["物流","人工"]]},
-    {id:"I225",label:"数据整理",desc:"数据整理归档 · 2人 · 24支/盘 | Z700料盘操作",specs:[["数据","人工"]]},
-    {id:"I226",label:"IQC来料检",desc:"精度 AQL 0.65 | 节拍 ≤30s/批 | 质量门 批次合格 | 良率 ≥99% | Z100L料笼搬运",specs:[["AQL","标准"],["千分尺","量具"]]},
-    {id:"I227",label:"原料入库",desc:"精度 零差错 | 节拍 ≤10s | 质量门 FIFO校验 | 良率 100% | Z100L料笼搬运",specs:[["MES","系统"],["条码","追溯"]]},
-    {id:"I228",label:"AGV配送",desc:"精度 ±10mm | 节拍 ≤5min/趟 | 质量门 准时率≥99% | 良率 ≥99.5% | Z100L料笼搬运",specs:[["±10mm","定位"],["AGV","自动"]]},
-    {id:"I500",label:"成品入库",desc:"精度 零差错 | 节拍 ≤30s | 质量门 发货确认 | 良率 100% | Z100L料笼搬运",specs:[["温控","恒温"],["扫码","入库"]]},
-    {id:"500",label:"出货",desc:"拣货·MES闭环",specs:[["按单","拣货"],["全程","追踪"]]},
-  ]}
+{id:"wh",name:"仓库物流区",color:0x3fb950,pos:{x:-11.5,z:9.5},size:{w:20.0,d:16.0},gridCols:8,stations:[
+    {id:"I-400",label:"包装出货",desc:"Z100L"},
+    {id:"I-401",label:"物料周转",desc:"Z100L"},
+    {id:"I-402",label:"数据整理",desc:"Z700F"},
+    {id:"I-403",label:"IQC来料检",desc:"Z100L"},
+    {id:"I-404",label:"原料入库",desc:"Z100L"},
+    {id:"I-405",label:"AGV配送",desc:"Z100L"},
+    {id:"I-406",label:"成品入库",desc:"Z100L"},
+    {id:"I-500",label:"出厂终检",desc:"FQC·MES闭环"}
+  ]},
 ];
+
+
+
 
 
 let stationObjects=[],agvObjs=[],robotObjs=[];
@@ -258,7 +232,7 @@ const wrap=document.getElementById("view3d"),W=view3d.clientWidth,H=view3d.clien
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x06080d);
 scene.fog=new THREE.Fog(0x06080d,15,50);
 const camera=new THREE.PerspectiveCamera(50,W/H,.5,120);
-camera.position.set(0,28,4);camera.lookAt(0,0,0);
+camera.position.set(0,35,8);camera.lookAt(0,0,0);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(W,H);
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -269,16 +243,16 @@ scene.add(new THREE.AmbientLight(0x445566,.8));
 const sun=new THREE.DirectionalLight(0xffffff,1.0);sun.position.set(5,20,8);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
 sun.shadow.camera.near=1;sun.shadow.camera.far=80;
-sun.shadow.camera.left=-18;sun.shadow.camera.right=18;
-sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;
+sun.shadow.camera.left=-24;sun.shadow.camera.right=24;
+sun.shadow.camera.top=20;sun.shadow.camera.bottom=-20;
 scene.add(sun);
 scene.add(new THREE.DirectionalLight(0xaaccee,.35)).position.set(-5,8,12);
 
 // Floor
-const floorGeom=new THREE.PlaneGeometry(36,24);
+const floorGeom=new THREE.PlaneGeometry(44,36);
 const floor=new THREE.Mesh(floorGeom,new THREE.MeshStandardMaterial({color:0x111520,roughness:.85}));
 floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
-const grid=new THREE.GridHelper(36,36,0x2a3040,0x1a1f2b);grid.position.y=.003;scene.add(grid);
+const grid=new THREE.GridHelper(44,44,0x2a3040,0x1a1f2b);grid.position.y=.003;scene.add(grid);
 
 // Coordinate labels — origin at bottom-left: display X=3dx+18, Y=-3dz+12
 function addLabel(text,x,y,z,color,size){
@@ -291,9 +265,9 @@ function addLabel(text,x,y,z,color,size){
   m.rotation.x=-Math.PI/2;m.position.set(x,.025,z);m.renderOrder=998;scene.add(m);
 }
 // X axis — bottom edge (Z=+12): display X = 3D_X + 18
-for(let x3d=-16;x3d<=16;x3d+=6) addLabel("X:"+(x3d+18),x3d,.025,11.8,"#ffffff22");
+for(let x3d=-20;x3d<=20;x3d+=6) addLabel("X:"+(x3d+18),x3d,.025,11.8,"#ffffff22");
 // Y axis — left edge (X=-18): display Y = -3D_Z + 12
-for(let z3d=10;z3d>=-10;z3d-=6) addLabel("Y:"+(-z3d+12),-17.8,.025,z3d,"#f0a50088");
+for(let z3d=16;z3d>=-16;z3d-=6) addLabel("Y:"+(-z3d+12),-17.8,.025,z3d,"#f0a50088");
 // Origin marker — bright sphere + large label at bottom-left corner (3D -18,12 = display 0,0)
 const originDot=new THREE.Mesh(new THREE.SphereGeometry(.3,16,16),new THREE.MeshBasicMaterial({color:0xffffff}));
 originDot.position.set(-18,.07,12);scene.add(originDot);
@@ -323,16 +297,21 @@ function createWall(x,z,w,d,color){
 
 // ═══════ Station machine — close to rail ═══════
 function createTextLabel(text,x,y,z){
-  const cv=document.createElement('canvas');cv.width=256;cv.height=48;
+  // 3-line label: coords + I-Step + name
+  const dx=Math.round((x+22)*10),dy=Math.round((-z+18)*10);
+  const cv=document.createElement('canvas');cv.width=256;cv.height=80;
   const cx=cv.getContext('2d');
-  cx.fillStyle='#ffffff';cx.font='bold 20px "PingFang SC","Microsoft YaHei",sans-serif';
-  cx.textAlign='center';cx.textBaseline='middle';
-  cx.fillText(text,128,24);
+  cx.fillStyle='#ffffff';cx.font='bold 12px monospace';cx.textAlign='center';
+  cx.fillText('('+dx+','+dy+')',128,16);
+  cx.fillStyle='#00d4aa';cx.font='bold 16px monospace';
+  cx.fillText(text,128,42);
+  cx.fillStyle='#c8d1d9';cx.font='11px sans-serif';
+  cx.fillText(y!==undefined?y:'',128,64);
   const tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
-  const plane=new THREE.Mesh(new THREE.PlaneGeometry(3,.6),
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(2.2,.7),
     new THREE.MeshBasicMaterial({map:tx,transparent:true,depthTest:false,depthWrite:false}));
   plane.rotation.x=-Math.PI/2;
-  plane.position.set(x,y,z);plane.renderOrder=1001;
+  plane.position.set(x,.02,z);plane.renderOrder=1001;
   return plane;
 }
 
@@ -351,24 +330,6 @@ function createStation(x,z,color,label,specs){
   g.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.15,.02),new THREE.MeshBasicMaterial({color:0x002233}))).position.set(0,.58,.26);
   // Status light
   g.add(new THREE.Mesh(new THREE.SphereGeometry(.04),new THREE.MeshBasicMaterial({color}))).position.set(.28,.78,.2);
-  // ═══ Loading ears (上下料耳朵) — 设备两侧伸出的上下料平台 ═══
-  // Left ear (上料侧) — 原料进入
-  const earMat=new THREE.MeshStandardMaterial({color:0x556677,metalness:.5,roughness:.3});
-  const earGlow=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.3});
-  const leftEar=new THREE.Mesh(new THREE.BoxGeometry(.35,.06,.25),earMat);
-  leftEar.position.set(-.55,.28,.1);leftEar.castShadow=true;g.add(leftEar);
-  // Left ear indicator
-  const leftDot=new THREE.Mesh(new THREE.SphereGeometry(.025),earGlow);
-  leftDot.position.set(-.7,.32,.1);g.add(leftDot);
-  // Right ear (下料侧) — 成品输出
-  const rightEar=new THREE.Mesh(new THREE.BoxGeometry(.35,.06,.25),earMat);
-  rightEar.position.set(.55,.28,.1);rightEar.castShadow=true;g.add(rightEar);
-  // Right ear indicator
-  const rightDot=new THREE.Mesh(new THREE.SphereGeometry(.025),earGlow);
-  rightDot.position.set(.7,.32,.1);g.add(rightDot);
-  // Connector to rail
-  const conn=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.5,6),new THREE.MeshStandardMaterial({color:0x3a4050}));
-  conn.rotation.x=Math.PI/2;conn.position.set(0,.06,.9);g.add(conn);
   
   g.position.set(x,0,z);
   g.userData={label,color,specs,isStation:true};
@@ -502,31 +463,49 @@ function buildFactory(){
 
   // Rails removed — clean layout
 
+  // ═══ Robot rails — dual beam + ties, 2m gap from stations ═══
+  ZONES.forEach(z=>{
+    const cols=z.gridCols||8;
+    const rows=Math.ceil(z.stations.length/cols);
+    const zStep=(z.size.d-3)/Math.max(rows-1,1);
+    for(let row=0;row<Math.min(rows,3);row++){
+      const sz=z.pos.z-z.size.d/2+1.5+row*(rows>1?zStep:0);
+      const railZ=sz-2.0;  // 2m gap from station
+      const sx0=z.pos.x-z.size.w/2+1.5;
+      const sx1=z.pos.x-z.size.w/2+1.5+(cols-1)*((z.size.w-3)/Math.max(cols-1,1));
+      const len=sx1-sx0;
+      const railMat=new THREE.MeshStandardMaterial({color:0x889999,metalness:.8,roughness:.2});
+      const tieMat=new THREE.MeshStandardMaterial({color:0x4a4a4a});
+      // Dual rail beams
+      for(let bz of[-.15,.15]){
+        const beam=new THREE.Mesh(new THREE.BoxGeometry(len,.04,.05),railMat);
+        beam.position.set((sx0+sx1)/2,.02,railZ+bz);scene.add(beam);
+      }
+      // Cross ties every 1.2m
+      for(let sx=sx0;sx<=sx1+.1;sx+=1.2){
+        const tie=new THREE.Mesh(new THREE.BoxGeometry(.06,.012,.35),tieMat);
+        tie.position.set(sx,.012,railZ);scene.add(tie);
+      }
+      // Yellow safety strip between rail and stations
+      const strip=new THREE.Mesh(new THREE.PlaneGeometry(len,.2),
+        new THREE.MeshBasicMaterial({color:0xffaa00,transparent:true,opacity:.18,side:THREE.DoubleSide}));
+      strip.rotation.x=-Math.PI/2;strip.position.set((sx0+sx1)/2,.013,sz-1.0);scene.add(strip);
+    }
+  });
 
-
-
-  // 线边仓 — COC区右侧物料缓冲区
-  const lbcWall=createWall(-7.5,-10,2.5,10,0x888866);
-  lbcWall.userData={isZone:true,label:'线边仓'};
-  scene.add(lbcWall);
-  // 线边仓标签
-  const lbcCv=document.createElement('canvas');lbcCv.width=128;lbcCv.height=64;
-  const lbcCx=lbcCv.getContext('2d');
-  lbcCx.fillStyle='#ccccaa';lbcCx.font='bold 22px "PingFang SC","Microsoft YaHei",sans-serif';
-  lbcCx.textAlign='center';lbcCx.textBaseline='middle';
-  lbcCx.fillText('线边仓1区',64,32);
-  const lbcTx=new THREE.CanvasTexture(lbcCv);lbcTx.minFilter=THREE.LinearFilter;
-  const lbcPlane=new THREE.Mesh(new THREE.PlaneGeometry(2.5,.8),
-    new THREE.MeshBasicMaterial({map:lbcTx,transparent:true,depthTest:false,depthWrite:false}));
-  lbcPlane.rotation.x=-Math.PI/2;lbcPlane.position.set(-7.5,.025,-10);lbcPlane.renderOrder=1001;
-  scene.add(lbcPlane);
-  // 货架示意
-  for(let si=0;si<3;si++){
-    const shelf=new THREE.Mesh(new THREE.BoxGeometry(.4,1.5,1.8),
-      new THREE.MeshStandardMaterial({color:0x776655,metalness:.3,roughness:.5}));
-    shelf.position.set(-8.3,.75,-12+si*2.2);
-    shelf.castShadow=true;scene.add(shelf);
+  // ═══ AMR corridors — cross-shaped main paths ═══
+  function addCorridor(x1,z1,x2,z2,color,w){
+    const dx=x2-x1,dz=z2-z1,len=Math.sqrt(dx*dx+dz*dz);
+    const g=new THREE.PlaneGeometry(w,len);
+    const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color,transparent:true,opacity:.08,side:THREE.DoubleSide}));
+    m.rotation.x=-Math.PI/2;m.rotation.z=Math.atan2(dx,dz);
+    m.position.set((x1+x2)/2,.012,(z1+z2)/2);scene.add(m);
   }
+  addCorridor(-22,0,22,0,0x00d4aa,2.5);
+  addCorridor(0,-18,0,18,0x00d4aa,2.5);
+
+  // Remove old line-side warehouse and connector-to-rail
+  // Connector shortened — no longer reaches to empty space
 
   // Stations — grid layout per zone
   ZONES.forEach(z=>{
@@ -539,7 +518,7 @@ function buildFactory(){
       s.userData={...s.userData,...st,zoneId:z.id,zoneName:z.name};
       scene.add(s);stationObjects.push(s);
       scene.add(createCoordSprite(sx,sz,z.color).sprite);
-      scene.add(createTextLabel((i+1)+' '+st.label,sx,.025,sz));
+      scene.add(createTextLabel(st.id,sx,.025,sz));
     });
     // Zone corner coordinates (4 corners)
     const zx=z.pos.x,zz=z.pos.z,zw=z.size.w,zd=z.size.d;
@@ -555,7 +534,7 @@ function buildFactory(){
   if(robotObjs.length===0){
     ROBOT_DEFS.forEach(rd=>{
       const r={obj:createRobot(rd.x,rd.z),pos:{x:rd.x,z:rd.z},
-               rowZ:rd.rowZ,stepIdx:0,zone:rd.zone,name:rd.name,offset:rd.offset,
+               railZ:rd.railZ,stepIdx:0,zone:rd.zone,name:rd.name,offset:1.5,
                coordSprite:null,nameSprite:null,dwell:0,workAnim:0};
       r.coordSprite=createCoordSprite(rd.x,rd.z,'#00d4aa');
       scene.add(r.obj);scene.add(r.coordSprite.sprite);
@@ -647,11 +626,12 @@ function buildFactory(){
 
   // AGVs — 4台高对比色往返4区（当前1台展开）
   const AGV_DEFS=[
-    {x:-3,z:-6,c:0x00ffcc,s:0xffffff,n:'A1',zone:'coc'},  // 亮青
-    {x:10,z:-6,c:0xffff00,s:0x222222,n:'A2',zone:'oe'},   // 亮黄
-    {x:10,z:2, c:0xff44ff,s:0xffffff,n:'A3',zone:'mod'},  // 亮粉
-    {x:-3,z:2, c:0xff8800,s:0x222222,n:'A4',zone:'wh'}    // 亮橙
+    {x:-10,z:-1,c:0x00ffcc,s:0xffffff,n:'A1',zone:'coc'},
+    {x:10,z:-1,c:0xffff00,s:0x222222,n:'A2',zone:'oe'},
+    {x:10,z:1,c:0xff44ff,s:0xffffff,n:'A3',zone:'mod'},
+    {x:-10,z:1,c:0xff8800,s:0x222222,n:'A4',zone:'wh'}
   ];
+
   if(agvObjs.length===0){
     AGV_DEFS.forEach((d,i)=>{
       const a={obj:createAGV(d.x,d.z,d.c,d.s),pos:{x:d.x,z:d.z},target:{x:d.x,z:d.z},
@@ -911,11 +891,11 @@ function animate(){
   // Robot movement — visit each station in row, left to right, loop
   robotObjs.forEach(r=>{
     const rowStations=stationObjects.filter(s=>
-      s.userData.zoneId===r.zone&&Math.abs(s.position.z-r.rowZ)<1.5
+      s.userData.zoneId===r.zone&&Math.abs(s.position.z-r.railZ-1.5)<1.5
     ).sort((a,b)=>a.position.x-b.position.x);
     if(rowStations.length===0)return;
     const st=rowStations[r.stepIdx%rowStations.length];
-    let tx=st.position.x,tz=st.position.z+(r.offset||2.0);
+    let tx=st.position.x,tz=r.railZ;
     const rdx=tx-r.pos.x,rdz=tz-r.pos.z;
     if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08){
       const dwellTime=r.name==='Z4 AOI'&&st.userData.id==='I120'?180:150;
@@ -932,11 +912,12 @@ function animate(){
   
   // AGV movement — 4台各自区内巡逻 + R1跟随AGV
   const AGV_PATROLS=[
-    [{x:-3,z:-4},{x:-3,z:-9},{x:1.5,z:-10}],         // 青A1: (150,160)→(150,210)→(195,220)
-    [{x:15.5,z:-5},{x:15.5,z:-2},{x:14,z:-2},{x:14,z:3}], // 黄A2: (335,170)(335,140)(320,140)(320,90)
-    [{x:-6,z:6},{x:2,z:6},{x:0,z:6}],               // 粉A3: MOD上边界 (120,60)(200,60)(180,60)
-    [{x:14,z:-4},{x:2,z:-2.5},{x:4.5,z:-2.5},{x:-5.5,z:2.5}], // 橙A4
+    [{x:-19,z:-1},{x:-3,z:-1},{x:-3,z:-10},{x:-19,z:-10}],
+    [{x:3,z:-1},{x:19,z:-1},{x:19,z:-10},{x:3,z:-10}],
+    [{x:-19,z:1},{x:-3,z:1},{x:-3,z:10},{x:-19,z:10}],
+    [{x:3,z:1},{x:19,z:1},{x:19,z:10},{x:3,z:10}],
   ];
+
   agvObjs.forEach((a,i)=>{
     if(a.isFollower){
       // R1跟随AGV — 跟在R1机器人后面

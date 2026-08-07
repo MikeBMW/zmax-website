@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工厂大屏 · Z-MAX 智能制造监控</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080d;color:#c9d1d9;font-family:'PingFang SC','Microsoft YaHei',sans-serif;overflow-x:hidden;min-height:100vh}
+.header{background:linear-gradient(90deg,#06080d 0%,#0d1520 50%,#06080d 100%);border-bottom:1px solid #1a2a3a;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header h1{font-size:28px;font-weight:700;color:#fff;letter-spacing:2px}
+.header h1 span{color:#00d4aa}
+.header .time{font-size:16px;color:#8b949e;font-family:monospace}
+.header .stats{display:flex;gap:24px;align-items:center}
+.header .stat{text-align:center}
+.header .stat .val{font-size:24px;font-weight:700;color:#00d4aa}
+.header .stat .lab{font-size:11px;color:#6e7681;margin-top:2px}
+.main-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px;max-width:1920px;margin:0 auto}
+.zone-col{background:#0d1117;border-radius:8px;border:1px solid #1a2a3a;overflow:hidden}
+.zone-header{padding:10px 14px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1a2a3a}
+.zone-header .zone-dot{width:10px;height:10px;border-radius:50%}
+.zone-coc .zone-header{background:linear-gradient(90deg,#f0a50020,#0d1117)}
+.zone-coc .zone-dot{background:#f0a500;box-shadow:0 0 6px #f0a500}
+.zone-oe .zone-header{background:linear-gradient(90deg,#ff6b3520,#0d1117)}
+.zone-oe .zone-dot{background:#ff6b35;box-shadow:0 0 6px #ff6b35}
+.zone-mod .zone-header{background:linear-gradient(90deg,#58a6ff20,#0d1117)}
+.zone-mod .zone-dot{background:#58a6ff;box-shadow:0 0 6px #58a6ff}
+.zone-wh .zone-header{background:linear-gradient(90deg,#3fb95020,#0d1117)}
+.zone-wh .zone-dot{background:#3fb950;box-shadow:0 0 6px #3fb950}
+.robot-card{background:#131726;border:1px solid #1a2a3a;border-radius:6px;margin:8px;padding:12px;transition:border-color .3s}
+.robot-card.alarm{border-color:#ff4444;animation:alarm-pulse 1s ease-in-out infinite}
+@keyframes alarm-pulse{0%,100%{box-shadow:0 0 0 rgba(255,68,68,0)}50%{box-shadow:0 0 12px rgba(255,68,68,.4),inset 0 0 8px rgba(255,68,68,.05)}}
+.robot-card.warning{border-color:#f0a500}
+.robot-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.robot-name{font-size:15px;font-weight:700;color:#e6edf3}
+.robot-type{font-size:10px;color:#6e7681;background:#1a1f2b;padding:2px 6px;border-radius:3px}
+.robot-status{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.status-dot{width:8px;height:8px;border-radius:50%}
+.status-dot.online{background:#3fb950;box-shadow:0 0 6px #3fb950}
+.status-dot.idle{background:#f0a500;box-shadow:0 0 6px #f0a500;animation:pulse-dot 2s ease-in-out infinite}
+.status-dot.offline{background:#ff4444}
+.status-dot.running{background:#00d4aa;box-shadow:0 0 8px #00d4aa;animation:pulse-dot .8s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.status-text{font-size:12px;font-weight:600}
+.status-text.running{color:#00d4aa}
+.status-text.idle{color:#f0a500}
+.status-text.offline{color:#ff4444}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.metric{padding:6px 8px;background:#0d1117;border-radius:4px}
+.metric .m-val{font-size:18px;font-weight:700;color:#e6edf3;font-family:monospace}
+.metric .m-lab{font-size:9px;color:#6e7681;margin-top:1px}
+.metric.running .m-val{color:#00d4aa}
+.metric.warn .m-val{color:#f0a500}
+.agv-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;padding-top:8px;border-top:1px solid #1a2a3a}
+.agv-tag{font-size:10px;padding:3px 8px;border-radius:10px;background:#1a1f2b;color:#8b949e;display:flex;align-items:center;gap:4px}
+.agv-tag .agv-dot{width:5px;height:5px;border-radius:50%}
+.agv-tag.running .agv-dot{background:#00d4aa}
+.agv-tag.idle .agv-dot{background:#f0a500}
+.alarm-bar{position:fixed;bottom:0;left:0;right:0;background:#0d1117;border-top:1px solid #1a2a3a;padding:6px 16px;display:flex;align-items:center;gap:12px;z-index:100;font-size:12px}
+.alarm-bar .alarm-count{font-weight:700;color:#ff4444;font-size:18px}
+.alarm-bar .alarm-item{padding:3px 10px;background:#ff444415;border:1px solid #ff444430;border-radius:4px;color:#ff6b6b;font-size:11px;display:flex;align-items:center;gap:6px}
+.alarm-bar .alarm-item .ack-btn{background:#ff4444;color:#fff;border:none;padding:2px 8px;border-radius:3px;cursor:pointer;font-size:10px}
+.alarm-bar .alarm-item .ack-btn:hover{background:#ff6666}
+.alarm-bar .clear{font-size:11px;color:#8b949e}
+.agv-section{background:#0d1117;border-radius:8px;border:1px solid #1a2a3a;padding:12px;margin-top:12px}
+.agv-section .agv-title{font-size:13px;font-weight:700;color:#00d4aa;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.agv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.agv-card{background:#131726;border:1px solid #1a2a3a;border-radius:8px;padding:12px}
+.agv-card .agv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.agv-card .agv-name{font-size:14px;font-weight:700;color:#e6edf3}
+.agv-card .agv-zone{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700}
+.agv-card .agv-status{font-size:10px;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.agv-card .agv-metrics{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.agv-card .agv-metric{padding:5px 6px;background:#0d1117;border-radius:4px;text-align:center}
+.agv-card .agv-metric .mv{font-size:16px;font-weight:700;color:#00d4aa;font-family:monospace}
+.agv-card .agv-metric .ml{font-size:9px;color:#6e7681;margin-top:1px}
+.agv-dist-bar{height:3px;background:#1a2a3b;border-radius:2px;margin-top:6px;overflow:hidden}
+.agv-dist-fill{height:100%;border-radius:2px;transition:width 1s}
+@media(max-width:1200px){.agv-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.agv-grid{grid-template-columns:1fr}}
+.efficiency-bar{height:3px;background:#1a2a3b;border-radius:2px;margin-top:4px;overflow:hidden}
+.efficiency-fill{height:100%;border-radius:2px;transition:width 1s}
+.efficiency-fill.high{background:#3fb950}
+.efficiency-fill.mid{background:#f0a500}
+.efficiency-fill.low{background:#ff4444}
+.kpi-row{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;padding:0 12px 12px;max-width:1920px;margin:0 auto}
+.kpi-card{background:#0d1117;border:1px solid #1a2a3a;border-radius:6px;padding:10px;text-align:center}
+.kpi-card .kpi-val{font-size:26px;font-weight:700;color:#00d4aa;font-family:monospace}
+.kpi-card .kpi-lab{font-size:10px;color:#6e7681;margin-top:2px}
+@media(max-width:1200px){.main-grid{grid-template-columns:repeat(2,1fr)}.kpi-row{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:768px){.main-grid{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="/" style="color:#00d4aa;text-decoration:none;font-size:12px;margin-right:12px;border:1px solid #00d4aa44;padding:4px 10px;border-radius:4px">← 主页</a>
+  <h1>Z-MAX <span>智能工厂</span> 监控大屏</h1>
+  <div class="stats">
+    <div class="stat"><div class="val" id="total-runtime">00:00:00</div><div class="lab">运行时长</div></div>
+    <div class="stat"><div class="val" id="total-output">0</div><div class="lab">今日产出 (件)</div></div>
+    <div class="stat"><div class="val" id="oee">--</div><div class="lab">OEE</div></div>
+  </div>
+  <div class="time" id="clock">--</div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-val" id="kpi-online">0</div><div class="kpi-lab">在线设备</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-running">0</div><div class="kpi-lab">运行中</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-idle">0</div><div class="kpi-lab">待机</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-alarm">0</div><div class="kpi-lab" style="color:#ff6b6b">⚠ 报警</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-efficiency">--</div><div class="kpi-lab">整体效率</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-yield">--</div><div class="kpi-lab">良率</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-agv">0</div><div class="kpi-lab">AGV 运行</div></div>
+  <div class="kpi-card"><div class="kpi-val" id="kpi-cycle">--</div><div class="kpi-lab">平均节拍 (s)</div></div>
+</div>
+
+<div class="main-grid" id="dashboard"></div>
+
+<div class="agv-section" id="agv-section">
+  <div class="agv-title">🚗 AGV 小车工作量 <span style="font-size:10px;color:#6e7681;font-weight:400">— 4台区域巡逻AGV</span></div>
+  <div class="agv-grid" id="agv-dashboard"></div>
+</div>
+
+<div class="alarm-bar" id="alarm-bar" style="display:none">
+  <span style="color:#ff4444;font-weight:700">🚨 报警</span>
+  <span class="alarm-count" id="alarm-count">0</span>
+  <span class="clear">|</span>
+  <div id="alarm-list" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+</div>
+
+<script>
+// ═══════ Factory Data ═══════
+var FACTORY = {
+  coc: { name: 'COC 来料检测区', color: '#f0a500', icon: '📦', stations: 31, robots: [
+    { id: 'Z4_AOI', name: 'Z4 AOI', type: 'Z700F+AOI', zone: 'coc', x: -16.5, z: -12.1, status: 'running', speed: 2.4, unit: '件/min', workload: 67, capacity: 100, cycleTime: 25, temp: 38, agvs: [
+      { id: 'AGV_C1', name: 'AGV-C1', status: 'running', speed: 1.2, load: 45 },
+      { id: 'AGV_C2', name: 'AGV-C2', status: 'idle', speed: 0, load: 0 }
+    ]}
+  ]},
+  oe: { name: 'OE 光电引擎区', color: '#ff6b35', icon: '🔧', stations: 72, robots: [
+    { id: 'R3', name: 'R3', type: 'Z700', zone: 'oe', x: 2.5, z: -7.1, status: 'running', speed: 1.8, unit: '件/min', workload: 42, capacity: 80, cycleTime: 33, temp: 42, agvs: [
+      { id: 'AGV_R3a', name: 'R3-跟随1', status: 'running', speed: 0.9, load: 30 },
+      { id: 'AGV_R3b', name: 'R3-跟随2', status: 'running', speed: 1.1, load: 55 }
+    ]}
+  ]},
+  mod: { name: 'MOD 模块组装区', color: '#58a6ff', icon: '⚙️', stations: 51, robots: [
+    { id: 'M1', name: 'M1', type: 'Z100L', zone: 'mod', x: 2.5, z: 1.5, status: 'running', speed: 3.1, unit: '件/min', workload: 78, capacity: 100, cycleTime: 19, temp: 35, agvs: [
+      { id: 'AGV_M1a', name: 'M1-跟随1', status: 'running', speed: 1.5, load: 60 },
+      { id: 'AGV_M1b', name: 'M1-跟随2', status: 'running', speed: 1.3, load: 40 },
+      { id: 'AGV_M1c', name: 'M1-跟随3', status: 'idle', speed: 0, load: 0 }
+    ]}
+  ]},
+  wh: { name: 'WH 仓储物流区', color: '#3fb950', icon: '🏗️', stations: 46, robots: [
+    { id: 'W1', name: 'W1', type: 'Z100L', zone: 'wh', x: -16.5, z: 4.2, status: 'idle', speed: 0, unit: '件/min', workload: 15, capacity: 60, cycleTime: 22, temp: 31, agvs: [
+      { id: 'AGV_W1a', name: 'W1-跟随1', status: 'idle', speed: 0, load: 0 },
+      { id: 'AGV_W1b', name: 'W1-跟随2', status: 'idle', speed: 0, load: 0 },
+      { id: 'AGV_W1c', name: 'W1-跟随3', status: 'idle', speed: 0, load: 0 }
+    ]}
+  ]}
+};
+
+// ═══════ AGV 巡逻车数据 (4台区域巡逻AGV) ═══════
+var AGVS = [
+  { id:'A1', name:'AGV-A1 青', zone:'COC', zoneColor:'#f0a500', color:'#00ffcc',
+    patrol_m:9.6, speed:1.0, status:'running', workload:65, load:45, dist_today:0, cycles:0 },
+  { id:'A2', name:'AGV-A2 黄', zone:'OE', zoneColor:'#ff6b35', color:'#ffff00',
+    patrol_m:9.5, speed:0.9, status:'running', workload:58, load:30, dist_today:0, cycles:0 },
+  { id:'A3', name:'AGV-A3 粉', zone:'MOD', zoneColor:'#58a6ff', color:'#ff44ff',
+    patrol_m:10.0, speed:1.1, status:'running', workload:72, load:60, dist_today:0, cycles:0 },
+  { id:'A4', name:'AGV-A4 橙', zone:'WH', zoneColor:'#3fb950', color:'#ff8800',
+    patrol_m:25.8, speed:0.8, status:'idle', workload:22, load:0, dist_today:0, cycles:0 }
+];
+
+var alarms = [];
+var startTime = Date.now();
+var totalOutput = 0;
+
+// ═══════ Simulate real-time data ═══════
+function simulate() {
+  var now = Date.now();
+  Object.keys(FACTORY).forEach(function(zk) {
+    var z = FACTORY[zk];
+    z.robots.forEach(function(r, ri) {
+      var flip = Math.random();
+      if (flip < 0.02) { r.status = 'alarm'; r.speed = 0;
+        alarms.push({ ts: now, robot: r.name, zone: z.name, msg: r.name + ' 异常停机', acked: false });
+        setTimeout(function() { r.status = 'idle'; r.speed = 0; }, 8000 + Math.random() * 15000);
+      } else if (flip < 0.05) { r.status = 'idle'; r.speed = 0; }
+      else if (flip < 0.7) { r.status = 'running'; r.speed = (r.status === 'running' ? r.speed * (0.9 + Math.random() * 0.2) : 1.5 + Math.random() * 2.5); r.workload = Math.min(100, r.workload + Math.random() * 0.5); r.temp = Math.round(r.temp + (Math.random() - 0.5) * 2); totalOutput += Math.random() * 0.1; }
+      r.cycleTime = Math.round(15 + Math.random() * 25);
+      r.agvs.forEach(function(a) {
+        a.status = r.status === 'running' ? (Math.random() > 0.2 ? 'running' : 'idle') : (r.status === 'idle' ? (Math.random() > 0.5 ? 'idle' : 'running') : 'idle');
+        a.speed = a.status === 'running' ? (0.5 + Math.random() * 1.5) : 0;
+        a.load = Math.round(a.status === 'running' ? 10 + Math.random() * 80 : 0);
+      });
+    });
+  });
+  alarms = alarms.filter(function(a) { return now - a.ts < 30000; });
+  // AGV simulation
+  AGVS.forEach(function(a) {
+    if (Math.random() < 0.03) { a.status = 'alarm';
+      alarms.push({ ts: now, robot: a.name, zone: a.zone, msg: a.name + ' 异常停车', acked: false });
+      setTimeout(function() { a.status = 'idle'; }, 6000 + Math.random() * 10000);
+    } else if (Math.random() < 0.08) { a.status = 'idle'; a.speed = 0; a.load = Math.round(a.load * 0.5); }
+    else { a.status = 'running';
+      a.speed = (0.7 + Math.random() * 0.6);
+      a.load = Math.round(Math.min(100, a.load + (Math.random() - 0.4) * 15));
+      a.workload = Math.round(Math.min(100, Math.max(10, a.workload + (Math.random() - 0.5) * 8)));
+      a.cycles += Math.random() * 0.3;
+      a.dist_today += a.patrol_m * Math.random() * 0.3 / 1000; // km increments
+    }
+  });
+}
+
+function render() {
+  var h = '';
+  var zoneKeys = ['coc', 'oe', 'mod', 'wh'];
+  var zoneClasses = ['zone-coc', 'zone-oe', 'zone-mod', 'zone-wh'];
+  var online = 0, running = 0, idle = 0, alarmCount = 0, totalEff = 0, robotCount = 0;
+  var allAgvs = 0, runningAgvs = 0, runningA = 0;
+  var totalCycle = 0;
+
+  zoneKeys.forEach(function(zk, zi) {
+    var z = FACTORY[zk];
+    h += '<div class="zone-col ' + zoneClasses[zi] + '">';
+    h += '<div class="zone-header"><span class="zone-dot"></span>' + z.icon + ' ' + z.name + ' <span style="font-size:10px;color:#6e7681;margin-left:auto">' + z.stations + '站</span></div>';
+
+    z.robots.forEach(function(r) {
+      robotCount++;
+      totalCycle += r.cycleTime;
+      var sc = '';
+      if (r.status === 'running') { sc = 'running'; running++; }
+      else if (r.status === 'idle') { sc = 'idle'; idle++; }
+      else if (r.status === 'alarm') { sc = 'offline'; alarmCount++; }
+      else { sc = 'offline'; }
+      if (r.status !== 'offline') online++;
+      totalEff += r.workload;
+
+      var alarmClass = r.status === 'alarm' ? ' alarm' : (r.workload > 90 ? ' warning' : '');
+      var effClass = r.workload > 80 ? 'high' : (r.workload > 40 ? 'mid' : 'low');
+
+      h += '<div class="robot-card' + alarmClass + '">';
+      h += '<div class="robot-top"><span class="robot-name">🤖 ' + r.name + '</span><span class="robot-type">' + r.type + '</span></div>';
+      h += '<div class="robot-status"><span class="status-dot ' + sc + '"></span><span class="status-text ' + sc + '">' + (r.status === 'running' ? '运行中' : r.status === 'idle' ? '待机' : r.status === 'alarm' ? '⚠ 报警' : '离线') + '</span></div>';
+      h += '<div class="efficiency-bar"><div class="efficiency-fill ' + effClass + '" style="width:' + r.workload + '%"></div></div>';
+      h += '<div class="metrics">';
+      h += '<div class="metric"><div class="m-val">' + (r.speed || 0).toFixed(1) + '</div><div class="m-lab">速度 ' + r.unit + '</div></div>';
+      h += '<div class="metric"><div class="m-val">' + r.cycleTime + 's</div><div class="m-lab">节拍</div></div>';
+      h += '<div class="metric"><div class="m-val">' + Math.round(r.workload) + '%</div><div class="m-lab">负载</div></div>';
+      h += '<div class="metric"><div class="m-val">' + r.temp + '°C</div><div class="m-lab">温度</div></div>';
+      h += '</div>';
+
+      if (r.agvs.length > 0) {
+        h += '<div class="agv-row">';
+        r.agvs.forEach(function(a) {
+          allAgvs++;
+          if (a.status === 'running') runningAgvs++;
+          h += '<span class="agv-tag ' + a.status + '"><span class="agv-dot"></span>' + a.name + ' ' + (a.speed || 0).toFixed(1) + 'm/s ' + a.load + '%</span>';
+        });
+        h += '</div>';
+      }
+      h += '</div>';
+    });
+
+    h += '</div>';
+  });
+
+  document.getElementById('dashboard').innerHTML = h;
+
+  // KPI
+  document.getElementById('kpi-online').textContent = online;
+  document.getElementById('kpi-running').textContent = running;
+  document.getElementById('kpi-idle').textContent = idle;
+  document.getElementById('kpi-alarm').textContent = alarmCount;
+  document.getElementById('kpi-alarm').style.color = alarmCount > 0 ? '#ff4444' : '#6e7681';
+  document.getElementById('kpi-efficiency').textContent = (robotCount > 0 ? Math.round(totalEff / robotCount) : 0) + '%';
+  document.getElementById('kpi-yield').textContent = '99.5%';
+  document.getElementById('kpi-agv').textContent = (runningAgvs + runningA) + '/' + (allAgvs + 4);
+  document.getElementById('kpi-cycle').textContent = (robotCount > 0 ? Math.round(totalCycle / robotCount) : 0) + 's';
+
+  // AGV render
+  var agvHtml = '', runningA = 0;
+  AGVS.forEach(function(a) {
+    if (a.status === 'running') runningA++;
+    var sc = a.status === 'running' ? 'running' : a.status === 'idle' ? 'idle' : 'offline';
+    var stText = a.status === 'running' ? '🟢 运行' : a.status === 'idle' ? '🟡 待机' : '🔴 报警';
+    var distPct = Math.min(100, (a.dist_today / 100) * 100);
+    agvHtml += '<div class="agv-card">';
+    agvHtml += '<div class="agv-top"><span class="agv-name" style="color:' + a.color + '">🚗 ' + a.name + '</span>';
+    agvHtml += '<span class="agv-zone" style="background:' + a.zoneColor + '22;color:' + a.zoneColor + '">' + a.zone + '</span></div>';
+    agvHtml += '<div class="agv-status"><span class="status-dot ' + sc + '"></span>' + stText + '</div>';
+    agvHtml += '<div class="agv-metrics">';
+    agvHtml += '<div class="agv-metric"><div class="mv">' + a.speed.toFixed(1) + '</div><div class="ml">速度 m/s</div></div>';
+    agvHtml += '<div class="agv-metric"><div class="mv">' + a.workload + '%</div><div class="ml">利用率</div></div>';
+    agvHtml += '<div class="agv-metric"><div class="mv">' + a.dist_today.toFixed(1) + '</div><div class="ml">今日里程 km</div></div>';
+    agvHtml += '<div class="agv-metric"><div class="mv">' + Math.floor(a.cycles) + '</div><div class="ml">巡逻圈数</div></div>';
+    agvHtml += '</div>';
+    agvHtml += '<div style="font-size:9px;color:#6e7681;margin-top:4px">📐 巡逻 ' + a.patrol_m + 'm/圈 · 负载 ' + a.load + '%</div>';
+    agvHtml += '<div class="agv-dist-bar"><div class="agv-dist-fill high" style="width:' + distPct + '%"></div></div>';
+    agvHtml += '</div>';
+  });
+  document.getElementById('agv-dashboard').innerHTML = agvHtml;
+
+  // Alarms
+  var ab = document.getElementById('alarm-bar');
+  if (alarms.length > 0) {
+    ab.style.display = 'flex';
+    document.getElementById('alarm-count').textContent = alarms.length;
+    var ah = '';
+    alarms.slice(-5).reverse().forEach(function(a, i) {
+      ah += '<span class="alarm-item">🔔 ' + a.robot + ' @ ' + a.zone + ' — ' + a.msg + (a.acked ? ' <span style="color:#3fb950">已确认</span>' : ' <button class="ack-btn" onclick="ackAlarm(' + i + ')">确认</button>') + '</span>';
+    });
+    document.getElementById('alarm-list').innerHTML = ah;
+  } else {
+    ab.style.display = 'none';
+  }
+}
+
+function ackAlarm(i) { if (alarms[i]) alarms[i].acked = true; render(); }
+
+// Clock
+function updateClock() {
+  var now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleString('zh-CN', { hour12: false });
+  var elapsed = Math.floor((Date.now() - startTime) / 1000);
+  var h = Math.floor(elapsed / 3600), m = Math.floor((elapsed % 3600) / 60), s = elapsed % 60;
+  document.getElementById('total-runtime').textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  document.getElementById('total-output').textContent = Math.floor(totalOutput);
+  var online = 0, running = 0, total = 0;
+  Object.values(FACTORY).forEach(function(z) { z.robots.forEach(function(r) { total++; if (r.status !== 'offline') online++; if (r.status === 'running') running++; }); });
+  document.getElementById('oee').textContent = (total > 0 ? Math.round(running / total * 100) : 0) + '%';
+}
+
+// Main loop
+setInterval(function() { simulate(); render(); updateClock(); }, 2000);
+render();
+updateClock();
+</script>
+
+</body>
+</html>

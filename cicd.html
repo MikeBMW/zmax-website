@@ -5,9 +5,9 @@ body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans
 #bar{background:#0d1117;padding:6px 12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid #1a1f2b}
 #bar h1{font-size:14px;color:#00d4aa}#bar a{font-size:10px;color:#484f58;text-decoration:none}
 .row{display:flex;gap:8px;padding:8px;flex-wrap:wrap}
-.card{flex:1;min-width:180px;background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:8px}
-.card h3{font-size:10px;color:#00d4aa;margin-bottom:4px}
-.v{font-size:16px;font-weight:800;color:#00d4aa;text-align:center}.vl{font-size:9px;color:#8b949e;text-align:center}
+.card{flex:1;min-width:180px;max-width:220px;background:#0d1117;border:1px solid #1a1f2b;border-radius:6px;padding:8px}
+.card h3{font-size:10px;color:#00d4aa;margin-bottom:4px;white-space:nowrap}
+.v{font-size:16px;font-weight:800;color:#00d4aa;text-align:center;min-height:24px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vl{font-size:9px;color:#8b949e;text-align:center}
 #cam{width:100%;min-width:200px;min-height:150px;max-height:300px;display:block;border-radius:4px;background:#111}
 .st{display:flex;flex-wrap:wrap;gap:3px;font-size:8px}
 .st span{padding:1px 5px;border-radius:2px;border:1px solid #1a1f2b;color:#484f58}
@@ -19,7 +19,7 @@ body{background:#06080d;color:#c8d1d9;font:12px -apple-system,"PingFang SC",sans
 .stage{display:flex;align-items:center;font-size:10px}
 .metric{text-align:center;padding:4px 8px}.metric .val{font-size:18px;font-weight:800;color:#00d4aa}.metric .lab{font-size:8px;color:#484f58}
 </style></head><body>
-<div id="bar"><a href="/">←</a><h1>🔗 CI/CD</h1><span style="font-size:10px;color:#484f58;margin-left:auto" id="t">-</span></div>
+<div id="bar"><a href="/">←</a><h1>🔗 CI/CD</h1><a href="/pipeline-scheme.html" style="font-size:10px;color:#f0a500">📋 完整方案</a><span style="font-size:10px;color:#484f58;margin-left:auto" id="t">-</span></div>
 <div class="row">
 <div class="card"><h3>🤖 机器人</h3><div class="v" id="act">-</div><div class="vl">动作</div></div>
 <div class="card"><h3>📷 实时画面</h3><img id="cam"><div class="vl" id="ci">-</div></div>
@@ -73,24 +73,37 @@ async function P(){
   document.getElementById("inf").textContent=od.infer_count||0;
   document.getElementById("ver").textContent="v"+(od.infer_count||0);
   if(od.infer_count>0){SS(3,"ok","推理中");}
-  // System metrics from Orin sys field (current format: % values)
+  // System metrics (adapts to changing sys format)
   var sy=od.sys||{};
-  if(sy.cpu!=null)document.getElementById("ocpu").textContent=sy.cpu+"%";
+  document.getElementById("ocpu").textContent=(sy.cpu!=null?sy.cpu:"?")+"%";
   document.getElementById("ogpu").textContent=(sy.gpu!=null?sy.gpu+"%":"集成");
-  document.getElementById("omem").textContent=(sy.mem!=null?sy.mem+"%":"-");
-  document.getElementById("odisk").textContent=(sy.disk!=null?sy.disk+"%":"-");
-  document.getElementById("onet").textContent=(sy.net!=null?Math.round(sy.net)+"KB/s":"-");
+  document.getElementById("omem").textContent=(sy.mem_pct!=null?sy.mem_pct+"%":sy.mem!=null?sy.mem+"%":"?")+" · "+(sy.mem_used!=null?Math.round(sy.mem_used/1024)+"/"+Math.round(sy.mem_total/1024)+"G":"");
+  document.getElementById("odisk").textContent=(sy.disk_pct!=null?sy.disk_pct+"%":sy.disk!=null?sy.disk+"%":"?")+" · "+(sy.disk_used!=null?Math.round(sy.disk_used)+"/"+Math.round(sy.disk_total)+"G":"");
+  var nr=sy.net_rx||sy.net,nx=sy.net_tx||0;
+  document.getElementById("onet").textContent=(nr!=null?Math.round(nr)+"↓"+Math.round(nx)+"↑KB/s":"-");
   if(sy.temp!=null)document.getElementById("otmp").textContent=sy.temp+"°C";
  }catch(e){}
  try{
   var p=await fetch("/api/relay/peek"),pd=await p.json();
   // Version & loss from meta
   var meta=pd.meta||{};
+  // Shadow mode or regular frames
+  if(pd.shadow){
+    document.getElementById("act").textContent="影子模式";
+    var sc=pd.shadow.count||0;
+    document.getElementById("meta-info").textContent="影子对比:"+sc+"样本 · act_dim:"+(pd.shadow.act_dim||"?")+" · "+(pd.shadow.infer_ms_avg||0)+"ms";
+  }
   if(meta.labels){var lbs=Object.entries(meta.labels).map(([k,v])=>k+":"+v).join(" · ");document.getElementById("meta-info").textContent="标签: "+lbs}
   if(meta.loss){document.getElementById("loss").textContent=meta.loss.toFixed(3)}
-  // Action
-  var lb="IDLE";
-  if(pd.frames&&pd.frames[0])lb=pd.frames[0].label||"IDLE";
+  // Action from frames or shadow mode
+  var lb="待机";
+  if(pd.shadow&&pd.shadow.count>0){
+    // Check if last sample is recent (<10s old)
+    var ss=pd.samples||[];
+    var now=Date.now()/1000;
+    if(ss.length&&(now-(ss[ss.length-1].ts||0))<10)lb="影子运行中";
+  }
+  else if(pd.frames&&pd.frames[0])lb=pd.frames[0].label||"IDLE";
   else if(pd.current_state)lb=pd.current_state;
   document.getElementById("act").textContent=lb;
   // State machine
@@ -102,7 +115,7 @@ async function P(){
   document.getElementById("ci").textContent="🟢 "+t;
  }catch(e){document.getElementById("ci").textContent="JS错误:"+e.message;console.error(e)}
 }
-setInterval(P,500);P();
+setInterval(P,100);P();
 
 // Three-stage status + trigger
 function SS(id,c,txt){var d=document.getElementById("s"+id+"d");if(d){d.className="dot";if(c)d.classList.add(c)}var v=document.getElementById("s"+id+"t");if(v&&txt)v.textContent=txt}

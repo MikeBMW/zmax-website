@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z-MAX 数据闭环 · 完整方案 v2.7</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:16px;max-width:1000px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:20px;margin:16px 0}
+h2{color:#58a6ff;font-size:15px;margin:20px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:12px;margin:12px 0 4px}
+p,li{color:#8b949e;margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
+a{color:#00d4aa}
+.circular{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0}
+.circular .node{background:#0d1520;border:2px solid #1a2030;border-radius:10px;padding:10px 14px;text-align:center;min-width:100px}
+.circular .node .n{font-size:14px;color:#c8d1d9;font-weight:700}
+.circular .node .d{font-size:9px;color:#484f58;margin-top:2px}
+.circular .node.n1{border-color:#58a6ff}.circular .node.n2{border-color:#a371f7}
+.circular .node.n3{border-color:#f0a500}.circular .node.n4{border-color:#00d4aa}
+.circular .node.n5{border-color:#3fb950}.circular .node.n6{border-color:#ff6b35}
+.circular .arr{font-size:20px;color:#333}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;margin:1px}
+.tg{background:#00d4aa22;color:#00d4aa;border:1px solid #00d4aa44}
+.tb{background:#58a6ff22;color:#58a6ff;border:1px solid #58a6ff44}
+.to{background:#f0a50022;color:#f0a500;border:1px solid #f0a50044}
+.highlight{background:#0d1520;border-left:3px solid #00d4aa;padding:8px 12px;margin:8px 0;border-radius:4px}
+.kpi{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.kpi div{flex:1;min-width:100px;background:#0d1520;border:1px solid #1a2030;border-radius:6px;padding:8px;text-align:center}
+.kpi .kv{font-size:18px;font-weight:800;color:#00d4aa}
+.kpi .kl{font-size:9px;color:#484f58}
+</style>
+</head>
+<body>
+<a href="/">← 主页</a> · <a href="/cicd.html">📊 CICD</a>
+<h1>🔗 Z-MAX 数据闭环完整方案 v2.7</h1>
+<div class="highlight"><b>珞石 XMS5-R800 · 6轴 · ACT模型 · WS事件驱动 · Sim-to-Real迭代</b></div>
+
+<!-- ═══ KPI ═══ -->
+<h2>📊 核心 KPI</h2>
+<div class="kpi">
+  <div><div class="kv"><5min</div><div class="kl">闭环时间</div></div>
+  <div><div class="kv">479ms</div><div class="kl">推理延迟</div></div>
+  <div><div class="kv">1.543</div><div class="kl">训练loss</div></div>
+  <div><div class="kv">100MB</div><div class="kl">单包上限</div></div>
+  <div><div class="kv">5fps</div><div class="kl">快照直播</div></div>
+</div>
+
+<!-- ═══ 环形拓扑 ═══ -->
+<h2>一、六节点环形拓扑</h2>
+<div class="circular">
+  <div class="node n1"><div class="n">📡 ① 采集</div><div class="d">Orin·小芳</div></div>
+  <div class="arr">→</div>
+  <div class="node n2"><div class="n">🧠 ② 训练</div><div class="d">4060·xspace</div></div>
+  <div class="arr">→</div>
+  <div class="node n3"><div class="n">✅ ③ 验证</div><div class="d">合规检查</div></div>
+  <div class="arr">→</div>
+  <div class="node n4"><div class="n">☁ ④ 集成</div><div class="d">ECS·web</div></div>
+  <div class="arr">→</div>
+  <div class="node n5"><div class="n">🚀 ⑤ 部署</div><div class="d">Orin·小芳</div></div>
+  <div class="arr">→</div>
+  <div class="node n6"><div class="n">🎯 ⑥ 推理</div><div class="d">产线·影子</div></div>
+</div>
+<center style="font-size:10px;color:#484f58">└─── 推理反馈 → 再采集 → 迭代循环 ───┘</center>
+
+<!-- ═══ 节点详情 ═══ -->
+<h2>二、节点详情（输入/输出/质量/负责人）</h2>
+<table>
+<tr><th>#</th><th>节点</th><th>输入</th><th>输出</th><th>质量要求</th><th>负责人</th></tr>
+<tr>
+  <td>①</td><td><b>采集</b></td>
+  <td>RealSense D405 · 珞石SDK · 6D关节</td>
+  <td>orin_6d数据集<br>state[6]+action[6]+camera+label</td>
+  <td><span class="tg">IDLE禁训</span><span class="tg">图var≥3000</span><span class="tb">时间戳相对</span></td>
+  <td>小芳</td>
+</tr>
+<tr>
+  <td>②</td><td><b>训练</b></td>
+  <td>LeRobot Dataset<br>多episode·独立mp4</td>
+  <td>model.safetensors (84MB)<br>2000步·loss输出</td>
+  <td><span class="tg">loss<1.6</span><span class="to">训练锁</span><span class="tb">三阶段</span></td>
+  <td>xspace</td>
+</tr>
+<tr>
+  <td>③</td><td><b>验证</b></td>
+  <td>checkpoint + flow拓扑</td>
+  <td>PASS/FAIL · 合规报告</td>
+  <td><span class="tg">维度匹配</span><span class="tg">拓扑完整</span></td>
+  <td>xspace</td>
+</tr>
+<tr>
+  <td>④</td><td><b>集成</b></td>
+  <td>模型84MB safetensors</td>
+  <td>pkg_npz → relay<br>静态URL双通道</td>
+  <td><span class="tg">单包≤100M</span><span class="to">size校验</span><span class="tb">FIFO淘汰</span></td>
+  <td>web</td>
+</tr>
+<tr>
+  <td>⑤</td><td><b>部署</b></td>
+  <td>relay弹栈/静态URL</td>
+  <td>Orin推理服务加载<br>sys心跳上报</td>
+  <td><span class="tg">心跳<30s</span><span class="tg">模型名确认</span></td>
+  <td>小芳</td>
+</tr>
+<tr>
+  <td>⑥</td><td><b>推理</b></td>
+  <td>产线关节位姿(6D)<br>仿真4D动作(影子)</td>
+  <td>动作块(7,6)<br>infer_count递增<br>影子对比delta</td>
+  <td><span class="tg">count>0</span><span class="to">延迟<70ms</span><span class="tb">delta可追溯</span></td>
+  <td>小芳</td>
+</tr>
+</table>
+
+<!-- ═══ 质量体系 ═══ -->
+<h2>三、数据质量管理（八维度）</h2>
+<table>
+<tr><th>维度</th><th>要求</th><th>检查手段</th><th>异常处理</th></tr>
+<tr><td>完整性</td><td>四元组缺一不可</td><td>上传前schema校验</td><td>丢弃+告警</td></tr>
+<tr><td>一致性</td><td>state/action维度匹配SR5(6D)</td><td>训练端维度校验</td><td>拒绝训练</td></tr>
+<tr><td>去重</td><td>JOINT_EPS=0.01rad+200ms窗口</td><td>N2过滤层</td><td>跳过重复帧</td></tr>
+<tr><td>时效</td><td>timestamp相对化·递增</td><td>采集端打标·训练端校验</td><td>修正偏移</td></tr>
+<tr><td>带宽</td><td>单包≤200KB·总缓冲≤100MB</td><td>relay FIFO·采集帧率控制</td><td>删最旧</td></tr>
+<tr><td>存储</td><td>ECS<85%·Orin<80%·MCAP<200MB</td><td>cron巡检·容量守卫</td><td>自动清理</td></tr>
+<tr><td>安全</td><td>只读查询·不干扰产线</td><td>rokae_query.py·SDK共存验证</td><td>立即回滚</td></tr>
+<tr><td>传递</td><td>静态URL+relay双通道·不弹栈</td><td>HTTP 200校验·size校验</td><td>重推</td></tr>
+</table>
+
+<!-- ═══ 管理 ═══ -->
+<h2>四、全链路管理方法</h2>
+
+<h3>4.1 自动守护</h3>
+<table>
+<tr><th>机制</th><th>实现</th></tr>
+<tr><td>WS事件驱动</td><td>ECS relay /upload → notify(:8766) → auto_loop毫秒触发</td></tr>
+<tr><td>60s轮询兜底</td><td>断线自愈·5s重连·独立于WS</td></tr>
+<tr><td>训练锁</td><td>同一时刻仅一个训练进程·prev_train.is_alive()守卫</td></tr>
+<tr><td>容量守卫</td><td>采集60包上限·训练4checkpoint·日志5MB</td></tr>
+</table>
+
+<h3>4.2 监控体系</h3>
+<table>
+<tr><th>层级</th><th>工具</th><th>阈值</th></tr>
+<tr><td>Orin端侧</td><td>orin_sys_status.py → /orin/status sys字段</td><td>CPU<90%·温度<75°C</td></tr>
+<tr><td>ECS中继</td><td>zmax_relay status · cicd面板</td><td>磁盘<85%·缓冲<100MB</td></tr>
+<tr><td>4060训练</td><td>auto_loop日志 · meta.loss</td><td>loss下降·无str/str崩溃</td></tr>
+<tr><td>控制台</td><td>cicd.html 100ms刷新</td><td>全绿·影子模式运行</td></tr>
+</table>
+
+<h3>4.3 Sim-to-Real 迭代</h3>
+<div class="highlight">
+Metaworld仿真(4D) → 4060训练 → 模型 → Orin影子模式<br>
+4D预测 vs 6D真机 → delta差异 → 回传训练 → 新模型 → 再对比 → 循环
+</div>
+
+<h2>五、Simulink Pipeline 映射</h2>
+<table>
+<tr><th>Simulink模块</th><th>对应节点</th><th>端侧实现</th></tr>
+<tr><td>📥 数据源</td><td>① 采集</td><td>SR5 MCAP+打标·过滤IDLE·JOINT_EPS去重</td></tr>
+<tr><td>⚙️ 处理</td><td>④ 集成</td><td>relay中转·缓冲FIFO·快照bridge·100MB限制</td></tr>
+<tr><td>🧠 模型</td><td>②③ 训练+验证</td><td>ACT 2000步·LeRobot·三阶段合规</td></tr>
+<tr><td>📤 输出</td><td>⑤⑥ 部署+推理</td><td>静态URL·影子模式·sys心跳·infer_count</td></tr>
+</table>
+
+<h2>六、版本 & 参考</h2>
+<table>
+<tr><th>版本</th><th>日期</th><th>变更</th></tr>
+<tr><td>v2.6.2</td><td>08-02</td><td>闭环初通·静态URL·三bug修复</td></tr>
+<tr><td>v2.6.3</td><td>08-03</td><td>WS事件驱动·Orin sys监控·100MB限制</td></tr>
+<tr><td>v2.6.4</td><td>08-04</td><td>Sim-to-Real影子模式·14节点端侧·八维质量</td></tr>
+<tr><td><b>v2.7</b></td><td>08-05</td><td><b>三端方案统一·环形拓扑·KPI体系·管理方法</b></td></tr>
+</table>
+
+<p style="text-align:center;margin:20px 0">
+<a href="/cicd.html">📊 实时控制台</a> · 
+<a href="/simulink.html">🔧 Simulink</a> · 
+<a href="/dds-global.html">🌊 DDS全局空间</a> · 
+<a href="/master-data.html">🎯 主数据空间</a>
+</p>
+</body>
+</html>
