@@ -294,9 +294,9 @@ if(sceneType==="insert"){
     var s=new THREE.Mesh(new THREE.BoxGeometry(.15,.05,.3),new THREE.MeshStandardMaterial({color:0x111111,emissive:0x331100,emissiveIntensity:.5}));
     s.position.set(-.6+i*.4,.65,-1.65);objs.add(s);
   }
-  // Robot arm in front of oven
-  var robot=buildCobot(0,0,.05,1);
-  objs.add(robot);
+  // AMR + cobot in front of oven
+  var amr=buildAMR(0,0,.3);objs.add(amr);
+  var robot=buildCobot(.18,.2,-.2,.75);objs.add(robot);
 
 }else if(sceneType==="handle"){
   // AMR transport scene: AMR + shelves + work area
@@ -413,6 +413,10 @@ if(sceneType==="insert"){
   scopeHead.position.set(0,.85,-.6);objs.add(scopeHead);
   var scopeLens=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,.15,8),mtl.accent);
   scopeLens.position.set(0,.78,-.6);objs.add(scopeLens);
+
+  // AMR parked near input conveyor
+  var amrAoi=buildAMR(-2.5,.01,.5);objs.add(amrAoi);
+  var cobotAoi=buildCobot(-2.32,.22,.3,.75);objs.add(cobotAoi);
 }
 
 // Orbit controls
