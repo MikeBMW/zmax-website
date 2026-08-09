@@ -485,70 +485,33 @@ if(sceneType==="insert"){
     renderer.render(scene,camera);
   };
 }else if(sceneType==="aoi"||sceneType.indexOf("aoi")>=0){
-  var _amrRef=null;
-  // ==== AOI 4-STATION OPTICAL INSPECTION SCENE ====
-  var stPos=[
-    {x:1.5,z:1.5,label:"上料定位",color:0x58a6ff},
-    {x:-1.5,z:1.5,label:"金线焊点检测",color:0xf0a500},
-    {x:-1.5,z:-1.5,label:"耦合面检测",color:0xa371f7},
-    {x:1.5,z:-1.5,label:"外观检测",color:0x3fb950}
-  ];
-  var stations=[];
+  // ==== AOI 4-STATION SCENE (handle scene pattern) ====
+  // 4 AOI station pedestals at corners
+  var stPos=[{x:1.5,z:1.5,c:0x58a6ff},{x:-1.5,z:1.5,c:0xf0a500},{x:-1.5,z:-1.5,c:0xa371f7},{x:1.5,z:-1.5,c:0x3fb950}];
   for(var si=0;si<4;si++){
-    var sp=stPos[si];
-    var sg=new THREE.Group();sg.position.set(sp.x,0,sp.z);
-    sg.add(set(mk(new THREE.BoxGeometry(.4,.08,.4),M.base),0,.04,0));
-    sg.add(set(mk(new THREE.CylinderGeometry(.04,.05,.5,16),M.white),0,.29,0));
-    var head=new THREE.Group();head.position.y=.55;sg.add(head);
-    var hc=new THREE.MeshStandardMaterial({color:sp.color,roughness:.2,metalness:.5,emissive:sp.color,emissiveIntensity:.2});
-    head.add(set(mk(new THREE.BoxGeometry(.25,.12,.2),hc),0,0,0));
-    head.add(set(mk(new THREE.CylinderGeometry(.04,.05,.1,16),new THREE.MeshStandardMaterial({color:0x111,metalness:.9,roughness:.1})),0,.12,0));
-    var lr=new THREE.Mesh(new THREE.TorusGeometry(.06,.01,8,16),new THREE.MeshBasicMaterial({color:sp.color}));
-    lr.position.y=.07;head.add(lr);sg._ledRing=lr;
-    sg.add(set(mk(new THREE.BoxGeometry(.2,.02,.2),new THREE.MeshStandardMaterial({color:0x222,roughness:.5})),0,.01,0));
-    var lcv=document.createElement("canvas");lcv.width=256;lcv.height=48;
-    var lcx=lcv.getContext("2d");lcx.fillStyle="#fff";lcx.font="bold 16px Arial";lcx.textAlign="center";lcx.fillText(sp.label,128,32);
-    var ltx=new THREE.CanvasTexture(lcv);ltx.minFilter=THREE.LinearFilter;
-    var lbl=new THREE.Sprite(new THREE.SpriteMaterial({map:ltx,transparent:true,depthTest:false}));
-    lbl.position.set(0,.78,0);lbl.scale.set(.7,.13,1);sg.add(lbl);
-    var ind=new THREE.Mesh(new THREE.SphereGeometry(.025,8,8),new THREE.MeshBasicMaterial({color:0x555}));
-    ind.position.set(0,.85,0);sg.add(ind);sg._indicator=ind;
-    objs.add(sg);stations.push(sg);
+    var sg=new THREE.Group();sg.position.set(stPos[si].x,0,stPos[si].z);
+    sg.add(set(mk(new THREE.BoxGeometry(.4,.35,.4),M.base),0,.175,0));
+    sg.add(set(mk(new THREE.CylinderGeometry(.06,.08,.1,16),new THREE.MeshStandardMaterial({color:stPos[si].c,emissive:stPos[si].c,emissiveIntensity:.4,roughness:.1})),0,.4,0));
+    objs.add(sg);
   }
-  // Incoming tray
-  var trayIn=new THREE.Group();trayIn.position.set(-2.2,0,0);objs.add(trayIn);
-  trayIn.add(set(mk(new THREE.BoxGeometry(.5,.08,.5),M.base),0,.04,0));
-  trayIn.add(set(mk(new THREE.BoxGeometry(.4,.015,.4),new THREE.MeshStandardMaterial({color:0x4488bb,roughness:.3,metalness:.4})),0,.09,0));
-  var trayMods=[];
-  for(var ti=0;ti<6;ti++){
-    var tm=mk(new THREE.BoxGeometry(.06,.02,.1),M.mod);
-    tm.position.set(-.12+(ti%3)*.12,.11,-.1+Math.floor(ti/3)*.1);
-    trayIn.add(tm);trayMods.push(tm);
-  }
-  // OK bin
-  var okBin=new THREE.Group();okBin.position.set(2,0,1.2);objs.add(okBin);
+  // Incoming tray (left)
+  var trayInGrp=new THREE.Group();trayInGrp.position.set(-2,0,0);objs.add(trayInGrp);
+  trayInGrp.add(set(mk(new THREE.BoxGeometry(.5,.08,.5),M.base),0,.04,0));
+  trayInGrp.add(set(mk(new THREE.BoxGeometry(.4,.015,.4),new THREE.MeshStandardMaterial({color:0x4488bb,roughness:.3,metalness:.4})),0,.09,0));
+  // OK bin (right top)
+  var okBin=new THREE.Group();okBin.position.set(2,0,1);objs.add(okBin);
   okBin.add(set(mk(new THREE.BoxGeometry(.4,.25,.4),new THREE.MeshStandardMaterial({color:0x2a4a2a,roughness:.5})),0,.125,0));
-  var okcv=document.createElement("canvas");okcv.width=128;okcv.height=48;
-  var okcx=okcv.getContext("2d");okcx.fillStyle="#3fb950";okcx.font="bold 22px Arial";okcx.textAlign="center";okcx.fillText("OK",64,34);
-  var oktx=new THREE.CanvasTexture(okcv);oktx.minFilter=THREE.LinearFilter;
-  var okl=new THREE.Sprite(new THREE.SpriteMaterial({map:oktx,transparent:true,depthTest:false}));
-  okl.position.set(0,.32,0);okl.scale.set(.35,.13,1);okBin.add(okl);
-  // NG bin
-  var ngBin=new THREE.Group();ngBin.position.set(2,0,-1.2);objs.add(ngBin);
+  // NG bin (right bottom)
+  var ngBin=new THREE.Group();ngBin.position.set(2,0,-1);objs.add(ngBin);
   ngBin.add(set(mk(new THREE.BoxGeometry(.4,.25,.4),new THREE.MeshStandardMaterial({color:0x4a2a2a,roughness:.5})),0,.125,0));
-  var ngcv=document.createElement("canvas");ngcv.width=128;ngcv.height=48;
-  var ngcx=ngcv.getContext("2d");ngcx.fillStyle="#ff4444";ngcx.font="bold 22px Arial";ngcx.textAlign="center";ngcx.fillText("NG",64,34);
-  var ngtx=new THREE.CanvasTexture(ngcv);ngtx.minFilter=THREE.LinearFilter;
-  var ngl=new THREE.Sprite(new THREE.SpriteMaterial({map:ngtx,transparent:true,depthTest:false}));
-  ngl.position.set(0,.32,0);ngl.scale.set(.35,.13,1);ngBin.add(ngl);
-  // Narrow AMR + arm
-  var amr=buildNarrowAMR();amr.position.set(0,0,0);amr.rotation.y=Math.PI/2;objs.add(amr);
+  // Narrow AMR + arm (same pattern as handle scene)
+  var amr=buildNarrowAMR();amr.position.set(0,0,.3);amr.rotation.y=Math.PI/2;objs.add(amr);
   var armFront=buildArm(1,.12);armFront.position.z=.2;amr.add(armFront);
   // ESD mat
-  var esd=mk(new THREE.PlaneGeometry(5,3.5),new THREE.MeshBasicMaterial({color:0x1a1a2a,transparent:true,opacity:.1}));
-  esd.rotation.x=-Math.PI/2;esd.position.set(0,.001,0);objs.add(esd);
-  // IK
-  function ikArmAoi(arm,tgt){
+  var esd=mk(new THREE.PlaneGeometry(5,3),new THREE.MeshBasicMaterial({color:0x1a1a2a,transparent:true,opacity:.1}));
+  esd.rotation.x=-Math.PI/2;esd.position.set(0,.001,.3);objs.add(esd);
+  // IK function
+  function ikArm(arm,tgt){
     var l=tgt.clone();l.y-=.2;var pd=Math.sqrt(l.x*l.x+l.z*l.z),d=Math.sqrt(pd*pd+l.y*l.y);
     d=Math.min(d,.68);arm._j1.rotation.y=Math.atan2(l.x,l.z)-Math.PI/2;
     var ce=(.1225+.1225-d*d)/(.245);ce=Math.max(-.99,Math.min(.99,ce));
@@ -556,42 +519,40 @@ if(sceneType==="insert"){
     var st=Math.atan2(l.y,pd),so=Math.atan2(.35*Math.sin(el),.35+.35*Math.cos(el));
     arm._j2.rotation.z=st-so;arm._j4.rotation.z=-(arm._j2.rotation.z+arm._j3.rotation.z);arm._j5.rotation.z=0;
   }
-  // Animation state
-  var animState=0,animTimer=0,moduleIdx=0,currentStation=-1;
-  var phaseDurs=[2.5,2,1.5,2,1.5,2,1.5,2,1.5,2,1.5,2];
-  var phaseNames=["→取料","检测1:上料定位","→站2","检测2:金线焊点","→站3","检测3:耦合面","→站4","检测4:外观","→判定","判定分流","→返回","待机"];
+  // Animation: patrol 4 stations
+  var animState=0,animTimer=0,moduleIdx=0;
+  var phaseDurs=[2,2,1.5,2,1.5,2,1.5,2,1.5,2,1.5,2,1.5];
+  var phaseNames=["→取料","站1:定位","→站2","站2:焊点","→站3","站3:耦合","→站4","站4:外观","→判定","OK/NG","→取料","站1:定位","→站2"];
+  var patrol=[{x:-2,z:0},{x:1.5,z:1.5},{x:-1.5,z:1.5},{x:-1.5,z:-1.5},{x:1.5,z:-1.5},{x:2,z:0},{x:0,z:0}];
   var posRest=new THREE.Vector3(-.1,.32,-.2);
-  var posPick=new THREE.Vector3(-.8,.32,-.2);
-  _amrRef=amr;var _armLRef=armFront;
+  var _amrRef=amr,_armLRef=armFront;
   animate=function(){
     requestAnimationFrame(animate);
     var dt=Math.min(clk.getDelta(),.15);
-    animTimer+=dt;
-    if(animTimer>phaseDurs[animState]){animTimer=0;animState=(animState+1)%phaseDurs.length;if(animState===0)moduleIdx=(moduleIdx+1)%6;}
-    var raw=Math.min(animTimer/phaseDurs[animState],1),t=ease(raw),stEl=document.getElementById("status");
-    for(var si=0;si<4;si++)stations[si]._indicator.material.color.set(si===currentStation?0x00d4aa:0x555);
-    var tgtL=posRest.clone(),grip=.015;
-    switch(animState){
-      case 0:_amrRef.position.x=lerp(0,-1.2,t);_amrRef.position.z=0;armFront._held.visible=false;currentStation=-1;if(t>.5){tgtL=posPick;tgtL.y-=.06;grip=0;}if(t>.7)armFront._held.visible=true;break;
-      case 1:_amrRef.position.x=-1.2;_amrRef.position.z=0;tgtL=new THREE.Vector3(1.3,.55,-.8);grip=0;armFront._held.visible=true;currentStation=0;break;
-      case 2:_amrRef.position.x=lerp(-1.2,0,t);_amrRef.position.z=0;tgtL=posRest;grip=0;armFront._held.visible=true;currentStation=-1;break;
-      case 3:_amrRef.position.x=lerp(0,1.5,t);_amrRef.position.z=lerp(0,1.5,t);if(t>.6)tgtL=new THREE.Vector3(.8,.55,-.5);grip=0;armFront._held.visible=true;currentStation=-1;break;
-      case 4:_amrRef.position.x=1.5;_amrRef.position.z=1.5;tgtL=new THREE.Vector3(-.8,.55,.5);grip=0;armFront._held.visible=true;currentStation=1;break;
-      case 5:_amrRef.position.x=lerp(1.5,-1.5,t);_amrRef.position.z=lerp(1.5,1.5,t);tgtL=posRest;grip=0;armFront._held.visible=true;currentStation=-1;break;
-      case 6:_amrRef.position.x=-1.5;_amrRef.position.z=1.5;tgtL=new THREE.Vector3(.8,.55,.5);grip=0;armFront._held.visible=true;currentStation=2;break;
-      case 7:_amrRef.position.x=lerp(-1.5,-1.5,t);_amrRef.position.z=lerp(1.5,-1.5,t);tgtL=posRest;grip=0;armFront._held.visible=true;currentStation=-1;break;
-      case 8:_amrRef.position.x=-1.5;_amrRef.position.z=-1.5;tgtL=new THREE.Vector3(.8,.55,-.5);grip=0;armFront._held.visible=true;currentStation=3;break;
-      case 9:_amrRef.position.x=lerp(-1.5,2,t);_amrRef.position.z=lerp(-1.5,0,t);tgtL=posRest;grip=0;armFront._held.visible=true;currentStation=-1;break;
-      case 10:_amrRef.position.x=2;_amrRef.position.z=0;var isOK=(moduleIdx%5!==0);tgtL=isOK?new THREE.Vector3(-.3,.4,.6):new THREE.Vector3(-.3,.4,-.6);if(t>.3)grip=.015;if(t>.6)armFront._held.visible=false;currentStation=-1;break;
-      case 11:_amrRef.position.x=lerp(2,0,t);_amrRef.position.z=0;tgtL=posRest;grip=.015;armFront._held.visible=false;currentStation=-1;break;
+    if(sceneType.indexOf("aoi")>=0&&_amrRef){
+      animTimer+=dt;
+      if(animTimer>phaseDurs[animState]){animTimer=0;animState=(animState+1)%phaseDurs.length;if(animState===0)moduleIdx=(moduleIdx+1)%6;}
+      var raw=Math.min(animTimer/phaseDurs[animState],1),t=ease(raw),stEl=document.getElementById("status");
+      var idx=Math.floor(animState/2),isTransit=(animState%2===0),tgtL=posRest.clone(),grip=.015;
+      if(idx>=patrol.length)idx=patrol.length-1;
+      if(isTransit){
+        var nxt=Math.min(idx+1,patrol.length-1);
+        _amrRef.position.x=lerp(patrol[idx].x,patrol[nxt].x,t);
+        _amrRef.position.z=lerp(patrol[idx].z,patrol[nxt].z,t);
+        _armLRef._held.visible=false;
+      }else{
+        _amrRef.position.x=patrol[idx].x;_amrRef.position.z=patrol[idx].z;
+        tgtL=new THREE.Vector3(0,.45,-.6);grip=0;
+        _armLRef._held.visible=true;
+      }
+      if(_armLRef){ikArm(_armLRef,tgtL);
+        var gv=_armLRef._fL.position.x;gv+=(grip-gv)*15*dt;_armLRef._fL.position.x=gv;_armLRef._fR.position.x=-gv;}
+      stEl&&(stEl.textContent="● 第"+(moduleIdx+1)+"/6颗 "+phaseNames[animState]);
     }
-    if(_armLRef){ikArmAoi(_armLRef,tgtL);var gv=_armLRef._fL.position.x;gv+=(grip-gv)*15*dt;_armLRef._fL.position.x=gv;_armLRef._fR.position.x=-gv;}
-    stEl&&(stEl.textContent="● 第"+(moduleIdx+1)+"/6颗 "+phaseNames[animState]);
     if(_amrRef&&_amrRef._ring)_amrRef._ring.material.emissiveIntensity=1.2+Math.sin(Date.now()*.004)*.4;
     renderer.render(scene,camera);
   };
 }
-
 // Click on floor to add patrol point / show coords
 renderer.domElement.addEventListener("click",function(e){
   if(isDown)return; // don't trigger after drag
