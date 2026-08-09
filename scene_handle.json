@@ -1,0 +1,23 @@
+{
+    "name": "光模块柔性搬运场景",
+    "skills": [
+        "1.来料识别",
+        "2.料盘叉取",
+        "3.光模块移载",
+        "4.空盘回收",
+        "5.成品转运"
+    ],
+    "specs": {
+        "success_rate": 0.99,
+        "cycle_time": 8.0
+    },
+    "kpi": {
+        "operation_success_rate": "≥99%",
+        "cycle_time": "≤8s/颗 (取放到下一工位)",
+        "pick_accuracy": "±0.5mm (视觉引导)",
+        "damage_rate": "≤0.02% (防静电/防磕碰)",
+        "esd_control": "全流程防静电, 阻抗1e6-1e9Ω",
+        "payload": "≤2kg (机械臂末端)",
+        "vibration": "≤0.5g (搬运中)"
+    }
+}

@@ -1,92 +1,64 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>制造原子技能 · Z-MAX</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>原子技能主表 | Z-MAX v2.8</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#06080d;color:#c8d1d9;line-height:1.7}
-.wrap{max-width:1100px;margin:0 auto;padding:40px 20px}
-h1{color:#00d4aa;font-size:26px;text-align:center;margin-bottom:4px}
-.sub{text-align:center;color:#8b949e;font-size:13px;margin-bottom:28px}
-h2{color:#00d4aa;font-size:16px;margin:28px 0 10px;padding:6px 12px;background:#0d1117;border-left:3px solid #00d4aa;border-radius:0 4px 4px 0}
-table{width:100%;border-collapse:collapse;background:#0d1117;border-radius:8px;overflow:hidden;margin:10px 0;font-size:11px;display:block;overflow-x:auto}
-th{background:#00d4aa22;padding:7px 10px;text-align:left;color:#00d4aa;font-weight:700;white-space:nowrap;position:sticky;top:0}
-td{padding:6px 10px;border-bottom:1px solid #1a1f2b;white-space:nowrap}
-td.wrap{white-space:normal;max-width:200px}
-tr:nth-child(even) td{background:#080c14}
-.back-home{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:20px}
-.tag{display:inline-block;padding:1px 8px;border-radius:4px;font-size:10px;font-weight:700}
-.tag-p0{background:#ff444422;color:#ff4444}
-.tag-p1{background:#d4a80022;color:#d4a800}
-.tag-p2{background:#00d4aa22;color:#00d4aa}
-.stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
-.stat{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:12px 20px;text-align:center}
-.stat-num{font-size:24px;font-weight:900;color:#00d4aa}
-.stat-label{font-size:10px;color:#8b949e}
-.footer{text-align:center;padding:30px;color:#8b949e;font-size:11px;border-top:1px solid #1a1f2b;margin-top:40px}
-@media(max-width:768px){.wrap{padding:20px 12px}h1{font-size:22px}}
-</style>
-<script src="/dds-global.js"></script>
-<script src="/zmax-auth.js"></script>
-</head>
-<body>
-<div class="wrap">
-<a href="/kanban.html" class="back-home">← 返回看板</a> &nbsp; <a href="/dds-data-space.html" style="color:#00d4aa;text-decoration:none;font-size:12px">🌐 数据空间 →</a>
-<h1>🏭 制造原子技能</h1>
-<p class="sub">制造业场景_具身机器人原子技能库 · 89条 · 8大类 · DDS驱动</p>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:16px;max-width:1000px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:20px;margin:16px 0}
+h2{color:#58a6ff;font-size:15px;margin:20px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e}
+a{color:#00d4aa}
+.tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;margin:1px}
+.tg{background:#00d4aa22;color:#00d4aa}.tb{background:#58a6ff22;color:#58a6ff}
+.to{background:#f0a50022;color:#f0a500}.tp{background:#a371f722;color:#a371f7}
+</style></head><body>
+<a href="/">← 主页</a> · <a href="/cicd.html">📊 CICD</a>
+<h1>⚛️ 原子技能主表 · SR5 光模块产线</h1>
 
-<div class="stats" id="stats"></div>
-<div id="tables"></div>
+<h2>一、20 原子技能</h2>
+<table>
+<tr><th>#</th><th>技能</th><th>分类</th><th>关节动作</th><th>视觉</th><th>触发条件</th></tr>
+<tr><td>1</td><td><b>料盘识别</b></td><td><span class="tg">感知</span></td><td>静止·相机定位</td><td>模板匹配</td><td>产线上料信号</td></tr>
+<tr><td>2</td><td><b>AOI_1</b></td><td><span class="to">检测</span></td><td>移动到AOI位1</td><td>外观检测</td><td>料盘就位</td></tr>
+<tr><td>3</td><td><b>AOI_2</b></td><td><span class="to">检测</span></td><td>移动到AOI位2</td><td>外观检测</td><td>AOI_1完成</td></tr>
+<tr><td>4</td><td><b>AOI_3</b></td><td><span class="to">检测</span></td><td>移动到AOI位3</td><td>外观检测</td><td>AOI_2完成</td></tr>
+<tr><td>5</td><td><b>AOI_4</b></td><td><span class="to">检测</span></td><td>移动到AOI位4</td><td>外观检测</td><td>AOI_3完成</td></tr>
+<tr><td>6</td><td><b>AOI_5</b></td><td><span class="to">检测</span></td><td>移动到AOI位5</td><td>外观检测</td><td>AOI_4完成</td></tr>
+<tr><td>7</td><td><b>AOI_6</b></td><td><span class="to">检测</span></td><td>移动到AOI位6</td><td>外观检测</td><td>AOI_5完成</td></tr>
+<tr><td>8</td><td><b>AOI_PD</b></td><td><span class="to">检测</span></td><td>光探测器检测</td><td>PD响应</td><td>AOI_6完成</td></tr>
+<tr><td>9</td><td><b>OK</b></td><td><span class="tg">判定</span></td><td>确认合格</td><td>-</td><td>全部AOI通过</td></tr>
+<tr><td>10</td><td><b>初始化循环</b></td><td><span class="tb">控制</span></td><td>回home位</td><td>-</td><td>每轮开始</td></tr>
+<tr><td>11</td><td><b>取料</b></td><td><span class="tp">操作</span></td><td>夹爪抓取</td><td>定位料盘</td><td>料盘就位</td></tr>
+<tr><td>12</td><td><b>尝试插入第一次</b></td><td><span class="tp">操作</span></td><td>轴对准+插入</td><td>力反馈</td><td>取料完成</td></tr>
+<tr><td>13</td><td><b>循环守卫</b></td><td><span class="tb">控制</span></td><td>检查循环条件</td><td>-</td><td>每步后</td></tr>
+<tr><td>14</td><td><b>扫码</b></td><td><span class="tg">感知</span></td><td>读二维码</td><td>扫码器</td><td>治具就位</td></tr>
+<tr><td>15</td><td><b>抓取失败判定</b></td><td><span class="tg">判定</span></td><td>检查抓取力</td><td>力传感器</td><td>取料后</td></tr>
+<tr><td>16</td><td><b>拔出</b></td><td><span class="tp">操作</span></td><td>反向拔出</td><td>-</td><td>测试完成</td></tr>
+<tr><td>17</td><td><b>插入完成</b></td><td><span class="tp">操作</span></td><td>确认到位</td><td>到位检测</td><td>插入结束</td></tr>
+<tr><td>18</td><td><b>暂时松开</b></td><td><span class="tp">操作</span></td><td>松夹爪</td><td>-</td><td>插入后</td></tr>
+<tr><td>19</td><td><b>移动到治具插槽</b></td><td><span class="tp">操作</span></td><td>关节移动</td><td>定位治具</td><td>取料完成</td></tr>
+<tr><td>20</td><td><b>等待测试结果</b></td><td><span class="tb">控制</span></td><td>静止等待</td><td>-</td><td>测试提交后</td></tr>
+</table>
 
-<div class="footer">© 2026 智蜂创元 · datadrive.world</div>
-</div>
+<h2>二、技能到 DDS 映射</h2>
+<table>
+<tr><th>DDS节点</th><th>原子技能</th><th>数据流</th></tr>
+<tr><td>📡 采集</td><td>料盘识别·扫码</td><td>camera_b64 → relay</td></tr>
+<tr><td>⚙️ 处理</td><td>AOI_1-6·AOI_PD·OK</td><td>state[6] → label → relay</td></tr>
+<tr><td>🧠 模型</td><td>取料·插入·拔出·松开</td><td>action[6] → ACT训练</td></tr>
+<tr><td>🚀 推理</td><td>循环守卫·等待·初始化</td><td>影子模式 delta</td></tr>
+</table>
 
-<script>
-fetch('/api/dds-all.php').then(function(r){return r.json()}).then(function(d){
-  var cats = d.atomic_categories || [];
-  var total = d.atomic_total || 0;
-  
-  // Stats
-  var statsHtml = '<div class="stat"><div class="stat-num">'+total+'</div><div class="stat-label">原子技能</div></div>'+
-    '<div class="stat"><div class="stat-num">'+cats.length+'</div><div class="stat-label">技能大类</div></div>';
-  cats.forEach(function(c){ statsHtml += '<div class="stat"><div class="stat-num">'+c.cnt+'</div><div class="stat-label">'+c.category+'</div></div>'; });
-  document.getElementById('stats').innerHTML = statsHtml;
+<h2>三、技能版本</h2>
+<table>
+<tr><th>版本</th><th>日期</th><th>技能数</th></tr>
+<tr><td>v1.0</td><td>07-27</td><td>8</td></tr>
+<tr><td>v2.6</td><td>08-02</td><td>12</td></tr>
+<tr><td><b>v2.8</b></td><td>08-09</td><td><b>20</b></td></tr>
+</table>
 
-  // Fetch full skill list from atomic API
-  fetch('/api/dds-atomic-api.php').then(function(r){return r.json()}).then(function(skills){
-    var byCat = {};
-    skills.forEach(function(s){
-      if (!byCat[s.category]) byCat[s.category] = [];
-      byCat[s.category].push(s);
-    });
-
-    var phaseClass = {'P0-核心MVP':'tag-p0','P1-核心MVP':'tag-p1','P0-立即攻关/销售样机':'tag-p0','P0-优先销售/样机':'tag-p0'};
-    var html = '';
-    Object.keys(byCat).sort().forEach(function(cat){
-      var items = byCat[cat];
-      html += '<h2>'+cat+' ('+items.length+'条)</h2>';
-      html += '<table><tr><th>ID</th><th>原子技能</th><th>定义</th><th>当前</th><th>目标</th><th>难度</th><th>优先</th><th>阶段</th><th>典型场景</th></tr>';
-      items.forEach(function(s){
-        var cls = phaseClass[s.phase] || '';
-        html += '<tr>'+
-          '<td style="font-family:monospace;color:#00d4aa">'+s.id+'</td>'+
-          '<td style="color:#fff;font-weight:600">'+s.name+'</td>'+
-          '<td class="wrap">'+(s.definition||'').substring(0,60)+'</td>'+
-          '<td>'+s.maturity_now+'</td>'+
-          '<td>'+s.maturity_target+'</td>'+
-          '<td>'+s.difficulty+'</td>'+
-          '<td style="font-weight:700">'+s.priority_score+'</td>'+
-          '<td><span class="tag '+cls+'">'+(s.phase||'')+'</span></td>'+
-          '<td class="wrap">'+(s.scene||'').substring(0,40)+'</td>'+
-          '</tr>';
-      });
-      html += '</table>';
-    });
-    document.getElementById('tables').innerHTML = html;
-  });
-});
-</script>
-</body>
-</html>
+<p style="text-align:center;margin:20px 0">
+<a href="/cicd.html">📊 CICD</a> · <a href="/dds-global.html">🌊 DDS全局</a> · <a href="/pipeline-scheme.html">📋 方案</a>
+</p>
+</body></html>

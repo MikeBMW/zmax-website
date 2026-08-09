@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>场景工厂 · Z-MAX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:16px;max-width:1100px;margin:0 auto}
+h1{color:#00d4aa;font-size:18px;margin:12px 0}
+h2{color:#58a6ff;font-size:14px;margin:16px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:12px;margin:10px 0 4px}
+a{color:#00d4aa;text-decoration:none}
+.tabs{display:flex;gap:4px;margin:10px 0}
+.tab{padding:8px 16px;background:#0d1520;border:1px solid #1a2030;border-radius:6px 6px 0 0;cursor:pointer;font-size:12px;color:#8b949e}
+.tab.on{background:#00d4aa22;color:#00d4aa;border-color:#00d4aa;border-bottom-color:transparent}
+.panel{display:none;background:#0d1520;border:1px solid #1a2030;border-radius:0 8px 8px 8px;padding:14px;margin-top:-1px}
+.panel.on{display:block}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+th{background:#0a1020;color:#00d4aa;padding:5px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e}
+.kpi{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.kpi div{flex:1;min-width:100px;background:#0a1020;border:1px solid #1a2030;border-radius:6px;padding:8px;text-align:center}
+.kpi .kv{font-size:18px;font-weight:800;color:#00d4aa}.kpi .kl{font-size:9px;color:#484f58}
+.tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;margin:1px}
+.tg{background:#00d4aa22;color:#00d4aa}.to{background:#f0a50022;color:#f0a500}
+.btn{display:inline-block;padding:6px 14px;background:#00d4aa;color:#000;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;text-decoration:none;margin:4px}
+.json-box{background:#060a10;border:1px solid #1a2030;border-radius:6px;padding:10px;font:10px monospace;color:#58a6ff;max-height:200px;overflow:auto;white-space:pre-wrap;margin:8px 0}
+</style></head>
+<body>
+<a href="/">← 主页</a>
+<h1>🏭 光模块产线 · 场景工厂 v2.8</h1>
+
+<div class="tabs">
+  <div class="tab on" onclick="switchTab('insert')">🔌 插拔场景</div>
+  <div class="tab" onclick="switchTab('handle')">📦 搬运场景</div>
+  <div class="tab" onclick="switchTab('aoi')">🔍 AOI检测场景</div>
+</div>
+
+<!-- ═══ 插拔场景 ═══ -->
+<div class="panel on" id="insert">
+<h2>🔌 场景一：光模块插拔操作</h2>
+<div class="kpi">
+  <div><div class="kv">>99.5%</div><div class="kl">插入成功率</div></div>
+  <div><div class="kv"><1.5s</div><div class="kl">单次节拍</div></div>
+  <div><div class="kv"><0.5N</div><div class="kl">插入力</div></div>
+  <div><div class="kv">±0.05mm</div><div class="kl">定位精度</div></div>
+</div>
+<table>
+<tr><th>指标</th><th>要求</th></tr>
+<tr><td>模块尺寸</td><td>100G QSFP28 · 18.35×72.4×8.5mm</td></tr>
+<tr><td>插入深度</td><td>35.0±0.3mm · 力控闭环</td></tr>
+<tr><td>原子技能</td><td><span class="tg">取料</span>→<span class="to">移动到治具插槽</span>→<span class="tg">尝试插入第一次</span>→<span class="tg">插入完成</span>→<span class="to">暂时松开</span></td></tr>
+<tr><td>视觉引导</td><td>RealSense D405 · 模板匹配定位料盘</td></tr>
+<tr><td>力控保护</td><td>F<2N急停 · 插入力0.3-0.5N目标</td></tr>
+<tr><td>循环节拍</td><td>取料0.8s+移动1.2s+插入1.5s+松开0.3s=3.8s/次</td></tr>
+</table>
+<div class="btn" onclick="showJSON('insert')">📋 查看场景JSON</div>
+<a class="btn" href="/api/scene/insert" style="background:#a371f7;color:#fff">📤 上传插拔场景JSON</a>
+<div class="json-box" id="json-insert" style="display:none"></div>
+</div>
+
+<!-- ═══ 搬运场景 ═══ -->
+<div class="panel" id="handle">
+<h2>📦 场景二：料盘/模块搬运</h2>
+<div class="kpi">
+  <div><div class="kv">>99.8%</div><div class="kl">搬运成功率</div></div>
+  <div><div class="kv"><3.0s</div><div class="kl">单次节拍</div></div>
+  <div><div class="kv">≤10kg</div><div class="kl">负载</div></div>
+  <div><div class="kv">±0.2mm</div><div class="kl">放置精度</div></div>
+</div>
+<table>
+<tr><th>指标</th><th>要求</th></tr>
+<tr><td>料盘规格</td><td>320×240×15mm · 12槽位 · 铝合金</td></tr>
+<tr><td>负载范围</td><td>0.5-10kg · 力传感器实时监控</td></tr>
+<tr><td>原子技能</td><td><span class="tg">料盘识别</span>→<span class="to">取料</span>→<span class="tg">初始化循环</span>→<span class="to">循环守卫</span></td></tr>
+<tr><td>路径规划</td><td>6轴关节空间 · 碰撞检测 · 避障</td></tr>
+<tr><td>安全区域</td><td>工作空间 800×600×400mm</td></tr>
+<tr><td>循环节拍</td><td>识别0.5s+抓取0.8s+搬运1.5s+放置0.5s=3.3s/次</td></tr>
+</table>
+<div class="btn" onclick="showJSON('handle')">📋 查看场景JSON</div>
+<a class="btn" href="/api/scene/handle" style="background:#a371f7;color:#fff">📤 上传搬运场景JSON</a>
+<div class="json-box" id="json-handle" style="display:none"></div>
+</div>
+
+<!-- ═══ AOI场景 ═══ -->
+<div class="panel" id="aoi">
+<h2>🔍 场景三：AOI光学检测</h2>
+<div class="kpi">
+  <div><div class="kv">>99%</div><div class="kl">检测准确率</div></div>
+  <div><div class="kv"><2.0s</div><div class="kl">单点节拍</div></div>
+  <div><div class="kv">6+1</div><div class="kl">检测位</div></div>
+  <div><div class="kv">±0.01mm</div><div class="kl">检测分辨率</div></div>
+</div>
+<table>
+<tr><th>指标</th><th>要求</th></tr>
+<tr><td>检测对象</td><td>100G DR8光模块 · 端面/侧面/引脚</td></tr>
+<tr><td>检测位</td><td>AOI_1-6(六面)+AOI_PD(光探测器)</td></tr>
+<tr><td>原子技能</td><td><span class="tg">AOI_1</span>→<span class="tg">AOI_2</span>→<span class="tg">AOI_3</span>→<span class="tg">AOI_4</span>→<span class="tg">AOI_5</span>→<span class="tg">AOI_6</span>→<span class="tg">AOI_PD</span>→<span class="to">OK</span></td></tr>
+<tr><td>光学参数</td><td>分辨率2μm/pixel · 光源5000K LED · 曝光5ms</td></tr>
+<tr><td>判定标准</td><td>划痕<10μm·气泡<50μm·偏移<20μm</td></tr>
+<tr><td>循环节拍</td><td>移动0.5s+拍照0.3s+判定0.2s=1.0s/位×7=7s/件</td></tr>
+</table>
+<div class="btn" onclick="showJSON('aoi')">📋 查看场景JSON</div>
+<a class="btn" href="/api/scene/aoi" style="background:#a371f7;color:#fff">📤 上传AOI场景JSON</a>
+<div class="json-box" id="json-aoi" style="display:none"></div>
+</div>
+
+<script>
+function switchTab(id){
+  document.querySelectorAll('.tab,.panel').forEach(e=>e.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  document.querySelector(`.tab:nth-child(${id==='insert'?1:id==='handle'?2:3})`).classList.add('on');
+}
+
+const SCENES={
+  insert:{
+    name:"光模块插拔操作",id:"insert",
+    type:"precision_insertion",
+    robot:"XMS5-R800·6轴",
+    specs:{success_rate:0.995,cycle_time:3.8,insert_force:0.5,precision:0.05,module:"100G QSFP28",dimensions:"18.35×72.4×8.5mm"},
+    skills:["取料","移动到治具插槽","尝试插入第一次","插入完成","暂时松开"],
+    conditions:{vision:"RealSense D405·模板匹配",force:"F<2N急停·0.3-0.5N目标"},
+    kpi:{insert_rate:">99.5%",cycle:"<3.8s/次",force:"<0.5N",accuracy:"±0.05mm"}
+  },
+  handle:{
+    name:"料盘/模块搬运",id:"handle",
+    type:"material_handling",
+    robot:"XMS5-R800/Z100L·6轴",
+    specs:{success_rate:0.998,cycle_time:3.3,payload:10,precision:0.2,tray:"320×240×15mm·12槽"},
+    skills:["料盘识别","取料","初始化循环","循环守卫"],
+    conditions:{workspace:"800×600×400mm",collision:"6轴碰撞检测"},
+    kpi:{handle_rate:">99.8%",cycle:"<3.3s/次",payload:"≤10kg",accuracy:"±0.2mm"}
+  },
+  aoi:{
+    name:"AOI光学检测",id:"aoi",
+    type:"visual_inspection",
+    robot:"XMS5-R800·6轴",
+    specs:{success_rate:0.99,cycle_time:7.0,stations:7,resolution:0.01,target:"100G DR8六面+PD"},
+    skills:["AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK"],
+    conditions:{optics:"2μm/pixel·5000K·5ms",criteria:"划痕<10μm·气泡<50μm·偏移<20μm"},
+    kpi:{detect_rate:">99%",cycle:"<7s/件",stations:7,resolution:"2μm"}
+  }
+};
+
+function showJSON(id){
+  var box=document.getElementById("json-"+id);
+  box.style.display=box.style.display==="none"?"block":"none";
+  box.textContent=JSON.stringify(SCENES[id],null,2);
+}
+
+// Auto-load scene JSON display
+document.addEventListener("DOMContentLoaded",function(){
+  Object.keys(SCENES).forEach(function(k){
+    document.getElementById("json-"+k).textContent=JSON.stringify(SCENES[k],null,2);
+  });
+});
+</script>
+</body></html>

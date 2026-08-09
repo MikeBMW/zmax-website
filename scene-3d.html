@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z-MAX 场景工厂</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#0a0f18;overflow:hidden;font-family:Arial,sans-serif}
+canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
+#info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#888;font-size:11px;opacity:.5;z-index:10;pointer-events:none}
+#status{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;font-weight:bold;z-index:10;background:rgba(10,10,26,.75);padding:5px 16px;border-radius:16px}
+#back{position:absolute;top:12px;left:15px;z-index:15;color:#fff;font-size:13px;font-weight:700;cursor:pointer;background:rgba(0,212,170,.15);padding:8px 16px;border-radius:20px;border:1px solid #00d4aa66;text-decoration:none}
+#tabs{position:absolute;top:12px;right:15px;z-index:15;display:flex;gap:4px}
+#tabs a{padding:6px 14px;font-size:11px;color:#8b949e;text-decoration:none;background:rgba(10,10,26,.75);border:1px solid #1a2030;border-radius:16px}
+#tabs a.on{border-color:#00d4aa;color:#00d4aa;background:rgba(0,212,170,.1)}
+#kpi{position:absolute;bottom:40px;left:15px;z-index:15;font-size:10px;color:#8b949e;background:rgba(10,10,26,.75);padding:8px 12px;border-radius:8px;border:1px solid #1a2030;max-width:240px;line-height:1.6}
+#kpi .val{color:#00d4aa;font-weight:700}
+#steps{position:absolute;bottom:40px;right:15px;z-index:15;font-size:9px;color:#8b949e;background:rgba(10,10,26,.75);padding:6px 10px;border-radius:8px;border:1px solid #1a2030;max-width:200px}
+#steps .active{color:#00d4aa;font-weight:700}
+</style>
+</head>
+<body>
+<a id="back" href="/">← 主页</a>
+<div id="status">● 加载场景JSON...</div>
+<div id="tabs">
+  <a href="?scene=insert">🔌 插拔</a>
+  <a href="?scene=handle">📦 搬运</a>
+  <a href="?scene=aoi">🔍 AOI</a>
+</div>
+<div id="kpi"></div>
+<div id="steps"></div>
+<div id="json-view" style="position:absolute;top:50px;right:15px;z-index:20;background:rgba(10,10,26,.9);border:1px solid #00d4aa44;border-radius:8px;padding:10px;max-width:350px;max-height:300px;overflow:auto;display:none;font:10px monospace;color:#58a6ff;white-space:pre-wrap"></div>
+<button id="btn-json" style="position:absolute;top:52px;right:15px;z-index:20;padding:4px 10px;font-size:9px;background:#0d1520;color:#00d4aa;border:1px solid #00d4aa44;border-radius:4px;cursor:pointer" onclick="toggleJSON()">📋 查看JSON</button>
+<div id="info">拖拽旋转 | 滚轮缩放 | 右键平移</div>
+
+<script src="https://unpkg.com/three@0.157.0/build/three.min.js"></script>
+<script>
+(async function(){
+if(typeof THREE==="undefined")return;
+var W=window.innerWidth,H=window.innerHeight;
+var params=new URLSearchParams(location.search);
+var sceneType=params.get("scene")||"insert";
+
+// Load scene JSON
+var sceneData=null;
+try{
+  var r=await fetch("/scenes/scene_"+sceneType+".json");
+  if(r.ok)sceneData=await r.json();
+}catch(e){}
+// Fallback defaults
+if(!sceneData)sceneData={
+  insert:{name:"插拔操作",skills:["取料","移动到治具插槽","尝试插入第一次","插入完成","暂时松开"],specs:{success_rate:0.995,cycle_time:3.8},kpi:{"插入成功率":">99.5%","单次节拍":"<1.5s","插入力":"<0.5N","定位精度":"±0.05mm"}},
+  handle:{name:"料盘搬运",skills:["料盘识别","取料","初始化循环","循环守卫"],specs:{success_rate:0.998,cycle_time:3.3},kpi:{"搬运成功率":">99.8%","单次节拍":"<3.0s","负载":"≤10kg","放置精度":"±0.2mm"}},
+  aoi:{name:"AOI检测",skills:["AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK"],specs:{success_rate:0.99,cycle_time:7.0},kpi:{"检测准确率":">99%","单点节拍":"<2.0s","分辨率":"2μm","检测位":"6+1"}}
+}[sceneType]||{name:"场景",skills:["未知"],specs:{},kpi:{}};
+
+// Update UI
+document.getElementById("status").textContent="● "+sceneData.name;
+document.querySelectorAll("#tabs a").forEach(function(a){a.classList.toggle("on",a.href.includes("scene="+sceneType))});
+var kpiHTML="";
+for(var k in sceneData.kpi)kpiHTML+='<span class="val">'+sceneData.kpi[k]+'</span> '+k+'<br>';
+document.getElementById("kpi").innerHTML=kpiHTML;
+var stepsHTML="";
+sceneData.skills.forEach(function(s,i){stepsHTML+='<span class="'+(i===0?"active":"")+'">'+(i+1)+'. '+s+'</span><br>'});
+document.getElementById("steps").innerHTML=stepsHTML;
+
+// Three.js scene
+var scene=new THREE.Scene();scene.background=new THREE.Color(0x0a0f18);
+var camera=new THREE.PerspectiveCamera(45,W/H,.1,40);camera.position.set(3,2,4.5);camera.lookAt(0,0,-.5);
+var renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(W,H);
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.AmbientLight(0x334466,1.2));
+var dir=new THREE.DirectionalLight(0xffffff,2.5);dir.position.set(5,8,3);dir.castShadow=true;
+dir.shadow.mapSize.set(1024,1024);dir.shadow.camera.near=.5;dir.shadow.camera.far=30;
+dir.shadow.camera.left=-8;dir.shadow.camera.right=8;dir.shadow.camera.top=6;dir.shadow.camera.bottom=-4;
+scene.add(dir);
+scene.add(new THREE.PointLight(0x00d4aa,3,8));
+
+var grid=new THREE.GridHelper(7,24,0x1a2030,0x1a2030);scene.add(grid);
+var floor=new THREE.Mesh(new THREE.PlaneGeometry(7,5),new THREE.MeshStandardMaterial({color:0x111520,roughness:.9}));
+floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+
+// Material library
+var mtl={dark:new THREE.MeshStandardMaterial({color:0x1a2530,metalness:.8,roughness:.4}),
+  body:new THREE.MeshStandardMaterial({color:0x2a3a4a,metalness:.7,roughness:.3}),
+  accent:new THREE.MeshStandardMaterial({color:0x00d4aa,metalness:.5,roughness:.2}),
+  blue:new THREE.MeshStandardMaterial({color:0x58a6ff,emissive:0x112244,emissiveIntensity:.4}),
+  shelf:new THREE.MeshStandardMaterial({color:0x2a3545,metalness:.7,roughness:.5}),
+  tray:new THREE.MeshStandardMaterial({color:0x8a7a5a,metalness:.4}),
+  steel:new THREE.MeshStandardMaterial({color:0x666666,metalness:.9,roughness:.2}),
+  orange:new THREE.MeshStandardMaterial({color:0xff6b35,emissive:0x331100,emissiveIntensity:.3}),
+  green:new THREE.MeshStandardMaterial({color:0x3fb950,emissive:0x002200,emissiveIntensity:.3}),
+  red:new THREE.MeshStandardMaterial({color:0xff4444,emissive:0x220000,emissiveIntensity:.3})
+};
+
+// AMR base (reusable)
+function buildAMR(x,y,z){
+  var g=new THREE.Group();
+  // Chassis
+  var chassis=new THREE.Mesh(new THREE.BoxGeometry(.85,.18,.65),mtl.dark);chassis.position.y=.09;chassis.castShadow=true;g.add(chassis);
+  // Top plate
+  var top=new THREE.Mesh(new THREE.BoxGeometry(.75,.03,.55),mtl.body);top.position.y=.19;g.add(top);
+  // Drive wheels (2 large, visible on sides)
+  var whGeo=new THREE.CylinderGeometry(.12,.12,.06,16);
+  [[-.38,.05,.25],[.38,.05,.25],[-.38,.05,-.25],[.38,.05,-.25]].forEach(function(p){
+    var w=new THREE.Mesh(whGeo,new THREE.MeshStandardMaterial({color:0x333333,metalness:.9}));
+    w.rotation.z=Math.PI/2;w.position.set(p[0],p[1],p[2]);g.add(w);
+    // Hub cap
+    var hub=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.07,8),mtl.accent);
+    hub.rotation.z=Math.PI/2;hub.position.set(p[0],p[1],p[2]);g.add(hub);
+  });
+  // Caster wheels (small, front/back)
+  [[-.35,.04,0],[.35,.04,0]].forEach(function(p){
+    var cw=new THREE.Mesh(new THREE.SphereGeometry(.05,8,6),mtl.steel);
+    cw.position.set(p[0],p[1],p[2]);g.add(cw);
+  });
+  // LiDAR sensor on top
+  var lidar=new THREE.Mesh(new THREE.CylinderGeometry(.07,.08,.04,16),mtl.accent);
+  lidar.position.set(0,.22,0);g.add(lidar);
+  // Safety bumper (front yellow)
+  var bumper=new THREE.Mesh(new THREE.BoxGeometry(.82,.04,.04),mtl.orange);
+  bumper.position.set(0,.06,.33);g.add(bumper);
+  // Safety bumper (rear)
+  var bumperR=bumper.clone();bumperR.position.z=-.33;g.add(bumperR);
+  // Status beacon
+  var pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.12,8),mtl.steel);
+  pole.position.set(.2,.28,0);g.add(pole);
+  var bcn=new THREE.Mesh(new THREE.SphereGeometry(.04,8,6),mtl.accent);
+  bcn.position.set(.2,.35,0);g.add(bcn);
+  // Side panels with vents
+  [[-.05,.13,.34],[.05,.13,.34],[-.05,.13,-.34],[.05,.13,-.34]].forEach(function(p){
+    var vent=new THREE.Mesh(new THREE.BoxGeometry(.04,.08,.02),mtl.steel);
+    vent.position.set(p[0],p[1],p[2]);g.add(vent);
+  });
+  g.position.set(x,y,z);
+  return g;
+}
+
+// Collaborative robot arm (6-axis, mounted on top plate)
+function buildCobot(x,y,z,scale){
+  scale=scale||1;
+  var arm=new THREE.Group();
+  // Base
+  arm.add(makeCyl(.18,.2,.1,.15,mtl.body));
+  // J1 shoulder
+  arm.add(makeCyl(.1,.12,.15,.45,mtl.dark));
+  // J2 upper arm
+  var j2=new THREE.Group();j2.position.y=.55;
+  j2.add(makeCyl(.08,.1,.35,.15,mtl.body));
+  arm.add(j2);
+  // J3 forearm
+  var j3=new THREE.Group();j3.position.y=.7;
+  j3.add(makeCyl(.06,.08,.25,.1,mtl.dark));
+  arm.add(j3);
+  // J4 wrist
+  var j4=new THREE.Group();j4.position.y=.82;
+  j4.add(makeCyl(.05,.06,.12,.05,mtl.accent));
+  arm.add(j4);
+  // Gripper
+  var gripBase=new THREE.Mesh(new THREE.BoxGeometry(.06,.06,.1),mtl.steel);
+  gripBase.position.y=.9;arm.add(gripBase);
+  var fl=new THREE.Mesh(new THREE.BoxGeometry(.015,.08,.03),mtl.steel);fl.position.set(-.025,.95,.05);arm.add(fl);
+  var fr=fl.clone();fr.position.x=.025;arm.add(fr);
+  arm.position.set(x,y,z);
+  arm.scale.set(scale,scale,scale);
+  return arm;
+}
+
+function makeCyl(rt,rb,h,y,mat){
+  var g=new THREE.CylinderGeometry(rt,rb,h,16);
+  var m=new THREE.Mesh(g,mat);m.position.y=y;m.castShadow=true;return m;
+}
+
+// Scene objects
+var objs=new THREE.Group();scene.add(objs);
+var spec=sceneData.specs||{};
+
+if(sceneType==="insert"){
+  // Insert scene: test oven + slots + robot in front
+  var oven=new THREE.Mesh(new THREE.BoxGeometry(2,.8,.6),new THREE.MeshStandardMaterial({color:0x2a3040,metalness:.8}));
+  oven.position.set(0,.4,-1.8);oven.castShadow=true;objs.add(oven);
+  // Cage slots
+  var nSlots=spec.slots||4;
+  for(var i=0;i<nSlots;i++){
+    var s=new THREE.Mesh(new THREE.BoxGeometry(.15,.05,.3),new THREE.MeshStandardMaterial({color:0x111111,emissive:0x331100,emissiveIntensity:.5}));
+    s.position.set(-.6+i*.4,.65,-1.65);objs.add(s);
+  }
+  // Robot arm in front of oven
+  var robot=buildCobot(0,0,.05,1);
+  objs.add(robot);
+
+}else if(sceneType==="handle"){
+  // AMR transport scene: AMR + shelves + work area
+  var amr=buildAMR(0,0,.3);objs.add(amr);
+  // Cobot on AMR
+  var cobot=buildCobot(0,.2,.3,.85);objs.add(cobot);
+
+  // Incoming shelf (left)
+  var shelfL=new THREE.Mesh(new THREE.BoxGeometry(.5,.8,.55),mtl.shelf);
+  shelfL.position.set(-2.2,.4,-1);shelfL.castShadow=true;objs.add(shelfL);
+  // Incoming tray
+  var trayIn=new THREE.Mesh(new THREE.BoxGeometry(.45,.025,.45),mtl.tray);
+  trayIn.position.set(-2.2,.82,-1);objs.add(trayIn);
+  // Modules on incoming tray
+  for(var ti=0;ti<4;ti++){
+    var mod=new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.07),mtl.blue);
+    mod.position.set(-2.35+(ti%2)*.28,.84,-1.1+Math.floor(ti/2)*.2);objs.add(mod);
+  }
+
+  // Work tray (center)
+  var trayW=new THREE.Mesh(new THREE.BoxGeometry(1,.025,.65),mtl.tray);
+  trayW.position.set(0,.02,-1.4);trayW.receiveShadow=true;objs.add(trayW);
+  // Slot grid
+  for(var tr=0;tr<3;tr++)for(var tc=0;tc<4;tc++){
+    var sl=new THREE.Mesh(new THREE.BoxGeometry(.14,.004,.08),new THREE.MeshStandardMaterial({color:0x444}));
+    sl.position.set(-.45+tc*.3,.035,-1.55+tr*.2);objs.add(sl);
+    // Some filled slots
+    if(tr===0||(tr===1&&tc<2)){
+      var m2=new THREE.Mesh(new THREE.BoxGeometry(.1,.012,.06),mtl.blue);
+      m2.position.set(-.45+tc*.3,.043,-1.55+tr*.2);objs.add(m2);
+    }
+  }
+
+  // Destination shelf (right)
+  var shelfR=new THREE.Mesh(new THREE.BoxGeometry(.5,.7,.55),mtl.shelf);
+  shelfR.position.set(2.2,.35,-1);shelfR.castShadow=true;objs.add(shelfR);
+  var trayOut=new THREE.Mesh(new THREE.BoxGeometry(.4,.025,.4),new THREE.MeshStandardMaterial({color:0x6a8a5a,metalness:.4}));
+  trayOut.position.set(2.2,.72,-1);objs.add(trayOut);
+
+  // Ground path
+  var pathM=new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.12});
+  var p1=new THREE.Mesh(new THREE.PlaneGeometry(4,.06),pathM);
+  p1.rotation.x=-Math.PI/2;p1.position.set(0,.004,-1);objs.add(p1);
+  // Direction arrows
+  [[-1.5,-1],[1.5,-1]].forEach(function(p){
+    var ar=new THREE.Mesh(new THREE.ConeGeometry(.04,.08,4),new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.3}));
+    ar.rotation.x=-Math.PI/2;ar.position.set(p[0],.008,p[1]);objs.add(ar);
+  });
+
+  // ESD mat
+  var esd=new THREE.Mesh(new THREE.PlaneGeometry(4.8,2.8),new THREE.MeshBasicMaterial({color:0x1a2a1a,transparent:true,opacity:.15}));
+  esd.rotation.x=-Math.PI/2;esd.position.set(0,.002,-.8);objs.add(esd);
+
+}else{
+  // AOI scene: rotary stage + cameras + conveyor
+  // Central rotary stage
+  var stage=new THREE.Mesh(new THREE.CylinderGeometry(.35,.38,.1,32),mtl.body);
+  stage.position.set(0,.05,-.6);stage.castShadow=true;objs.add(stage);
+  var stageTop=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,.03,32),new THREE.MeshStandardMaterial({color:0x111,roughness:.3}));
+  stageTop.position.set(0,.12,-.6);objs.add(stageTop);
+  // Module on stage
+  var modOn=new THREE.Mesh(new THREE.BoxGeometry(.22,.03,.15),mtl.blue);
+  modOn.position.set(0,.15,-.6);objs.add(modOn);
+
+  // 4 inspection stations around rotary stage
+  var stationAngles=[-Math.PI/5,Math.PI/5,Math.PI*3/5,Math.PI*4/5];
+  var stationNames=["金线焊点","耦合面","外观","判定"];
+  stationAngles.forEach(function(a,i){
+    var rx=Math.cos(a)*.7,rz=-.6+Math.sin(a)*.7;
+    // Camera pillar
+    var pillar=new THREE.Mesh(new THREE.BoxGeometry(.06,.35,.06),mtl.dark);
+    pillar.position.set(rx,.2,rz);objs.add(pillar);
+    // Camera head
+    var cam=new THREE.Mesh(new THREE.BoxGeometry(.12,.08,.18),mtl.body);
+    cam.position.set(rx,.4,rz);objs.add(cam);
+    // Lens
+    var lens=new THREE.Mesh(new THREE.CylinderGeometry(.03,.04,.1,8),mtl.accent);
+    lens.position.set(rx,.35,rz);lens.rotation.x=Math.PI/2;objs.add(lens);
+    // LED ring
+    var ring=new THREE.Mesh(new THREE.TorusGeometry(.05,.01,8,16),new THREE.MeshBasicMaterial({color:i===2?0xff6b35:0x00d4aa}));
+    ring.position.set(rx,.33,rz);ring.rotation.x=Math.PI/2;objs.add(ring);
+    // Base plate
+    var bp=new THREE.Mesh(new THREE.BoxGeometry(.2,.02,.15),mtl.shelf);
+    bp.position.set(rx,.02,rz);objs.add(bp);
+  });
+
+  // Input conveyor (left)
+  var convIn=new THREE.Mesh(new THREE.BoxGeometry(1.5,.06,.3),mtl.dark);
+  convIn.position.set(-1.8,.03,.8);convIn.castShadow=true;objs.add(convIn);
+  // Conveyor rollers
+  for(var ci=0;ci<6;ci++){
+    var rl=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.28,8),mtl.steel);
+    rl.rotation.x=Math.PI/2;rl.position.set(-2.1+ci*.4,.06,.8);objs.add(rl);
+  }
+  // Module on conveyor
+  var modC=new THREE.Mesh(new THREE.BoxGeometry(.22,.03,.15),mtl.blue);
+  modC.position.set(-1.5,.1,.8);objs.add(modC);
+
+  // Output diverter
+  var divert=new THREE.Mesh(new THREE.BoxGeometry(.5,.08,.4),mtl.body);
+  divert.position.set(1.5,.04,.8);objs.add(divert);
+
+  // OK bin (green)
+  var okBin=new THREE.Mesh(new THREE.BoxGeometry(.35,.2,.3),mtl.green);
+  okBin.position.set(2,.1,1.2);objs.add(okBin);
+  // NG bin (red)
+  var ngBin=new THREE.Mesh(new THREE.BoxGeometry(.35,.2,.3),mtl.red);
+  ngBin.position.set(2,.1,.4);objs.add(ngBin);
+
+  // Microscope main (center top)
+  var scopeArm=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,.6,16),mtl.dark);
+  scopeArm.position.set(0,.5,-.6);objs.add(scopeArm);
+  var scopeHead=new THREE.Mesh(new THREE.BoxGeometry(.25,.1,.2),mtl.body);
+  scopeHead.position.set(0,.85,-.6);objs.add(scopeHead);
+  var scopeLens=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,.15,8),mtl.accent);
+  scopeLens.position.set(0,.78,-.6);objs.add(scopeLens);
+}
+
+// Orbit controls
+var isDown=false,isPan=false,px=0,py=0,theta=0,phi=.7,dist=5,target=new THREE.Vector3(0,0,-.5);
+function uc(){camera.position.set(target.x+dist*Math.sin(phi)*Math.cos(theta),target.y+dist*Math.cos(phi),target.z+dist*Math.sin(phi)*Math.sin(theta));camera.lookAt(target)}
+uc();
+window.addEventListener("mousedown",function(e){isDown=true;isPan=e.button===1;px=e.clientX;py=e.clientY});
+window.addEventListener("mousemove",function(e){if(!isDown)return;if(isPan){target.x-=(e.clientX-px)*.005;target.y+=(e.clientY-py)*.005}else{theta+=(e.clientX-px)*.005;phi=Math.max(.2,Math.min(1.5,phi-(e.clientY-py)*.005))}px=e.clientX;py=e.clientY;uc()});
+window.addEventListener("mouseup",function(){isDown=false});
+window.addEventListener("wheel",function(e){e.preventDefault();dist=Math.max(1.5,Math.min(10,dist+e.deltaY*.005));uc()},{passive:false});
+window.addEventListener("resize",function(){W=window.innerWidth;H=window.innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H)});
+
+// Animate
+var time=0;
+function animate(){requestAnimationFrame(animate);time+=.016;
+  // Gentle rotation on rotary stage (AOI)
+  if(sceneType==="aoi"&&stageTop)stageTop.rotation.y+=.005;
+  renderer.render(scene,camera);
+}
+animate();
+
+// JSON viewer
+window._sceneJSON=sceneData;
+function toggleJSON(){
+  var v=document.getElementById("json-view");
+  if(v.style.display==="block"){v.style.display="none";return}
+  v.textContent=JSON.stringify(window._sceneJSON,null,2);
+  v.style.display="block";
+}
+})();
+</script>
+</body></html>

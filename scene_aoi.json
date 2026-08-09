@@ -1,0 +1,23 @@
+{
+    "name": "光模块光学检测场景",
+    "skills": [
+        "1.上料定位",
+        "2.金线焊点检测",
+        "3.耦合面检测",
+        "4.外观检测",
+        "5.判定分流"
+    ],
+    "specs": {
+        "success_rate": 0.999,
+        "cycle_time": 12.0
+    },
+    "kpi": {
+        "operation_success_rate": "≥99.9%",
+        "cycle_time": "≤12s/颗 (4道检测全流程)",
+        "defect_detection_rate": "≥99.9%",
+        "false_call_rate": "≤0.5%",
+        "positioning_accuracy": "±2μm (转位台)",
+        "resolution": "0.35μm/pix",
+        "throughput": "≥300颗/小时"
+    }
+}
