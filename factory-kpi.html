@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>精细操作 KPI 监督 | Z-MAX v2.0.0</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:12px "PingFang SC","Microsoft YaHei",sans-serif;padding:12px}
+h1{color:#00d4aa;font-size:16px;margin:8px 0}
+h2{color:#58a6ff;font-size:13px;margin:12px 0 6px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+a{color:#00d4aa;font-size:10px;text-decoration:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.card{background:#0d1520;border:1px solid #1a2030;border-radius:8px;padding:12px}
+.card.running{border-color:#3fb950}.card.warning{border-color:#f0a500}.card.alarm{border-color:#ff4444}
+.card h3{font-size:12px;color:#00d4aa;margin-bottom:8px}
+.card .status{font-size:9px;padding:2px 6px;border-radius:3px;display:inline-block}
+.card .status.run{background:#3fb95022;color:#3fb950;border:1px solid #3fb95044}
+.card .status.idle{background:#555;color:#888}
+.metric{font-size:10px;margin:3px 0;display:flex;justify-content:space-between}
+.metric .val{font-weight:700}.metric .pass{color:#3fb950}.metric .warn{color:#f0a500}.metric .fail{color:#ff4444}
+.bar{height:5px;background:#1a2030;border-radius:3px;margin:2px 0}
+.bar div{height:100%;border-radius:3px}
+.log{background:#0a0f18;border:1px solid #1a2030;border-radius:6px;padding:8px;max-height:180px;overflow:auto;font:9px monospace;color:#555;margin-top:8px}
+.log .ok{color:#3fb950}.log .warn{color:#f0a500}.log .err{color:#ff4444}
+</style>
+</head>
+<body>
+<a href="/">← 主页</a> · <a href="/factory-dashboard.html">📊 产品大屏</a> · <a href="/factory-3d.html">🏭 工厂3D</a>
+<h1>⚡ 精细操作 KPI 监督 · 8状态机调制</h1>
+
+<div class="grid" id="robots"></div>
+<div class="log" id="log"><span class="warn">⏳ 监控就绪...</span></div>
+
+<script>
+// 6 robots × 8 state modulation stages
+var ROBOTS=[
+  {id:"Z700",zone:"OE-I171",task:"LD Lens AA耦合",stage:"ALIGN",scenario:"场景3",kpi:[
+    {k:"对位误差",v:0.8,t:1,unit:"μm",pass:true},{k:"下降到位",v:0.12,t:0.2,unit:"mm",pass:true},{k:"接触力",v:1.5,t:2,unit:"N",pass:true}
+  ],pass:true,cycle:8.2,rate:7.3},
+  {id:"Z700F",zone:"OE-I155",task:"PEI Cover压合",stage:"INSERT",scenario:"场景4",kpi:[
+    {k:"对位误差",v:0.3,t:0.5,unit:"mm",pass:true},{k:"插入深度",v:0.05,t:0.1,unit:"mm",pass:true},{k:"压合力",v:7.2,t:10,unit:"N",pass:true}
+  ],pass:true,cycle:12.5,rate:4.8},
+  {id:"Z100L",zone:"OE-I136",task:"DA芯片贴装上下料",stage:"TRANSFER",scenario:"场景2",kpi:[
+    {k:"抬升高度",v:78,t:80,unit:"mm",pass:true},{k:"转移到位",v:3.2,t:5,unit:"mm",pass:true},{k:"插入到位",v:0.3,t:0.5,unit:"mm",pass:true}
+  ],pass:true,cycle:3.5,rate:17.1},
+  {id:"Z700",zone:"COC-I113",task:"COC共晶绑定",stage:"ALIGN",scenario:"场景6",kpi:[
+    {k:"对位误差",v:0.6,t:1,unit:"μm",pass:true},{k:"共晶温度",v:279.8,t:280,unit:"°C",pass:false},{k:"空洞率",v:3.2,t:5,unit:"%",pass:true}
+  ],pass:false,cycle:7.5,rate:8.0},
+  {id:"Z700F",zone:"OE-I159",task:"隔离器贴装",stage:"DESCEND",scenario:"场景5",kpi:[
+    {k:"放置对位",v:0.12,t:0.2,unit:"mm",pass:true},{k:"贴装力",v:1.3,t:2,unit:"N",pass:true},{k:"拾取接触",v:0.7,t:0.5,unit:"prob",pass:true}
+  ],pass:true,cycle:17.2,rate:3.5},
+  {id:"Z700F",zone:"OE-I152",task:"WB金线键合连板",stage:"INSERT",scenario:"场景1",kpi:[
+    {k:"接近收敛",v:0.04,t:0.06,unit:"m",pass:true},{k:"对位误差",v:0.2,t:0.3,unit:"mm",pass:true},{k:"插入力",v:3.8,t:5,unit:"N",pass:true}
+  ],pass:true,cycle:5.2,rate:11.5}
+];
+
+function L(m,c){var d=document.createElement("div");d.className=c||"";d.textContent="["+new Date().toLocaleTimeString()+"] "+m;var l=document.getElementById("log");l.appendChild(d);l.scrollTop=l.scrollHeight}
+
+function render(){
+  var h="";
+  ROBOTS.forEach(function(r,i){
+    var cls=r.pass?"running":"alarm";
+    h+='<div class="card '+cls+'"><h3>🤖 '+r.id+' <span class="status '+cls+'">● '+(r.pass?'运行中':'⚠告警')+'</span></h3>';
+    h+='<div style="font-size:9px;color:#f0a500;margin-bottom:4px">场景'+r.scenario+': '+r.task+' · 状态机: <b>'+r.stage+'</b> ('+(STAGES.indexOf(r.stage)+1)+'/8)</div>';
+    r.kpi.forEach(function(m){
+      var pf=m.pass?"pass":(m.v/m.t>0.9?"warn":"fail");
+      h+='<div class="metric"><span>'+m.k+'</span><span class="val '+pf+'">'+m.v+'/'+m.t+m.unit+' '+(pf==="pass"?'✅':pf==="warn"?'⚠️':'🔴')+'</span></div>';
+      var pct=Math.min(100,(m.v/m.t)*100);
+      h+='<div class="bar"><div style="width:'+pct+'%;background:'+(pf==="pass"?'#3fb950':pf==="warn"?'#f0a500':'#ff4444')+'"></div></div>';
+    });
+    h+='<div style="font-size:9px;color:#8b949e;margin-top:4px">⏱ '+r.cycle+'s/件 · 📈 '+r.rate+'件/min · 🎯 '+(r.pass?'全部达标':'有未达标')+'</div>';
+    h+='</div>';
+  });
+  document.getElementById("robots").innerHTML=h;
+}
+
+var STAGES=["APPROACH","ALIGN","DESCEND","GRASP","LIFT","TRANSFER","INSERT","DONE"];
+render();
+
+// Live Orin heartbeat
+setInterval(function(){
+  fetch("/orin/status").then(function(r){return r.json()}).then(function(d){
+    var sy=d.sys||{};
+    L("Orin CPU:"+(sy.cpu||"?")+"% MEM:"+(sy.mem||"?")+"% · infer:"+d.infer_count,"ok");
+  }).catch(function(){L("Orin离线","err")});
+},10000);
+L("6机器人·6场景·8状态机·KPI监督就绪","ok");
+</script>
+</body></html>
