@@ -93,12 +93,21 @@ var mtl={dark:new THREE.MeshStandardMaterial({color:0x1a2530,metalness:.8,roughn
   steel:new THREE.MeshStandardMaterial({color:0x666666,metalness:.9,roughness:.2}),
   orange:new THREE.MeshStandardMaterial({color:0xff6b35,emissive:0x331100,emissiveIntensity:.3}),
   green:new THREE.MeshStandardMaterial({color:0x3fb950,emissive:0x002200,emissiveIntensity:.3}),
-  red:new THREE.MeshStandardMaterial({color:0xff4444,emissive:0x220000,emissiveIntensity:.3})
+  red:new THREE.MeshStandardMaterial({color:0xff4444,emissive:0x220000,emissiveIntensity:.3}),
+  // Luoshi SR5-C arm materials
+  cobotBody:new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.25}),
+  cobotBase:new THREE.MeshStandardMaterial({color:0x4a4f58,roughness:.3,metalness:.5}),
+  cobotJoint:new THREE.MeshStandardMaterial({color:0x00d4aa,roughness:.1,metalness:.4,emissive:0x005544,emissiveIntensity:.7}),
+  cobotRed:new THREE.MeshStandardMaterial({color:0xd73a49,roughness:.3,metalness:.2}),
+  cobotGrip:new THREE.MeshStandardMaterial({color:0x999aaa,roughness:.2,metalness:.6}),
+  cobotFinger:new THREE.MeshStandardMaterial({color:0x555566,roughness:.15,metalness:.7}),
+  cobotFtip:new THREE.MeshStandardMaterial({color:0x222233,roughness:.3,metalness:.3}),
+  cobotRing:new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:1.5,roughness:.1})
 };
 
 // AMR — GYRO第三代窄体·模块化工具箱底盘 (半导体洁净室)
 function buildAMR(x,y,z){
-  // KUKA KMP 600-S style: low-profile omnidirectional AMR
+  // Luoshi SR5-C on KUKA KMP 600-S AMR
   var g=new THREE.Group();
   var KUKA_ORG=new THREE.MeshStandardMaterial({color:0xf47920,metalness:.3,roughness:.4});   // KUKA orange
   var KUKA_WHT=new THREE.MeshStandardMaterial({color:0xeceef0,metalness:.2,roughness:.5});    // white
@@ -197,84 +206,72 @@ function buildAMR(x,y,z){
   return g;
 }
 
-// KUKA LBR iisy style 6-axis collaborative robot arm
-// 6 DOF: J1(base rotation) J2(shoulder) J3(elbow) J4(wrist1) J5(wrist2) J6(tool)
+// Luoshi SR5-C 6-axis collaborative robot arm + DH PEGA-50-26 gripper
+// 6 DOF: J1(base) J2(shoulder) J3(elbow) J4(wrist1) J5(wrist2) + gripper
 function buildCobot(x,y,z,scale){
   scale=scale||1;
   var arm=new THREE.Group();
-  var KUKA_ARM=new THREE.MeshStandardMaterial({color:0xd0d4d8,metalness:.4,roughness:.3});
-  var KUKA_JT=new THREE.MeshStandardMaterial({color:0x3a3e44,metalness:.7,roughness:.3});
-  var KUKA_ORG=new THREE.MeshStandardMaterial({color:0xf47920,metalness:.3,roughness:.4});
-  var JT_GLOW=new THREE.MeshBasicMaterial({color:0xf47920});
 
-  function jointRing(r,y){var ring=new THREE.Mesh(new THREE.TorusGeometry(r,.004,8,20),JT_GLOW);ring.rotation.x=Math.PI/2;ring.position.y=y;return ring;}
+  function set(m,x2,y2,z2){m.position.set(x2,y2,z2);return m;}
+  function mk(geo,mat){var m2=new THREE.Mesh(geo,mat);m2.castShadow=true;m2.receiveShadow=true;return m2;}
 
-  // J0: Base mounting plate
-  arm.add(makeCyl(.09,.1,.03,.015,KUKA_ORG));
-  arm.add(jointRing(.095,.03));
+  // Base
+  arm.add(set(mk(new THREE.CylinderGeometry(.22,.27,.15,32),mtl.cobotBase),0,.075,0));
+  arm.add(set(mk(new THREE.TorusGeometry(.215,.012,8,48),mtl.cobotRed),0,.082,0));
 
-  // J1: Rotation base — DOF 1 (rotate about vertical Z)
-  arm.add(makeCyl(.06,.07,.06,.07,KUKA_JT));
-  arm.add(jointRing(.065,.1));
+  // J1: rotation base
+  var j1=new THREE.Group();j1.position.y=.15;arm.add(j1);
+  j1.add(set(mk(new THREE.CylinderGeometry(.13,.17,.28,32),mtl.cobotBody),0,0,0));
+  j1.add(set(mk(new THREE.TorusGeometry(.125,.022,16,32),mtl.cobotJoint),0,-.07,0));
 
-  // J2: Shoulder link — DOF 2
-  var j2link=new THREE.Mesh(new THREE.BoxGeometry(.05,.28,.05),KUKA_ARM);
-  j2link.position.set(0,.24,0);arm.add(j2link);
-  arm.add(jointRing(.06,.38));
-  // J2 motor housing
-  var j2motor=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.05,16),KUKA_JT);
-  j2motor.rotation.x=Math.PI/2;j2motor.position.set(0,.38,.06);arm.add(j2motor);
+  // J2: shoulder
+  var j2=new THREE.Group();j2.position.y=.26;j1.add(j2);
+  j2.add(set(mk(new THREE.SphereGeometry(.13,32,16),mtl.cobotJoint),0,0,0));
+  var upper=new THREE.Group();j2.add(upper);
+  upper.add(set(mk(new THREE.BoxGeometry(.1,.55,.1),mtl.cobotBody),0,.275,0));
+  upper.add(set(mk(new THREE.BoxGeometry(.11,.035,.11),mtl.cobotRed),0,.12,0));
 
-  // J3: Elbow — DOF 3
-  var j3link=new THREE.Mesh(new THREE.BoxGeometry(.04,.2,.04),KUKA_ARM);
-  j3link.position.set(0,.48,0);arm.add(j3link);
-  arm.add(jointRing(.055,.58));
-  var j3motor=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.04,12),KUKA_JT);
-  j3motor.rotation.x=Math.PI/2;j3motor.position.set(0,.58,.05);arm.add(j3motor);
+  // J3: elbow
+  var j3=new THREE.Group();j3.position.y=.55;upper.add(j3);
+  j3.add(set(mk(new THREE.SphereGeometry(.1,32,16),mtl.cobotJoint),0,0,0));
+  var forearm=new THREE.Group();j3.add(forearm);
+  forearm.add(set(mk(new THREE.BoxGeometry(.08,.55,.08),mtl.cobotBody),0,.275,0));
+  forearm.add(set(mk(new THREE.BoxGeometry(.09,.03,.09),mtl.cobotRed),0,.09,0));
 
-  // J4: Wrist 1 — DOF 4
-  var j4link=new THREE.Mesh(new THREE.BoxGeometry(.035,.14,.035),KUKA_ARM);
-  j4link.position.set(0,.65,0);arm.add(j4link);
-  arm.add(jointRing(.05,.72));
-  var j4motor=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.035,10),KUKA_JT);
-  j4motor.rotation.x=Math.PI/2;j4motor.position.set(0,.72,.04);arm.add(j4motor);
+  // J4: wrist 1
+  var j4=new THREE.Group();j4.position.y=.55;forearm.add(j4);
+  j4.add(set(mk(new THREE.SphereGeometry(.07,32,16),mtl.cobotJoint),0,0,0));
+  var wrist=new THREE.Group();j4.add(wrist);
+  wrist.add(set(mk(new THREE.BoxGeometry(.065,.13,.065),mtl.cobotBody),0,.065,0));
 
-  // J5: Wrist 2 — DOF 5
-  var j5link=new THREE.Mesh(new THREE.BoxGeometry(.03,.1,.03),KUKA_ARM);
-  j5link.position.set(0,.77,0);arm.add(j5link);
-  arm.add(jointRing(.045,.82));
+  // J5: wrist 2
+  var j5=new THREE.Group();j5.position.y=.13;wrist.add(j5);
+  j5.add(set(mk(new THREE.SphereGeometry(.05,32,16),mtl.cobotJoint),0,0,0));
 
-  // J6: Tool flange — DOF 6
-  var j6link=new THREE.Mesh(new THREE.BoxGeometry(.025,.06,.025),KUKA_ORG);
-  j6link.position.set(0,.85,0);arm.add(j6link);
-  arm.add(jointRing(.04,.88));
-  // Tool flange
-  var flange=new THREE.Mesh(new THREE.CylinderGeometry(.025,.03,.015,12),mtl.steel);
-  flange.position.set(0,.895,0);arm.add(flange);
+  // DH PEGA-50-26 gripper
+  var gb=new THREE.Group();j5.add(gb);
+  gb.add(set(mk(new THREE.CylinderGeometry(.04,.045,.035,24),mtl.cobotGrip),0,0,0));
+  gb.add(set(mk(new THREE.BoxGeometry(.065,.08,.055),mtl.cobotGrip),0,-.055,0));
+  // Left finger
+  var fL=new THREE.Group();gb.add(fL);
+  fL.add(set(mk(new THREE.BoxGeometry(.012,.07,.015),mtl.cobotFinger),.022,-.095,0));
+  fL.add(set(mk(new THREE.BoxGeometry(.01,.018,.018),mtl.cobotFtip),.022,-.14,0));
+  // Right finger
+  var fR=new THREE.Group();gb.add(fR);
+  fR.add(set(mk(new THREE.BoxGeometry(.012,.07,.015),mtl.cobotFinger),-.022,-.095,0));
+  fR.add(set(mk(new THREE.BoxGeometry(.01,.018,.018),mtl.cobotFtip),-.022,-.14,0));
 
-  // Parallel gripper (tool)
-  var gripBody=new THREE.Mesh(new THREE.BoxGeometry(.04,.035,.06),KUKA_JT);
-  gripBody.position.set(0,.92,0);arm.add(gripBody);
-  // 2 fingers + rubber pads
-  var fl=new THREE.Mesh(new THREE.BoxGeometry(.01,.05,.02),mtl.steel);
-  fl.position.set(-.015,.95,.03);arm.add(fl);
-  var fr=fl.clone();fr.position.x=.015;arm.add(fr);
-  [[-.015,.955,.04],[.015,.955,.04]].forEach(function(p){
-    var pad=new THREE.Mesh(new THREE.BoxGeometry(.008,.01,.008),new THREE.MeshStandardMaterial({color:0x222,roughness:.9}));
-    pad.position.set(p[0],p[1],p[2]);arm.add(pad);
-  });
-
-  // Cable management (orange tube on back)
-  var cable=new THREE.Mesh(new THREE.TorusGeometry(.012,.004,6,12,Math.PI),KUKA_ORG);
-  cable.position.set(0,.28,-.06);cable.rotation.z=Math.PI/2;arm.add(cable);
-  cable=cable.clone();cable.position.y=.46;arm.add(cable);
-  cable=cable.clone();cable.position.y=.6;arm.add(cable);
+  // Green LED ring at base
+  var ring=mk(new THREE.TorusGeometry(.22,.012,16,64),mtl.cobotRing);
+  ring.castShadow=false;ring.receiveShadow=false;
+  ring.rotation.x=Math.PI/2;ring.position.set(0,.075,0);arm.add(ring);
 
   arm.position.set(x,y,z);
   arm.scale.set(scale,scale,scale);
   return arm;
 }
 
+function set(m,x2,y2,z2){m.position.set(x2,y2,z2);return m;}
 function makeCyl(rt,rb,h,y,mat){
   var g=new THREE.CylinderGeometry(rt,rb,h,16);
   var m=new THREE.Mesh(g,mat);m.position.y=y;m.castShadow=true;return m;
@@ -285,7 +282,7 @@ var objs=new THREE.Group();scene.add(objs);
 var spec=sceneData.specs||{};
 
 if(sceneType==="insert"){
-  // Insert scene: test oven + slots + robot in front
+  // Insert scene: test oven + slots + Luoshi SR5-C arm + camera
   var oven=new THREE.Mesh(new THREE.BoxGeometry(2,.8,.6),new THREE.MeshStandardMaterial({color:0x2a3040,metalness:.8}));
   oven.position.set(0,.4,-1.8);oven.castShadow=true;objs.add(oven);
   // Cage slots
@@ -294,9 +291,63 @@ if(sceneType==="insert"){
     var s=new THREE.Mesh(new THREE.BoxGeometry(.15,.05,.3),new THREE.MeshStandardMaterial({color:0x111111,emissive:0x331100,emissiveIntensity:.5}));
     s.position.set(-.6+i*.4,.65,-1.65);objs.add(s);
   }
-  // AMR + cobot in front of oven
+  // AMR + Luoshi SR5-C cobot in front of oven
   var amr=buildAMR(0,0,.3);objs.add(amr);
   var robot=buildCobot(.18,.2,-.2,.75);objs.add(robot);
+
+  // ---- Coordinate axes at arm base ----
+  function mkAxis(dir,color,len){
+    var g=new THREE.Group();
+    var shaft=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,len,8),new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:.5,roughness:.1}));
+    shaft.position.set(0,len/2,0);shaft.castShadow=false;shaft.receiveShadow=false;g.add(shaft);
+    var head=new THREE.Mesh(new THREE.ConeGeometry(.04,.12,8),new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:.5,roughness:.1}));
+    head.position.set(0,len,0);head.castShadow=false;head.receiveShadow=false;g.add(head);
+    if(dir==="x")g.rotation.z=-Math.PI/2;
+    else if(dir==="z")g.rotation.x=Math.PI/2;
+    return g;
+  }
+  function mkAxisLabel(text,color,pos){
+    var cv=document.createElement("canvas");cv.width=128;cv.height=64;
+    var cx=cv.getContext("2d");cx.fillStyle=color;cx.font="bold 40px Arial";cx.textAlign="center";cx.fillText(text,64,44);
+    var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
+    var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
+    s.position.copy(pos);s.scale.set(.35,.18,1);return s;
+  }
+  // X-axis (red) along +X
+  var axX=new THREE.Group();
+  var xShaft=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.5,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.5,roughness:.1}));
+  xShaft.rotation.z=Math.PI/2;xShaft.position.set(.75,0,0);xShaft.castShadow=xShaft.receiveShadow=false;axX.add(xShaft);
+  var xHead=new THREE.Mesh(new THREE.ConeGeometry(.04,.12,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.5,roughness:.1}));
+  xHead.rotation.z=-Math.PI/2;xHead.position.set(1.5,0,0);xHead.castShadow=xHead.receiveShadow=false;axX.add(xHead);
+  axX.position.set(.18,.2,-.2);objs.add(axX);
+  // Y-axis (green) along +Y
+  var axY=mkAxis("y",0x44ff44,1.5);
+  axY.position.set(.18,.2,-.2);objs.add(axY);
+  // Z-axis (blue) along +Z
+  var axZ=mkAxis("z",0x4488ff,1.5);
+  axZ.position.set(.18,.2,-.2);objs.add(axZ);
+  objs.add(mkAxisLabel("X","#ff4444",new THREE.Vector3(.18+1.7,.2,-.2)));
+  objs.add(mkAxisLabel("Y","#44ff44",new THREE.Vector3(.18,.2+1.7,-.2)));
+  objs.add(mkAxisLabel("Z","#4488ff",new THREE.Vector3(.18,.2,-.2+1.7)));
+  // Origin dot (white)
+  var od=new THREE.Mesh(new THREE.SphereGeometry(.05,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:2,roughness:.1}));
+  od.castShadow=false;od.receiveShadow=false;od.position.set(.18,.2,-.2);objs.add(od);
+
+  // ---- Camera/Scanner module ----
+  var camGroup=new THREE.Group();
+  // Pillar
+  camGroup.add(set(new THREE.Mesh(new THREE.BoxGeometry(.06,.5,.06),mtl.dark),0,.25,0));
+  // Camera head
+  camGroup.add(set(new THREE.Mesh(new THREE.BoxGeometry(.15,.1,.2),mtl.body),0,.55,0));
+  // Lens
+  var lens=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,.12,8),mtl.accent);
+  lens.rotation.x=Math.PI/2;lens.position.set(0,.48,.16);camGroup.add(lens);
+  // LED ring
+  var camRing=new THREE.Mesh(new THREE.TorusGeometry(.05,.01,8,16),new THREE.MeshBasicMaterial({color:0x00d4aa}));
+  camRing.position.set(0,.43,.2);camRing.rotation.x=Math.PI/2;camGroup.add(camRing);
+  // Base plate
+  camGroup.add(set(new THREE.Mesh(new THREE.BoxGeometry(.22,.02,.18),mtl.shelf),0,.01,0));
+  camGroup.position.set(.18,.01,-.8);objs.add(camGroup);
 
 }else if(sceneType==="handle"){
   // AMR transport scene: AMR + shelves + work area
