@@ -4,8 +4,19 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>供应商合作 · 模型需求 | Z-MAX</title>
 <style>
+@media print{
+  *{color:#000!important;background:#fff!important;border-color:#ccc!important}
+  body{padding:30px;font-size:12pt;line-height:1.8}
+  h1{font-size:22pt;margin-bottom:12pt}h2{font-size:16pt;margin-top:16pt;border-bottom:1px solid #000;padding-bottom:4pt}h3{font-size:13pt}
+  table{border-collapse:collapse;width:100%}th,td{border:1px solid #000;padding:6pt 8pt}th{background:#eee!important}
+  #btn-print{display:none}a{color:#000!important;text-decoration:underline}
+  .highlight{border:2px solid #000;padding:10pt}.models{display:block}.model{display:block;margin-bottom:12pt;border-left:3px solid #000!important;padding:10pt}
+  .tag{border:1px solid #000!important}
+}
+</style>
+<style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:900px;margin:0 auto;line-height:1.8}
+body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:1000px;margin:0 auto;line-height:1.8}
 h1{color:#00d4aa;font-size:18px;margin:12px 0}
 h2{color:#58a6ff;font-size:14px;margin:16px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
 h3{color:#f0a500;font-size:12px;margin:10px 0 4px}
@@ -13,6 +24,7 @@ p{color:#8b949e;margin:4px 0}
 table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
 th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
 td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
 a{color:#00d4aa;text-decoration:none}
 .models{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
 .model{flex:1;min-width:240px;background:#0d1520;border:1px solid #1a2030;border-radius:8px;padding:14px}
@@ -21,90 +33,172 @@ a{color:#00d4aa;text-decoration:none}
 .tag.b{background:#58a6ff22;color:#58a6ff}.tag.g{background:#00d4aa22;color:#00d4aa}.tag.p{background:#a371f722;color:#a371f7}
 .check{font-size:10px;margin:3px 0}.check span{margin:0 2px}
 .highlight{background:#0d1520;border-left:3px solid #ff6b35;padding:8px 12px;margin:8px 0;border-radius:4px;color:#ff6b35;font-weight:700}
+.scene-card{background:#0d1520;border:1px solid #1a2030;border-radius:8px;padding:12px;margin:10px 0}
+.scene-card h3{color:#00d4aa;margin-bottom:6px}
+.scene-card .info{font-size:10px;color:#555;margin-bottom:4px}
+.scene-card .steps{font-size:10px;color:#58a6ff;margin:4px 0}
+.scene-card .steps span{margin:0 2px}
 </style>
 </head>
 <body>
 <a href="/">← 主页</a> · <a href="/factory-dashboard.html">📊 大屏</a>
-<h1>🤝 供应商合作方案 · 具身智能模型</h1>
+<button id="btn-print" onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
+<h1>🤝 供应商合作方案 · 光模块精细操作模型</h1>
 
-<div class="highlight">🔒 核心原则：实验室数据不外发，数据闭环在本地完成</div>
+<div class="highlight">甲方：智蜂（实验室） · 乙方：供应商　|　🔒 核心原则：甲方数据不外发，数据闭环在甲方本地完成</div>
 
-<!-- ═══ 场景需求 ═══ -->
-<h2>一、基于工厂场景的模型需求</h2>
+<!-- ═══ 合作目标 ═══ -->
+<h2>合作目标 · 产线痛点</h2>
 <table>
-<tr><th>场景</th><th>精度要求</th><th>节拍</th><th>模型能力</th><th>所需模型类型</th></tr>
-<tr><td>① 金线键合上料</td><td>对位≤0.3mm</td><td>≤6s</td><td>插拔·力控·治具适配</td><td>ACT/W2-VLA</td></tr>
-<tr><td>② 芯片贴装上下料</td><td>到位≤0.5mm</td><td>≤4s</td><td>取放·流转·料盒适配</td><td>ACT</td></tr>
-<tr><td>③ 透镜AA耦合</td><td>对位≤±1μm</td><td>≤10s</td><td>精密对准·力控</td><td>W2-VLA</td></tr>
-<tr><td>④ PEI Cover压合</td><td>插入深度±0.1mm</td><td>≤15s</td><td>插销装配·力控</td><td>ACT/W2-VLA</td></tr>
-<tr><td>⑤ 隔离器安装</td><td>放置≤0.2mm</td><td>≤20s</td><td>微型件拾放·力控</td><td>ACT</td></tr>
-<tr><td>⑥ COC固晶绑定</td><td>对位≤±1μm</td><td>≤8s</td><td>亚微米对准·温控联动</td><td>W2-VLA</td></tr>
+<tr><th>痛点</th><th>产线表现</th><th>期望效果</th></tr>
+<tr><td>精细操作定位不准</td><td>插拔、对准、贴装等动作中，视觉引导精度不足，导致对位偏差、物料损伤</td><td>毫米级/微米级视觉定位，满足各场景精度要求</td></tr>
+<tr><td>推理响应慢</td><td>模型计算耗时过长，机器人动作卡顿，产线节拍无法达标</td><td>毫秒级实时响应，6-20s节拍稳定运行</td></tr>
+<tr><td>硬件成本高</td><td>大模型依赖昂贵GPU，无法部署到产线嵌入式控制器</td><td>轻量化模型，可部署到产线现有算力设备</td></tr>
+<tr><td>新场景适应慢</td><td>换型号、换工装后需要长时间重新训练，影响换批效率</td><td>少量新数据即可快速适配，换批时间≤5分钟</td></tr>
+<tr><td>视觉-动作协同差</td><td>相机看到的和机械手执行的不一致，导致抓空、插偏</td><td>端到端视觉动作闭环，所见即所动</td></tr>
 </table>
 
-<!-- ═══ 三种模式 ═══ -->
-<h2>二、三种合作模式</h2>
+<!-- ═══ 五大场景 ═══ -->
+<h2>一、光模块工厂五大精细操作场景</h2>
+
+<div class="scene-card">
+<h3>场景一 · SCN-01 电口插拔（FW Loading）</h3>
+<div class="info">固件下载与EEPROM校验工序 · 操作对象：光模块成品(QSFP-DD/OSFP/SFP)+EVB测试子板</div>
+<table>
+<tr><th>项目</th><th>规格</th></tr>
+<tr><td>精度</td><td>对位≤±0.1mm · 重复定位±0.02mm · 力控±0.1N</td></tr>
+<tr><td>节拍</td><td>≤15s/颗（不含测试等待50-75s）</td></tr>
+<tr><td>成功率</td><td>≥99%</td></tr>
+<tr><td>原子动作链</td><td><b>取料→扫码→翻转→插入→拔出→AOI→分拣</b></td></tr>
+<tr><td>工序步骤</td><td>①取料：从来料料盘取出模块 ②扫码：扫描SN二维码 ③翻转：标签面向下 ④插入：对准EVB子板插槽直推 ⑤等待测试(50-75s) ⑥读取结果 ⑦拉出模块 ⑧AOI：金手指外观检测 ⑨分拣：Pass/Fail分类放置</td></tr>
+<tr><td>关键能力</td><td>电口插拔 · 力控 · 扫码识别 · AOI检测 · 金手指保护</td></tr>
+</table>
+</div>
+
+<div class="scene-card">
+<h3>场景二 · SCN-02 上下料（料盘/治具）</h3>
+<div class="info">全流程物料流转支撑 · 三个能力层级递进</div>
+<table>
+<tr><th>层级</th><th>操作对象</th><th>精度</th><th>节拍</th><th>原子动作</th></tr>
+<tr><td><b>L1 料盘上下料</b></td><td>整盘料盘(吸塑盒/华夫盒/蓝膜)</td><td>±0.5mm</td><td>≤6s/盘</td><td>料盘识别→穴位映射→抓取/释放→叉取/放置</td></tr>
+<tr><td><b>L2 治具上下料</b></td><td>单个物料+治具插槽</td><td>±0.1-0.3mm</td><td>≤6s/个</td><td>治具识别→精密对准→插入/拔出→流转</td></tr>
+<tr><td><b>L3 治具内精密操作</b></td><td>治具内的芯片/元件</td><td>±1μm-±0.1mm</td><td>≤6s/个</td><td>2D外观检测→3D尺寸检测→显微复检→缺陷分类</td></tr>
+</table>
+<p style="color:#555;font-size:10px">递进关系：L1整盘管理 → L2单颗治具对接 → L3治具内精密识别与检测</p>
+</div>
+
+<div class="scene-card">
+<h3>场景三 · SCN-03 老化箱模块插拔（BI）</h3>
+<div class="info">老化测试(Burn-In)工序 · 操作对象：成品模块(QSFP约10颗/抽屉·OSFP约16颗/抽屉)+老化箱抽屉</div>
+<table>
+<tr><th>项目</th><th>规格</th></tr>
+<tr><td>精度</td><td>导向精度±0.5mm · 力控精度±0.1N</td></tr>
+<tr><td>节拍</td><td>单颗≤6s</td></tr>
+<tr><td>成功率</td><td>≥99%</td></tr>
+<tr><td>原子动作链</td><td><b>抽屉识别→抽屉拉出→批量插入→抽屉关闭→抽屉拉出→批量拔出→分拣</b></td></tr>
+<tr><td>关键能力</td><td>抽屉级批量插拔 · 多层上下移动 · 定位对准 · 连续作业</td></tr>
+</table>
+</div>
+
+<div class="scene-card">
+<h3>场景四 · SCN-04 热海柜体插拔</h3>
+<div class="info">批量老化/环境测试工序 · 操作对象：成品模块+光纤跳线+热海柜体电口/光口</div>
+<table>
+<tr><th>项目</th><th>规格</th></tr>
+<tr><td>精度</td><td>导向精度±0.5mm · 力控精度±0.1N</td></tr>
+<tr><td>节拍</td><td>电口+光口≤20s/模块（不含等待时间）</td></tr>
+<tr><td>成功率</td><td>≥99%</td></tr>
+<tr><td>原子动作链</td><td><b>取料→插入光口→插入电口→等待测试→拔出→分拣</b></td></tr>
+<tr><td>关键能力</td><td>光口插拔 · 电口插拔 · 光纤操作 · 多槽位定位 · 多层上下移动</td></tr>
+</table>
+</div>
+
+<div class="scene-card">
+<h3>场景五 · SCN-05 ATS/线外检测插接 <span class="tag g">核心挑战场景</span></h3>
+<div class="info">光性能测试/线外检测工序 · 操作对象：光模块+光纤跳线+ATS测试座 · 动作链超集</div>
+<table>
+<tr><th>项目</th><th>规格</th></tr>
+<tr><td>精度</td><td>对位≤±0.1mm · 力控≤0.1N</td></tr>
+<tr><td>节拍</td><td>≤20s/模块完整循环（不含测试时间）</td></tr>
+<tr><td>成功率</td><td>≥99%</td></tr>
+<tr><td>原子动作链</td><td><b>扫码→清洁→插入光纤→插入电口→测试→拔出光纤→拔出模块→目检→分拣</b></td></tr>
+<tr><td>关键能力</td><td>光纤插拔 · 光口清洁 · 力控 · 视觉检测 · 扫码 · 覆盖全部场景动作</td></tr>
+</table>
+</div>
+
+<!-- ═══ 能力下放 ═══ -->
+<h2>二、技术能力下放关系</h2>
+<p>ATS/线外检测插接(SCN-05)为动作链超集，验收通过后能力直接下放：</p>
+<table>
+<tr><th>源场景</th><th>→</th><th>目标场景</th><th>下放方式</th></tr>
+<tr><td>SCN-05 ATS</td><td>→</td><td>SCN-01 电口插拔</td><td>移除光口/光纤/清洁，保留电口+扫码+分拣</td></tr>
+<tr><td>SCN-05 ATS</td><td>→</td><td>SCN-02 上下料</td><td>移除插拔，保留取放+流转+治具对接+精密感知</td></tr>
+<tr><td>SCN-05 ATS</td><td>→</td><td>SCN-03 老化箱</td><td>保留批量插拔，增加抽屉操作</td></tr>
+<tr><td>SCN-05 ATS</td><td>→</td><td>SCN-04 热海</td><td>保留光口+电口，移除清洁，适配柜体槽位</td></tr>
+</table>
+
+<!-- ═══ 原子技能映射 ═══ -->
+<h2>三、原子技能与场景映射</h2>
+<table>
+<tr><th>原子技能</th><th>功能</th><th>应用场景</th></tr>
+<tr><td><b>A001 精密对准</b></td><td>微米级位置和角度对准</td><td>电口插拔·上下料(L2)·热海·ATS</td></tr>
+<tr><td><b>A002 插入/拔出（力控）</b></td><td>力控插拔操作</td><td>全部场景</td></tr>
+<tr><td><b>A003 压装/扣合</b></td><td>压合装配</td><td>上下料(L2)</td></tr>
+<tr><td><b>A004 叉取/放置</b></td><td>料盘/物料流转</td><td>上下料(L1)</td></tr>
+<tr><td><b>A005 抓取/释放</b></td><td>取料/放料</td><td>上下料(L1)·电口插拔·老化箱·热海·ATS</td></tr>
+<tr><td><b>XPO002 料盘穴位映射</b></td><td>料盘类型识别与穴位定位</td><td>上下料(L1)</td></tr>
+<tr><td><b>Q001 2D外观检测</b></td><td>外观识别与检测</td><td>上下料(L3)·ATS</td></tr>
+<tr><td><b>V003 显微复检</b></td><td>金线/焊点显微检查</td><td>上下料(L3)</td></tr>
+<tr><td><b>Q004 缺陷分类</b></td><td>缺陷自动分级</td><td>上下料(L3)·ATS</td></tr>
+</table>
+
+<!-- ═══ 合作模式 ═══ -->
+<h2>四、三种合作模式</h2>
 <div class="models">
-  <div class="model m1">
-    <h3>模式一 · 包人</h3>
-    <span class="tag b">供应商驻场开发</span>
-    <p style="margin:8px 0">供应商工程师在实验室本地工作，使用本地数据和算力进行模型开发、训练、调优。</p>
-    <div class="check">✅ 数据完全不出实验室</div>
-    <div class="check">✅ 供应商直接接触硬件和产线</div>
-    <div class="check">✅ 迭代速度快</div>
-    <div class="check">⚠️ 成本较高（人天计费）</div>
-    <div class="check">⚠️ 需签保密协议 + 物理隔离</div>
+  <div class="model m1"><h3>模式一 · 包人</h3><span class="tag b">乙方驻场开发</span>
+    <p style="margin:8px 0">乙方工程师在甲方实验室本地工作，使用本地数据和算力进行模型开发、训练、调优。</p>
+    <div class="check">✅ 数据完全不出实验室</div><div class="check">✅ 乙方直接接触硬件和产线</div><div class="check">✅ 迭代速度快</div>
+    <div class="check">⚠️ 成本较高（人天计费）</div><div class="check">⚠️ 需签保密协议+物理隔离</div>
   </div>
-  <div class="model m2">
-    <h3>模式二 · 合作</h3>
-    <span class="tag g">推荐</span>
-    <p style="margin:8px 0">供应商提供完整模型包，部署到本地数据闭环平台。在本地环境训练微调，供应商负责集成和接口适配。</p>
-    <div class="check">✅ 数据不出实验室</div>
-    <div class="check">✅ 供应商提供专业模型</div>
-    <div class="check">✅ 我们自主微调迭代</div>
+  <div class="model m2"><h3>模式二 · 合作</h3><span class="tag g">推荐</span>
+    <p style="margin:8px 0">乙方提供完整模型包，部署到甲方本地数据闭环平台。甲方在本地环境训练微调，乙方负责集成和接口适配。</p>
+    <div class="check">✅ 数据不出实验室</div><div class="check">✅ 乙方提供专业模型</div><div class="check">✅ 甲方自主微调迭代</div>
     <div class="check">✅ 成本适中（模型+集成费）</div>
-    <div class="check">📋 接口: LeRobot格式 · API适配</div>
+    <div class="check">📋 接口：标准训练框架格式·API适配</div>
   </div>
-  <div class="model m3">
-    <h3>模式三 · 预训练</h3>
-    <span class="tag p">轻量</span>
-    <p style="margin:8px 0">供应商提供预训练基础模型，预留微调接口。通过远程方式部署，我们本地数据闭环完成微调训练。</p>
-    <div class="check">✅ 数据不出实验室</div>
-    <div class="check">✅ 快速启动</div>
-    <div class="check">✅ 成本最低</div>
+  <div class="model m3"><h3>模式三 · 预训练</h3><span class="tag p">轻量</span>
+    <p style="margin:8px 0">乙方提供预训练基础模型，预留微调接口。甲方本地数据闭环完成微调训练。</p>
+    <div class="check">✅ 数据不出实验室</div><div class="check">✅ 快速启动</div><div class="check">✅ 成本最低</div>
     <div class="check">⚠️ 模型需适配本地环境</div>
-    <div class="check">📋 接口: safetensors权重 · 远程部署</div>
+    <div class="check">📋 接口：标准权重格式·远程部署</div>
   </div>
 </div>
 
 <!-- ═══ 技术规格 ═══ -->
-<h2>三、对供应商模型的技术要求</h2>
+<h2>五、对乙方模型的技术要求（协商为准）</h2>
 <table>
 <tr><th>要求</th><th>规格</th></tr>
-<tr><td>输入维度</td><td>state[6]关节角 + camera(320×240) + label(20状态)</td></tr>
-<tr><td>输出维度</td><td>action[6]关节命令 或 action[4]笛卡尔速度</td></tr>
-<tr><td>推理延迟</td><td>＜70ms（产线实时控制）</td></tr>
-<tr><td>模型格式</td><td>safetensors · 兼容LeRobot · Docker容器化</td></tr>
-<tr><td>训练框架</td><td>LeRobot + ACT 或 W2-VLA · 支持本地GPU训练</td></tr>
-<tr><td>数据格式</td><td>每包独立episode · timestamp相对化 · episode内frame_index递增</td></tr>
-<tr><td>评估指标</td><td>loss · success_rate · delta(预测vs真实) · 推理延迟</td></tr>
-<tr><td>部署方式</td><td>Docker容器 · 静态URL + relay双通道 · 支持Mac/Orin</td></tr>
-<tr><td>数据闭环</td><td>兼容Z-MAX relay API · WS事件触发训练 · 支持影子模式对比</td></tr>
+<tr><td>输入维度</td><td>关节状态+相机图像+动作标签(可配置)<br>相机：中(320×240)/高(640×480)/超清(1280×960)可选·最高支持800万像素</td></tr>
+<tr><td>输出维度</td><td>关节命令或笛卡尔速度（根据机器人接口协商）</td></tr>
+<tr><td>推理延迟</td><td>参考值＜100ms·具体以产线节拍协商</td></tr>
+<tr><td>模型格式</td><td>标准权重格式·兼容主流训练框架·支持容器化部署</td></tr>
+<tr><td>训练框架</td><td>主流开源训练框架·支持本地GPU训练·具体协商</td></tr>
+<tr><td>数据格式</td><td>每包独立episode·时间戳相对化·帧索引递增（协商确定）</td></tr>
+<tr><td>评估指标</td><td>loss·成功率·预测偏差·推理延迟（协商验收标准）</td></tr>
+<tr><td>部署方式</td><td>容器化·支持甲方Mac/Orin环境·双通道交付（协商）</td></tr>
+<tr><td>数据闭环</td><td>兼容甲方数据中继API·支持增量训练·协商接口规范</td></tr>
 </table>
 
 <!-- ═══ 数据保护 ═══ -->
-<h2>四、数据安全保护措施</h2>
+<h2>六、数据安全保护措施</h2>
 <table>
 <tr><th>措施</th><th>实现</th></tr>
-<tr><td>物理隔离</td><td>实验室网络独立 · 供应商设备不连外网</td></tr>
-<tr><td>数据不出域</td><td>训练数据仅在本地relay流转 · 不上传云端</td></tr>
-<tr><td>模型加密</td><td>safetensors格式 · 部署时签名校验</td></tr>
-<tr><td>访问控制</td><td>SSH密钥管理 · 操作日志审计</td></tr>
-<tr><td>保密协议</td><td>供应商签署NDA · 项目周期内数据管控</td></tr>
+<tr><td>物理隔离</td><td>实验室网络独立·乙方设备不连外网</td></tr>
+<tr><td>数据不出域</td><td>训练数据仅在本地relay流转·不上传云端</td></tr>
+<tr><td>模型加密</td><td>标准权重格式·部署时签名校验</td></tr>
+<tr><td>访问控制</td><td>SSH密钥管理·操作日志审计</td></tr>
+<tr><td>保密协议</td><td>乙方签署NDA·项目周期内数据管控</td></tr>
 </table>
 
-<p style="text-align:center;margin:16px 0">
-  <a href="/factory-dashboard.html">📊 大屏监督</a> · 
-  <a href="/factory-3d.html">🏭 工厂3D</a> · 
-  <a href="/cicd.html">📊 CICD</a>
-</p>
+<p style="text-align:center;margin:16px 0;color:#555;font-size:10px">文档版本：V2.0 · 更新日期：2026年8月11日 · 智蜂创元 © 2026</p>
 </body></html>

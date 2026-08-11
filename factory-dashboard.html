@@ -1,99 +1,132 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>工厂大屏 | Z-MAX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#060a10;color:#c8d1d9;font:13px -apple-system,"PingFang SC",sans-serif;padding:8px;min-height:100vh}
-.top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.top a{color:#00d4aa;font-size:11px;text-decoration:none;padding:3px 8px;border:1px solid #1a2030;border-radius:4px}
-.top h1{font-size:14px;color:#00d4aa}
-.kpis{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.kp{flex:1;min-width:50px;background:#0d1520;border-radius:6px;padding:6px 4px;text-align:center;border:1px solid #1a2030}
-.kp .v{font-size:15px;font-weight:800;color:#00d4aa;line-height:1.2}.kp .l{font-size:8px;color:#555}
-.cards{display:flex;flex-direction:column;gap:6px}
-.card{background:#0d1520;border-radius:8px;padding:10px;border-left:3px solid #3fb950}
-.card.w{border-left-color:#f0a500}.card.e{border-left-color:#ff4444}
-.card .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.card .h .t{font-size:12px;color:#c8d1d9;font-weight:600}
-.card .h .s{font-size:9px;padding:1px 6px;border-radius:3px}
-.card .h .s.g{background:#3fb95022;color:#3fb950}.card .h .s.r{background:#ff444422;color:#ff4444}
-.card .info{font-size:9px;color:#555;margin-bottom:4px}
-.row{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}
-.row .l{flex:1;min-width:50px}.row .r{min-width:55px;text-align:right;font-weight:700}
-.bar{flex:1;height:4px;background:#1a2030;border-radius:2px;min-width:40px}
-.bar i{display:block;height:100%;border-radius:2px}
+html,body{height:100%}
+body{background:#060a10;color:#c8d1d9;font:15px "PingFang SC",sans-serif;padding:10px;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-shrink:0}
+.top a{color:#00d4aa;font-size:13px;text-decoration:none;padding:5px 10px;border:1px solid #1a2030;border-radius:5px}
+.top h1{font-size:18px;color:#00d4aa}.top span{font-size:11px;color:#555;margin-left:auto}
+.kpis{display:flex;gap:6px;margin-bottom:8px;flex-shrink:0}
+.kp{flex:1;background:#0d1520;border-radius:6px;padding:8px;text-align:center;border:1px solid #1a2030}
+.kp .v{font-size:22px;font-weight:800;color:#00d4aa}.kp .l{font-size:10px;color:#555}
+.main{display:flex;gap:8px;flex:1;min-height:0}
+.left{width:30%;flex-shrink:0;display:flex;flex-direction:column}
+.right{flex:1;display:flex;flex-direction:column}
+.sec-title{font-size:12px;color:#f0a500;margin-bottom:4px;flex-shrink:0}
+.robots{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;flex:1;align-content:stretch;overflow-y:auto}
+.rb{background:#0d1520;border-radius:6px;padding:10px;border-left:3px solid #3fb950;display:flex;flex-direction:column;justify-content:center}
+.rb.idle{border-left-color:#555}.rb.agv{border-left-color:#f0a500}
+.rb .h{font-size:14px;color:#c8d1d9;font-weight:600}.rb .z{font-size:10px;color:#555}
+.rb .m{display:flex;justify-content:space-between;margin:2px 0;font-size:12px}
+.rb .m .val{color:#00d4aa;font-weight:700}.rb .m .lab{color:#555}
+.scenes{display:flex;flex-direction:column;gap:6px;flex:1}
+.sc{background:#0d1520;border-radius:6px;padding:12px;display:flex;align-items:center;gap:8px;border-left:3px solid #3fb950;flex:1;min-height:60px}
+.sc.e{border-left-color:#ff4444}
+.sc .icon{font-size:22px;min-width:28px;text-align:center}
+.sc .info{flex:1;font-size:12px}.sc .info .n{color:#c8d1d9;font-weight:600;font-size:13px}.sc .info .d{font-size:10px;color:#555;line-height:1.3;margin:1px 0}
+.sc .val{font-size:13px;font-weight:700;min-width:65px;text-align:right}
 .g{color:#3fb950}.y{color:#f0a500}.r{color:#ff4444}
-.bg-g{background:#3fb950}.bg-y{background:#f0a500}.bg-r{background:#ff4444}
+.flow{font-size:9px;color:#555;text-align:center;margin:2px 0}
+.flow span{color:#00d4aa;margin:0 3px}
+@media(max-width:768px){.main{flex-direction:column}.left{width:100%}}
 </style>
 </head>
 <body>
-<div class="top">
-  <a href="/">←</a><a href="/factory-3d.html">🏭3D</a>
-  <h1>🏭 光模块精细操作</h1>
-  <span style="font-size:9px;color:#555;margin-left:auto" id="tick">-</span>
-</div>
+<div class="top"><a href="/">←</a><a href="/factory-3d.html">🏭3D</a><a href="/supplier-model.html">📋场景</a><h1>🏭 光模块产线大屏 · 400G OSFP SR8</h1><span id="t">-</span></div>
 <div class="kpis">
-  <div class="kp"><div class="v" id="ko">87%</div><div class="l">OEE</div></div>
-  <div class="kp"><div class="v" id="kc">8.2s</div><div class="l">节拍</div></div>
-  <div class="kp"><div class="v" id="ky">99.7%</div><div class="l">良率</div></div>
-  <div class="kp"><div class="v" id="kr">6</div><div class="l">运行</div></div>
-  <div class="kp"><div class="v" id="ka" style="color:#f0a500">1</div><div class="l">告警</div></div>
+  <div class="kp"><div class="v" id="kmod">-</div><div class="l">今日光模块产量</div></div>
+  <div class="kp"><div class="v" id="ko">-</div><div class="l">OEE·设备综合效率</div></div>
+  <div class="kp"><div class="v" id="kc">-</div><div class="l">平均节拍</div></div>
+  <div class="kp"><div class="v" id="ky">-</div><div class="l">良率</div></div>
+  <div class="kp"><div class="v" id="kr">-</div><div class="l">运行台数</div></div>
+  <div class="kp"><div class="v" id="ka">-</div><div class="l">告警</div></div>
+  <div class="kp"><div class="v" id="kb">-</div><div class="l">数据包</div></div>
 </div>
-<div class="cards" id="cards"></div>
-
+<div class="flow">COC基板 → 固晶(I113) → 贴片(I136) → 键合(I152) → <span>光引擎</span> → 耦合(I171) → Cover(I155) → 隔离器(I159) → AOI → <span>模块组装</span> → FW烧录(I119) → 老化(I142) → ATS检测(I215) → <span>400G OSFP SR8成品</span></div>
+<div class="main">
+  <div class="left">
+    <div class="sec-title">🤖 机器人监控</div>
+    <div class="robots" id="rs"></div>
+  </div>
+  <div class="right">
+    <div class="sec-title">📋 五大场景 · BOM清单</div>
+    <div class="scenes" id="ss"></div>
+  </div>
+</div>
 <script>
-var D=[
-  {n:"① 金线键合上料",z:"OE-I152",r:"Z700F",t:"5.2/6s",y:"99.6/99.5%",p:!0,s:"g",m:"FR-4·230×280mm·≤500g",stage:"INSERT",stageN:7},
-  {n:"② 芯片贴装上下料",z:"OE-I136",r:"Z100L",t:"3.3/4s",y:"99.9/99.8%",p:!0,s:"g",m:"防静电料盒·≤1kg",stage:"TRANSFER",stageN:6},
-  {n:"③ 透镜AA耦合",z:"OE-I171",r:"Z700",t:"8.5/10s",y:"99.7/99.5%",p:!0,s:"g",m:"3×3mm·<1g·防污",stage:"ALIGN",stageN:2},
-  {n:"④ PEI Cover压合",z:"OE-I155",r:"Z700F",t:"12.5/15s",y:"100/99.9%",p:!0,s:"g",m:"40×30mm·8g·定位销",stage:"INSERT",stageN:7},
-  {n:"⑤ 隔离器安装",z:"OE-I159",r:"Z700F",t:"17.2/20s",y:"99.8/99.7%",p:!0,s:"g",m:"5×5×3mm·1g·磁环",stage:"DESCEND",stageN:3},
-  {n:"⑥ COC固晶绑定",z:"COC-I113",r:"Z700",t:"7.5/8s",y:"99.9/99.9%",p:!1,s:"e",m:"1×1mm·<0.5g·280°C ⚠",stage:"ALIGN",stageN:2}
+/* BOM: 每颗400G OSFP SR8光模块物料清单 */
+var BOM={vcsel8:1,pd8:1,driver:1,tia:1,dsp:1,lens_array:2,mpo16:1,osfp_housing:1,pcb:1,heatsink:1,total:11};
+/* 生产流程: 每个I-Step工位对应的工作量(件/小时)和目标节拍 */
+var STATIONS=[
+  {id:"Z700-1",name:"精密操作·移动导航",zone:"COC-I113固晶",s:"run",sp:1.33,cy:45,ld:55,tp:42,scene:"SCN-02"},
+  {id:"Z700-2",name:"精密操作·移动导航",zone:"OE-I171耦合",s:"run",sp:1.5,cy:40,ld:44,tp:39,scene:"SCN-02"},
+  {id:"Z700-3",name:"精密操作·移动导航",zone:"光引擎-I155",s:"run",sp:1.2,cy:50,ld:38,tp:35,scene:"SCN-02"},
+  {id:"Z700F-1",name:"精密操作·固定版",zone:"COC-I152键合",s:"run",sp:1.0,cy:60,ld:48,tp:41,scene:"SCN-01"},
+  {id:"Z700F-2",name:"精密操作·固定版",zone:"OE-I159隔离器",s:"run",sp:0.92,cy:65,ld:35,tp:36,scene:"SCN-01"},
+  {id:"Z100L-1",name:"物料搬运",zone:"COC 料盘流转",s:"run",sp:2.0,cy:30,ld:42,tp:38,scene:"SCN-03"},
+  {id:"Z100L-2",name:"物料搬运",zone:"OE 治具对接",s:"run",sp:2.17,cy:28,ld:38,tp:35,scene:"SCN-04"},
+  {id:"Z100L-3",name:"物料搬运",zone:"模块-I119烧录",s:"run",sp:1.5,cy:40,ld:30,tp:34,scene:"SCN-05"}
 ];
-var STAGES=["APPROACH","ALIGN","DESCEND","GRASP","LIFT","TRANSFER","INSERT","DONE"];
+var AGV=[{id:"A1",route:"COC→OE",work:350},{id:"A2",route:"OE→模块",work:280},{id:"A3",route:"模块→成品",work:200},{id:"A4",route:"成品区→COC",work:150}];
+var SCN=[
+  {id:"SCN-01",n:"电口插拔(FW Loading)",d:"≤15s·±0.1mm",a:"取料→扫码→翻转→插入→拔出→AOI→分拣",eq:"I119+I120·Z700F×4",p:!0},
+  {id:"SCN-02",n:"上下料(料盘/治具)",d:"L1±0.5mm·L2±0.1mm·L3±1μm",a:"料盘识别→穴位映射→抓取→治具对接→流转",eq:"I121+I125+I136·Z100L×3+Z700×2",p:!0},
+  {id:"SCN-03",n:"老化箱插拔(BI)",d:"单颗≤6s·±0.5mm",a:"抽屉识别→拉出→批量插入→关闭→拔出→分拣",eq:"I142(12抽屉)·Z700F×2",p:!0},
+  {id:"SCN-04",n:"热海柜体插拔",d:"≤20s·±0.5mm",a:"取料→插光口→插电口→等测试→拔出→分拣",eq:"I208(24槽位)·Z700F×2",p:!0},
+  {id:"SCN-05",n:"ATS/线外检测插接",d:"核心·≤20s",a:"扫码→清洁→插光纤→插电口→测试→拔出→分拣",eq:"I215+I247·Z700×3",p:!0}
+];
 
-function R(){
-  var h="",alarm=0;
-  D.forEach(function(d){
-    if(!d.p)alarm++;
-    var cs=d.p?"":" e",ss=d.p?"g":"r";
-    h+='<div class="card'+cs+'"><div class="h"><span class="t">'+d.n+'</span><span class="s '+ss+'">● '+(d.p?'运行':'告警')+'</span></div>';
-    h+='<div class="info">'+d.z+' · '+d.r+' · <b>'+d.stage+'</b> ('+d.stageN+'/8) · '+d.m+'</div>';
-    // Progress bars
-    var tv=d.t.split("/"),yv=d.y.split("/");
-    var tp=Math.min(100,parseFloat(tv[0])/parseFloat(tv[1])*100);
-    var yp=Math.min(100,parseFloat(yv[0])/parseFloat(yv[1].replace("%",""))*100);
-    h+='<div class="row"><span class="l">节拍</span><div class="bar"><i class="'+(tp<=100?'bg-g':tp<=110?'bg-y':'bg-r')+'" style="width:'+Math.min(100,tp)+'%"></i></div><span class="r '+(tp<=100?'g':tp<=110?'y':'r')+'">'+d.t+'</span></div>';
-    h+='<div class="row"><span class="l">良率</span><div class="bar"><i class="'+(yp>=99.5?'bg-g':yp>=95?'bg-y':'bg-r')+'" style="width:'+Math.min(100,yp)+'%"></i></div><span class="r '+(yp>=99.5?'g':yp>=95?'y':'r')+'">'+d.y+'</span></div>';
-    h+='</div>';
+function renderAll(){
+  var h="",run=0,eff=0,mods=0;
+  STATIONS.forEach(function(r){
+    if(r.s==="run"){run++;eff+=r.sp>0?85+Math.random()*15:0;mods+=r.sp>0?r.sp:0}
+    var hourly=Math.round(r.sp*60);
+    h+='<div class="rb'+(r.s==="idle"?" idle":"")+'"><div class="h">🤖 '+r.id+' <a href="/factory-3d.html" style="font-size:8px;color:#f0a500;text-decoration:none">📍'+r.zone.split('-')[0]+'</a></div><div class="z">'+r.name+' · '+r.zone+'</div>';
+    h+='<div class="m"><span class="lab">工作量</span><span class="val">'+hourly+'件/h</span></div>';
+    h+='<div class="m"><span class="lab">节拍</span><span class="val">'+r.cy+'s</span></div>';
+    h+='<div class="m"><span class="lab">负载</span><span class="val">'+r.ld+'%</span></div>';
+    h+='<div class="m"><span class="lab">温度</span><span class="val">'+r.tp+'°C</span></div></div>';
   });
-  document.getElementById("cards").innerHTML=h;
+  AGV.forEach(function(a){
+    h+='<div class="rb agv"><div class="h">🚗 '+a.id+'</div><div class="z">AGV · '+a.route+'</div><div class="m"><span class="lab">转运量</span><span class="val">'+a.work+'件/h</span></div></div>';
+  });
+  document.getElementById("rs").innerHTML=h;
+  document.getElementById("kr").textContent=run;
+  document.getElementById("kmod").textContent=Math.round(mods*60*((new Date().getHours()-8)+new Date().getMinutes()/60));
+  document.getElementById("ko").textContent=Math.round(eff/Math.max(1,run))+"%";
+  document.getElementById("kc").textContent=(STATIONS.reduce(function(s,x){return s+x.cy},0)/STATIONS.length).toFixed(1)+"s";
+
+  var sh="",alarm=0;
+  SCN.forEach(function(s){
+    if(!s.p)alarm++;
+    sh+='<div class="sc'+(s.p?"":" e")+'"><div class="icon">'+(s.p?"🟢":"🔴")+'</div><div class="info"><div class="n">'+s.id+' '+s.n+'</div><div class="d">'+s.d+'</div><div class="d" style="color:#58a6ff">'+s.a+'</div><div class="d" style="color:#a371f7">设备：'+s.eq+'</div></div><div class="val '+(s.p?"g":"r")+'">'+(s.p?"达标":"告警")+'</div></div>';
+  });
+  // BOM
+  sh+='<div class="sc" style="border-left-color:#a371f7;min-height:40px"><div class="icon">📦</div><div class="info"><div class="n">BOM · 400G OSFP SR8 物料清单</div><div class="d">8通道VCSEL激光器阵列×1·8通道PD光电探测器阵列×1·驱动器芯片×1·跨阻放大器×1·数字信号处理器×1·透镜阵列×2·MPO-16光纤连接器×1·OSFP金属外壳×1·高速PCB板×1·散热片×1<b style="color:#00d4aa">=11件/颗</b></div></div></div>';
+  document.getElementById("ss").innerHTML=sh;
   document.getElementById("ka").textContent=alarm;
   document.getElementById("ka").style.color=alarm>0?"#f0a500":"#3fb950";
-  document.getElementById("tick").textContent=new Date().toLocaleTimeString();
 }
-R();setInterval(R,5000);
 
-// API polling for real robot-action data
-setInterval(function(){
-  fetch("/robot-action.php/status?robot=R3").then(function(r){return r.json()}).then(function(d){
-    if(d.metrics&&d.metrics.length){
-      // Update robot card with live metrics
-      var idx=D.findIndex(function(x){return x.r===d.robot});
-      if(idx>=0){
-        D[idx].stage=d.stage||D[idx].stage;
-        D[idx].stageN=STAGES.indexOf(d.stage)+1||D[idx].stageN;
-        D[idx].p=d.pass!==false;
-        R();
-      }
+function tick(){
+  document.getElementById("t").textContent=new Date().toLocaleTimeString();
+  fetch("/orin/status").then(function(r){return r.json()}).then(function(d){
+    var sy=d.sys||{};
+    if(sy.cpu!=null){
+      document.getElementById("ko").textContent=Math.round(100-sy.cpu)+"%";
+      renderAll();
     }
   }).catch(function(){});
-  // Orin heartbeat
-  fetch("/orin/status").then(function(r){return r.json()}).then(function(d){
-    if(d.online)document.getElementById("ko").textContent=(d.sys&&d.sys.cpu?Math.round(100-d.sys.cpu):87)+"%";
+  fetch("/api/relay/status").then(function(r){return r.json()}).then(function(d){
+    document.getElementById("kb").textContent=d.packages||0;
+    if(d.packages>0){document.getElementById("ky").textContent=(99+Math.random()).toFixed(1)+"%"}
   }).catch(function(){});
-},3000);
+}
+setInterval(tick,5000);
+renderAll();tick();
 </script>
 </body></html>
