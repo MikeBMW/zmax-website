@@ -1,94 +1,99 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>光模块工厂 · 精细操作大屏 | Z-MAX v2.0.0</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>工厂大屏 | Z-MAX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#04070d;color:#c8d1d9;font:12px "PingFang SC","Microsoft YaHei",sans-serif;padding:12px}
-h1{color:#00d4aa;font-size:16px;margin:8px 0}
-a{color:#00d4aa;font-size:10px;text-decoration:none;margin-right:10px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.card{background:#0d1520;border:1px solid #1a2030;border-radius:8px;padding:10px}
-.card.g{border-left:3px solid #3fb950}.card.y{border-left:3px solid #f0a500}.card.r{border-left:3px solid #ff4444}
-.card h3{font-size:11px;color:#00d4aa;margin-bottom:6px}
-.mBar{display:flex;align-items:center;gap:4px;font-size:9px;margin:2px 0}
-.mBar .l{flex:1}.mBar .v{min-width:60px;text-align:right;font-weight:700}
-.bar{flex:1;height:4px;background:#1a2030;border-radius:2px;min-width:60px}
-.bar div{height:100%;border-radius:2px}
-.kpi-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.kpi-box{flex:1;min-width:70px;background:#0a1020;border-radius:6px;padding:6px;text-align:center;border:1px solid #1a2030}
-.kpi-box .kv{font-size:16px;font-weight:800;color:#00d4aa}.kpi-box .kl{font-size:8px;color:#555}
-.pass{color:#3fb950}.warn{color:#f0a500}.fail{color:#ff4444}
-table{width:100%;border-collapse:collapse;font-size:9px;margin:4px 0}
-th{background:#0a1020;color:#00d4aa;padding:3px 5px;text-align:left;border:1px solid #1a2030}
-td{padding:3px 5px;border:1px solid #1a2030;color:#8b949e}
+body{background:#060a10;color:#c8d1d9;font:13px -apple-system,"PingFang SC",sans-serif;padding:8px;min-height:100vh}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.top a{color:#00d4aa;font-size:11px;text-decoration:none;padding:3px 8px;border:1px solid #1a2030;border-radius:4px}
+.top h1{font-size:14px;color:#00d4aa}
+.kpis{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.kp{flex:1;min-width:50px;background:#0d1520;border-radius:6px;padding:6px 4px;text-align:center;border:1px solid #1a2030}
+.kp .v{font-size:15px;font-weight:800;color:#00d4aa;line-height:1.2}.kp .l{font-size:8px;color:#555}
+.cards{display:flex;flex-direction:column;gap:6px}
+.card{background:#0d1520;border-radius:8px;padding:10px;border-left:3px solid #3fb950}
+.card.w{border-left-color:#f0a500}.card.e{border-left-color:#ff4444}
+.card .h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.card .h .t{font-size:12px;color:#c8d1d9;font-weight:600}
+.card .h .s{font-size:9px;padding:1px 6px;border-radius:3px}
+.card .h .s.g{background:#3fb95022;color:#3fb950}.card .h .s.r{background:#ff444422;color:#ff4444}
+.card .info{font-size:9px;color:#555;margin-bottom:4px}
+.row{display:flex;align-items:center;gap:6px;margin:2px 0;font-size:9px}
+.row .l{flex:1;min-width:50px}.row .r{min-width:55px;text-align:right;font-weight:700}
+.bar{flex:1;height:4px;background:#1a2030;border-radius:2px;min-width:40px}
+.bar i{display:block;height:100%;border-radius:2px}
+.g{color:#3fb950}.y{color:#f0a500}.r{color:#ff4444}
+.bg-g{background:#3fb950}.bg-y{background:#f0a500}.bg-r{background:#ff4444}
 </style>
 </head>
 <body>
-<a href="/">← 主页</a><a href="/factory-3d.html">🏭 工厂3D</a><a href="/factory-kpi.html">⚡ KPI监督</a>
-<h1>🏭 光模块工厂 · 精细操作大屏</h1>
-
-<!-- Metrics row -->
-<div class="kpi-row">
-  <div class="kpi-box"><div class="kv" id="m-oee">87.3%</div><div class="kl">OEE</div></div>
-  <div class="kpi-box"><div class="kv" id="m-cycle">8.2s</div><div class="kl">平均节拍</div></div>
-  <div class="kpi-box"><div class="kv" id="m-yield">99.7%</div><div class="kl">综合良率</div></div>
-  <div class="kpi-box"><div class="kv" id="m-running">6/6</div><div class="kl">运行中</div></div>
-  <div class="kpi-box"><div class="kv" id="m-alarm">1</div><div class="kl">告警</div></div>
-  <div class="kpi-box"><div class="kv" id="m-uptime">72h</div><div class="kl">连续运行</div></div>
+<div class="top">
+  <a href="/">←</a><a href="/factory-3d.html">🏭3D</a>
+  <h1>🏭 光模块精细操作</h1>
+  <span style="font-size:9px;color:#555;margin-left:auto" id="tick">-</span>
 </div>
-
-<!-- 6 Scenarios -->
-<div class="grid2" id="scenes"></div>
+<div class="kpis">
+  <div class="kp"><div class="v" id="ko">87%</div><div class="l">OEE</div></div>
+  <div class="kp"><div class="v" id="kc">8.2s</div><div class="l">节拍</div></div>
+  <div class="kp"><div class="v" id="ky">99.7%</div><div class="l">良率</div></div>
+  <div class="kp"><div class="v" id="kr">6</div><div class="l">运行</div></div>
+  <div class="kp"><div class="v" id="ka" style="color:#f0a500">1</div><div class="l">告警</div></div>
+</div>
+<div class="cards" id="cards"></div>
 
 <script>
-var SCENES=[
-  {id:1,name:"金线键合连板上料",zone:"OE-I152",robot:"Z700F+AOI",cycle:6,yield:99.5,weight:"≤500g",size:"~230×280mm",material:"FR-4 PCB·金手指",kpi:[
-    {k:"节拍",v:5.2,t:6,unit:"s"},{k:"良率",v:99.6,t:99.5,unit:"%"},{k:"到位准确",v:100,t:100,unit:"%"}
-  ],pass:true,status:"运行中"},
-  {id:2,name:"芯片贴装上下料",zone:"OE-I136",robot:"Z100L",cycle:4,yield:99.8,weight:"≤1kg",size:"~150×200mm",material:"防静电料盒",kpi:[
-    {k:"节拍",v:3.3,t:4,unit:"s"},{k:"良率",v:99.9,t:99.8,unit:"%"},{k:"ESD安全",v:100,t:100,unit:"%"}
-  ],pass:true,status:"运行中"},
-  {id:3,name:"透镜AA耦合取放",zone:"OE-I171",robot:"Z700",cycle:10,yield:99.5,weight:"<1g",size:"~3×3mm",material:"光学透镜·防污",kpi:[
-    {k:"节拍",v:8.5,t:10,unit:"s"},{k:"良率",v:99.7,t:99.5,unit:"%"},{k:"对位",v:0.8,t:1,unit:"μm"}
-  ],pass:true,status:"运行中"},
-  {id:4,name:"PEI Cover压合",zone:"OE-I155",robot:"Z700F+AOI",cycle:15,yield:99.9,weight:"~8g",size:"~40×30mm",material:"PEI·定位销",kpi:[
-    {k:"节拍",v:12.5,t:15,unit:"s"},{k:"良率",v:100,t:99.9,unit:"%"},{k:"压合力",v:7.2,t:10,unit:"N"}
-  ],pass:true,status:"运行中"},
-  {id:5,name:"隔离器安装定位",zone:"OE-I159",robot:"Z700F+AOI",cycle:20,yield:99.7,weight:"~1g",size:"~5×5×3mm",material:"磁环·防静电",kpi:[
-    {k:"节拍",v:17.2,t:20,unit:"s"},{k:"良率",v:99.8,t:99.7,unit:"%"},{k:"放置精度",v:0.12,t:0.2,unit:"mm"}
-  ],pass:true,status:"运行中"},
-  {id:6,name:"COC固晶绑定",zone:"COC-I113",robot:"Z700",cycle:8,yield:99.9,weight:"<0.5g",size:"~1×1mm",material:"陶瓷基板·280°C",kpi:[
-    {k:"节拍",v:7.5,t:8,unit:"s"},{k:"良率",v:99.92,t:99.9,unit:"%"},{k:"共晶温度",v:279.8,t:280,unit:"°C"}
-  ],pass:false,status:"⚠告警·温度偏差"}
+var D=[
+  {n:"① 金线键合上料",z:"OE-I152",r:"Z700F",t:"5.2/6s",y:"99.6/99.5%",p:!0,s:"g",m:"FR-4·230×280mm·≤500g",stage:"INSERT",stageN:7},
+  {n:"② 芯片贴装上下料",z:"OE-I136",r:"Z100L",t:"3.3/4s",y:"99.9/99.8%",p:!0,s:"g",m:"防静电料盒·≤1kg",stage:"TRANSFER",stageN:6},
+  {n:"③ 透镜AA耦合",z:"OE-I171",r:"Z700",t:"8.5/10s",y:"99.7/99.5%",p:!0,s:"g",m:"3×3mm·<1g·防污",stage:"ALIGN",stageN:2},
+  {n:"④ PEI Cover压合",z:"OE-I155",r:"Z700F",t:"12.5/15s",y:"100/99.9%",p:!0,s:"g",m:"40×30mm·8g·定位销",stage:"INSERT",stageN:7},
+  {n:"⑤ 隔离器安装",z:"OE-I159",r:"Z700F",t:"17.2/20s",y:"99.8/99.7%",p:!0,s:"g",m:"5×5×3mm·1g·磁环",stage:"DESCEND",stageN:3},
+  {n:"⑥ COC固晶绑定",z:"COC-I113",r:"Z700",t:"7.5/8s",y:"99.9/99.9%",p:!1,s:"e",m:"1×1mm·<0.5g·280°C ⚠",stage:"ALIGN",stageN:2}
 ];
+var STAGES=["APPROACH","ALIGN","DESCEND","GRASP","LIFT","TRANSFER","INSERT","DONE"];
 
-function render(){
-  var h="";
-  SCENES.forEach(function(s){
-    var cls=s.pass?"g":"r";
-    h+='<div class="card '+cls+'"><h3>'+s.id+'. '+s.name+' <span style="font-size:9px;color:'+(s.pass?'#3fb950':'#ff4444')+'">● '+s.status+'</span></h3>';
-    h+='<div style="font-size:9px;color:#555">'+s.zone+' · '+s.robot+' · '+s.size+' · '+s.weight+' · '+s.material+'</div>';
-    s.kpi.forEach(function(m){
-      var pct=Math.min(100,(m.v/m.t)*100);
-      var cl=pct>=100?"pass":pct>=90?"warn":"fail";
-      h+='<div class="mBar"><span class="l">'+m.k+'</span><div class="bar"><div style="width:'+pct+'%;background:'+(cl=="pass"?"#3fb950":cl=="warn"?"#f0a500":"#ff4444")+'"></div></div><span class="v '+cl+'">'+m.v+'/'+m.t+m.unit+'</span></div>';
-    });
+function R(){
+  var h="",alarm=0;
+  D.forEach(function(d){
+    if(!d.p)alarm++;
+    var cs=d.p?"":" e",ss=d.p?"g":"r";
+    h+='<div class="card'+cs+'"><div class="h"><span class="t">'+d.n+'</span><span class="s '+ss+'">● '+(d.p?'运行':'告警')+'</span></div>';
+    h+='<div class="info">'+d.z+' · '+d.r+' · <b>'+d.stage+'</b> ('+d.stageN+'/8) · '+d.m+'</div>';
+    // Progress bars
+    var tv=d.t.split("/"),yv=d.y.split("/");
+    var tp=Math.min(100,parseFloat(tv[0])/parseFloat(tv[1])*100);
+    var yp=Math.min(100,parseFloat(yv[0])/parseFloat(yv[1].replace("%",""))*100);
+    h+='<div class="row"><span class="l">节拍</span><div class="bar"><i class="'+(tp<=100?'bg-g':tp<=110?'bg-y':'bg-r')+'" style="width:'+Math.min(100,tp)+'%"></i></div><span class="r '+(tp<=100?'g':tp<=110?'y':'r')+'">'+d.t+'</span></div>';
+    h+='<div class="row"><span class="l">良率</span><div class="bar"><i class="'+(yp>=99.5?'bg-g':yp>=95?'bg-y':'bg-r')+'" style="width:'+Math.min(100,yp)+'%"></i></div><span class="r '+(yp>=99.5?'g':yp>=95?'y':'r')+'">'+d.y+'</span></div>';
     h+='</div>';
   });
-  document.getElementById("scenes").innerHTML=h;
+  document.getElementById("cards").innerHTML=h;
+  document.getElementById("ka").textContent=alarm;
+  document.getElementById("ka").style.color=alarm>0?"#f0a500":"#3fb950";
+  document.getElementById("tick").textContent=new Date().toLocaleTimeString();
 }
-render();
+R();setInterval(R,5000);
 
-// Live Orin status
+// API polling for real robot-action data
 setInterval(function(){
-  fetch("/orin/status").then(function(r){return r.json()}).then(function(d){
-    document.getElementById("m-running").textContent=(d.online?"6/6":"5/6");
-    var sy=d.sys||{};
-    if(sy.cpu)document.getElementById("m-oee").textContent=(100-sy.cpu).toFixed(0)+"%";
+  fetch("/robot-action.php/status?robot=R3").then(function(r){return r.json()}).then(function(d){
+    if(d.metrics&&d.metrics.length){
+      // Update robot card with live metrics
+      var idx=D.findIndex(function(x){return x.r===d.robot});
+      if(idx>=0){
+        D[idx].stage=d.stage||D[idx].stage;
+        D[idx].stageN=STAGES.indexOf(d.stage)+1||D[idx].stageN;
+        D[idx].p=d.pass!==false;
+        R();
+      }
+    }
   }).catch(function(){});
-},10000);
+  // Orin heartbeat
+  fetch("/orin/status").then(function(r){return r.json()}).then(function(d){
+    if(d.online)document.getElementById("ko").textContent=(d.sys&&d.sys.cpu?Math.round(100-d.sys.cpu):87)+"%";
+  }).catch(function(){});
+},3000);
 </script>
 </body></html>

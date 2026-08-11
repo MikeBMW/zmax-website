@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>供应商合作 · 模型需求 | Z-MAX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:900px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:18px;margin:12px 0}
+h2{color:#58a6ff;font-size:14px;margin:16px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:12px;margin:10px 0 4px}
+p{color:#8b949e;margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+a{color:#00d4aa;text-decoration:none}
+.models{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.model{flex:1;min-width:240px;background:#0d1520;border:1px solid #1a2030;border-radius:8px;padding:14px}
+.model h3{font-size:13px}.model .tag{font-size:10px;padding:2px 6px;border-radius:3px;display:inline-block;margin:4px 0}
+.model.m1{border-left:3px solid #58a6ff}.model.m2{border-left:3px solid #00d4aa}.model.m3{border-left:3px solid #a371f7}
+.tag.b{background:#58a6ff22;color:#58a6ff}.tag.g{background:#00d4aa22;color:#00d4aa}.tag.p{background:#a371f722;color:#a371f7}
+.check{font-size:10px;margin:3px 0}.check span{margin:0 2px}
+.highlight{background:#0d1520;border-left:3px solid #ff6b35;padding:8px 12px;margin:8px 0;border-radius:4px;color:#ff6b35;font-weight:700}
+</style>
+</head>
+<body>
+<a href="/">← 主页</a> · <a href="/factory-dashboard.html">📊 大屏</a>
+<h1>🤝 供应商合作方案 · 具身智能模型</h1>
+
+<div class="highlight">🔒 核心原则：实验室数据不外发，数据闭环在本地完成</div>
+
+<!-- ═══ 场景需求 ═══ -->
+<h2>一、基于工厂场景的模型需求</h2>
+<table>
+<tr><th>场景</th><th>精度要求</th><th>节拍</th><th>模型能力</th><th>所需模型类型</th></tr>
+<tr><td>① 金线键合上料</td><td>对位≤0.3mm</td><td>≤6s</td><td>插拔·力控·治具适配</td><td>ACT/W2-VLA</td></tr>
+<tr><td>② 芯片贴装上下料</td><td>到位≤0.5mm</td><td>≤4s</td><td>取放·流转·料盒适配</td><td>ACT</td></tr>
+<tr><td>③ 透镜AA耦合</td><td>对位≤±1μm</td><td>≤10s</td><td>精密对准·力控</td><td>W2-VLA</td></tr>
+<tr><td>④ PEI Cover压合</td><td>插入深度±0.1mm</td><td>≤15s</td><td>插销装配·力控</td><td>ACT/W2-VLA</td></tr>
+<tr><td>⑤ 隔离器安装</td><td>放置≤0.2mm</td><td>≤20s</td><td>微型件拾放·力控</td><td>ACT</td></tr>
+<tr><td>⑥ COC固晶绑定</td><td>对位≤±1μm</td><td>≤8s</td><td>亚微米对准·温控联动</td><td>W2-VLA</td></tr>
+</table>
+
+<!-- ═══ 三种模式 ═══ -->
+<h2>二、三种合作模式</h2>
+<div class="models">
+  <div class="model m1">
+    <h3>模式一 · 包人</h3>
+    <span class="tag b">供应商驻场开发</span>
+    <p style="margin:8px 0">供应商工程师在实验室本地工作，使用本地数据和算力进行模型开发、训练、调优。</p>
+    <div class="check">✅ 数据完全不出实验室</div>
+    <div class="check">✅ 供应商直接接触硬件和产线</div>
+    <div class="check">✅ 迭代速度快</div>
+    <div class="check">⚠️ 成本较高（人天计费）</div>
+    <div class="check">⚠️ 需签保密协议 + 物理隔离</div>
+  </div>
+  <div class="model m2">
+    <h3>模式二 · 合作</h3>
+    <span class="tag g">推荐</span>
+    <p style="margin:8px 0">供应商提供完整模型包，部署到本地数据闭环平台。在本地环境训练微调，供应商负责集成和接口适配。</p>
+    <div class="check">✅ 数据不出实验室</div>
+    <div class="check">✅ 供应商提供专业模型</div>
+    <div class="check">✅ 我们自主微调迭代</div>
+    <div class="check">✅ 成本适中（模型+集成费）</div>
+    <div class="check">📋 接口: LeRobot格式 · API适配</div>
+  </div>
+  <div class="model m3">
+    <h3>模式三 · 预训练</h3>
+    <span class="tag p">轻量</span>
+    <p style="margin:8px 0">供应商提供预训练基础模型，预留微调接口。通过远程方式部署，我们本地数据闭环完成微调训练。</p>
+    <div class="check">✅ 数据不出实验室</div>
+    <div class="check">✅ 快速启动</div>
+    <div class="check">✅ 成本最低</div>
+    <div class="check">⚠️ 模型需适配本地环境</div>
+    <div class="check">📋 接口: safetensors权重 · 远程部署</div>
+  </div>
+</div>
+
+<!-- ═══ 技术规格 ═══ -->
+<h2>三、对供应商模型的技术要求</h2>
+<table>
+<tr><th>要求</th><th>规格</th></tr>
+<tr><td>输入维度</td><td>state[6]关节角 + camera(320×240) + label(20状态)</td></tr>
+<tr><td>输出维度</td><td>action[6]关节命令 或 action[4]笛卡尔速度</td></tr>
+<tr><td>推理延迟</td><td>＜70ms（产线实时控制）</td></tr>
+<tr><td>模型格式</td><td>safetensors · 兼容LeRobot · Docker容器化</td></tr>
+<tr><td>训练框架</td><td>LeRobot + ACT 或 W2-VLA · 支持本地GPU训练</td></tr>
+<tr><td>数据格式</td><td>每包独立episode · timestamp相对化 · episode内frame_index递增</td></tr>
+<tr><td>评估指标</td><td>loss · success_rate · delta(预测vs真实) · 推理延迟</td></tr>
+<tr><td>部署方式</td><td>Docker容器 · 静态URL + relay双通道 · 支持Mac/Orin</td></tr>
+<tr><td>数据闭环</td><td>兼容Z-MAX relay API · WS事件触发训练 · 支持影子模式对比</td></tr>
+</table>
+
+<!-- ═══ 数据保护 ═══ -->
+<h2>四、数据安全保护措施</h2>
+<table>
+<tr><th>措施</th><th>实现</th></tr>
+<tr><td>物理隔离</td><td>实验室网络独立 · 供应商设备不连外网</td></tr>
+<tr><td>数据不出域</td><td>训练数据仅在本地relay流转 · 不上传云端</td></tr>
+<tr><td>模型加密</td><td>safetensors格式 · 部署时签名校验</td></tr>
+<tr><td>访问控制</td><td>SSH密钥管理 · 操作日志审计</td></tr>
+<tr><td>保密协议</td><td>供应商签署NDA · 项目周期内数据管控</td></tr>
+</table>
+
+<p style="text-align:center;margin:16px 0">
+  <a href="/factory-dashboard.html">📊 大屏监督</a> · 
+  <a href="/factory-3d.html">🏭 工厂3D</a> · 
+  <a href="/cicd.html">📊 CICD</a>
+</p>
+</body></html>
