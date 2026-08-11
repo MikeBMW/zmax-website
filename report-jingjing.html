@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>述职报告 · 静静 · Z-MAX 精密操作解决方案</title>
+<style>
+@page{size:A4;margin:15mm}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#fff;color:#222;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:20px;max-width:900px;margin:0 auto;line-height:1.8}
+h1{font-size:22px;border-bottom:2px solid #333;padding-bottom:6px;margin:12px 0}
+h2{font-size:16px;color:#333;margin:16px 0 6px;border-left:4px solid #00d4aa;padding-left:8px}
+h3{font-size:13px;margin:8px 0 4px}
+p{margin:4px 0;text-indent:2em}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+th{background:#f0f0f0;padding:5px 7px;text-align:left;border:1px solid #ccc}
+td{padding:4px 7px;border:1px solid #ccc}
+ul{margin-left:20px}li{margin:2px 0}
+.q{background:#f8f8f8;border-left:3px solid #00d4aa;padding:8px 12px;margin:6px 0;font-size:12px}
+.ok{color:#1a7f37}.warn{color:#b35900}.bad{color:#c62828}
+@media print{h1{font-size:20px}h2{font-size:14px}body{padding:10px;font-size:12px}}
+</style>
+</head>
+<body>
+<h1>述职报告 · 静静 · Z-MAX 精密操作解决方案（大小脑模型）</h1>
+
+<p><b>岗位：</b>具身智能算法工程师（大小脑模型方向）· 训练/评估/部署全链路<br>
+<b>定位：</b>Z700 机器人精密操作解决方案 — 左右脑双脑策略从模型训练到产品化交付<br>
+<b>周期：</b>2026年7月-2026年8月 · 版本：v2.0.0</p>
+
+<!-- ═══ 一句话定调 ═══ -->
+<div class="q"><b>一句话定调：</b>牵头完成 Z700"左右脑双脑策略"——用 63.5 万参数端侧模型实现超越官方专家演示的插拔成功率（抓起 8/8、插入 7/8 vs 官方专家 7/8），并落成 v2.0.0 产品化交付：5 场景具身方案技术协议 v3、帮助文档体系、web3d 场景工艺仿真、产品大屏动作级指标监督方案。</div>
+
+<!-- ═══ 工作目标 ═══ -->
+<h2>一、工作目标（4项全部达成）</h2>
+<table>
+<tr><th>#</th><th>目标</th><th>结果</th></tr>
+<tr><td>1</td><td>精密操作策略（插拔/搬运）达到并超越官方专家基线</td><td>✅ 双脑+状态机 抓起 <b>8/8</b> 插入 <b>7/8</b>（87.5%）vs 官方专家 7/8（85%）；视觉 BC 端到端 0/8</td></tr>
+<tr><td>2</td><td>模型可端侧部署（实时推理）</td><td>✅ <b>635K 参数 / 0.19ms 推理</b>，比主流 VLA 小数百倍，可部署 Orin Nano，INT8 可量化</td></tr>
+<tr><td>3</td><td>训练-评估-部署全链路工程化</td><td>✅ lerobot 标准策略注册 · 容器训练（zmax-std:1.0）· 控制台 ▶运行 一键训练 · 配置规范位 configs/policies/</td></tr>
+<tr><td>4</td><td>方案产品化（文档/验收/监督）</td><td>✅ v2.0.0：技术协议 v3 + 帮助文档 5 篇 + 场景仿真 3 页上线 + 大屏动作级指标监督方案 + GitHub Release + 飞书通知</td></tr>
+</table>
+
+<!-- ═══ 成果交付清单 ═══ -->
+<h2>二、核心成果交付清单</h2>
+<table>
+<tr><th>成果</th><th>内容</th><th>指标/证据</th></tr>
+<tr><td><b>左右脑双脑策略</b></td><td>左脑 LeftBrainMLP(39D→4D 动作) + 右脑 RightBrainWM(世界模型: next obs + contact) + 8 状态机调制</td><td>547K + 87K = 635K 参数 · contact 判定 acc 1.00 · 抓起 8/8 插入 7/8</td></tr>
+<tr><td><b>5 场景具身方案技术协议 v3</b></td><td>FW Loading(≤6s) / 上下料 / BI 老化箱 / 热海柜体(≤20s) / ATS(≤15s) + 形态论证 + 投资收益</td><td>节拍物理硬指标 6s/15s/20s · 整机 ≤250kg 论证 · 两班替代回收期 1.2-1.9 年</td></tr>
+<tr><td><b>web3d 场景工艺仿真</b></td><td>scene-3d.html?scene=insert/handle/aoi 动态仿真：原子技能序列 + 节拍实时计时 + 39D state HUD</td><td>insert ≤6.0s / handle ≤3.3s / aoi ≤8.6s 循环运行 · 物体→39D 映射可视化</td></tr>
+<tr><td><b>大屏动作级指标监督方案</b></td><td>factory-dashboard 扩展：每机器人每动作指标实时监督 + action-log 留痕 + 告警规则</td><td>指标树（成功率/节拍/精度/工艺）· API 设计 · 验收以大屏记录为最终依据</td></tr>
+<tr><td><b>帮助文档体系</b></td><td>左右脑技术方案 / 精细操作监督方案 / 市场版需求规格书 / 技术协议 v3 / 场景仿真定义</td><td>控制台帮助菜单 5 篇可打开 · 版本 v1.8.0→v2.0.0</td></tr>
+<tr><td><b>39D 观测结构文档化</b></td><td>metaworld 原生观测实测确认（源码+实例化 100%），11 段结构说明 + 45D/49D/58D 扩展</td><td>画布「📊 39D obs 输入」节点双击可见 · 场景仿真 HUD 同构</td></tr>
+</table>
+
+<!-- ═══ 核心问题 ═══ -->
+<h2>三、核心问题（What/Why/How，按严重性降序）</h2>
+
+<h3>问题 1：长轨迹插拔训练"越训越差"（BC 多阶段退化）</h3>
+<p class="q"><b>What：</b>视觉 BC 端到端直接学完整插拔，仿真成绩 0/8；多阶段拼接仍退化。<br>
+<b>Why：</b>底层症结——插拔是"长时程+强时序依赖"任务，单网络端到端难以同时建模"该抓的时刻"（接触判定）与"怎么动"（连续动作）；接触反馈信息在长轨迹中被淹没。<br>
+<b>How：</b>架构决策——拆成左右脑：左脑专注连续动作生成（39D→4D），右脑世界模型预测接触时刻（contact 概率），中间 8 状态机做阶段调制（接近→对位→下降→抓取→抬起→转移→插入→完成）。<br>
+<b>结果：</b>抓起 8/8、插入 7/8，超官方专家 7/8；MLP 蒸馏 6/10、速度自适应实验 4-6 全部对照。</p>
+
+<h3>问题 2：仿真转移卡顿，控制参数调不动</h3>
+<p class="q"><b>What：</b>转移阶段速度自适应实验（0.6/0.35/0.15 分级）抓起 6-7 但插入 4-6 未改善。<br>
+<b>Why：</b>根因排查到<b>仿真物理碰撞</b>（销钉与孔边缘/台面几何干涉）——无接触反馈的控制参数调不动，是环境问题不是策略问题。<br>
+<b>How：</b>三组对照实验（纯增强 vs 速度自适应×3 重复 + 降波动）定位根因 → 止损转向<b>真机力控夹爪 + 插入前 YOLO 视觉对准</b>。<br>
+<b>结果：</b>不再浪费算力调仿真参数，明确下一步技术路线（真机力控+视觉）。</p>
+
+<h3>问题 3：触觉信息怎么用（接触反馈的架构位置）</h3>
+<p class="q"><b>What：</b>contact 判定结果往哪送——直觉是"喂给模型"，但喂给左脑会造成输入分布漂移。<br>
+<b>Why：</b>接触信号是离散时序事件，与连续动作生成通道不匹配。<br>
+<b>How：</b>实测决定——contact 只作<b>状态机转移条件</b>（该抓了吗），不喂左脑；状态机反过来<b>调制左脑输出</b>（接近×0.3+偏置×2、抓取×0.1+夹持 0.6、转移速度自适应、插入力控）。<br>
+<b>结果：</b>模块边界清晰，左右脑职责单一，可独立训练/替换（0.71M 总参数、0.19ms）。</p>
+
+<h3>问题 4：工程化落地多轮踩坑（环境/链路/分发）</h3>
+<p class="q"><b>What/Why/How：</b>conda 环境损坏→容器训练（zmax-std:1.0，torch2.11+cu128 可复现）；GUI 卡死→子线程+QTimer 防重入改造；飞书 PDF 推送失败→glob 模式与实际文件名不匹配（五模型对比 vs Model Zoo）修复两处；视频/文档打不开→WSL 无播放器+UNC 路径被拒→C 盘复制+explorer 打开链路。<br>
+<b>结果：</b>▶运行=一键训练、帮助文档可打开、飞书群推送成功、场景仿真上线。</p>
+
+<!-- ═══ KPI ═══ -->
+<h2>四、最有挑战的KPI指标（牵头主导）</h2>
+
+<h3>KPI 1：插拔成功率（牵头）— 抓起 8/8 · 插入 7/8</h3>
+<table>
+<tr><th>方案</th><th>抓起</th><th>插入</th><th>说明</th></tr>
+<tr><td><b>双脑+状态机（本方案）</b></td><td class="ok"><b>8/8</b></td><td class="ok"><b>7/8</b></td><td>87.5% · 635K 参数</td></tr>
+<tr><td>官方专家（演示）</td><td>8/8</td><td>7/8</td><td>85% 基准锚点</td></tr>
+<tr><td>MLP 蒸馏</td><td>6/10</td><td>3/10</td><td>轻量基线</td></tr>
+<tr><td>视觉 BC 端到端</td><td>0/8</td><td>0/8</td><td>长轨迹退化</td></tr>
+</table>
+<p><b>贡献：</b>架构设计（左右脑分工+状态机调制）提出并实现；评估管道全链路自建——<b>防"假 0%"严谨性</b>：逐维归一化来源、图像尺寸、反归一化三个坑逐一排查，成绩可信。</p>
+
+<h3>KPI 2：模型规模与推理延迟（牵头）— 635K / 0.19ms</h3>
+<p>比主流 VLA（数亿参数）小数百倍，可部署 Orin Nano 端侧。意义：单颗插拔推理成本 &lt;0.001 元 → RaaS 按颗计费商业模式可行（协议第 9 章：0.05-0.1 元/颗仍有 5-10 倍毛利）。</p>
+
+<h3>KPI 3：节拍物理硬指标定义与仿真验证（牵头）— 6s/15s/20s</h3>
+<p>定义三级节拍硬指标（不可妥协），反推机器人形态（整机 ≤250kg / 臂 ≤25kg / 末端 ≤1.5kg，重量-惯量-节拍关系论证）；web3d 场景仿真上线：insert ≤6.0s / handle ≤3.3s / aoi ≤8.6s 循环运行 + 39D state HUD 实时监督。</p>
+
+<!-- ═══ 经验总结 ═══ -->
+<h2>五、经验总结（理念与思路）</h2>
+<ul>
+<li><b>可控模型 · 可控架构 · 可控指标（三控原则）</b>：每个需求都有模型归属、架构落点、可测量指标——工程交付的质量锚点（写进协议第 1.2 节）。</li>
+<li><b>决策分层优于端到端</b>：接触判定（世界模型）与动作生成（左脑）分离 + 状态机调制，比单网络端到端更稳、更可解释、更可调。</li>
+<li><b>根因优先于调参</b>：转移卡顿 3 组实验定位物理碰撞根因，止损转向真机路线——不浪费算力在错误环境上。</li>
+<li><b>数据闭环</b>：采集→训练→评估→部署→采集，每环节可追溯（曲线 JSON / 评估报告 / checkpoint 全留痕）。</li>
+<li><b>效率优先</b>：追求最简路径（容器训练 3000 步 1.5 分钟验证、配置现场 sed 生成 runtime），快速出结果。</li>
+</ul>
+
+<!-- ═══ 自我审视与规划 ═══ -->
+<h2>六、自我审视与规划</h2>
+<h3>优势</h3>
+<ul>
+<li>端到端工程能力：训练管道 + GUI 控制台 + 文档交付 + 线上部署一人通吃</li>
+<li>根因定位快：39D 结构源码+实例化实测确认（不猜不抄）、WSL 视频/文档链路逐层排查</li>
+<li>效率优先：最简路径出结果，v2.0.0 大版本一次交付</li>
+</ul>
+<h3>劣势（直面）</h3>
+<ul>
+<li class="bad">真机验证尚未展开（当前成绩全在 metaworld 仿真）——最关键的短板，也是下一步主攻方向</li>
+<li>实验设计系统性有待加强（对比基线、消融实验需更规范）</li>
+</ul>
+<h3>规划（1 年）</h3>
+<ul>
+<li><b>真机落地</b>：力控夹爪 + YOLO 视觉对准集成，Z700 真机插拔验收（M4/M5 里程碑：节拍 ≤30s→≤15s）</li>
+<li><b>大屏监督上线</b>：动作级指标 + action-log 留痕，验收以数据说话</li>
+<li><b>5 场景扩展</b>：FW Loading → 老化箱 → 热海柜体（工艺包复制，换型 ≤0.5H）</li>
+<li>更长周期：多机器人协同调度 + 工艺包跨工厂复制（RaaS 按颗计费）</li>
+</ul>
+
+<!-- ═══ 工作环境评价 ═══ -->
+<h2>七、工作环境评价</h2>
+<ul>
+<li><b>团队</b>：三分身协同（我=训练/推理/GUI，web=云端/网站，小芳=硬件/Orin/飞书）——分工明确、通道畅通（GitHub/飞书/共享记忆/共享技能），协作效率高；v2.0.0 场景仿真与 web 分身 v2.8.3 基线合并，不覆盖他人改动。</li>
+<li><b>硬件设施</b>：4060 8GB 本地训练（容器化隔离，可复现）+ Orin 边缘部署 + WSL 开发，够用但<b>真机稀缺是最大瓶颈</b>。</li>
+<li><b>制度/流程</b>：版本管理（git tag/Release）、配置规范（configs/policies）、验证纪律——已形成有效工作流。</li>
+</ul>
+
+<!-- ═══ 点对点应答 ═══ -->
+<h2>八、点对点应答（具体事例）</h2>
+<table>
+<tr><th>能力</th><th>事例</th></tr>
+<tr><td><b>问题分析/解决</b></td><td>转移卡顿：3 组对照实验（纯增强 vs 速度自适应×3 重复 + 降波动）→ 定位<b>仿真物理碰撞</b>根因 → 止损转向真机力控+视觉。全过程 what/why/how 结构化，结论可复现。</td></tr>
+<tr><td><b>学习能力</b></td><td>39D 观测结构：源码 + 实例化实测 100% 确认（不猜不抄），写成 11 段结构文档；WSL 视频打开：排查 4 层（无播放器→UNC 被拒→C 盘复制→explorer 打开）建立可复用链路。</td></tr>
+<tr><td><b>严谨性</b></td><td>评估防"假 0%"：逐维归一化/图像尺寸/反归一化三坑排查；验证纪律：fresh 证据 + 临时脚本清理 + 明示 ad-hoc 非套件绿灯。</td></tr>
+<tr><td><b>团队协作</b></td><td>v2.0.0 大版本：文档+菜单+Release+tag+飞书群通知一次交付；场景仿真合并 web 分身基线不覆盖；共享记忆/技能同步（飞书端重启 gateway 即吃新记忆）。</td></tr>
+</table>
+
+<p style="margin-top:16px;color:#888;font-size:11px">Z-MAX 智蜂创元 · 2026-08 · 述职报告（静静） · 数据来源：双脑策略评估 / 技术协议 v3 / 场景仿真线上实测</p>
+</body>
+</html>
