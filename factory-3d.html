@@ -548,6 +548,7 @@ function buildFactory(){
       const namePlane=new THREE.Mesh(new THREE.PlaneGeometry(.8,.4),new THREE.MeshBasicMaterial({map:nameTx,transparent:true,depthTest:false,depthWrite:false}));
       namePlane.position.set(rd.x,1.6,rd.z);namePlane.renderOrder=1000;
       r.nameSprite={sprite:namePlane,canvas:nameCv,ctx:nameCx,texture:nameTx};
+      r.workCount=Math.floor(Math.random()*500); // initial work count
       scene.add(namePlane);
       robotObjs.push(r);
     });
@@ -900,7 +901,18 @@ function animate(){
     if(Math.abs(rdx)<.08&&Math.abs(rdz)<.08){
       const dwellTime=r.name==='Z4 AOI'&&st.userData.id==='I120'?180:150;
       if(r.dwell<dwellTime){r.dwell++;r.workAnim=Math.sin(r.dwell*.15)}
-      else{r.dwell=0;r.stepIdx=(r.stepIdx+1)%rowStations.length}
+      else{
+        r.dwell=0;r.stepIdx=(r.stepIdx+1)%rowStations.length;
+        r.workCount++; // increment work when completing station visit
+        // update name sprite with work count
+        var ctx=r.nameSprite.ctx,cv=r.nameSprite.canvas;
+        ctx.clearRect(0,0,cv.width,cv.height);
+        ctx.fillStyle='#00d4aa';ctx.font='bold 16px monospace';ctx.textAlign='center';
+        ctx.fillText(r.name,32,10);
+        ctx.fillStyle='#f0a500';ctx.font='bold 14px monospace';
+        ctx.fillText(r.workCount+'件',32,26);
+        r.nameSprite.texture.needsUpdate=true;
+      }
     }
     if(r.dwell===0){r.pos.x+=rdx*.025;r.pos.z+=rdz*.025}
     r.obj.position.set(r.pos.x,.05,r.pos.z);

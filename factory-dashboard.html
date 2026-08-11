@@ -62,16 +62,14 @@ body{background:#060a10;color:#c8d1d9;font:15px "PingFang SC",sans-serif;padding
 var BOM={vcsel8:1,pd8:1,driver:1,tia:1,dsp:1,lens_array:2,mpo16:1,osfp_housing:1,pcb:1,heatsink:1,total:11};
 /* 生产流程: 每个I-Step工位对应的工作量(件/小时)和目标节拍 */
 var STATIONS=[
-  {id:"Z700-1",name:"精密操作·移动导航",zone:"COC-I113固晶",s:"run",sp:1.33,cy:45,ld:55,tp:42,scene:"SCN-02"},
-  {id:"Z700-2",name:"精密操作·移动导航",zone:"OE-I171耦合",s:"run",sp:1.5,cy:40,ld:44,tp:39,scene:"SCN-02"},
-  {id:"Z700-3",name:"精密操作·移动导航",zone:"光引擎-I155",s:"run",sp:1.2,cy:50,ld:38,tp:35,scene:"SCN-02"},
-  {id:"Z700F-1",name:"精密操作·固定版",zone:"COC-I152键合",s:"run",sp:1.0,cy:60,ld:48,tp:41,scene:"SCN-01"},
-  {id:"Z700F-2",name:"精密操作·固定版",zone:"OE-I159隔离器",s:"run",sp:0.92,cy:65,ld:35,tp:36,scene:"SCN-01"},
-  {id:"Z100L-1",name:"物料搬运",zone:"COC 料盘流转",s:"run",sp:2.0,cy:30,ld:42,tp:38,scene:"SCN-03"},
-  {id:"Z100L-2",name:"物料搬运",zone:"OE 治具对接",s:"run",sp:2.17,cy:28,ld:38,tp:35,scene:"SCN-04"},
-  {id:"Z100L-3",name:"物料搬运",zone:"模块-I119烧录",s:"run",sp:1.5,cy:40,ld:30,tp:34,scene:"SCN-05"}
+  {id:"Z4 AOI",name:"精密操作·固定版",zone:"COC基板区",s:"run",sp:1.0,cy:60,ld:48,tp:41,scene:"SCN-01"},
+  {id:"R3",name:"精密操作·移动导航",zone:"光引擎区",s:"run",sp:1.5,cy:40,ld:44,tp:39,scene:"SCN-02"},
+  {id:"M1",name:"精密操作·移动导航",zone:"模块组装区",s:"run",sp:1.33,cy:45,ld:55,tp:42,scene:"SCN-02"},
+  {id:"W1",name:"物料搬运",zone:"成品物流区",s:"run",sp:0.92,cy:65,ld:35,tp:36,scene:"SCN-03"},
+  {id:"Z700-I215",name:"精密操作·固定版",zone:"I215 ATS测试",s:"run",sp:1.2,cy:50,ld:38,tp:35,scene:"SCN-05"},
+  {id:"Z700-FW",name:"精密操作·固定版",zone:"I119 FW烧录",s:"run",sp:1.5,cy:40,ld:30,tp:34,scene:"SCN-01"}
 ];
-var AGV=[{id:"A1",route:"COC→OE",work:350},{id:"A2",route:"OE→模块",work:280},{id:"A3",route:"模块→成品",work:200},{id:"A4",route:"成品区→COC",work:150}];
+var AGV=[{id:"R3 AGV",route:"光引擎区跟随",work:350},{id:"M1a",route:"模块区跟随A",work:280},{id:"M1b",route:"模块区跟随B",work:200},{id:"W1-1",route:"成品区巡逻",work:150}];
 var SCN=[
   {id:"SCN-01",n:"电口插拔(FW Loading)",d:"≤15s·±0.1mm",a:"取料→扫码→翻转→插入→拔出→AOI→分拣",eq:"I119+I120·Z700F×4",p:!0},
   {id:"SCN-02",n:"上下料(料盘/治具)",d:"L1±0.5mm·L2±0.1mm·L3±1μm",a:"料盘识别→穴位映射→抓取→治具对接→流转",eq:"I121+I125+I136·Z100L×3+Z700×2",p:!0},
