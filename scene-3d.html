@@ -17,6 +17,10 @@ canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
 #kpi .val{color:#00d4aa;font-weight:700}
 #steps{position:absolute;bottom:40px;right:15px;z-index:15;font-size:9px;color:#8b949e;background:rgba(10,10,26,.75);padding:6px 10px;border-radius:8px;border:1px solid #1a2030;max-width:200px}
 #steps .active{color:#00d4aa;font-weight:700}
+#state39{position:absolute;bottom:40px;left:270px;z-index:15;font-size:9px;color:#8b949e;background:rgba(10,10,26,.85);padding:8px 12px;border-radius:8px;border:1px solid #00d4aa44;max-width:260px;line-height:1.5;font-family:monospace}
+#state39 .seg{color:#00d4aa;font-weight:700}
+#state39 .cur{color:#fff}
+#state39 .tar{color:#ffb454}
 </style>
 </head>
 <body>
@@ -29,6 +33,7 @@ canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
 </div>
 <div id="kpi"></div>
 <div id="steps"></div>
+<div id="state39">📊 39D State 加载中…</div>
 <div id="json-view" style="position:absolute;top:50px;right:15px;z-index:20;background:rgba(10,10,26,.9);border:1px solid #00d4aa44;border-radius:8px;padding:10px;max-width:350px;max-height:300px;overflow:auto;display:none;font:10px monospace;color:#58a6ff;white-space:pre-wrap"></div>
 <button id="btn-json" style="position:absolute;top:52px;right:15px;z-index:20;padding:4px 10px;font-size:9px;background:#0d1520;color:#00d4aa;border:1px solid #00d4aa44;border-radius:4px;cursor:pointer" onclick="toggleJSON()">📋 查看JSON</button>
 <div id="info">拖拽旋转 | 滚轮缩放 | 右键平移</div>
@@ -294,6 +299,22 @@ if(sceneType==="insert"){
   // AMR + Luoshi SR5-C cobot in front of oven
   var amr=buildAMR(0,0,.3);objs.add(amr);
   var robot=buildCobot(.18,.2,-.2,.75);objs.add(robot);
+  // ===== 工艺仿真物体 (协议v3 第11.2节): 来料吸塑盒+光模块+分拣区 =====
+  var trayIn=new THREE.Mesh(new THREE.BoxGeometry(.4,.02,.4),mtl.tray);
+  trayIn.position.set(-.7,.03,.4);objs.add(trayIn);
+  var modules=[];
+  for(var mi=0;mi<3;mi++){
+    var mm=new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.07),mtl.blue);
+    mm.position.set(-.75+(mi%2)*.13,.045,.35+Math.floor(mi/2)*.12);
+    mm.userData.home=mm.position.clone();mm.userData.visible=true;objs.add(mm);modules.push(mm);
+  }
+  var scanSpot=new THREE.Mesh(new THREE.BoxGeometry(.14,.012,.1),new THREE.MeshStandardMaterial({color:0x224422,emissive:0x00aa44,emissiveIntensity:.25}));
+  scanSpot.position.set(.18,.02,-.6);objs.add(scanSpot);
+  var okBinI=new THREE.Mesh(new THREE.BoxGeometry(.35,.18,.3),mtl.green);
+  okBinI.position.set(1.1,.09,.6);objs.add(okBinI);
+  var ngBinI=new THREE.Mesh(new THREE.BoxGeometry(.35,.18,.3),mtl.red);
+  ngBinI.position.set(1.5,.09,.6);objs.add(ngBinI);
+  var workMod=null;
 
   // ---- Coordinate axes at arm base ----
   function mkAxis(dir,color,len){
@@ -480,11 +501,116 @@ window.addEventListener("mouseup",function(){isDown=false});
 window.addEventListener("wheel",function(e){e.preventDefault();dist=Math.max(1.5,Math.min(10,dist+e.deltaY*.005));uc()},{passive:false});
 window.addEventListener("resize",function(){W=window.innerWidth;H=window.innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H)});
 
+// ===== 工艺仿真引擎 (2026-08-10 协议v3 第11章: 场景仿真工作模式) =====
+// 技能计划: {name, dur(s), to:[x,y,z] 目标位, spin: 旋转角(rad)}
+// 节拍硬指标: insert<=6s / handle<=3.3s / aoi<=8.6s (协议 11.2-11.4)
+var SIM_PLANS={
+  insert:[
+    {name:"取料",dur:.6, pick:true},
+    {name:"扫码",dur:1.0, to:[.18,.35,-.6]},
+    {name:"翻转(标签向下)",dur:.8, spin:Math.PI},
+    {name:"对位插入",dur:1.2, to:[0,.7,-1.6]},
+    {name:"测试等待(异步)",dur:.1, to:[0,.7,-1.6]},
+    {name:"拉出",dur:.8, to:[0,.5,-.9]},
+    {name:"AOI位姿",dur:.6, spin:-Math.PI*.4},
+    {name:"分拣",dur:.8, to:[1.1,.2,.6]}
+  ],
+  handle:[
+    {name:"料盘识别",dur:.5},
+    {name:"取料",dur:1.2, pick:true},
+    {name:"移动到工作台",dur:1.0, to:[0,.4,-1.4]},
+    {name:"放置槽位",dur:.6, place:true}
+  ],
+  aoi:[
+    {name:"上料(传送带→转台)",dur:.8, pick:true, to:[0,.2,-.6]},
+    {name:"转台转位-金线焊点",dur:.5, spin:Math.PI/5},
+    {name:"焊点检测",dur:1.5},
+    {name:"转台转位-耦合面",dur:.5, spin:Math.PI/5},
+    {name:"耦合面检测",dur:1.5},
+    {name:"转台转位-外观",dur:.5, spin:Math.PI/5},
+    {name:"外观检测",dur:1.5},
+    {name:"转台转位-判定",dur:.5, spin:Math.PI/5},
+    {name:"判定(Pass/Fail)",dur:.5},
+    {name:"分拣(OK/NG)",dur:.8, to:[2,.15,1.2]}
+  ]
+};
+var PLAN=SIM_PLANS[sceneType]||[];
+var PLAN_TARGET={insert:6.0,handle:3.3,aoi:8.6}[sceneType]||10;
+var stepIdx=0,stepT=0,cycleT=0,cycleCount=0;
+var stepsEl=document.getElementById("steps");
+function simUpdate(dt){
+  if(!PLAN.length)return;
+  stepT+=dt;var st=PLAN[stepIdx];
+  // 技能对象动画: 插值到目标位 (简化: 每技能一个移动段)
+  if(st.pick&&sceneType==="insert"){
+    if(!workMod&&modules.length){workMod=modules.shift();}
+  }
+  if(st.to&&workMod){workMod.position.lerp(new THREE.Vector3(st.to[0],st.to[1],st.to[2]),dt*4);}
+  if(st.to&&sceneType==="handle"&&modC&&st.name.indexOf("移动")>=0){
+    // handle: 料盘组整体移动 (简化用第一个模块代表)
+  }
+  if(st.spin&&workMod){workMod.rotation.y+=st.spin*dt/st.dur;}
+  if(stepT>=st.dur){
+    stepT=0;stepIdx++;
+    if(stepIdx>=PLAN.length){stepIdx=0;cycleT=0;cycleCount++;
+      if(sceneType==="insert"&&modules.length===0){
+        // 循环: 重新补料
+        for(var ri=0;ri<3;ri++){
+          var rmm=new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.07),mtl.blue);
+          rmm.position.set(-.75+(ri%2)*.13,.045,.35+Math.floor(ri/2)*.12);
+          rmm.userData.home=rmm.position.clone();objs.add(rmm);modules.push(rmm);
+        }
+      }
+      if(sceneType==="aoi"&&modOn){modOn.position.set(0,.15,-.6);modOn.rotation.y=0;}
+    }
+  }
+  // 步骤高亮
+  if(stepsEl){
+    var sh="";PLAN.forEach(function(p,i){sh+='<span class="'+(i===stepIdx?"active":"")+'">'+(i+1)+'. '+p.name+'</span><br>'});
+    stepsEl.innerHTML=sh;
+  }
+  // KPI: 节拍计时 + 达标红绿
+  var kpi=document.getElementById("kpi");
+  if(kpi){
+    var ok=cycleT<=PLAN_TARGET;
+    kpi.innerHTML='<span class="val" style="color:'+(ok?"#3fb950":"#ff4444")+'">'+cycleT.toFixed(2)+'s</span> 当前循环节拍 (目标 '+PLAN_TARGET+'s)<br>'+
+      '<span class="val">'+cycleCount+'</span> 已完成循环<br>'+
+      '<span class="val">'+PLAN[stepIdx].name+'</span> 当前技能<br>'+
+      '<span class="val">'+Math.round(PLAN[stepIdx].dur-stepT)+'s</span> 技能剩余';
+  }
+  cycleT+=dt;
+  // 暴露 39D 映射状态 (协议 11.1.1, 供大屏/训练对接)
+  window._sceneState={
+    hand:workMod?[workMod.position.x,workMod.position.y,workMod.position.z]:[0,0,0],
+    gripper:workMod?1:0,
+    obj:workMod?[workMod.position.x,workMod.position.y,workMod.position.z]:[0,0,0],
+    objQuat:workMod?[0,0,0,1]:[0,0,0,1],
+    target:st.to||[0,0,0],
+    cycle:cycleT,step:stepIdx,pass:cycleT<=PLAN_TARGET
+  };
+  // ===== 39D State HUD (协议 11.1.1: 物体→state 映射可视化) =====
+  var s39=document.getElementById("state39");
+  if(s39&&window._sceneState){
+    var st=window._sceneState;
+    function f3(v){return (v||[]).map(function(n){return n.toFixed(3)}).join(" ")}
+    s39.innerHTML=
+      '<span class="seg">[0:3]</span> hand    '+f3(st.hand)+'<br>'+
+      '<span class="seg">[3]</span>   gripper '+st.gripper+'<br>'+
+      '<span class="seg">[4:7]</span> obj     <span class="cur">'+f3(st.obj)+'</span><br>'+
+      '<span class="seg">[7:11]</span>objQuat '+f3(st.objQuat)+'<br>'+
+      '<span class="seg">[11:18]</span>pad    0 0 0 0 0 0 0<br>'+
+      '<span class="seg">[18:36]</span>prev    (上帧快照)<br>'+
+      '<span class="seg">[36:39]</span>target  <span class="tar">'+f3(st.target)+'</span><br>'+
+      '<span class="seg">▸</span> 节拍 '+st.cycle.toFixed(2)+'s '+(st.pass?'<span style="color:#3fb950">达标</span>':'<span style="color:#ff4444">超标</span>');
+  }
+}
 // Animate
 var time=0;
 function animate(){requestAnimationFrame(animate);time+=.016;
   // Gentle rotation on rotary stage (AOI)
   if(sceneType==="aoi"&&stageTop)stageTop.rotation.y+=.005;
+  // ===== 工艺仿真 (协议v3 第11章) =====
+  simUpdate(.016);
   renderer.render(scene,camera);
 }
 animate();
