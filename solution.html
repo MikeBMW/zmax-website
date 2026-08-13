@@ -43,7 +43,10 @@ td.hl{color:var(--acc);font-weight:700;white-space:nowrap}
 <div class="wrap">
   <div class="top">
     <div class="brand">🦾 Z-MAX <span>具身智能</span></div>
-    <a class="home-link" href="/">← 返回主页</a>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="home-link" href="/Z700-方案介绍.pdf" download style="color:var(--acc);border-color:var(--acc)">📄 下载 PDF</a>
+      <a class="home-link" href="/">← 返回主页</a>
+    </div>
   </div>
 
   <h1>光模块工厂 · 具身智能方案</h1>
@@ -72,10 +75,10 @@ td.hl{color:var(--acc);font-weight:700;white-space:nowrap}
 
   <div class="sec-title">技术架构</div>
   <div class="arch">
-    <div class="card"><h4>感知前端 <em>YOLO 3D + 触觉</em></h4><p>YOLO 检测销钉/插孔/末端 → 2D→3D 解算 → 39D state + 触觉 4D = 43D 统一输入</p></div>
+    <div class="card"><h4>感知前端 <em>YOLO 3D + 触觉</em></h4><p>🎯 YOLO 3D → 📐 2D→3D 解算 → 🔌 State Adapter ← 📍 Marker 触觉跟踪 → 43D 统一输入</p></div>
     <div class="card"><h4>左脑 <em>LeftBrainMLP</em></h4><p>动作生成器：39D→4D 动作，偏置接近训练突破 0 成功率</p></div>
     <div class="card"><h4>右脑 <em>RightBrainWM</em></h4><p>世界模型：接触判定/时机判断，contact 只喂状态机不掺动作</p></div>
-    <div class="card"><h4>状态机 <em>8 阶段调制</em></h4><p>接近→对位→下降→抓取→抬起→转移→插入→完成，逐阶段调制</p></div>
+    <div class="card"><h4>状态机 <em>6 阶段执行</em></h4><p>接近→抓取→抬起→转移→插入→完成，逐节点执行（与画布模型一致）</p></div>
   </div>
 
   <div class="sec-title">数据闭环</div>
