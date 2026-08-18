@@ -37,8 +37,9 @@ h1{color:var(--c);font-size:22px;text-align:center;margin-bottom:4px}
 .empty{text-align:center;color:var(--sub);padding:40px;font-size:13px}
 .loading{text-align:center;color:var(--sub);padding:20px}
 </style>
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
 </head>
-<body>
+<body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <div class="wrap">
 <a href="/" style="color:var(--c);text-decoration:none;font-size:12px">← 主页</a>
 <h1>🤖 具身机器人原子技能库</h1>

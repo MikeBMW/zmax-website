@@ -115,8 +115,9 @@ tr:hover td{background:#0a0f18}
   .summary{padding:24px}
 }
 </style>
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
 </head>
-<body>
+<body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <div class="wrap">
 <a href="/" class="back">← 返回首页</a>
 <h1><span class="h1-accent">全局数据空间</span>的数据质量管理策略</h1>

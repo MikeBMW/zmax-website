@@ -1,628 +1,176 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Z-MAX 场景工厂</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:#0a0f18;overflow:hidden;font-family:Arial,sans-serif}
-canvas{display:block!important;position:absolute;top:0;left:0;z-index:1}
-#info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#888;font-size:11px;opacity:.5;z-index:10;pointer-events:none}
-#status{position:absolute;top:12px;left:50%;transform:translateX(-50%);color:#00d4aa;font-size:14px;font-weight:bold;z-index:10;background:rgba(10,10,26,.75);padding:5px 16px;border-radius:16px}
-#back{position:absolute;top:12px;left:15px;z-index:15;color:#fff;font-size:13px;font-weight:700;cursor:pointer;background:rgba(0,212,170,.15);padding:8px 16px;border-radius:20px;border:1px solid #00d4aa66;text-decoration:none}
-#tabs{position:absolute;top:12px;right:15px;z-index:15;display:flex;gap:4px}
-#tabs a{padding:6px 14px;font-size:11px;color:#8b949e;text-decoration:none;background:rgba(10,10,26,.75);border:1px solid #1a2030;border-radius:16px}
-#tabs a.on{border-color:#00d4aa;color:#00d4aa;background:rgba(0,212,170,.1)}
-#kpi{position:absolute;bottom:40px;left:15px;z-index:15;font-size:10px;color:#8b949e;background:rgba(10,10,26,.75);padding:8px 12px;border-radius:8px;border:1px solid #1a2030;max-width:240px;line-height:1.6}
-#kpi .val{color:#00d4aa;font-weight:700}
-#steps{position:absolute;bottom:40px;right:15px;z-index:15;font-size:9px;color:#8b949e;background:rgba(10,10,26,.75);padding:6px 10px;border-radius:8px;border:1px solid #1a2030;max-width:200px}
-#steps .active{color:#00d4aa;font-weight:700}
-#state39{position:absolute;bottom:40px;left:270px;z-index:15;font-size:9px;color:#8b949e;background:rgba(10,10,26,.85);padding:8px 12px;border-radius:8px;border:1px solid #00d4aa44;max-width:260px;line-height:1.5;font-family:monospace}
-#state39 .seg{color:#00d4aa;font-weight:700}
-#state39 .cur{color:#fff}
-#state39 .tar{color:#ffb454}
-</style>
-</head>
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R MPV Z700 · FW Loading 仿真</title>
+<style>*{margin:0;padding:0}html,body{width:100%;height:100%;background:#0a0f18;overflow:hidden}
+canvas{display:block}#bar{position:absolute;top:0;left:0;right:0;z-index:10;background:rgba(10,15,24,.9);padding:6px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #1a2030}
+#bar a{color:#8b949e;font-size:10px;text-decoration:none;padding:3px 8px;border-radius:4px;border:1px solid #1a2030}
+#bar a.on{color:#00d4aa;border-color:#00d4aa}#bar h1{font-size:12px;color:#00d4aa;margin-left:6px}
+#status{position:absolute;top:50px;left:50%;transform:translateX(-50%);color:#f0a500;font-size:12px;font-weight:bold;z-index:10;background:rgba(10,10,26,.8);padding:4px 12px;border-radius:12px}
+#info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#555;font-size:9px;z-index:5}
+#parts{position:absolute;top:50px;right:6px;z-index:10;font-size:8px;color:#555;background:rgba(10,10,26,.8);padding:5px 8px;border-radius:4px;max-height:300px;overflow:auto;border:1px solid #1a2030}
+#parts div{margin:1px 0}#parts b{color:#00d4aa}</style></head>
 <body>
-<a id="back" href="/">← 主页</a>
-<div id="status">● 加载场景JSON...</div>
-<div id="tabs">
-  <a href="?scene=insert">🔌 插拔</a>
-  <a href="?scene=handle">📦 搬运</a>
-  <a href="?scene=aoi">🔍 AOI</a>
+<div id="bar"><a href="/">←</a><a href="/scene-spec.html">📋</a>
+<a href="?scene=insert" class="on">🔌插拔</a><a href="?scene=handle">📦搬运</a><a href="?scene=aoi">🔍AOI</a>
+<h1>R MPV Z700 · FW Loading仿真</h1></div>
+<div id="status">● 就绪</div><div id="info">拖拽旋转|滚轮缩放</div>
+<div id="parts"><b>📋 场景组件</b>
+<div><b>R MPV</b> (0,0,0) 1.6×1.2×1.0m</div>
+<div><b>左臂</b> (-0.5,1.3,0.15)</div>
+<div><b>右臂</b> (+0.5,1.3,0.15)</div>
+<div><b>工作台</b> (2.5,1.2,0) 1.5×0.06×0.9</div>
+<div><b>来料盘</b> (2.5,1.24,-0.4) 0.35×0.03</div>
+<div><b>EVB板</b> (2.5,1.25,0) 0.25×0.008</div>
+<div><b>插座</b> (2.5,1.26,0) QSFP</div>
+<div><b>扫码枪</b> (2.1,1.35,0.4)</div>
+<div><b>Pass盘</b> (3.0,1.24,0.35) 🟢</div>
+<div><b>Fail盘</b> (3.0,1.24,-0.35) 🔴</div>
+<div><b>显示器</b> (3.3,2.0,0)</div>
+<div style="color:#f0a500">坐标系:+X前+Y左+Z上</div>
 </div>
-<div id="kpi"></div>
-<div id="steps"></div>
-<div id="state39">📊 39D State 加载中…</div>
-<div id="json-view" style="position:absolute;top:50px;right:15px;z-index:20;background:rgba(10,10,26,.9);border:1px solid #00d4aa44;border-radius:8px;padding:10px;max-width:350px;max-height:300px;overflow:auto;display:none;font:10px monospace;color:#58a6ff;white-space:pre-wrap"></div>
-<button id="btn-json" style="position:absolute;top:52px;right:15px;z-index:20;padding:4px 10px;font-size:9px;background:#0d1520;color:#00d4aa;border:1px solid #00d4aa44;border-radius:4px;cursor:pointer" onclick="toggleJSON()">📋 查看JSON</button>
-<div id="info">拖拽旋转 | 滚轮缩放 | 右键平移</div>
-
-<script src="/three.min.js"></script>
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 <script>
-(async function(){
-if(typeof THREE==="undefined")return;
-var W=window.innerWidth,H=window.innerHeight;
-var params=new URLSearchParams(location.search);
-var sceneType=params.get("scene")||"insert";
+var p=new URLSearchParams(location.search),st=p.get("scene")||"insert";
+if(st!=="insert"){document.querySelectorAll("#bar a").forEach(function(a,i){a.className=["insert","handle","aoi"][i]===st?"on":""});document.querySelector("h1").textContent="R MPV Z700 · "+["FW Loading","搬运","AOI"][["insert","handle","aoi"].indexOf(st)]+"仿真"}
 
-// Load scene JSON
-var sceneData=null;
-try{
-  var r=await fetch("/scenes/scene_"+sceneType+".json");
-  if(r.ok)sceneData=await r.json();
-}catch(e){}
-// Fallback defaults
-if(!sceneData)sceneData={
-  insert:{name:"插拔操作",skills:["取料","移动到治具插槽","尝试插入第一次","插入完成","暂时松开"],specs:{success_rate:0.995,cycle_time:3.8},kpi:{"插入成功率":">99.5%","单次节拍":"<1.5s","插入力":"<0.5N","定位精度":"±0.05mm"}},
-  handle:{name:"料盘搬运",skills:["料盘识别","取料","初始化循环","循环守卫"],specs:{success_rate:0.998,cycle_time:3.3},kpi:{"搬运成功率":">99.8%","单次节拍":"<3.0s","负载":"≤10kg","放置精度":"±0.2mm"}},
-  aoi:{name:"AOI检测",skills:["AOI_1","AOI_2","AOI_3","AOI_4","AOI_5","AOI_6","AOI_PD","OK"],specs:{success_rate:0.99,cycle_time:7.0},kpi:{"检测准确率":">99%","单点节拍":"<2.0s","分辨率":"2μm","检测位":"6+1"}}
-}[sceneType]||{name:"场景",skills:["未知"],specs:{},kpi:{}};
-
-// Update UI
-document.getElementById("status").textContent="● "+sceneData.name;
-document.querySelectorAll("#tabs a").forEach(function(a){a.classList.toggle("on",a.href.includes("scene="+sceneType))});
-var kpiHTML="";
-for(var k in sceneData.kpi)kpiHTML+='<span class="val">'+sceneData.kpi[k]+'</span> '+k+'<br>';
-document.getElementById("kpi").innerHTML=kpiHTML;
-var stepsHTML="";
-sceneData.skills.forEach(function(s,i){stepsHTML+='<span class="'+(i===0?"active":"")+'">'+(i+1)+'. '+s+'</span><br>'});
-document.getElementById("steps").innerHTML=stepsHTML;
-
-// Three.js scene
 var scene=new THREE.Scene();scene.background=new THREE.Color(0x0a0f18);
-var camera=new THREE.PerspectiveCamera(45,W/H,.1,40);camera.position.set(3,2,4.5);camera.lookAt(0,0,-.5);
-var renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(W,H);
-renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+var W=innerWidth,H=innerHeight;
+var camera=new THREE.PerspectiveCamera(45,W/H,.1,30);camera.position.set(-2,3,5);camera.lookAt(0.5,0.5,0);
+var renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(W,H);renderer.shadowMap.enabled=true;
 document.body.appendChild(renderer.domElement);
 
-scene.add(new THREE.AmbientLight(0x334466,1.2));
-var dir=new THREE.DirectionalLight(0xffffff,2.5);dir.position.set(5,8,3);dir.castShadow=true;
-dir.shadow.mapSize.set(1024,1024);dir.shadow.camera.near=.5;dir.shadow.camera.far=30;
-dir.shadow.camera.left=-8;dir.shadow.camera.right=8;dir.shadow.camera.top=6;dir.shadow.camera.bottom=-4;
-scene.add(dir);
-scene.add(new THREE.PointLight(0x00d4aa,3,8));
+scene.add(new THREE.AmbientLight(0x667788,2));
+var dl=new THREE.DirectionalLight(0xffffff,3);dl.position.set(3,8,2);dl.castShadow=true;scene.add(dl);
+scene.add(new THREE.HemisphereLight(0x445566,0x222233,1));
 
-var grid=new THREE.GridHelper(7,24,0x1a2030,0x1a2030);scene.add(grid);
-var floor=new THREE.Mesh(new THREE.PlaneGeometry(7,5),new THREE.MeshStandardMaterial({color:0x111520,roughness:.9}));
-floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+var grid=new THREE.GridHelper(10,20,0x1a2030,0x1a2030);grid.position.y=0.001;scene.add(grid);
+var fl=new THREE.Mesh(new THREE.PlaneGeometry(10,8),new THREE.MeshStandardMaterial({color:0x151a24,roughness:.9}));
+fl.rotation.x=-Math.PI/2;fl.position.y=0;scene.add(fl);
 
-// Material library
-var mtl={dark:new THREE.MeshStandardMaterial({color:0x1a2530,metalness:.8,roughness:.4}),
-  body:new THREE.MeshStandardMaterial({color:0x2a3a4a,metalness:.7,roughness:.3}),
-  accent:new THREE.MeshStandardMaterial({color:0x00d4aa,metalness:.5,roughness:.2}),
-  blue:new THREE.MeshStandardMaterial({color:0x58a6ff,emissive:0x112244,emissiveIntensity:.4}),
-  shelf:new THREE.MeshStandardMaterial({color:0x2a3545,metalness:.7,roughness:.5}),
-  tray:new THREE.MeshStandardMaterial({color:0x8a7a5a,metalness:.4}),
-  steel:new THREE.MeshStandardMaterial({color:0x666666,metalness:.9,roughness:.2}),
-  orange:new THREE.MeshStandardMaterial({color:0xff6b35,emissive:0x331100,emissiveIntensity:.3}),
-  green:new THREE.MeshStandardMaterial({color:0x3fb950,emissive:0x002200,emissiveIntensity:.3}),
-  red:new THREE.MeshStandardMaterial({color:0xff4444,emissive:0x220000,emissiveIntensity:.3}),
-  // Luoshi SR5-C arm materials
-  cobotBody:new THREE.MeshStandardMaterial({color:0xf0f4f8,roughness:.2,metalness:.25}),
-  cobotBase:new THREE.MeshStandardMaterial({color:0x4a4f58,roughness:.3,metalness:.5}),
-  cobotJoint:new THREE.MeshStandardMaterial({color:0x00d4aa,roughness:.1,metalness:.4,emissive:0x005544,emissiveIntensity:.7}),
-  cobotRed:new THREE.MeshStandardMaterial({color:0xd73a49,roughness:.3,metalness:.2}),
-  cobotGrip:new THREE.MeshStandardMaterial({color:0x999aaa,roughness:.2,metalness:.6}),
-  cobotFinger:new THREE.MeshStandardMaterial({color:0x555566,roughness:.15,metalness:.7}),
-  cobotFtip:new THREE.MeshStandardMaterial({color:0x222233,roughness:.3,metalness:.3}),
-  cobotRing:new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:1.5,roughness:.1})
-};
+// ═══ R MPV Vehicle (origin, scaled 2x for visibility) ═══
+var mpv=new THREE.Group();scene.add(mpv);
+var matV=new THREE.MeshStandardMaterial({color:0xeeeeff,metalness:.7,roughness:.3});
+var matA=new THREE.MeshStandardMaterial({color:0x00d4aa,emissive:0x00d4aa,emissiveIntensity:.6,roughness:.1});
 
-// AMR — GYRO第三代窄体·模块化工具箱底盘 (半导体洁净室)
-function buildAMR(x,y,z){
-  // Luoshi SR5-C on KUKA KMP 600-S AMR
-  var g=new THREE.Group();
-  var KUKA_ORG=new THREE.MeshStandardMaterial({color:0xf47920,metalness:.3,roughness:.4});   // KUKA orange
-  var KUKA_WHT=new THREE.MeshStandardMaterial({color:0xeceef0,metalness:.2,roughness:.5});    // white
-  var KUKA_DKG=new THREE.MeshStandardMaterial({color:0x2a2e33,metalness:.5,roughness:.5});    // dark grey
-  var KUKA_BLK=new THREE.MeshStandardMaterial({color:0x111,roughness:.9});                    // black
-
-  // === Chassis: low-profile ===
-  var chassis=new THREE.Mesh(new THREE.BoxGeometry(.7,.1,.85),KUKA_DKG);
-  chassis.position.y=.05;chassis.castShadow=true;g.add(chassis);
-  // Orange stripe around middle
-  var stripe=new THREE.Mesh(new THREE.BoxGeometry(.72,.012,.87),KUKA_ORG);
-  stripe.position.y=.08;g.add(stripe);
-  // Top deck
-  var deck=new THREE.Mesh(new THREE.BoxGeometry(.66,.015,.8),KUKA_WHT);
-  deck.position.y=.13;g.add(deck);
-
-  // === Mecanum wheels (4 omnidirectional) ===
-  var whGeo=new THREE.CylinderGeometry(.1,.1,.06,20);
-  [[-.3,.05,.28],[.3,.05,.28],[-.3,.05,-.28],[.3,.05,-.28]].forEach(function(p){
-    var w=new THREE.Mesh(whGeo,KUKA_BLK);
-    w.rotation.z=Math.PI/2;w.position.set(p[0],p[1],p[2]);w.castShadow=true;g.add(w);
-    // Mecanum roller rings
-    for(var ri=0;ri<3;ri++){
-      var roller=new THREE.Mesh(new THREE.TorusGeometry(.09,.012,6,12),KUKA_ORG);
-      roller.rotation.y=Math.PI/2;roller.position.set(p[0],p[1],p[2]+(ri-1)*.015);g.add(roller);
-    }
-    var hub=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.07,10),mtl.steel);
-    hub.rotation.z=Math.PI/2;hub.position.set(p[0],p[1],p[2]);g.add(hub);
-  });
-
-  // === Front LiDAR (KUKA orange ring) ===
-  var lidar=new THREE.Mesh(new THREE.CylinderGeometry(.04,.045,.02,20),KUKA_BLK);
-  lidar.position.set(0,.07,.44);g.add(lidar);
-  var ldRing=new THREE.Mesh(new THREE.TorusGeometry(.04,.005,4,20),KUKA_ORG);
-  ldRing.rotation.x=Math.PI/2;ldRing.position.set(0,.08,.44);g.add(ldRing);
-
-  // === Safety bumpers (front/rear, orange stripe) ===
-  [[0,.045,.44],[0,.045,-.44]].forEach(function(p){
-    var bm=new THREE.Mesh(new THREE.BoxGeometry(.66,.04,.03),KUKA_BLK);
-    bm.position.set(p[0],p[1],p[2]);g.add(bm);
-    var bs=new THREE.Mesh(new THREE.BoxGeometry(.66,.012,.031),KUKA_ORG);
-    bs.position.set(p[0],p[1],p[2]);g.add(bs);
-  });
-
-  // === KUKA logo plate (front center) ===
-  var logo=new THREE.Mesh(new THREE.BoxGeometry(.12,.04,.002),KUKA_ORG);
-  logo.position.set(0,.08,.43);g.add(logo);
-
-  // === HMI panel (right side, angled) ===
-  var hmiPole=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,.12,8),mtl.steel);
-  hmiPole.position.set(.28,.19,.2);g.add(hmiPole);
-  var scr=new THREE.Mesh(new THREE.BoxGeometry(.13,.08,.01),new THREE.MeshStandardMaterial({color:0x0a1620,emissive:0x001122,emissiveIntensity:.3}));
-  scr.position.set(.28,.27,.2);scr.rotation.x=-.15;g.add(scr);
-  var bezel=new THREE.Mesh(new THREE.BoxGeometry(.14,.09,.008),KUKA_DKG);
-  bezel.position.set(.28,.27,.207);bezel.rotation.x=-.15;g.add(bezel);
-
-  // === E-Stop ===
-  var es=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.012,12),mtl.red);
-  es.position.set(-.25,.17,.22);g.add(es);
-
-  // === Status LEDs (front strip) ===
-  var leds=new THREE.Mesh(new THREE.BoxGeometry(.55,.006,.005),new THREE.MeshBasicMaterial({color:0x00ff88}));
-  leds.position.set(0,.1,.43);g.add(leds);
-
-  // ====== 工具箱载台 ======
-  // 3 modular tool boxes on deck
-  // Box 1: left (光模块盘)
-  var b1=new THREE.Mesh(new THREE.BoxGeometry(.2,.09,.25),KUKA_WHT);
-  b1.position.set(-.18,.2,.15);b1.castShadow=true;g.add(b1);
-  var b1tag=new THREE.Mesh(new THREE.BoxGeometry(.14,.003,.035),KUKA_ORG);
-  b1tag.position.set(-.18,.245,.15);g.add(b1tag);
-  // Box 2: right (备件)
-  var b2=new THREE.Mesh(new THREE.BoxGeometry(.2,.09,.25),KUKA_WHT);
-  b2.position.set(.18,.2,.15);b2.castShadow=true;g.add(b2);
-  var b2tag=new THREE.Mesh(new THREE.BoxGeometry(.14,.003,.035),mtl.blue);
-  b2tag.position.set(.18,.245,.15);g.add(b2tag);
-  // Box 3: rear (夹具/吸嘴)
-  var b3=new THREE.Mesh(new THREE.BoxGeometry(.5,.07,.16),KUKA_WHT);
-  b3.position.set(0,.19,-.3);b3.castShadow=true;g.add(b3);
-  for(var di=0;di<3;di++){
-    var dv=new THREE.Mesh(new THREE.BoxGeometry(.005,.065,.14),KUKA_DKG);
-    dv.position.set(-.14+di*.14,.2,-.3);g.add(dv);
-  }
-
-  // === Cobot mounting pedestal (rear-right, KUKA orange base) ===
-  var pedestal=new THREE.Mesh(new THREE.CylinderGeometry(.09,.11,.04,20),KUKA_ORG);
-  pedestal.position.set(.18,.18,-.2);g.add(pedestal);
-  // 6 bolt pattern
-  for(var mb=0;mb<6;mb++){
-    var blt=new THREE.Mesh(new THREE.CylinderGeometry(.007,.007,.015,6),mtl.steel);
-    var ang=mb*Math.PI/3;
-    blt.position.set(.18+Math.cos(ang)*.08,.21,-.2+Math.sin(ang)*.08);g.add(blt);
-  }
-
-  g.position.set(x,y,z);
-  return g;
+// Big chassis so it's clearly visible
+var ch=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.2,1.0),matV);
+ch.position.y=.6;ch.castShadow=true;ch.receiveShadow=true;mpv.add(ch);
+// Accent stripe
+var stp=new THREE.Mesh(new THREE.BoxGeometry(1.62,.04,.15),matA);
+stp.position.set(0,1.25,.42);mpv.add(stp);
+// Top arm mount platform
+var plat=new THREE.Mesh(new THREE.BoxGeometry(.8,.06,.5),new THREE.MeshStandardMaterial({color:0x556677,metalness:.5}));
+plat.position.set(0,1.23,0);mpv.add(plat);
+// Head with camera on top (humanoid head)
+var head=new THREE.Mesh(new THREE.BoxGeometry(.25,.18,.2),new THREE.MeshStandardMaterial({color:0x667788,metalness:.5}));
+head.position.set(0,1.38,0);mpv.add(head);
+// Camera on head (eye)
+var cam=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.06,12),new THREE.MeshStandardMaterial({color:0x111,metalness:.8}));
+cam.rotation.x=Math.PI/2;cam.position.set(0,1.4,.13);mpv.add(cam);
+// Camera lens glow
+var lens=new THREE.Mesh(new THREE.CircleGeometry(.03,12),new THREE.MeshBasicMaterial({color:0x00d4aa}));
+lens.position.set(0,1.4,.17);mpv.add(lens);
+// Wheels - big and visible
+for(var sx of[-.6,.6])for(var sz of[.35,-.35]){
+  var wh=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.06,16),new THREE.MeshStandardMaterial({color:0x111,roughness:.8}));
+  wh.rotation.z=Math.PI/2;wh.position.set(sx,.08,sz);wh.castShadow=true;mpv.add(wh);
 }
 
-// Luoshi SR5-C 6-axis collaborative robot arm + DH PEGA-50-26 gripper
-// 6 DOF: J1(base) J2(shoulder) J3(elbow) J4(wrist1) J5(wrist2) + gripper
-function buildCobot(x,y,z,scale){
-  scale=scale||1;
-  var arm=new THREE.Group();
+// ═══ Left Arm - extends UP from vehicle platform ═══
+var armL=new THREE.Group();armL.position.set(-.5,1.3,.15);mpv.add(armL);
+var mRed=new THREE.MeshStandardMaterial({color:0xff4444,metalness:.3,roughness:.2});
+var mOrg=new THREE.MeshStandardMaterial({color:0xff8800,emissive:0xff4400,emissiveIntensity:.5});
+// Shoulder sphere
+armL.add(new THREE.Mesh(new THREE.SphereGeometry(.1,12,12),mRed));
+// Upper arm - extends UP
+var ul=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,.5,12),mRed);
+ul.position.y=.25;armL.add(ul);
+// Elbow
+armL.add(new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),mOrg)).position.y=.5;
+// Forearm - extends UP more
+var fl=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.4,12),mRed);
+fl.position.y=.7;armL.add(fl);
+// Wrist
+armL.add(new THREE.Mesh(new THREE.SphereGeometry(.05,8,8),mOrg)).position.y=.9;
+// Gripper at top
+var grL=new THREE.Mesh(new THREE.BoxGeometry(.1,.15,.08),mOrg);
+grL.position.y=1.0;armL.add(grL);
 
-  function set(m,x2,y2,z2){m.position.set(x2,y2,z2);return m;}
-  function mk(geo,mat){var m2=new THREE.Mesh(geo,mat);m2.castShadow=true;m2.receiveShadow=true;return m2;}
+// ═══ Right Arm - extends UP ═══
+var armR=new THREE.Group();armR.position.set(.5,1.3,.15);mpv.add(armR);
+armR.add(new THREE.Mesh(new THREE.SphereGeometry(.1,12,12),mRed));
+var ur=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,.5,12),mRed);
+ur.position.y=.25;armR.add(ur);
+armR.add(new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),mOrg)).position.y=.5;
+var fr=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.4,12),mRed);
+fr.position.y=.7;armR.add(fr);
+armR.add(new THREE.Mesh(new THREE.SphereGeometry(.05,8,8),mOrg)).position.y=.9;
+var grR=new THREE.Mesh(new THREE.BoxGeometry(.1,.15,.08),mOrg);
+grR.position.y=1.0;armR.add(grR);
 
-  // Base
-  arm.add(set(mk(new THREE.CylinderGeometry(.22,.27,.15,32),mtl.cobotBase),0,.075,0));
-  arm.add(set(mk(new THREE.TorusGeometry(.215,.012,8,48),mtl.cobotRed),0,.082,0));
-
-  // J1: rotation base
-  var j1=new THREE.Group();j1.position.y=.15;arm.add(j1);
-  j1.add(set(mk(new THREE.CylinderGeometry(.13,.17,.28,32),mtl.cobotBody),0,0,0));
-  j1.add(set(mk(new THREE.TorusGeometry(.125,.022,16,32),mtl.cobotJoint),0,-.07,0));
-
-  // J2: shoulder
-  var j2=new THREE.Group();j2.position.y=.26;j1.add(j2);
-  j2.add(set(mk(new THREE.SphereGeometry(.13,32,16),mtl.cobotJoint),0,0,0));
-  var upper=new THREE.Group();j2.add(upper);
-  upper.add(set(mk(new THREE.BoxGeometry(.1,.55,.1),mtl.cobotBody),0,.275,0));
-  upper.add(set(mk(new THREE.BoxGeometry(.11,.035,.11),mtl.cobotRed),0,.12,0));
-
-  // J3: elbow
-  var j3=new THREE.Group();j3.position.y=.55;upper.add(j3);
-  j3.add(set(mk(new THREE.SphereGeometry(.1,32,16),mtl.cobotJoint),0,0,0));
-  var forearm=new THREE.Group();j3.add(forearm);
-  forearm.add(set(mk(new THREE.BoxGeometry(.08,.55,.08),mtl.cobotBody),0,.275,0));
-  forearm.add(set(mk(new THREE.BoxGeometry(.09,.03,.09),mtl.cobotRed),0,.09,0));
-
-  // J4: wrist 1
-  var j4=new THREE.Group();j4.position.y=.55;forearm.add(j4);
-  j4.add(set(mk(new THREE.SphereGeometry(.07,32,16),mtl.cobotJoint),0,0,0));
-  var wrist=new THREE.Group();j4.add(wrist);
-  wrist.add(set(mk(new THREE.BoxGeometry(.065,.13,.065),mtl.cobotBody),0,.065,0));
-
-  // J5: wrist 2
-  var j5=new THREE.Group();j5.position.y=.13;wrist.add(j5);
-  j5.add(set(mk(new THREE.SphereGeometry(.05,32,16),mtl.cobotJoint),0,0,0));
-
-  // DH PEGA-50-26 gripper
-  var gb=new THREE.Group();j5.add(gb);
-  gb.add(set(mk(new THREE.CylinderGeometry(.04,.045,.035,24),mtl.cobotGrip),0,0,0));
-  gb.add(set(mk(new THREE.BoxGeometry(.065,.08,.055),mtl.cobotGrip),0,-.055,0));
-  // Left finger
-  var fL=new THREE.Group();gb.add(fL);
-  fL.add(set(mk(new THREE.BoxGeometry(.012,.07,.015),mtl.cobotFinger),.022,-.095,0));
-  fL.add(set(mk(new THREE.BoxGeometry(.01,.018,.018),mtl.cobotFtip),.022,-.14,0));
-  // Right finger
-  var fR=new THREE.Group();gb.add(fR);
-  fR.add(set(mk(new THREE.BoxGeometry(.012,.07,.015),mtl.cobotFinger),-.022,-.095,0));
-  fR.add(set(mk(new THREE.BoxGeometry(.01,.018,.018),mtl.cobotFtip),-.022,-.14,0));
-
-  // Green LED ring at base
-  var ring=mk(new THREE.TorusGeometry(.22,.012,16,64),mtl.cobotRing);
-  ring.castShadow=false;ring.receiveShadow=false;
-  ring.rotation.x=Math.PI/2;ring.position.set(0,.075,0);arm.add(ring);
-
-  arm.position.set(x,y,z);
-  arm.scale.set(scale,scale,scale);
-  return arm;
+// ═══ Workbench at (X=2.5, Z=0) ═══
+var bench=new THREE.Mesh(new THREE.BoxGeometry(1.5,.06,.9),new THREE.MeshStandardMaterial({color:0x889999,roughness:.7}));
+bench.position.set(2.5,1.2,0);bench.receiveShadow=true;scene.add(bench);
+for(var x of[1.85,3.15])for(var z of[-.35,.35]){
+  var lg=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,1.1,8),new THREE.MeshStandardMaterial({color:0x556666}));
+  lg.position.set(x,.55,z);lg.castShadow=true;scene.add(lg);
 }
+// Incoming tray
+var inTray=new THREE.Mesh(new THREE.BoxGeometry(.35,.03,.25),new THREE.MeshStandardMaterial({color:0x222233}));
+inTray.position.set(2.5,1.24,-.4);scene.add(inTray);
+// EVB test board
+var evb=new THREE.Mesh(new THREE.BoxGeometry(.25,.008,.18),new THREE.MeshStandardMaterial({color:0x226622}));
+evb.position.set(2.5,1.25,0);scene.add(evb);
+// Socket on EVB
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(.025,.01,.09),new THREE.MeshStandardMaterial({color:0x111,metalness:.6}))).position.set(2.5,1.26,0);
+// Scanner
+scene.add(new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,.12,12),new THREE.MeshStandardMaterial({color:0x334455}))).position.set(2.1,1.35,.4);
+// Pass/Fail trays
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.025,.2),new THREE.MeshStandardMaterial({color:0x113311,emissive:0x002200,emissiveIntensity:.4}))).position.set(3.0,1.24,.35);
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(.3,.025,.2),new THREE.MeshStandardMaterial({color:0x331111,emissive:0x220000,emissiveIntensity:.4}))).position.set(3.0,1.24,-.35);
+// Monitor
+scene.add(new THREE.Mesh(new THREE.BoxGeometry(.6,.35,.06),new THREE.MeshStandardMaterial({color:0x111}))).position.set(3.3,2.0,0);
 
-function set(m,x2,y2,z2){m.position.set(x2,y2,z2);return m;}
-function makeCyl(rt,rb,h,y,mat){
-  var g=new THREE.CylinderGeometry(rt,rb,h,16);
-  var m=new THREE.Mesh(g,mat);m.position.y=y;m.castShadow=true;return m;
-}
+// ═══ Action sequence ═══
+var ACTS=st==="insert"?[
+  {n:"取料·从吸塑盒取模块",d:0.6,tx:2.5,tz:-.4,ty:1.35,grip:!0},
+  {n:"扫码·扫SN二维码",d:1.0,tx:2.1,tz:.4,ty:1.35,grip:!0},
+  {n:"翻转·标签面向下",d:0.8,tx:2.1,tz:.4,ty:1.35,grip:!0},
+  {n:"对位·对准EVB插槽",d:0.5,tx:2.5,tz:0,ty:1.3,grip:!0},
+  {n:"插入·导向槽直推",d:0.7,tx:2.5,tz:0,ty:1.2,grip:!1},
+  {n:"测试中·PC异步",d:2.0,tx:0,tz:0,ty:.7,grip:!1},
+  {n:"拔出·力控拉出",d:0.8,tx:2.5,tz:0,ty:1.35,grip:!0},
+  {n:"AOI飞拍·6面检测",d:3.0,tx:2.5,tz:0,ty:1.4,grip:!0},
+  {n:"分拣·Pass/Fail",d:0.8,tx:3.0,tz:.35,ty:1.4,grip:!0}
+]:[{n:"待实现",d:1,tx:0,tz:0,ty:.7,grip:!1}];
 
-// Scene objects
-var objs=new THREE.Group();scene.add(objs);
-var spec=sceneData.specs||{};
-
-if(sceneType==="insert"){
-  // Insert scene: test oven + slots + Luoshi SR5-C arm + camera
-  var oven=new THREE.Mesh(new THREE.BoxGeometry(2,.8,.6),new THREE.MeshStandardMaterial({color:0x2a3040,metalness:.8}));
-  oven.position.set(0,.4,-1.8);oven.castShadow=true;objs.add(oven);
-  // Cage slots
-  var nSlots=spec.slots||4;
-  for(var i=0;i<nSlots;i++){
-    var s=new THREE.Mesh(new THREE.BoxGeometry(.15,.05,.3),new THREE.MeshStandardMaterial({color:0x111111,emissive:0x331100,emissiveIntensity:.5}));
-    s.position.set(-.6+i*.4,.65,-1.65);objs.add(s);
-  }
-  // AMR + Luoshi SR5-C cobot in front of oven
-  var amr=buildAMR(0,0,.3);objs.add(amr);
-  var robot=buildCobot(.18,.2,-.2,.75);objs.add(robot);
-  // ===== 工艺仿真物体 (协议v3 第11.2节): 来料吸塑盒+光模块+分拣区 =====
-  var trayIn=new THREE.Mesh(new THREE.BoxGeometry(.4,.02,.4),mtl.tray);
-  trayIn.position.set(-.7,.03,.4);objs.add(trayIn);
-  var modules=[];
-  for(var mi=0;mi<3;mi++){
-    var mm=new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.07),mtl.blue);
-    mm.position.set(-.75+(mi%2)*.13,.045,.35+Math.floor(mi/2)*.12);
-    mm.userData.home=mm.position.clone();mm.userData.visible=true;objs.add(mm);modules.push(mm);
-  }
-  var scanSpot=new THREE.Mesh(new THREE.BoxGeometry(.14,.012,.1),new THREE.MeshStandardMaterial({color:0x224422,emissive:0x00aa44,emissiveIntensity:.25}));
-  scanSpot.position.set(.18,.02,-.6);objs.add(scanSpot);
-  var okBinI=new THREE.Mesh(new THREE.BoxGeometry(.35,.18,.3),mtl.green);
-  okBinI.position.set(1.1,.09,.6);objs.add(okBinI);
-  var ngBinI=new THREE.Mesh(new THREE.BoxGeometry(.35,.18,.3),mtl.red);
-  ngBinI.position.set(1.5,.09,.6);objs.add(ngBinI);
-  var workMod=null;
-
-  // ---- Coordinate axes at arm base ----
-  function mkAxis(dir,color,len){
-    var g=new THREE.Group();
-    var shaft=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,len,8),new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:.5,roughness:.1}));
-    shaft.position.set(0,len/2,0);shaft.castShadow=false;shaft.receiveShadow=false;g.add(shaft);
-    var head=new THREE.Mesh(new THREE.ConeGeometry(.04,.12,8),new THREE.MeshStandardMaterial({color:color,emissive:color,emissiveIntensity:.5,roughness:.1}));
-    head.position.set(0,len,0);head.castShadow=false;head.receiveShadow=false;g.add(head);
-    if(dir==="x")g.rotation.z=-Math.PI/2;
-    else if(dir==="z")g.rotation.x=Math.PI/2;
-    return g;
-  }
-  function mkAxisLabel(text,color,pos){
-    var cv=document.createElement("canvas");cv.width=128;cv.height=64;
-    var cx=cv.getContext("2d");cx.fillStyle=color;cx.font="bold 40px Arial";cx.textAlign="center";cx.fillText(text,64,44);
-    var tx=new THREE.CanvasTexture(cv);tx.minFilter=THREE.LinearFilter;
-    var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthTest:false}));
-    s.position.copy(pos);s.scale.set(.35,.18,1);return s;
-  }
-  // X-axis (red) along +X
-  var axX=new THREE.Group();
-  var xShaft=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.5,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.5,roughness:.1}));
-  xShaft.rotation.z=Math.PI/2;xShaft.position.set(.75,0,0);xShaft.castShadow=xShaft.receiveShadow=false;axX.add(xShaft);
-  var xHead=new THREE.Mesh(new THREE.ConeGeometry(.04,.12,8),new THREE.MeshStandardMaterial({color:0xff4444,emissive:0xff4444,emissiveIntensity:.5,roughness:.1}));
-  xHead.rotation.z=-Math.PI/2;xHead.position.set(1.5,0,0);xHead.castShadow=xHead.receiveShadow=false;axX.add(xHead);
-  axX.position.set(.18,.2,-.2);objs.add(axX);
-  // Y-axis (green) along +Y
-  var axY=mkAxis("y",0x44ff44,1.5);
-  axY.position.set(.18,.2,-.2);objs.add(axY);
-  // Z-axis (blue) along +Z
-  var axZ=mkAxis("z",0x4488ff,1.5);
-  axZ.position.set(.18,.2,-.2);objs.add(axZ);
-  objs.add(mkAxisLabel("X","#ff4444",new THREE.Vector3(.18+1.7,.2,-.2)));
-  objs.add(mkAxisLabel("Y","#44ff44",new THREE.Vector3(.18,.2+1.7,-.2)));
-  objs.add(mkAxisLabel("Z","#4488ff",new THREE.Vector3(.18,.2,-.2+1.7)));
-  // Origin dot (white)
-  var od=new THREE.Mesh(new THREE.SphereGeometry(.05,16,16),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:2,roughness:.1}));
-  od.castShadow=false;od.receiveShadow=false;od.position.set(.18,.2,-.2);objs.add(od);
-
-  // ---- Camera/Scanner module ----
-  var camGroup=new THREE.Group();
-  // Pillar
-  camGroup.add(set(new THREE.Mesh(new THREE.BoxGeometry(.06,.5,.06),mtl.dark),0,.25,0));
-  // Camera head
-  camGroup.add(set(new THREE.Mesh(new THREE.BoxGeometry(.15,.1,.2),mtl.body),0,.55,0));
-  // Lens
-  var lens=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,.12,8),mtl.accent);
-  lens.rotation.x=Math.PI/2;lens.position.set(0,.48,.16);camGroup.add(lens);
-  // LED ring
-  var camRing=new THREE.Mesh(new THREE.TorusGeometry(.05,.01,8,16),new THREE.MeshBasicMaterial({color:0x00d4aa}));
-  camRing.position.set(0,.43,.2);camRing.rotation.x=Math.PI/2;camGroup.add(camRing);
-  // Base plate
-  camGroup.add(set(new THREE.Mesh(new THREE.BoxGeometry(.22,.02,.18),mtl.shelf),0,.01,0));
-  camGroup.position.set(.18,.01,-.8);objs.add(camGroup);
-
-}else if(sceneType==="handle"){
-  // AMR transport scene: AMR + shelves + work area
-  var amr=buildAMR(0,0,.3);objs.add(amr);
-  // Cobot on AMR
-  var cobot=buildCobot(.18,.2,-.2,.75);objs.add(cobot);
-
-  // Incoming shelf (left)
-  var shelfL=new THREE.Mesh(new THREE.BoxGeometry(.5,.8,.55),mtl.shelf);
-  shelfL.position.set(-2.2,.4,-1);shelfL.castShadow=true;objs.add(shelfL);
-  // Incoming tray
-  var trayIn=new THREE.Mesh(new THREE.BoxGeometry(.45,.025,.45),mtl.tray);
-  trayIn.position.set(-2.2,.82,-1);objs.add(trayIn);
-  // Modules on incoming tray
-  for(var ti=0;ti<4;ti++){
-    var mod=new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.07),mtl.blue);
-    mod.position.set(-2.35+(ti%2)*.28,.84,-1.1+Math.floor(ti/2)*.2);objs.add(mod);
-  }
-
-  // Work tray (center)
-  var trayW=new THREE.Mesh(new THREE.BoxGeometry(1,.025,.65),mtl.tray);
-  trayW.position.set(0,.02,-1.4);trayW.receiveShadow=true;objs.add(trayW);
-  // Slot grid
-  for(var tr=0;tr<3;tr++)for(var tc=0;tc<4;tc++){
-    var sl=new THREE.Mesh(new THREE.BoxGeometry(.14,.004,.08),new THREE.MeshStandardMaterial({color:0x444}));
-    sl.position.set(-.45+tc*.3,.035,-1.55+tr*.2);objs.add(sl);
-    // Some filled slots
-    if(tr===0||(tr===1&&tc<2)){
-      var m2=new THREE.Mesh(new THREE.BoxGeometry(.1,.012,.06),mtl.blue);
-      m2.position.set(-.45+tc*.3,.043,-1.55+tr*.2);objs.add(m2);
-    }
-  }
-
-  // Destination shelf (right)
-  var shelfR=new THREE.Mesh(new THREE.BoxGeometry(.5,.7,.55),mtl.shelf);
-  shelfR.position.set(2.2,.35,-1);shelfR.castShadow=true;objs.add(shelfR);
-  var trayOut=new THREE.Mesh(new THREE.BoxGeometry(.4,.025,.4),new THREE.MeshStandardMaterial({color:0x6a8a5a,metalness:.4}));
-  trayOut.position.set(2.2,.72,-1);objs.add(trayOut);
-
-  // Ground path
-  var pathM=new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.12});
-  var p1=new THREE.Mesh(new THREE.PlaneGeometry(4,.06),pathM);
-  p1.rotation.x=-Math.PI/2;p1.position.set(0,.004,-1);objs.add(p1);
-  // Direction arrows
-  [[-1.5,-1],[1.5,-1]].forEach(function(p){
-    var ar=new THREE.Mesh(new THREE.ConeGeometry(.04,.08,4),new THREE.MeshBasicMaterial({color:0x00d4aa,transparent:true,opacity:.3}));
-    ar.rotation.x=-Math.PI/2;ar.position.set(p[0],.008,p[1]);objs.add(ar);
-  });
-
-  // ESD mat
-  var esd=new THREE.Mesh(new THREE.PlaneGeometry(4.8,2.8),new THREE.MeshBasicMaterial({color:0x1a2a1a,transparent:true,opacity:.15}));
-  esd.rotation.x=-Math.PI/2;esd.position.set(0,.002,-.8);objs.add(esd);
-
-}else{
-  // AOI scene: rotary stage + cameras + conveyor
-  // Central rotary stage
-  var stage=new THREE.Mesh(new THREE.CylinderGeometry(.35,.38,.1,32),mtl.body);
-  stage.position.set(0,.05,-.6);stage.castShadow=true;objs.add(stage);
-  var stageTop=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,.03,32),new THREE.MeshStandardMaterial({color:0x111,roughness:.3}));
-  stageTop.position.set(0,.12,-.6);objs.add(stageTop);
-  // Module on stage
-  var modOn=new THREE.Mesh(new THREE.BoxGeometry(.22,.03,.15),mtl.blue);
-  modOn.position.set(0,.15,-.6);objs.add(modOn);
-
-  // 4 inspection stations around rotary stage
-  var stationAngles=[-Math.PI/5,Math.PI/5,Math.PI*3/5,Math.PI*4/5];
-  var stationNames=["金线焊点","耦合面","外观","判定"];
-  stationAngles.forEach(function(a,i){
-    var rx=Math.cos(a)*.7,rz=-.6+Math.sin(a)*.7;
-    // Camera pillar
-    var pillar=new THREE.Mesh(new THREE.BoxGeometry(.06,.35,.06),mtl.dark);
-    pillar.position.set(rx,.2,rz);objs.add(pillar);
-    // Camera head
-    var cam=new THREE.Mesh(new THREE.BoxGeometry(.12,.08,.18),mtl.body);
-    cam.position.set(rx,.4,rz);objs.add(cam);
-    // Lens
-    var lens=new THREE.Mesh(new THREE.CylinderGeometry(.03,.04,.1,8),mtl.accent);
-    lens.position.set(rx,.35,rz);lens.rotation.x=Math.PI/2;objs.add(lens);
-    // LED ring
-    var ring=new THREE.Mesh(new THREE.TorusGeometry(.05,.01,8,16),new THREE.MeshBasicMaterial({color:i===2?0xff6b35:0x00d4aa}));
-    ring.position.set(rx,.33,rz);ring.rotation.x=Math.PI/2;objs.add(ring);
-    // Base plate
-    var bp=new THREE.Mesh(new THREE.BoxGeometry(.2,.02,.15),mtl.shelf);
-    bp.position.set(rx,.02,rz);objs.add(bp);
-  });
-
-  // Input conveyor (left)
-  var convIn=new THREE.Mesh(new THREE.BoxGeometry(1.5,.06,.3),mtl.dark);
-  convIn.position.set(-1.8,.03,.8);convIn.castShadow=true;objs.add(convIn);
-  // Conveyor rollers
-  for(var ci=0;ci<6;ci++){
-    var rl=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.28,8),mtl.steel);
-    rl.rotation.x=Math.PI/2;rl.position.set(-2.1+ci*.4,.06,.8);objs.add(rl);
-  }
-  // Module on conveyor
-  var modC=new THREE.Mesh(new THREE.BoxGeometry(.22,.03,.15),mtl.blue);
-  modC.position.set(-1.5,.1,.8);objs.add(modC);
-
-  // Output diverter
-  var divert=new THREE.Mesh(new THREE.BoxGeometry(.5,.08,.4),mtl.body);
-  divert.position.set(1.5,.04,.8);objs.add(divert);
-
-  // OK bin (green)
-  var okBin=new THREE.Mesh(new THREE.BoxGeometry(.35,.2,.3),mtl.green);
-  okBin.position.set(2,.1,1.2);objs.add(okBin);
-  // NG bin (red)
-  var ngBin=new THREE.Mesh(new THREE.BoxGeometry(.35,.2,.3),mtl.red);
-  ngBin.position.set(2,.1,.4);objs.add(ngBin);
-
-  // Microscope main (center top)
-  var scopeArm=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,.6,16),mtl.dark);
-  scopeArm.position.set(0,.5,-.6);objs.add(scopeArm);
-  var scopeHead=new THREE.Mesh(new THREE.BoxGeometry(.25,.1,.2),mtl.body);
-  scopeHead.position.set(0,.85,-.6);objs.add(scopeHead);
-  var scopeLens=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,.15,8),mtl.accent);
-  scopeLens.position.set(0,.78,-.6);objs.add(scopeLens);
-
-  // AMR parked near input conveyor
-  var amrAoi=buildAMR(-2.5,.01,.5);objs.add(amrAoi);
-  var cobotAoi=buildCobot(-2.32,.22,.3,.75);objs.add(cobotAoi);
-}
-
-// Orbit controls
-var isDown=false,isPan=false,px=0,py=0,theta=0,phi=.7,dist=5,target=new THREE.Vector3(0,0,-.5);
-function uc(){camera.position.set(target.x+dist*Math.sin(phi)*Math.cos(theta),target.y+dist*Math.cos(phi),target.z+dist*Math.sin(phi)*Math.sin(theta));camera.lookAt(target)}
-uc();
-window.addEventListener("mousedown",function(e){isDown=true;isPan=e.button===1;px=e.clientX;py=e.clientY});
-window.addEventListener("mousemove",function(e){if(!isDown)return;if(isPan){target.x-=(e.clientX-px)*.005;target.y+=(e.clientY-py)*.005}else{theta+=(e.clientX-px)*.005;phi=Math.max(.2,Math.min(1.5,phi-(e.clientY-py)*.005))}px=e.clientX;py=e.clientY;uc()});
-window.addEventListener("mouseup",function(){isDown=false});
-window.addEventListener("wheel",function(e){e.preventDefault();dist=Math.max(1.5,Math.min(10,dist+e.deltaY*.005));uc()},{passive:false});
-window.addEventListener("resize",function(){W=window.innerWidth;H=window.innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H)});
-
-// ===== 工艺仿真引擎 (2026-08-10 协议v3 第11章: 场景仿真工作模式) =====
-// 技能计划: {name, dur(s), to:[x,y,z] 目标位, spin: 旋转角(rad)}
-// 节拍硬指标: insert<=6s / handle<=3.3s / aoi<=8.6s (协议 11.2-11.4)
-var SIM_PLANS={
-  insert:[
-    {name:"取料",dur:.6, pick:true},
-    {name:"扫码",dur:1.0, to:[.18,.35,-.6]},
-    {name:"翻转(标签向下)",dur:.8, spin:Math.PI},
-    {name:"对位插入",dur:1.2, to:[0,.7,-1.6]},
-    {name:"测试等待(异步)",dur:.1, to:[0,.7,-1.6]},
-    {name:"拉出",dur:.8, to:[0,.5,-.9]},
-    {name:"AOI位姿",dur:.6, spin:-Math.PI*.4},
-    {name:"分拣",dur:.8, to:[1.1,.2,.6]}
-  ],
-  handle:[
-    {name:"料盘识别",dur:.5},
-    {name:"取料",dur:1.2, pick:true},
-    {name:"移动到工作台",dur:1.0, to:[0,.4,-1.4]},
-    {name:"放置槽位",dur:.6, place:true}
-  ],
-  aoi:[
-    {name:"上料(传送带→转台)",dur:.8, pick:true, to:[0,.2,-.6]},
-    {name:"转台转位-金线焊点",dur:.5, spin:Math.PI/5},
-    {name:"焊点检测",dur:1.5},
-    {name:"转台转位-耦合面",dur:.5, spin:Math.PI/5},
-    {name:"耦合面检测",dur:1.5},
-    {name:"转台转位-外观",dur:.5, spin:Math.PI/5},
-    {name:"外观检测",dur:1.5},
-    {name:"转台转位-判定",dur:.5, spin:Math.PI/5},
-    {name:"判定(Pass/Fail)",dur:.5},
-    {name:"分拣(OK/NG)",dur:.8, to:[2,.15,1.2]}
-  ]
-};
-var PLAN=SIM_PLANS[sceneType]||[];
-var PLAN_TARGET={insert:6.0,handle:3.3,aoi:8.6}[sceneType]||10;
-var stepIdx=0,stepT=0,cycleT=0,cycleCount=0;
-var stepsEl=document.getElementById("steps");
-function simUpdate(dt){
-  if(!PLAN.length)return;
-  stepT+=dt;var st=PLAN[stepIdx];
-  // 技能对象动画: 插值到目标位 (简化: 每技能一个移动段)
-  if(st.pick&&sceneType==="insert"){
-    if(!workMod&&modules.length){workMod=modules.shift();}
-  }
-  if(st.to&&workMod){workMod.position.lerp(new THREE.Vector3(st.to[0],st.to[1],st.to[2]),dt*4);}
-  if(st.to&&sceneType==="handle"&&modC&&st.name.indexOf("移动")>=0){
-    // handle: 料盘组整体移动 (简化用第一个模块代表)
-  }
-  if(st.spin&&workMod){workMod.rotation.y+=st.spin*dt/st.dur;}
-  if(stepT>=st.dur){
-    stepT=0;stepIdx++;
-    if(stepIdx>=PLAN.length){stepIdx=0;cycleT=0;cycleCount++;
-      if(sceneType==="insert"&&modules.length===0){
-        // 循环: 重新补料
-        for(var ri=0;ri<3;ri++){
-          var rmm=new THREE.Mesh(new THREE.BoxGeometry(.1,.015,.07),mtl.blue);
-          rmm.position.set(-.75+(ri%2)*.13,.045,.35+Math.floor(ri/2)*.12);
-          rmm.userData.home=rmm.position.clone();objs.add(rmm);modules.push(rmm);
-        }
-      }
-      if(sceneType==="aoi"&&modOn){modOn.position.set(0,.15,-.6);modOn.rotation.y=0;}
-    }
-  }
-  // 步骤高亮
-  if(stepsEl){
-    var sh="";PLAN.forEach(function(p,i){sh+='<span class="'+(i===stepIdx?"active":"")+'">'+(i+1)+'. '+p.name+'</span><br>'});
-    stepsEl.innerHTML=sh;
-  }
-  // KPI: 节拍计时 + 达标红绿
-  var kpi=document.getElementById("kpi");
-  if(kpi){
-    var ok=cycleT<=PLAN_TARGET;
-    kpi.innerHTML='<span class="val" style="color:'+(ok?"#3fb950":"#ff4444")+'">'+cycleT.toFixed(2)+'s</span> 当前循环节拍 (目标 '+PLAN_TARGET+'s)<br>'+
-      '<span class="val">'+cycleCount+'</span> 已完成循环<br>'+
-      '<span class="val">'+PLAN[stepIdx].name+'</span> 当前技能<br>'+
-      '<span class="val">'+Math.round(PLAN[stepIdx].dur-stepT)+'s</span> 技能剩余';
-  }
-  cycleT+=dt;
-  // 暴露 39D 映射状态 (协议 11.1.1, 供大屏/训练对接)
-  window._sceneState={
-    hand:workMod?[workMod.position.x,workMod.position.y,workMod.position.z]:[0,0,0],
-    gripper:workMod?1:0,
-    obj:workMod?[workMod.position.x,workMod.position.y,workMod.position.z]:[0,0,0],
-    objQuat:workMod?[0,0,0,1]:[0,0,0,1],
-    target:st.to||[0,0,0],
-    cycle:cycleT,step:stepIdx,pass:cycleT<=PLAN_TARGET
-  };
-  // ===== 39D State HUD (协议 11.1.1: 物体→state 映射可视化) =====
-  var s39=document.getElementById("state39");
-  if(s39&&window._sceneState){
-    var st=window._sceneState;
-    function f3(v){return (v||[]).map(function(n){return n.toFixed(3)}).join(" ")}
-    s39.innerHTML=
-      '<span class="seg">[0:3]</span> hand    '+f3(st.hand)+'<br>'+
-      '<span class="seg">[3]</span>   gripper '+st.gripper+'<br>'+
-      '<span class="seg">[4:7]</span> obj     <span class="cur">'+f3(st.obj)+'</span><br>'+
-      '<span class="seg">[7:11]</span>objQuat '+f3(st.objQuat)+'<br>'+
-      '<span class="seg">[11:18]</span>pad    0 0 0 0 0 0 0<br>'+
-      '<span class="seg">[18:36]</span>prev    (上帧快照)<br>'+
-      '<span class="seg">[36:39]</span>target  <span class="tar">'+f3(st.target)+'</span><br>'+
-      '<span class="seg">▸</span> 节拍 '+st.cycle.toFixed(2)+'s '+(st.pass?'<span style="color:#3fb950">达标</span>':'<span style="color:#ff4444">超标</span>');
-  }
-}
-// Animate
-var time=0;
-function animate(){requestAnimationFrame(animate);time+=.016;
-  // Gentle rotation on rotary stage (AOI)
-  if(sceneType==="aoi"&&stageTop)stageTop.rotation.y+=.005;
-  // ===== 工艺仿真 (协议v3 第11章) =====
-  simUpdate(.016);
+var ai=0,at=0,cc=0;
+function anim(){
+  requestAnimationFrame(anim);
+  var cur=ACTS[ai];at+=.016;
+  var prog=Math.min(1,at/cur.d);
+  var prev=ai>0?ACTS[ai-1]:{tx:0.3,tz:.3,ty:1.0};
+  
+  // Move robot toward workbench
+  var bx=prev.tx>1?1:(0.6*prog);
+  mpv.position.set(bx,0,0);
+  
+  // Update gripper color
+  grL.material.color.set(cur.grip?0x00ff44:0x00d4aa);
+  grR.material.color.set(cur.grip?0x00ff44:0x00d4aa);
+  
+  document.getElementById("status").textContent="● "+cur.n+" "+(prog<1?"⏳":"✓")+" "+(at).toFixed(1)+"s";
+  if(at>=cur.d){at=0;ai=(ai+1)%ACTS.length;if(ai===0)cc++}
+  
   renderer.render(scene,camera);
 }
-animate();
+anim();
 
-// JSON viewer
-window._sceneJSON=sceneData;
-function toggleJSON(){
-  var v=document.getElementById("json-view");
-  if(v.style.display==="block"){v.style.display="none";return}
-  v.textContent=JSON.stringify(window._sceneJSON,null,2);
-  v.style.display="block";
-}
-})();
-</script>
-</body></html>
+// Orbit
+var down=false,px=0,py=0,theta=-1.0,phi=.9,dist=6,target=new THREE.Vector3(1.5,.8,0);
+function uc(){camera.position.set(target.x+dist*Math.sin(phi)*Math.cos(theta),target.y+dist*Math.cos(phi),target.z+dist*Math.sin(phi)*Math.sin(theta));camera.lookAt(target)}uc();
+window.onmousedown=function(e){down=true;px=e.clientX;py=e.clientY};
+window.onmousemove=function(e){if(!down)return;theta+=(e.clientX-px)*.005;phi=Math.max(.2,Math.min(1.5,phi-(e.clientY-py)*.005));px=e.clientX;py=e.clientY;uc()};
+window.onmouseup=function(){down=false};
+window.onwheel=function(e){dist=Math.max(2,Math.min(15,dist+e.deltaY*.005));uc()};
+window.onresize=function(){W=innerWidth;H=innerHeight;camera.aspect=W/H;camera.updateProjectionMatrix();renderer.setSize(W,H)};
+</script></body></html>

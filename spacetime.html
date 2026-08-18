@@ -44,7 +44,8 @@ body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSyst
   .block-data{height:80px;font-size:12px}
   .block-mgmt{height:70px;font-size:11px}
 }
-</style></head><body>
+</style>@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
+</head><body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <div class="bar">
   <a href="/">← 主页</a>
   <a href="/proposal-live.php">立项书</a>

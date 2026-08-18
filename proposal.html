@@ -35,7 +35,8 @@ td{padding:7px 12px;border-bottom:1px solid var(--bor)}tr:nth-child(even)td{back
 .timeline .tl::before{content:'';position:absolute;left:-30px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--c)}
 .timeline .tl h4{color:var(--c);font-size:13px}.timeline .tl p{font-size:11px;color:var(--sub)}
 @media(max-width:768px){.col2,.col3{grid-template-columns:1fr}.kpi{min-width:100px}.kpi .v{font-size:20px}}
-</style></head><body>
+</style>@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
+</head><body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <div class="wrap">
 
 <div class="hero">

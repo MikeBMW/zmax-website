@@ -25,8 +25,9 @@ pre{background:#0d1117;border:1px solid #1a1f2b;border-radius:8px;padding:14px 1
 .flow-arrow{color:#00d4aa;font-size:16px;margin:0 2px}
 .n0{border-color:#d4a800;color:#d4a800}.n1{border-color:#58a6ff;color:#58a6ff}.n2{border-color:#00d4aa;color:#00d4aa}
 </style>
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
 </head>
-<body>
+<body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <div class="wrap">
 <a href="/kanban.html" class="back-home">← 返回看板</a>
 <h1>🤖 RoboGen + MetaWorld 数据生成管线</h1>

@@ -20,8 +20,9 @@
   #proc-panel .dsc{font-size:9px;color:#8b949e;margin:2px 0 6px 14px;line-height:1.5}
   #proc-panel .sec{margin-top:6px;padding-top:4px;border-top:1px solid #1a1f2b;font-size:10px}
 </style>
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
 </head>
-<body>
+<body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <a id="back" href="/factory-3d.html">← 返回产线总览</a>
 <div id="title-bar">I-201 自动耦合测试</div>
 <div id="status">● 耦合对准中</div>

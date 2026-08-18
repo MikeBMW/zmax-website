@@ -57,6 +57,21 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 .process-arrow{color:#00d4aa44;font-size:10px;flex-shrink:0}
 .process-flow .process-arrow:last-child{display:none}
 #cursor-coord{position:fixed;pointer-events:none;z-index:20;background:rgba(0,212,170,.15);border:1px solid #00d4aa44;border-radius:4px;padding:2px 6px;font:9px monospace;color:#00d4aa;display:none}
+/* ═══ Fleet Manager ═══ */
+#fleet-sum{display:flex;gap:6px;padding:8px 12px;font-size:10px}
+#fleet-sum .fs{flex:1;background:#111827;border:1px solid #1a1f2b;border-radius:6px;padding:6px;text-align:center}
+#fleet-sum .fs b{display:block;font-size:16px;color:#00d4aa}
+#fleet-sum .fs span{color:#484f58;font-size:8px}
+#fleet-list{padding:0 12px 12px}
+.fleet-card{background:#111827;border:1px solid #1a1f2b;border-radius:6px;padding:7px 9px;margin:4px 0;display:flex;align-items:center;gap:8px}
+.fleet-card .ic{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.fleet-card .nm{font-size:11px;font-weight:700;color:#c8d1d9}
+.fleet-card .tp{font-size:8px;color:#484f58}
+.fleet-card .st{margin-left:auto;font-size:9px;padding:2px 6px;border-radius:3px}
+.st-run{background:#0d3320;color:#3fb950}.st-dwell{background:#332010;color:#f0a500}.st-move{background:#0d2033;color:#58a6ff}
+#fleet-dispatch{padding:0 12px;margin-bottom:6px}
+#fleet-dispatch button{width:100%;padding:7px;font-size:10px;background:#0d3320;color:#00d4aa;border:1px solid #00d4aa44;border-radius:6px;cursor:pointer;margin-top:4px}
+#fleet-dispatch button:hover{background:#0d4a2c}
 </style>
 <script src="/zmax-auth.js"></script>
 </head>
@@ -81,6 +96,18 @@ body{background:#06080d;color:#c8d1d9;font-family:-apple-system,"PingFang SC","M
 <div id="panel">
   <h3>🏭 工厂区域</h3>
   <div id="zones-list"></div>
+  <h3>📡 车队管理 · Fleet Manager</h3>
+  <div id="fleet-sum">
+    <div class="fs"><b id="fm-total">0</b><span>总设备</span></div>
+    <div class="fs"><b id="fm-robot">0</b><span>机器人</span></div>
+    <div class="fs"><b id="fm-agv">0</b><span>AGV</span></div>
+    <div class="fs"><b id="fm-run">0</b><span>运行中</span></div>
+  </div>
+  <div id="fleet-dispatch">
+    <button onclick="dispatchAll()">🚀 统一调度 · 启动全部</button>
+    <button onclick="dispatchByZone()" style="background:#111827;color:#8b949e;border-color:#1a1f2b">🎯 按区域调度 · 四区协同</button>
+  </div>
+  <div id="fleet-list"></div>
   <h3>🤖 设备清单</h3>
   <div id="legend">
     <div class="row"><span class="dot" style="background:#f0a500"></span>COC基板区 (S01-S06)</div>
@@ -339,37 +366,40 @@ function createStation(x,z,color,label,specs){
 // ═══════ Robot — close to machines ═══════
 function createRobot(x,z){
   const g=new THREE.Group();const bc=0x99aabb,ac=0x00d4aa;
-  // Base
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.7,.3,.5),new THREE.MeshStandardMaterial({color:bc,metalness:.3,roughness:.3})));
-  g.children[0].position.y=.2;g.children[0].castShadow=true;
-  // Body
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.4,.6,.3),new THREE.MeshStandardMaterial({color:bc,metalness:.35,roughness:.25})));
-  g.children[1].position.y=.7;g.children[1].castShadow=true;
+  // AMR Chassis
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(1.0,.25,.6),new THREE.MeshStandardMaterial({color:0x3a4a5a,metalness:.5,roughness:.2})));
+  g.children[0].position.y=.15;g.children[0].castShadow=true;
   // Stripe
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.42,.06,.32),new THREE.MeshStandardMaterial({color:ac,emissive:ac,emissiveIntensity:.4})));
-  g.children[2].position.y=.58;
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(1.02,.03,.15),new THREE.MeshStandardMaterial({color:ac,emissive:ac,emissiveIntensity:.5})));
+  g.children[1].position.set(0,.28,.25);
+  // Torso
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.35,.5,.25),new THREE.MeshStandardMaterial({color:bc,metalness:.35,roughness:.25})));
+  g.children[2].position.y=.65;g.children[2].castShadow=true;
   // Head
-  g.add(new THREE.Mesh(new THREE.BoxGeometry(.25,.2,.18),new THREE.MeshStandardMaterial({color:bc,metalness:.25})));
-  g.children[3].position.y=1.12;g.children[3].castShadow=true;
-  // Eyes
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.22,.18,.16),new THREE.MeshStandardMaterial({color:bc,metalness:.25})));
+  g.children[3].position.y=1.05;g.children[3].castShadow=true;
   const em=new THREE.MeshBasicMaterial({color:ac});
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.03),em)).position.set(-.04,1.16,.09);
-  g.add(new THREE.Mesh(new THREE.SphereGeometry(.03),em)).position.set(.04,1.16,.09);
-  // Arm
-  const armG=new THREE.Group();armG.position.set(.24,.8,0);armG.rotation.z=-.35;
-  armG.add(new THREE.Mesh(new THREE.CylinderGeometry(.045,.035,.5,8),new THREE.MeshStandardMaterial({color:bc,metalness:.4})));
-  armG.children[0].position.y=-.05;
-  armG.add(new THREE.Mesh(new THREE.CylinderGeometry(.035,.03,.38,8),new THREE.MeshStandardMaterial({color:bc,metalness:.4})));
-  armG.children[1].position.y=-.48;armG.children[1].rotation.z=.15;
-  const gm=new THREE.MeshStandardMaterial({color:ac,emissive:ac,emissiveIntensity:.5,roughness:.1});
-  armG.add(new THREE.Mesh(new THREE.BoxGeometry(.06,.12,.04),gm)).position.y=-.7;
-  for(let s of[-1,1]) armG.add(new THREE.Mesh(new THREE.BoxGeometry(.02,.06,.012),gm)).position.set(s*.02,-.78,.012);
-  g.add(armG);
+  g.add(new THREE.Mesh(new THREE.SphereGeometry(.025),em)).position.set(-.035,1.08,.08);
+  g.add(new THREE.Mesh(new THREE.SphereGeometry(.025),em)).position.set(.035,1.08,.08);
+  // Left Arm 4DOF
+  var armL=new THREE.Group();armL.position.set(-.22,.68,.05);
+  armL.add(new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.08,8),new THREE.MeshStandardMaterial({color:bc,metalness:.5}))).position.y=.04;
+  armL.add(new THREE.Mesh(new THREE.BoxGeometry(.06,.35,.06),new THREE.MeshStandardMaterial({color:bc,metalness:.4}))).position.y=-.15;
+  armL.add(new THREE.Mesh(new THREE.BoxGeometry(.05,.25,.05),new THREE.MeshStandardMaterial({color:bc,metalness:.4}))).position.y=-.42;
+  var gm=new THREE.MeshStandardMaterial({color:ac,emissive:ac,emissiveIntensity:.5,roughness:.1});
+  armL.add(new THREE.Mesh(new THREE.BoxGeometry(.07,.12,.05),gm)).position.y=-.58;
+  g.add(armL);
+  // Right Arm 4DOF
+  var armR=new THREE.Group();armR.position.set(.22,.68,.05);
+  armR.add(new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.08,8),new THREE.MeshStandardMaterial({color:bc,metalness:.5}))).position.y=.04;
+  armR.add(new THREE.Mesh(new THREE.BoxGeometry(.06,.35,.06),new THREE.MeshStandardMaterial({color:bc,metalness:.4}))).position.y=-.15;
+  armR.add(new THREE.Mesh(new THREE.BoxGeometry(.05,.25,.05),new THREE.MeshStandardMaterial({color:bc,metalness:.4}))).position.y=-.42;
+  armR.add(new THREE.Mesh(new THREE.BoxGeometry(.07,.12,.05),gm)).position.y=-.58;
+  g.add(armR);
   // Wheels
-  for(let sx of[-.22,.22]){
-    const w=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.04,16),new THREE.MeshStandardMaterial({color:0x222,roughness:.8}));
-    w.rotation.z=Math.PI/2;w.position.set(sx,.07,.18);g.add(w);
-    w.clone().position.z=-.18;g.add(w.clone());
+  for(var sx of[-.35,.35])for(var sz of[.18,-.18]){
+    var w=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.04,16),new THREE.MeshStandardMaterial({color:0x222,roughness:.8}));
+    w.rotation.z=Math.PI/2;w.position.set(sx,.04,sz);g.add(w);
   }
   g.position.set(x,.05,z);
   g.userData={isRobot:true};
@@ -975,9 +1005,66 @@ function animate(){
   renderer.render(scene,camera);
 }
 
+// ═══════ Fleet Manager ═══════
+let fleetPaused=false;
+function getFleet(){
+  const units=[];
+  robotObjs.forEach(r=>{
+    units.push({name:r.name,type:'机器人',zone:r.zone,ic:'🦾',color:'#00d4aa',
+      status:r.dwell>0?'作业中':(r.stepIdx>0?'移动中':'待机'),
+      work:r.workCount||0,obj:r});
+  });
+  agvObjs.forEach(a=>{
+    units.push({name:a.name,type:'AGV',zone:a.def?a.def.zone:(a.followRobot?'协同':'物流'),
+      ic:'🚗',color:'#58a6ff',status:a.isFollower?'跟随协同':'巡逻中',work:0,obj:a});
+  });
+  return units;
+}
+function buildFleetList(){
+  const units=getFleet();
+  let h='';
+  const zoneName={coc:'COC',oe:'OE',mod:'模块',wh:'仓库'};
+  units.forEach(u=>{
+    const stCls=u.status==='作业中'?'st-run':(u.status==='移动中'?'st-move':'st-dwell');
+    h+=`<div class="fleet-card">
+      <div class="ic" style="background:${u.color}22;border:1px solid ${u.color}44">${u.ic}</div>
+      <div><div class="nm">${u.name}</div><div class="tp">${u.type} · ${zoneName[u.zone]||u.zone}</div></div>
+      <div class="st ${stCls}">${u.status}${u.work?'·'+u.work+'件':''}</div>
+    </div>`;
+  });
+  document.getElementById('fleet-list').innerHTML=h;
+  document.getElementById('fm-total').textContent=units.length;
+  document.getElementById('fm-robot').textContent=robotObjs.length;
+  document.getElementById('fm-agv').textContent=agvObjs.length;
+  document.getElementById('fm-run').textContent=units.filter(u=>u.status!=='待机').length;
+}
+function dispatchAll(){
+  fleetPaused=false;
+  const btn=event?event.target:null;
+  if(btn){btn.textContent='✅ 已启动全部 · 统一调度中';setTimeout(()=>{btn.textContent='🚀 统一调度 · 启动全部'},2000)}
+  // 视觉反馈：所有机器人立即进入工作状态
+  robotObjs.forEach(r=>{if(r.dwell===0){r.stepIdx=(r.stepIdx+1)%8}});
+  buildFleetList();
+}
+function dispatchByZone(){
+  // 四区协同调度：按区域优先级依次启动
+  const order=['coc','oe','mod','wh'];
+  order.forEach((z,i)=>{
+    const robots=robotObjs.filter(r=>r.zone===z);
+    setTimeout(()=>{
+      robots.forEach(r=>{if(r.dwell===0)r.stepIdx=(r.stepIdx+1)%8});
+      buildFleetList();
+    },i*500);
+  });
+  const btn=event?event.target:null;
+  if(btn){btn.textContent='✅ 四区协同调度中…';setTimeout(()=>{btn.textContent='🎯 按区域调度 · 四区协同'},3000)}
+}
+
 buildFactory();
 updateCam();
 animate();
+buildFleetList();
+setInterval(buildFleetList,2000); // 每2秒刷新车队状态
 window.addEventListener("resize",()=>{
   renderer.setSize(view3d.clientWidth,view3d.clientHeight);
   camera.aspect=view3d.clientWidth/view3d.clientHeight;camera.updateProjectionMatrix();

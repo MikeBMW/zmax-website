@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z700 模型产品 · 分阶段规划</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:14px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:1000px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:20px;margin:12px 0;text-align:center}
+h2{color:#58a6ff;font-size:16px;margin:18px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:13px;margin:10px 0 4px}
+p{color:#8b949e;margin:4px 0;text-indent:2em}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
+.p0 td:first-child{color:#58a6ff}.p1 td:first-child{color:#f0a500}.p2 td:first-child{color:#a371f7}
+.note{font-size:11px;color:#555;padding:6px 10px;background:#0a0f18;border-radius:4px;margin:6px 0}
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}h1{font-size:22pt}h2{font-size:16pt}body{padding:20px}}
+</style>
+</head>
+<body>
+<button onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
+<a href="/">← 主页</a>
+<h1>Z700 模型产品 · 分阶段规划</h1>
+
+<div class="note"><b>规划原则：</b>每个阶段明确"研发什么模型、模型解决什么问题、模型达到什么指标、模型如何部署"。逐阶段递进，前阶段成果是后阶段输入。</div>
+
+<h2>一、模型演进主线</h2>
+<table>
+<tr><th>阶段</th><th>模型形态</th><th>解决的核心问题</th><th>关键指标</th></tr>
+<tr class="p0"><td><b>Phase 0</b></td><td>状态机</td><td>长程插拔任务时序难建模→状态机调度</td><td>力控插拔≤2N·节拍≤6s·成功率≥99%</td></tr>
+<tr class="p1"><td><b>Phase 1</b></td><td>视触觉端到端模型</td><td>移动带来的定位误差→视觉+触觉联合决策补偿</td><td>定位±10mm臂补偿·跨工位异步</td></tr>
+<tr class="p2"><td><b>Phase 2</b></td><td>触觉世界模型</td><td>双臂协同+精密操作→世界模型预演动作后果</td><td>±0.02mm对位·5场景全流程</td></tr>
+</table>
+
+<!-- ═══ Phase 0 ═══ -->
+<h2>二、Phase 0 · 状态机</h2>
+<h3>研发内容</h3>
+<table>
+<tr><th>模块</th><th>输入</th><th>输出</th><th>用途</th></tr>
+<tr><td><b>状态机</b></td><td>YOLO检测框+接触信号</td><td>8阶段动作调度指令</td><td>接近→对位→下降→抓取→抬起→转移→插入→完成</td></tr>
+<tr><td><b>YOLO感知</b></td><td>图像</td><td>hand/peg/hole检测框</td><td>视觉定位·22MB独立模型</td></tr>
+</table>
+<p><b>Phase 0 技术逻辑：</b>固定工位无移动损耗，任务时序清晰可控。采用<b>规则状态机</b>按工艺步骤调度机械臂动作，YOLO负责视觉定位。此阶段不引入学习模型，用最短路径验证力控插拔和视觉引导的精度与节拍，为后续阶段积累真机工艺数据。</p>
+<h3>研发里程碑</h3>
+<table>
+<tr><th>里程碑</th><th>内容</th><th>验收</th></tr>
+<tr><td>M0.1</td><td>仿真环境搭建(MuJoCo metaworld peg)</td><td>仿真抓起8/8</td></tr>
+<tr><td>M0.2</td><td>状态机调度调试+YOLO视觉对位</td><td>插入成功率≥99%·力控≤2N</td></tr>
+<tr><td>M0.3</td><td>固定工位真机部署</td><td>72h·5000次·成功率99%</td></tr>
+</table>
+
+<!-- ═══ Phase 1 ═══ -->
+<h2>三、Phase 1 · 视触觉端到端模型</h2>
+<h3>研发内容</h3>
+<table>
+<tr><th>模块</th><th>技术要点</th><th>解决痛点</th></tr>
+<tr><td><b>视觉-触觉融合</b></td><td>相机图像+指尖触觉联合输入</td><td>移动定位误差靠视觉+触觉补偿</td></tr>
+<tr><td><b>端到端动作生成</b></td><td>图像直接到动作·无需中间状态</td><td>跨工位场景泛化</td></tr>
+<tr><td><b>导航-操作耦合</b></td><td>SLAM定位+臂运动学闭环</td><td>工位对接±10mm→臂补偿至±0.1mm</td></tr>
+</table>
+<h3>研发里程碑</h3>
+<table>
+<tr><th>里程碑</th><th>内容</th><th>验收</th></tr>
+<tr><td>M1.1</td><td>视触觉数据集采集(真机+仿真)</td><td>5000帧含触觉标注</td></tr>
+<tr><td>M1.2</td><td>端到端模型训练</td><td>跨工位成功率≥98%</td></tr>
+<tr><td>M1.3</td><td>移动底盘集成+导航联调</td><td>场景1/2/3全流程</td></tr>
+</table>
+
+<!-- ═══ Phase 2 ═══ -->
+<h2>四、Phase 2 · 触觉世界模型</h2>
+<h3>研发内容</h3>
+<table>
+<tr><th>模块</th><th>技术要点</th><th>解决痛点</th></tr>
+<tr><td><b>触觉世界模型</b></td><td>预测下一状态+接触+力反馈</td><td>双臂协同预演·避免碰撞/损伤</td></tr>
+<tr><td><b>精密力控</b></td><td>力觉反馈闭环·±0.02mm对位</td><td>透镜耦合等精密操作</td></tr>
+<tr><td><b>双臂协同</b></td><td>一臂持料一臂操作·时空协调</td><td>光纤插拔·清洁·分拣</td></tr>
+</table>
+<h3>研发里程碑</h3>
+<table>
+<tr><th>里程碑</th><th>内容</th><th>验收</th></tr>
+<tr><td>M2.1</td><td>世界模型训练(预测接触)</td><td>接触预测准确率≥95%</td></tr>
+<tr><td>M2.2</td><td>双臂协同策略</td><td>场景5 ATS全流程≤15s</td></tr>
+<tr><td>M2.3</td><td>全场景工艺包+换型</td><td>5场景验收·换型≤0.5H</td></tr>
+</table>
+
+<h2>五、模型投入与产出</h2>
+<table>
+<tr><th>阶段</th><th>研发人力(人月)</th><th>算力(TOPS)</th><th>数据量</th><th>产出</th></tr>
+<tr class="p0"><td>Phase 0</td><td>4</td><td>≤20</td><td>3600帧真机</td><td>状态机模型+YOLO+状态机</td></tr>
+<tr class="p1"><td>Phase 1</td><td>6</td><td>≤20</td><td>5000帧视触觉</td><td>端到端模型+导航</td></tr>
+<tr class="p2"><td>Phase 2</td><td>8</td><td>≤20</td><td>10000帧+力觉</td><td>世界模型+双臂协同</td></tr>
+</table>
+
+<p style="text-align:center;margin:16px 0;color:#555;font-size:11px">
+  <a href="/z700-product-plan.html">📐 产品规划</a> · 
+  <a href="/z700-model-roadmap.html">🗺️ 演进路线图</a>
+</p>
+</body></html>

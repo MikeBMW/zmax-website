@@ -22,8 +22,9 @@ svg{display:block;margin:0 auto;max-width:100%}
 table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
 td,th{padding:6px 8px;border:1px solid #1e2740;text-align:center}
 th{background:#1a1f33;color:#58a6ff}
-</style></head>
-<body>
+</style>@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
+</head>
+<body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <a href="/" style="display:inline-block;margin:12px 0 8px;color:#00d4aa;text-decoration:none;font-size:13px;padding:6px 14px;border:1px solid #1a1f2b;border-radius:4px;background:#0d1117">← 返回主页</a>
 
 <h1>🔄 H-JEPA zFlow v3.2 · 训练模式</h1>

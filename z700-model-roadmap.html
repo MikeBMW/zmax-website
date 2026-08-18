@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z700 模型产品 · 演进路线图</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:14px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:1100px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:20px;margin:12px 0;text-align:center}
+h2{color:#58a6ff;font-size:16px;margin:18px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:13px;margin:10px 0 4px}
+p{color:#8b949e;margin:4px 0;text-indent:2em}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
+.road{display:flex;align-items:center;justify-content:space-between;margin:12px 0;gap:4px}
+.node{flex:1;background:#0d1520;border:1px solid #1a2030;border-radius:8px;padding:10px;text-align:center}
+.node .ph{font-size:14px;font-weight:700}
+.node .n{font-size:11px;color:#8b949e}
+.arrow{color:#00d4aa;font-size:20px;flex:0 0 auto}
+.n0{border-top:3px solid #58a6ff}.n0 .ph{color:#58a6ff}
+.n1{border-top:3px solid #f0a500}.n1 .ph{color:#f0a500}
+.n2{border-top:3px solid #a371f7}.n2 .ph{color:#a371f7}
+.note{font-size:11px;color:#555;padding:6px 10px;background:#0a0f18;border-radius:4px;margin:6px 0}
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}h1{font-size:22pt}h2{font-size:16pt}body{padding:20px}}
+</style>
+</head>
+<body>
+<button onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
+<a href="/">← 主页</a>
+<h1>Z700 模型产品 · 演进路线图</h1>
+
+<div class="note"><b>路线图说明：</b>从Phase 0到Phase 2，模型能力从"能操作"到"会预演"，产品形态从"固定臂"到"移动双臂人形"。三个阶段层层递进，前阶段的模型和数据是后阶段的输入。</div>
+
+<!-- ═══ 路线图总览 ═══ -->
+<h2>一、演进路线总览</h2>
+<div class="road">
+  <div class="node n0"><div class="ph">Phase 0</div><div class="n">分段式/固定协作臂<br>状态机调度<br>单工位≤6s</div></div>
+  <div class="arrow">→</div>
+  <div class="node n1"><div class="ph">Phase 1</div><div class="n">视触觉端到端<br>移动导航机器人<br>场景1/2/3</div></div>
+  <div class="arrow">→</div>
+  <div class="node n2"><div class="ph">Phase 2</div><div class="n">触觉世界模型<br>精密操作机器人<br>全5场景</div></div>
+</div>
+
+<h2>二、时间轴与里程碑</h2>
+<table>
+<tr><th>时间</th><th>Phase 0 固定臂</th><th>Phase 1 移动导航</th><th>Phase 2 精密操作</th></tr>
+<tr><td><b>T0+0~2月</b></td><td>仿真环境搭建<br>状态机调度调试<br>力控插拔≤2N</td><td>—</td><td>—</td></tr>
+<tr><td><b>T0+2~4月</b></td><td>插入7/8达标<br>固定工位真机部署<br>72h验收</td><td>视触觉数据采集<br>开始端到端训练</td><td>—</td></tr>
+<tr><td><b>T0+4~6月</b></td><td>场景1固化<br>进入量产复制</td><td>端到端模型达标<br>移动底盘集成<br>导航联调</td><td>世界模型调研<br>双臂协同预研</td></tr>
+<tr><td><b>T0+6~8月</b></td><td>—</td><td>场景1/2/3全流程<br>移动版验收</td><td>世界模型训练<br>接触预测≥95%</td></tr>
+<tr><td><b>T0+8~10月</b></td><td>—</td><td>—</td><td>双臂协同策略<br>场景5 ATS≤15s</td></tr>
+<tr><td><b>T0+10~12月</b></td><td>—</td><td>—</td><td>全5场景工艺包<br>换型≤0.5H<br>全厂无人化</td></tr>
+</table>
+
+<h2>三、能力演进矩阵</h2>
+<table>
+<tr><th>能力维度</th><th>Phase 0</th><th>Phase 1</th><th>Phase 2</th></tr>
+<tr><td><b>感知</b></td><td>YOLO视觉+力觉</td><td>+触觉融合</td><td>+世界模型预演</td></tr>
+<tr><td><b>决策</b></td><td>状态机+状态机</td><td>端到端</td><td>世界模型+双臂协同</td></tr>
+<tr><td><b>移动</b></td><td>固定</td><td>SLAM导航</td><td>SLAM+协同</td></tr>
+<tr><td><b>操作</b></td><td>单工序插拔</td><td>跨工位上下料</td><td>全场景精密操作</td></tr>
+<tr><td><b>精度</b></td><td>±0.1mm</td><td>±0.1mm(补偿)</td><td>±0.02mm</td></tr>
+<tr><td><b>节拍</b></td><td>≤6s</td><td>≤6s异步</td><td>≤15s全场景</td></tr>
+<tr><td><b>模型规模</b></td><td>~64万参数</td><td>~100万参数</td><td>~500万参数</td></tr>
+<tr><td><b>推理</b></td><td>0.19ms</td><td><70ms</td><td><70ms</td></tr>
+</table>
+
+<h2>四、技术依赖关系</h2>
+<table>
+<tr><th>Phase 1 依赖 Phase 0</th><th>Phase 2 依赖 Phase 1</th></tr>
+<tr><td>状态机的接触判定逻辑→视触觉端到端的监督信号</td><td>视触觉数据的触觉标注→世界模型的训练输入</td></tr>
+<tr><td>固定工位的力控数据→移动版的力控先验</td><td>跨工位操作的动作数据→双臂协同的策略库</td></tr>
+<tr><td>YOLO感知模型→移动导航的视觉定位基础</td><td>端到端模型的动作生成→世界模型的预测目标</td></tr>
+</table>
+
+<h2>五、风险与应对</h2>
+<table>
+<tr><th>风险</th><th>阶段</th><th>应对</th></tr>
+<tr><td><b>仿真到真机转移失败</b></td><td>Phase 0→1</td><td>仿真物理碰撞已定位→真机力控+视觉对准(技术协议v3已写)</td></tr>
+<tr><td><b>移动定位误差超限</b></td><td>Phase 1</td><td>臂补偿±0.1mm + 触觉反馈闭环</td></tr>
+<tr><td><b>双臂碰撞/物料损伤</b></td><td>Phase 2</td><td>世界模型预演 + 力控上限保护</td></tr>
+<tr><td><b>换型周期超0.5H</b></td><td>Phase 2</td><td>200原子技能库参数化复用</td></tr>
+</table>
+
+<p style="text-align:center;margin:16px 0;color:#555;font-size:11px">
+  <a href="/z700-product-plan.html">📐 产品规划</a> · 
+  <a href="/z700-model-phases.html">📋 分阶段规划</a>
+</p>
+</body></html>

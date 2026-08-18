@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Z700 模型成本分析 · 具身智能</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:14px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:1000px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:20px;margin:12px 0;text-align:center}
+h2{color:#58a6ff;font-size:16px;margin:18px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:13px;margin:10px 0 4px}
+p{color:#8b949e;margin:4px 0;text-indent:2em}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
+.total td{background:#0d1520;color:#00d4aa;font-weight:700}
+.note{font-size:11px;color:#555;padding:6px 10px;background:#0a0f18;border-radius:4px;margin:6px 0}
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}h1{font-size:22pt}h2{font-size:16pt}body{padding:20px}}
+</style>
+</head>
+<body>
+<button onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
+<a href="/">← 主页</a>
+<h1>Z700 精密操作机器人 · 模型方向成本分析</h1>
+
+<div class="note"><b>分析范围：</b>聚焦 Z700 具身智能的<b>模型研发方向</b>成本——从数据采集、模型训练、算力到研发人力的全链路投入。硬件本体成本(BOM)已在技术规格书中单独核算，此处只统计"让模型跑起来"的成本。</div>
+
+<!-- ═══ 一、硬件成本 ═══ -->
+<h2>一、硬件成本（模型训练与推理硬件）</h2>
+<h3>1.1 训练侧硬件（研发阶段·一次性）</h3>
+<table>
+<tr><th>设备</th><th>规格</th><th>用途</th><th>单价(万)</th><th>数量</th><th>小计(万)</th></tr>
+<tr><td><b>GPU训练服务器</b></td><td>4090×2 / 单卡24GB</td><td>模型训练·状态机状态机策略·行为克隆</td><td>2.5</td><td>1</td><td>2.5</td></tr>
+<tr><td><b>数据采集工作台</b></td><td>真机+力传感器+视觉</td><td>真机示教数据采集</td><td>5</td><td>1</td><td>5</td></tr>
+<tr><td><b>边缘推理板</b></td><td>RK3588 / Orin Nano</td><td>端侧推理验证·部署调试</td><td>0.3</td><td>2</td><td>0.6</td></tr>
+<tr class="total"><td colspan="5">训练硬件小计</td><td>8.1</td></tr>
+</table>
+
+<h3>1.2 推理侧硬件（单台Z700量产·摊薄后）</h3>
+<table>
+<tr><th>设备</th><th>规格</th><th>用途</th><th>单价(万)</th></tr>
+<tr><td><b>边缘计算单元</b></td><td>RK3588 · 8核 · 6TOPS NPU · 16GB</td><td>动作模型+引导模型+YOLO感知端侧推理</td><td>0.2~0.3</td></tr>
+<tr><td><b>YOLO感知相机</b></td><td>800万像素工业相机</td><td>hand/peg/hole 视觉检测</td><td>0.2~0.3</td></tr>
+<tr><td><b>力觉传感器</b></td><td>六维力/力矩</td><td>力控插拔接触判定</td><td>0.3~0.5</td></tr>
+<tr class="total"><td colspan="3">单台推理硬件小计</td><td>0.7~1.1</td></tr>
+</table>
+
+<!-- ═══ 二、算力成本 ═══ -->
+<h2>二、算力成本</h2>
+<h3>2.1 训练算力（研发阶段）</h3>
+<table>
+<tr><th>项目</th><th>计算</th><th>金额(万)</th></tr>
+<tr><td><b>GPU云训练</b></td><td>状态机策略800epoch · 3000步 · 单次1.5分钟 · 累计训练200次迭代 × 4090 4小时</td><td>0.5</td></tr>
+<tr><td><b>本地电费</b></td><td>4090功耗450W × 200小时 × 0.6元/度</td><td>0.054</td></tr>
+<tr><td><b>仿真环境算力</b></td><td>MuJoCo/Genesis仿真 · 3组对照实验 · 1000episode</td><td>0.3</td></tr>
+<tr class="total"><td colspan="2">训练算力小计</td><td>0.85</td></tr>
+</table>
+
+<h3>2.2 推理算力（单台Z700·单颗光模块）</h3>
+<table>
+<tr><th>项目</th><th>计算</th><th>金额</th></tr>
+<tr><td><b>单次推理成本</b></td><td>RK3588功耗6W · 推理70ms · 0.6元/度 · 折算</td><td><b>＜0.001元/颗</b></td></tr>
+<tr><td><b>24h连续推理</b></td><td>6W × 24h × 0.6元/度</td><td>＜0.1元/天</td></tr>
+<tr><td><b>年推理算力成本</b></td><td>日处理1万颗 × 365天</td><td>＜1元/年</td></tr>
+</table>
+<div class="note"><b>关键结论：</b>端侧推理(RK3588)算力成本趋近于零——单颗光模块推理成本＜0.001元。这是RaaS按颗计费商业模式成立的物理基础。对比云端GPU推理(按调用计费0.01-0.1元/次)，端侧成本降低100倍。</div>
+
+<!-- ═══ 三、数据采集成本 ═══ -->
+<h2>三、数据采集成本</h2>
+<table>
+<tr><th>数据项</th><th>采集方式</th><th>规模</th><th>成本(万)</th></tr>
+<tr><td><b>真机示教数据</b></td><td>人工示教 · 拖拽示教 · 12集3600帧</td><td>5场景 × 各20-50集</td><td>2~3</td></tr>
+<tr><td><b>仿真合成数据</b></td><td>MuJoCo/Genesis metaworld peg场景</td><td>1000episode自动生成</td><td>0(算力已计)</td></tr>
+<tr><td><b>视觉标注数据</b></td><td>hand/peg/hole标注 · YOLO训练集</td><td>5000张图标注</td><td>0.5~1</td></tr>
+<tr><td><b>力控数据</b></td><td>力传感器记录插入/拔出力曲线</td><td>1000次插拔</td><td>0.5</td></tr>
+<tr><td><b>数据存储与清洗</b></td><td>NAS存储 · 数据管道</td><td>100GB原始数据</td><td>0.3</td></tr>
+<tr class="total"><td colspan="3">数据采集小计</td><td>3.3~4.8</td></tr>
+</table>
+<div class="note"><b>数据主权：</b>产线数据默认归甲方(智蜂)，本地存储处理，不上传云端。数据采集成本随场景复用摊薄——200项原子技能库一旦建成，新场景只需参数化，数据采集成本下降70%。</div>
+
+<!-- ═══ 四、研发人力成本 ═══ -->
+<h2>四、研发人力成本</h2>
+<table>
+<tr><th>角色</th><th>职责</th><th>人月</th><th>月薪(万)</th><th>小计(万)</th></tr>
+<tr><td><b>具身算法工程师</b></td><td>状态机策略设计·训练·评估·工程化</td><td>4</td><td>3~4</td><td>12~16</td></tr>
+<tr><td><b>机器人感知工程师</b></td><td>YOLO检测·视觉引导·力控融合</td><td>3</td><td>2.5~3.5</td><td>7.5~10.5</td></tr>
+<tr><td><b>数据工程师</b></td><td>数据采集管道·标注·清洗·闭环</td><td>2</td><td>2~3</td><td>4~6</td></tr>
+<tr><td><b>仿真工程师</b></td><td>MuJoCo/Genesis环境·场景构建</td><td>2</td><td>2.5~3.5</td><td>5~7</td></tr>
+<tr><td><b>产品经理(模型方向)</b></td><td>场景定义·指标对齐·成本核算</td><td>3</td><td>2.5~3</td><td>7.5~9</td></tr>
+<tr class="total"><td colspan="4">研发人力小计</td><td>36~48.5</td></tr>
+</table>
+
+<!-- ═══ 五、总计 ═══ -->
+<h2>五、模型研发总成本汇总</h2>
+<table>
+<tr><th>成本项</th><th>金额(万)</th><th>性质</th></tr>
+<tr><td>训练硬件</td><td>8.1</td><td>一次性投入</td></tr>
+<tr><td>训练算力</td><td>0.85</td><td>一次性投入</td></tr>
+<tr><td>数据采集</td><td>3.3~4.8</td><td>一次性+持续</td></tr>
+<tr><td>研发人力</td><td>36~48.5</td><td>持续投入</td></tr>
+<tr class="total"><td><b>研发阶段总成本</b></td><td><b>48.25~62.25</b></td><td>约50~62万</td></tr>
+<tr><td>单台推理硬件</td><td>0.7~1.1</td><td>随量产摊薄</td></tr>
+<tr class="total"><td><b>模型成本占整机BOM比例</b></td><td><b>约3~5%</b></td><td>端侧推理成本极低</td></tr>
+</table>
+
+<h3>成本摊薄模型</h3>
+<table>
+<tr><th>量产规模</th><th>研发成本摊薄(万/台)</th><th>整机BOM(万)</th><th>模型摊薄占比</th></tr>
+<tr><td>10台</td><td>4.8~6.2</td><td>22~25</td><td>约22%</td></tr>
+<tr><td>50台</td><td>1.0~1.2</td><td>22~25</td><td>约4.5%</td></tr>
+<tr><td>200台</td><td>0.24~0.31</td><td>22~25</td><td>约1.2%</td></tr>
+<tr><td>1000台</td><td>0.05~0.06</td><td>22~25</td><td>约0.2%</td></tr>
+</table>
+<div class="note"><b>核心洞察：</b>模型研发成本(50-62万)是一次性投入，随量产规模摊薄至千分之一。50台规模时模型成本仅占整机1.2%，但模型是产品的核心壁垒——竞争对手复制硬件容易(采购相同协作臂+AMR底盘)，复制模型极难(需重新采集数据+训练+调优)。<b>模型是R MPV的护城河。</b></div>
+
+<p style="text-align:center;margin:16px 0;color:#555;font-size:11px">
+  <a href="/master-doc.html">📋 产品全景方案书</a> · 
+  <a href="/z700-spec.html">📐 技术规格书</a>
+</p>
+</body></html>

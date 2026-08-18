@@ -15,8 +15,9 @@ canvas{display:block}
 #legend div{margin:2px 0}
 .dot{display:inline-block;width:7px;height:7px;border-radius:4px;margin-right:4px}
 </style>
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
 </head>
-<body>
+<body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 <div id="bar">
   <a href="/">←</a><h1>🌊 DDS · 全局数据空间</h1>
   <span class="metric">📡 relay:<b id="rp">0</b>包</span>

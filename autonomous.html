@@ -18,7 +18,8 @@ td{padding:10px 16px;font-size:14px;border-bottom:1px solid #21262d;color:#c8d1d
 @media(max-width:768px){h1{font-size:28px!important}h2{font-size:21px!important}td,th{padding:8px 10px;font-size:13px}}
 .back-home{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:#0d1117;border:1px solid #00d4aa44;border-radius:8px;color:#00d4aa;text-decoration:none;font-size:14px;font-weight:600;margin:16px 20px;transition:all .2s;position:relative;z-index:10}
 .back-home:hover{background:#00d4aa22;border-color:#00d4aa;transform:translateX(-3px)}
-</style></head><body>
+</style>@media print{*{color:#000!important;background:#fff!important;border-color:#000!important}}
+</head><body><button onclick="window.print()" style="position:fixed;top:10px;right:10px;z-index:9999;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
 
 <a href="/" class="back-home">← 返回主页</a>
 

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R MPV Z700 · 场景工艺规格书</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:13px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:1100px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:18px;margin:12px 0;text-align:center}
+h2{color:#58a6ff;font-size:15px;margin:16px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:13px;margin:10px 0 4px}
+p{color:#8b949e;margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px}
+th{background:#0d1520;color:#00d4aa;padding:5px 7px;text-align:left;border:1px solid #1a2030}
+td{padding:4px 7px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
+a{color:#00d4aa;text-decoration:none}
+.note{font-size:10px;color:#555;padding:6px 10px;background:#0a0f18;border-radius:4px;margin:4px 0}
+.coord{background:#0d1520;border-left:3px solid #f0a500;padding:8px 12px;margin:8px 0;font-size:11px}
+.step{border-left:3px solid #00d4aa;padding:8px 12px;margin:8px 0;background:#0d1520;border-radius:4px}
+.step .t{color:#00d4aa;font-weight:700}
+.step .s{color:#f0a500;font-size:10px}
+img{max-width:100%;border-radius:6px;border:1px solid #1a2030;margin:6px 0}
+@media print{*{color:#000!important;background:#fff!important;border-color:#ccc!important}img{max-width:80%}button{display:none}}
+</style>
+</head>
+<body>
+<button onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button><a href="/">← 主页</a> · <a href="/z700-spec.html">📐 技术规格书</a> · <a href="/factory-dashboard.html">📊 大屏</a>
+<h1>📋 R MPV Z700 · 场景工艺规格书</h1>
+
+<div class="coord">
+<b>🚗 自车坐标系定义（R MPV Vehicle Frame）</b><br>
+原点：车体中心地面投影 · +X=前进方向（车头） · +Y=左侧 · +Z=上方 · 单位：米(m)<br>
+工作台位于车辆前方+X区域，料盘位于左侧+Y区域，检测区位于右侧-Y区域
+</div>
+
+<!-- ═══ 场景1 ═══ -->
+<h2>场景 1 · FW Loading + EEPROM 固件刷写校验</h2>
+<p><b>工艺目标：</b>对光模块成品执行固件下载与EEPROM校验，产出经FW验证合格的光模块。合格率≥99%。</p>
+<p><b>场景布局（自车系）：</b>R MPV停在工位对接点，工作台在车辆前方1.0m处(X=1.0)，台面高0.85m(Z=0.85)。来料吸塑盒位于R MPV左侧(Y=-0.5)，EVB测试子板位于台面中央(X=1.0,Y=0,Z=0.85)，分拣料盘位于台面右侧(Y=+0.5)。</p>
+
+<table>
+<tr><th>物体</th><th>自车坐标(X,Y,Z)m</th><th>尺寸mm</th><th>说明</th></tr>
+<tr><td><b>R MPV车体</b></td><td>(0,0,0)</td><td>800×600×700</td><td>坐标系原点·面向+X方向</td></tr>
+<tr><td><b>工作台</b></td><td>(1.0, 0, 0.85)</td><td>1200×750×850</td><td>车辆正前方·台面中心</td></tr>
+<tr><td><b>来料吸塑盒</b></td><td>(1.0, -0.3, 0.88)</td><td>300×200×30</td><td>台面左侧·20穴位</td></tr>
+<tr><td><b>EVB测试子板</b></td><td>(1.0, 0, 0.87)</td><td>200×150×2</td><td>台面中央·QSFP插座</td></tr>
+<tr><td><b>QSFP插座</b></td><td>(1.0, 0, 0.88)</td><td>20×75×9</td><td>EVB子板上·插入深度35mm</td></tr>
+<tr><td><b>扫码枪</b></td><td>(0.8, +0.3, 0.95)</td><td>160×95×70</td><td>台面右前·固定支架上</td></tr>
+<tr><td><b>Pass料盘</b></td><td>(1.4, +0.25, 0.88)</td><td>250×180×25</td><td>台面右前·绿色·12穴位</td></tr>
+<tr><td><b>Fail料盘</b></td><td>(1.4, -0.25, 0.88)</td><td>250×180×25</td><td>台面右后·红色·12穴位</td></tr>
+<tr><td><b>PC显示器</b></td><td>(1.6, 0, 1.3)</td><td>540×320</td><td>台面后方·显示测试进度</td></tr>
+</table>
+
+<h3>时间线 · 9步动作故事（≤6s操作时间+50s异步测试）</h3>
+
+<div class="step">
+<div class="t">T+0.0s · 步骤1 取料 (0.6s)</div>
+<div class="s">起点状态：臂(0, ±0.3, 1.0)·夹爪张开·面向来料区</div>
+<p>左臂从折叠位展开，末端从(X=0,Y=-0.3,Z=1.0)移动到(X=1.0,Y=-0.3,Z=0.90)·速度0.25m/s·加速度0.5m/s²。到达吸塑盒上方后，夹爪闭合(力控1~5N)，抓取第N颗光模块。</p>
+<p><b>终点状态：</b>夹爪夹持光模块·模块已脱离吸塑盒穴位·臂末端在(X=1.0,Y=-0.3,Z=0.95)</p>
+</div>
+
+<div class="step">
+<div class="t">T+0.6s · 步骤2 扫码 (1.0s)</div>
+<div class="s">起点：臂(1.0,-0.3,0.95)·夹持模块</div>
+<p>右臂携带模块移至扫码枪前，末端从(X=1.0,Y=-0.3,Z=0.95)→(X=0.8,Y=+0.3,Z=0.95)，行程0.7m·速度0.6m/s。稳定0.3s后，扫码枪红色十字激光照射模块标签面，读取SN二维码。</p>
+<p><b>终点状态：</b>模块标签已扫码·SN已录入系统·臂末端在(X=0.8,Y=+0.3,Z=0.95)</p>
+</div>
+
+<div class="step">
+<div class="t">T+1.6s · 步骤3 翻转 (0.8s)</div>
+<div class="s">起点：臂(0.8,+0.3,0.95)·模块标签面朝上</div>
+<p>腕部旋转模组执行180°旋转(150°/s·加速度250°/s²)，将模块翻转至标签面向下(金手指面朝上)。翻转过程中模块保持夹持稳定，无滑移。</p>
+<p><b>终点状态：</b>模块已翻转·标签面朝下·金手指面朝上</p>
+</div>
+
+<div class="step">
+<div class="t">T+2.4s · 步骤4 对位 (0.5s)</div>
+<div class="s">起点：臂(0.8,+0.3,0.95)·模块金手指面朝上</div>
+<p>视觉系统定位EVB子板上的QSFP插座导向槽，末端移动到(X=1.0,Y=0,Z=0.88)。对准精度±0.1mm·力控≤2N。</p>
+<p><b>终点状态：</b>模块前端对准QSFP插座导向槽·位置偏差<0.1mm·等待插入</p>
+</div>
+
+<div class="step">
+<div class="t">T+2.9s · 步骤5 插入 (0.7s)</div>
+<div class="s">起点：对准位·臂(1.0,0,0.88)</div>
+<p>沿导向槽直推35mm深度，力控≤2N。插入到位后弹簧卡扣锁紧，PC自动检测到模块插入。</p>
+<p><b>终点状态：</b>模块已插入EVB子板·金手指与插座触点接触良好·PC开始FW下载</p>
+</div>
+
+<div class="step">
+<div class="t">T+3.6s · 步骤6 异步测试 (50~90s)</div>
+<div class="s">PC自动执行·R MPV可转向另一机台</div>
+<p>PC自动下载固件(约30s)→校验EEPROM(约20s)→显示PASS/FAIL结果。R MPV此期间可转向机台B执行上下料操作。</p>
+<p><b>产出物：</b>FW已刷写+EEPROM已校验的光模块·测试结果(PASS/FAIL)已记录</p>
+</div>
+
+<div class="step">
+<div class="t">T+53.6s(异步回归) · 步骤7 拔出 (0.8s)</div>
+<div class="s">起点：模块已测试完成·PC显示器显示PASS/FAIL</div>
+<p>夹爪重新夹持模块，力控拉出(≤2N)。模块沿导向槽退出35mm，脱离QSFP插座。</p>
+<p><b>终点状态：</b>模块已从EVB子板取出·金手指无划痕·臂末端在(X=1.0,Y=0,Z=0.95)</p>
+</div>
+
+<div class="step">
+<div class="t">T+54.4s · 步骤8 AOI检测 (3.0s·飞拍)</div>
+<div class="s">起点：臂(1.0,0,0.95)·夹持模块</div>
+<p>金手指飞拍检测：①正面飞拍(0.5s)：模块平移经过AOI镜头，0.6m/s飞拍捕获金手指正面图像。②反面飞拍(0.5s)：腕部旋转180°后反向飞拍。③4侧面飞拍(2.0s)：模块依次旋转90°×4，每个侧面0.5s飞拍。AOI算法实时判定：划痕<10μm·偏移<20μm。</p>
+<p><b>终点状态：</b>6面AOI检测完成·金手指检测结果(PASS/FAIL)已记录</p>
+</div>
+
+<div class="step">
+<div class="t">T+57.4s · 步骤9 分拣 (0.8s)</div>
+<div class="s">起点：AOI检测完成·检测结果已判定</div>
+<p>根据FW刷写+A0I双重结果：PASS→绿色料盘(右前Y=+0.25)·FAIL→红色料盘(右后Y=-0.25)。移动行程0.4m·末端速度1.0m/s。模块放入料盘穴位后夹爪松开。</p>
+<p><b>终点状态：</b>模块已分拣至对应料盘·夹爪归位(X=0,±0.3,Z=1.0)·等待下一颗</p>
+<p><b>产出物(单颗)：</b>FW已验证+金手指已检测的合格/不合格光模块·SN+测试结果+AOI结果已绑定记录</p>
+</div>
+
+<p style="text-align:center"><a href="/scene-3d.html?scene=insert" target="_blank">🔌 打开3D仿真场景</a></p>
+
+<!-- ═══ 场景2 ═══ -->
+<h2>场景 2 · 料盘/治具上下料搬运</h2>
+<p><b>工艺目标：</b>完成光模块物料在工位间的流转，产出正确配送至目标工位的料盘/物料。配送准时率≥99.5%。</p>
+
+<table>
+<tr><th>物体</th><th>自车坐标(X,Y,Z)m</th><th>尺寸mm</th><th>说明</th></tr>
+<tr><td><b>料盘缓存架</b></td><td>(-0.5, +0.5, 1.2)</td><td>800×500×1200</td><td>车辆左后方·4层8盘位</td></tr>
+<tr><td><b>治具对接台</b></td><td>(0.8, 0, 0.9)</td><td>600×400×900</td><td>车辆正前方·气动锁紧</td></tr>
+<tr><td><b>贴装治具</b></td><td>(0.8, 0, 1.0)</td><td>300×200×15</td><td>对接台面上·4×5穴位</td></tr>
+<tr><td><b>AGV停靠标识</b></td><td>(0.8, 0, 0)</td><td>1000×800</td><td>地面黄色虚线框</td></tr>
+</table>
+
+<div class="step"><div class="t">T+0.0s L1 料盘级 · 取盘 (3.0s)</div>
+<div class="s">起点：R MPV停靠距缓存架0.5m·双臂归位</div>
+<p>左臂从归位(X=0,Y=-0.3,Z=1.0)抬起，末端移动到缓存架第3层(X=-0.3,Y=+0.5,Z=0.9)·速度0.5m/s·加速度1.0m/s²。夹爪张开20mm，夹持整盘(5~10N力控)，确认接触后提升。</p>
+<p><b>终点状态：</b>左臂夹持满料盘·末端在(X=-0.3,Y=+0.5,Z=1.2)·料盘已脱离货架</p></div>
+
+<div class="step"><div class="t">T+3.0s L1 料盘级 · 配送 (3.0s)</div>
+<div class="s">起点：左臂(0.5,0.5,1.2)·夹持料盘</div>
+<p>R MPV差速转向90°，导航至治具对接台前方(X=0→0.8·速度1.0m/s)。左臂保持料盘水平稳定，移动至对接台上方(X=0.8,Y=0,Z=1.0)。视觉定位对接台定位销，Z向下降至料盘入位。</p>
+<p><b>终点状态：</b>料盘已放置至对接台·定位销对齐·左臂归位</p></div>
+
+<div class="step"><div class="t">T+6.0s L2 治具级 · 精密对接 (6.0s)</div>
+<div class="s">起点：R MPV在对接台前(X=0.8,0,0)·右臂待命</div>
+<p>右臂从归位移动到治具上方(X=0.8,Y=0,Z=1.05)，视觉定位治具4个定位孔(精度<0.1mm)。对位完成后Z向下降2cm，将单颗物料插入治具穴位。接触传感器确认到位后夹爪松开。</p>
+<p><b>终点状态：</b>物料已装入治具·接触传感器确认·治具对接完成信号已发送</p></div>
+
+<div class="step"><div class="t">T+12.0s L3 治具内 · 精密检测 (8.0s)</div>
+<div class="s">起点：物料已在治具内·AOI模组就绪</div>
+<p>①2D外观检测(2s)：右臂携带AOI镜头飞拍芯片表面，检查位置/方向/划痕。②3D尺寸验证(2s)：结构光扫描共面性±0.01mm。③金线焊点显微复检(2s)：高倍镜头检查193根金线完整性。④缺陷分级(2s)：AI算法判定良品/可修/报废三级。</p>
+<p><b>终点状态：</b>检测完成·缺陷分级报告已生成·合格品流转下一工位</p></div>
+
+<!-- ═══ 场景3 ═══ -->
+<h2>场景 3 · BI老化箱模块插拔</h2>
+<p><b>工艺目标：</b>完成光模块高温老化测试上下料，产出经老化验证的模块。成功率≥99%。</p>
+
+<table>
+<tr><th>物体</th><th>自车坐标(X,Y,Z)m</th><th>尺寸mm</th><th>说明</th></tr>
+<tr><td><b>老化箱体</b></td><td>(1.0, 0, 2.0)</td><td>1200×900×2000</td><td>车辆正前方·32抽屉</td></tr>
+<tr><td><b>目标抽屉(第5层)</b></td><td>(1.0, 0, 1.2)</td><td>280×850×80</td><td>升降立柱升至Z=1.2m</td></tr>
+</table>
+
+<div class="step"><div class="t">T+0s 导航就位 (5s)</div><div class="s">起点：R MPV在通道·目标老化箱在正前方</div><p>R MPV差速驱动至老化箱前对接位(X=0→1.0,Y=0)·激光雷达定位±10mm。</p></div>
+<div class="step"><div class="t">T+5s 升降就位 (3s)</div><p>升降立柱电动丝杆驱动，臂基座从Z=0.7升至Z=1.2m(第5层目标抽屉)。</p></div>
+<div class="step"><div class="t">T+8s 拉出抽屉 (2s)</div><p>右臂夹爪抓取抽屉把手·沿滑轨拉出800mm(Y方向)·力控≤15kg。</p></div>
+<div class="step"><div class="t">T+10s~T+70s 批量插入 (60s·10颗×6s)</div><p>左臂从料盘依次取模块→插入QSFP插座(单颗≤6s)·弹簧触点锁紧·共10颗。</p></div>
+<div class="step"><div class="t">T+72s 关闭抽屉 (2s)</div><p>推回抽屉·确认锁紧·状态指示灯变绿=老化中。</p></div>
+<div class="step"><div class="t">T+74s~T+4h 老化测试(异步)</div><p>箱体85°C±1°C·1~4小时·R MPV可服务其他工位。</p></div>
+<div class="step"><div class="t">T+4h 拉出+批量拔出 (10s)</div><p>状态灯变黄=完成·拉出抽屉·依次拔出10颗模块·放入成品料盘。</p></div>
+<div class="step"><div class="t">T+4h10s 分拣 (3s)</div><p>按老化Pass/Fail分拣至对应料盘。</p><p><b>产出物：</b>已完成老化测试的10颗模块·Pass/Fail记录</p></div>
+
+<!-- ═══ 场景4 ═══ -->
+<h2>场景 4 · 热海柜体电口+光口插拔</h2>
+<p><b>工艺目标：</b>完成光模块环境测试上下料，产出经环境测试验证的模块。成功率≥99%。</p>
+
+<table>
+<tr><th>物体</th><th>自车坐标(X,Y,Z)m</th><th>尺寸mm</th><th>说明</th></tr>
+<tr><td><b>热海柜体</b></td><td>(0.8, 0, 0.5)</td><td>600×500×500</td><td>车辆前方·24槽位</td></tr>
+<tr><td><b>目标槽位(3行2列)</b></td><td>(0.8, -0.1, 0.35)</td><td>20×75×40</td><td>含电口+光口×2</td></tr>
+</table>
+
+
+<div class="step"><div class="t">T+0.0s 导航就位 (3s)</div>
+<div class="s">起点：R MPV在通道中·目标热海柜体在正前方</div>
+<p>R MPV差速驱动至柜体前对接位(X=0→0.8,Z=0)·激光雷达定位±10mm。</p></div>
+<div class="step"><div class="t">T+3.0s 取料 (2s)</div>
+<div class="s">起点：双臂归位·料盘在躯干A区料盘</div>
+<p>左臂从归位(X=0,Y=-0.3,Z=1.0)移动到躯干A区料盘(X=0,Y=-0.3,Z=0.5)，从料盘取光模块。夹持力1~5N。末端移动到(X=0.8,Y=0,Z=1.0)，准备插入。</p>
+<p><b>终点状态：</b>左臂夹持光模块·末端在柜体槽位前方·模块金手指朝向槽位电口</p></div>
+<div class="step"><div class="t">T+5.0s 插电口 (2s)</div>
+<div class="s">起点：左臂(0.8,0,1.0)·夹持模块</div>
+<p>对准槽位底部电口(导向±0.5mm)，沿导轨直推。插入到位后触点接通，柜体识别模块在位。</p>
+<p><b>终点状态：</b>模块电口已插入·柜体上电·左臂归位</p></div>
+<div class="step"><div class="t">T+7.0s 光口检测 (1.5s)</div>
+<div class="s">起点：模块已在槽位中·光口端面待检测</div>
+<p>右臂携带光口检测探头(笔式·φ15×100mm·黑色金属)，对准槽位上部两个LC光口适配器。红光照射端面，检查清洁度。若检测不通过→进入清洁步骤。</p>
+<p><b>终点状态：</b>光口端面清洁度已检测·结果(OK/需清洁)已记录</p></div>
+<div class="step"><div class="t">T+8.5s 插光口×2 (4s)</div>
+<div class="s">起点：右臂准备光纤·柜体顶部收纳槽</div>
+<p>右臂从柜体顶部取光纤跳线(LC双工接头·黄色单模·φ2×1000mm)，依次插入两个LC适配器(蓝色塑料·13×13×30mm·带防尘帽)。每个插入1.5s·确认到位0.5s。</p>
+<p><b>终点状态：</b>两根光纤LC接头已插入·光路连接完成·等待测试</p></div>
+<div class="step"><div class="t">T+12.5s 清洁 (2s·可选)</div>
+<div class="s">起点：若检测不通过·R MPV侧面工具架</div>
+<p>右臂从侧面工具架取清洁棉签(φ2×120mm·白色无尘棉·一用一弃)，清洁光口端面。喷气罐(φ50×180mm·蓝白罐体·压缩空气)除尘除静电。清洁后重新检测(1.5s)。</p>
+<p><b>终点状态：</b>光口端面清洁度PASS·光纤已连接</p></div>
+<div class="step"><div class="t">T+14.5s 测试(异步·5~30min)</div>
+<div class="s">柜体自动执行环境测试</div>
+<p>柜体升温/降温循环·误码率监控·光功率测试。R MPV此期间可服务其他工位。测试完成后气缸自动顶出模块(行程30mm)。</p>
+<p><b>产出物：</b>环境测试数据·光功率/误码率曲线</p></div>
+<div class="step"><div class="t">T+14.5s(异步回归) 拉出电口 (1.5s)</div>
+<div class="s">起点：模块顶出·气缸推杆伸出</div>
+<p>左臂夹持模块·力控拉出(≤2N)·脱离电口触点。</p></div>
+<div class="step"><div class="t">T+16.0s 拔光口×2 (3s)</div>
+<div class="s">起点：左臂已取出模块</div>
+<p>右臂依次拔出两根光纤LC接头·放回柜体顶部收纳槽。每根1.5s。</p></div>
+<div class="step"><div class="t">T+19.0s 分拣+移动 (1s+3s)</div>
+<div class="s">起点：双臂归位</div>
+<p>按测试结果Pass(绿色料盘·X=1.2,Y=+0.25,Z=0.88)/Fail(红色料盘·X=1.2,Y=-0.25,Z=0.88)分拣。R MPV导航至下一工位。</p>
+<p><b>产出物：</b>已完成环境测试的模块·测试Pass/Fail记录·光口端面清洁度PASS</p></div>
+
+
+<!-- ═══ 场景5 ═══ -->
+<h2>场景 5 · ATS/线外检测插接（核心挑战场景）</h2>
+<p><b>工艺目标：</b>完成光模块全参数光学测试，产出全性能验证报告。成功率≥99%·测试读取≥99.9%。</p>
+
+<table>
+<tr><th>物体</th><th>自车坐标(X,Y,Z)m</th><th>尺寸mm</th><th>说明</th></tr>
+<tr><td><b>光学平台</b></td><td>(1.0, 0, 0.8)</td><td>1500×900×800</td><td>车辆前方·隔振</td></tr>
+<tr><td><b>ATS测试座</b></td><td>(1.0, 0, 0.95)</td><td>300×200×150</td><td>平台中央·气动锁紧</td></tr>
+</table>
+
+
+<div class="step"><div class="t">T+0.0s 导航就位 (2.2s)</div>
+<div class="s">起点：R MPV在通道中·目标ATS光学平台在正前方</div>
+<p>R MPV差速驱动至光学平台前对接位(X=1.0,Z=0)·激光雷达定位±10mm。环境照度＜1lux(遮光帘已降下)·温控23±1°C。</p></div>
+<div class="step"><div class="t">T+2.2s 扫码 (1s)</div>
+<div class="s">起点：左臂从料盘取模块·移至ATS座托架上方</div>
+<p>模块放入V型托架(黑色PEEK·20×75×5mm)后，ATS座上方固定式读码器(60×40×30mm·黑色)自动扫描模块SN标签。SN已录入测试系统。</p>
+<p><b>终点状态：</b>模块已在ATS托架中·SN已识别·等待测试</p></div>
+<div class="step"><div class="t">T+3.2s 插光口检测 (1.5s)</div>
+<div class="s">起点：模块已在托架·ATS座气动夹紧</div>
+<p>模块插入ATS座光口·精密陶瓷插芯耦合器(φ25×80mm·银色金属·插入损耗＜0.3dB)。光功率计探头(大面积InGaAs)初测光功率基线。</p>
+<p><b>终点状态：</b>光口对接完成·光功率基线已记录</p></div>
+<div class="step"><div class="t">T+4.7s 清洁度检测 (1s)</div>
+<div class="s">起点：光口对接完成·端面检测探头就绪</div>
+<p>ATS座侧面检测探头检查光口端面清洁度。判定标准:划痕＜10μm·污染＜50μm。若不通过→清洁步骤。</p></div>
+<div class="step"><div class="t">T+5.7s 清洁 (2s·可选)</div>
+<div class="s">起点：若检测不通过·平台右侧清洁工具套装</div>
+<p>右臂从清洁套装盒(200×150×50mm·蓝白塑料)取棉签(φ2×120mm·白色无尘棉)+酒精瓶·清洁端面。喷气罐除尘。清洁后重新检测(1s)。</p>
+<p><b>终点状态：</b>光口端面清洁度PASS</p></div>
+<div class="step"><div class="t">T+6.7s(+2s若有清洁) 插电口 (1.2s)</div>
+<div class="s">起点：光口检测通过</div>
+<p>右臂连接EVB电口·上电初始化·误码仪自检。ATS座气动锁紧确认。</p></div>
+<div class="step"><div class="t">T+7.9s 插光纤 (1.5s)</div>
+<div class="s">起点：电口已连接·光纤跳线在平台侧面</div>
+<p>右臂取光纤跳线(LC双工·黄色单模·φ2×1000mm·弯曲半径≥30mm)，连接至ATS座光纤耦合器。</p>
+<p><b>终点状态：</b>光路+电路全部连接·ATS测试就绪</p></div>
+<div class="step"><div class="t">T+9.4s 测试(异步·30~120s)</div>
+<div class="s">ATS自动执行全参数测试</div>
+<p>光功率·眼图·误码率·光谱·回波损耗全套参数测试。R MPV此期间可服务其他工位。</p>
+<p><b>产出物：</b>光功率曲线·眼图·误码率·全参数测试报告</p></div>
+<div class="step"><div class="t">T+9.4s(异步回归) 拔光纤 (1s)</div>
+<div class="s">起点：测试完成·ATS座释放</div>
+<p>右臂断开光纤LC接头·放回平台侧面收纳。</p></div>
+<div class="step"><div class="t">T+10.4s 拔模块 (0.8s)</div>
+<div class="s">起点：光纤已断开·模块在ATS托架</div>
+<p>左臂从ATS托架取出模块·夹持力1~5N。</p></div>
+<div class="step"><div class="t">T+11.2s 目检金手指 (1s)</div>
+<div class="s">起点：左臂夹持模块·AOI模组就绪</div>
+<p>右臂携带AOI镜头飞拍模块金手指正反两面·判定:划痕＜10μm·偏移＜20μm·金手指完整性。</p>
+<p><b>产出物：</b>金手指AOI检测结果·Pass/Fail判定</p></div>
+<div class="step"><div class="t">T+12.2s 分拣 (0.8s)</div>
+<div class="s">起点：测试+AOI双重结果已判定</div>
+<p>按Pass(绿色料盘·X=1.4,Y=+0.25,Z=0.88)/Fail(红色料盘·X=1.4,Y=-0.25,Z=0.88)分拣。</p></div>
+<div class="step"><div class="t">T+13.0s 移动 (2.2s)</div>
+<p>R MPV导航至下一工位或返回待机区。总操作时间13.0s≤15s ✓。</p>
+<p><b>产出物(单颗)：</b>光功率/眼图/误码率全参数测试报告·金手指AOI结果·SN+测试数据已绑定·Pass/Fail分类光模块</p></div>
+
+
+<p style="text-align:center;margin:16px 0">
+  <a href="/z700-spec.html">📐 技术规格书</a> · 
+  <a href="/factory-dashboard.html">📊 大屏</a> · 
+  <a href="/scene-3d.html?scene=insert">🔌 3D仿真</a>
+</p>
+</body></html>

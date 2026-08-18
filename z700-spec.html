@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R MPV Z700 机器人多功能用途车 · 技术规格书</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04070d;color:#c8d1d9;font:14px "PingFang SC","Microsoft YaHei",sans-serif;padding:14px;max-width:1100px;margin:0 auto;line-height:1.8}
+h1{color:#00d4aa;font-size:20px;margin:12px 0;text-align:center}
+h2{color:#58a6ff;font-size:15px;margin:16px 0 8px;border-bottom:1px solid #1a2030;padding-bottom:4px}
+h3{color:#f0a500;font-size:13px;margin:10px 0 4px}
+p{color:#8b949e;margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+th{background:#0d1520;color:#00d4aa;padding:6px 8px;text-align:left;border:1px solid #1a2030}
+td{padding:5px 8px;border:1px solid #1a2030;color:#8b949e;vertical-align:top}
+td b{color:#c8d1d9}
+a{color:#00d4aa;text-decoration:none}
+.highlight{background:#0d1520;border-left:3px solid #ff6b35;padding:8px 12px;margin:8px 0;border-radius:4px;color:#ff6b35;font-weight:700}
+.tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;margin:1px}
+.tg{background:#00d4aa22;color:#00d4aa}.to{background:#f0a50022;color:#f0a500}.tp{background:#a371f722;color:#a371f7}
+.note{font-size:11px;color:#555;padding:6px 10px;background:#0a0f18;border-radius:4px;margin:4px 0}
+@media print{*{color:#000!important;background:#fff!important;border-color:#000!important;box-shadow:none!important;text-shadow:none!important}h1{font-size:22pt}h2{font-size:16pt}h3{font-size:13pt}table{border:1px solid #000}th,td{border:1px solid #000;color:#000!important}th{background:#eee!important}.highlight{border:2px solid #000;background:#fff!important;color:#000!important}.note{background:#fff!important;border:1px solid #000}.tag{background:#fff!important}#btn-print{display:none}body{padding:20px}}
+</style>
+</head>
+<body>
+<a href="/">← 主页</a> · <a href="/supplier-model.html">🤝 供应商合作</a> · <a href="/factory-dashboard.html">📊 大屏</a>
+<button onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
+<h1>🏗 机器人多功能用途车 R MPV · 型号Z700 · 技术规格书</h1>
+
+
+
+<!-- ═══ 总体架构 ═══ -->
+<h2>一、系统总体架构</h2>
+<p><b>R MPV（Robot Multi-Purpose Vehicle）</b>型号Z700是一款面向光模块工厂精细操作的<b>机器人多功能用途车</b>。融合AMR自主移动底盘与人形躯干工具箱，搭载1~2台协作臂（6/7轴或4轴可配），既是运输载具(vehicle)，又是操作机器人(robot)。一车多能：自主导航跨工位流转+精密插拔+视觉检测+固件刷写+光学检测，支持≤6s/15s/20s三级节拍要求。</p>
+
+<h3>产品核心特征</h3>
+<table>
+<tr><th>特征</th><th>说明</th></tr>
+<tr><td><b>🧭 自主移动载具</b></td><td>SLAM激光导航+深度视觉，自主规划路径跨工位流转。差速驱动原地旋转，工位对接精度±10mm。既是车(vehicle)，运料运盘运模块</td></tr>
+<tr><td><b>🦾 精密操作机器人</b></td><td>1~2台协作臂（6/7轴或4轴可配），末端速度≥1.5m/s，重复定位±0.02mm。取料·翻转·插拔·分拣全自动。又是机器人(robot)，精细操作一气呵成</td></tr>
+<tr><td><b>📦 人形躯干工具箱</b></td><td>800×600×700mm标准箱体，四区功能分仓。A区料盘储存(160颗缓存)·B区AOI检测·头部相机·中央电气控制。箱顶两端各预留臂安装法兰</td></tr>
+<tr><td><b>⚡ 一车多能</b></td><td>单台Z700=运输车+操作臂+测试台+检测站。省去固定工位设备投入，一台车覆盖FW刷写、AOI检测、老化上下料、ATS测试全流程</td></tr>
+<tr><td><b>🔗 协同编组</b></td><td>多台R MPV可协同作业：一车取料→二车刷写→三车检测，产线柔性编排。单臂/双臂灵活配置，按节拍需求组合</td></tr>
+</table>
+<div class="note">
+<b>任务规划层</b> 场景编排 · 多机台多车协同调度<br>
+<b>技能编排层</b> 状态机调制(多工艺阶段) · 200项原子技能库<br>
+<b>模型决策层</b> 动作模型(~10 TOPS) + 引导模型(~10 TOPS)<br>
+<b>感知执行层</b> 多维观测状态 · 视觉(800万像素) · 力觉(0.1N) · 触觉 · 6/7轴或4轴臂+夹爪+力控
+</div>
+
+<!-- ═══ 本体规格 ═══ -->
+<h2>二、机器人本体规格</h2>
+<h3>2.1 整体参数</h3>
+<table>
+<tr><th>参数</th><th>规格</th><th>依据</th></tr>
+<tr><td><b>整机重量</b></td><td>≤250kg(含电池+工具箱)</td><td>分解：箱体100kg + 臂×2≤50kg + 电池≤40kg + 末端≤3kg + 物料≤57kg ≈ 250kg<br>单臂配置：100+25+35+1.5+38≈200kg<br>双臂配置：100+50+35+3+62≈250kg</td></tr>
+<tr><td><b>自由度</b></td><td>≥11 DOF</td><td>臂6~7 + 夹爪2 + AMR3(平面x,y,θ) = 11</td></tr>
+<tr><td><b>连续工作时间</b></td><td>≥24h</td><td>电池≥8kWh · 峰值功率1.5kW</td></tr>
+<tr><td><b>工作环境</b></td><td>无尘车间Class1000 · 防静电ESD</td><td>光模块产线环境要求</td></tr>
+</table>
+
+<h3>2.2 多功能车体（人形躯干工具箱+AMR底盘）</h3>
+<div class="note"><b>设计思想：</b>参考货车箱货设计——单箱集成，箱内分区储物，箱顶两端各预留臂安装法兰。</div>
+<table>
+<tr><th>参数</th><th>规格</th><th>说明</th></tr>
+<tr><td><b>标准箱体尺寸</b></td><td><b>800×600×700mm</b> (L×W×H)</td><td>铝合金框架+ABS面板</td></tr>
+<tr><td><b>臂安装方式</b></td><td>箱体两端各1个标准法兰接口</td><td>单臂(一端) · 双臂(两端各一) · 可拆卸</td></tr>
+<tr><td><b>箱体自重</b></td><td>≤100kg（含驱动轮组+电池+箱体）</td><td>含电气控制舱</td></tr>
+<tr><td><b>驱动方式</b></td><td>4轮独立驱动 · 差速转向</td><td>原地旋转 · 工位精准对接</td></tr>
+<tr><td><b>导航定位</b></td><td>SLAM + 激光雷达+深度相机</td><td>工位对接±10mm · 臂补偿到位</td></tr>
+<tr><td><b>最大速度</b></td><td>≥1.5 m/s</td><td>跨工位移动≤5s</td></tr>
+<tr><td><b>越障</b></td><td>≥10mm</td><td>地面接缝·线槽</td></tr>
+</table>
+
+<h3>2.3 工具箱内部储物设计</h3>
+<table>
+<tr><th>储物区</th><th>容量</th><th>存放物品</th></tr>
+<tr><td><b>A区·光模块料盘仓</b></td><td>2层×4盘=8盘</td><td>20颗光模块/盘 · 共160颗</td></tr>
+<tr><td><b>B区·AOI检测区</b></td><td>EVB子板×2 · 扫码枪×1 · 主板×1</td><td>模块插入EVB子板·PC自动下载固件·EEPROM校验</td></tr>
+<tr><td><b>头部相机(躯干顶部)</b></td><td>AOI镜头×1 · 清洁棉签/喷气罐 · 备用夹爪</td><td>金手指飞拍检测·6面外观检查·端面清洁</td></tr>
+<tr><td><b>中央电气控制舱</b></td><td>密封隔舱</td><td>边缘计算单元 · 电池管理 · 电机驱动 · 通信模块</td></tr>
+<tr><td><b>顶部·臂安装平台</b></td><td>600×500mm</td><td>标准法兰接口×2(两端各一) · 1臂或2臂可配置 · 臂折叠高度300mm</td></tr>
+</table>
+
+<h3>2.4 整机外形尺寸</h3>
+<table>
+<tr><th>配置</th><th>占地面积(L×W)</th><th>箱体高度</th><th>臂折叠高度</th><th>臂全展高度</th></tr>
+<tr><td><b>单臂配置</b></td><td>800×600mm</td><td>700mm</td><td>1000mm</td><td>≤1800mm</td></tr>
+<tr><td><b>双臂配置</b></td><td>800×600mm</td><td>700mm</td><td>1000mm</td><td>≤1800mm</td></tr>
+</table>
+<div class="note">单箱800×600mm · 两端各预留臂安装法兰 · 操作通道≥0.9m可通过 · 臂全展总高≤1800mm（含箱体+臂）</div>
+
+<h3>2.5 协作臂（6/7轴与4轴双方案）</h3>
+<table>
+<tr><th>参数</th><th>规格</th><th>计算依据</th></tr>
+<tr><td><b>自由度</b></td><td>6~7 DOF（J1-J6）</td><td>空间位置+姿态全覆盖</td></tr>
+<tr><td><b>有效负载</b></td><td>≥5 kg</td><td>光模块20-200g · 夹爪≤1.5kg · 安全余量</td></tr>
+<tr><td><b>臂展</b></td><td>≥800 mm</td><td>覆盖工作台1.13×0.75m+料盘区</td></tr>
+<tr><td><b>自重</b></td><td>≤25 kg</td><td>节拍约束：自重补偿可降惯量</td></tr>
+<tr><td><b>重复定位精度</b></td><td>≤±0.02 mm</td><td>EVB插槽对位±0.1mm要求</td></tr>
+<tr><td><b>末端最大速度</b></td><td>≥1.5 m/s</td><td>取料0.6s→行程0.15m → 0.25m/s平均 · 峰值需1.5m/s</td></tr>
+<tr><td><b>末端最大加速度</b></td><td>≥10 m/s²（≈1G）</td><td>加速到1.5m/s需0.15s · 总动作≤0.6s</td></tr>
+<tr><td><b>基座关节扭矩</b></td><td>≥60-80 Nm</td><td>I∝m·L²：5kg×(0.8m)²≈3.2kg·m² · 角加速度40rad/s²→128Nm</td></tr>
+<tr><td><b>控制周期</b></td><td>≤1 ms</td><td>力控闭环 · 实时插拔力检测</td></tr>
+</table>
+<h3>2.6 末端执行器</h3>
+<table>
+<tr><th>参数</th><th>规格</th></tr>
+<tr><td><b>夹爪</b></td><td>伺服驱动 · 开合行程0-50mm · 夹持力1-20N可调（支持0.2-2kg负载·加速度余量×3） · 防划伤指尖</td></tr>
+<tr><td><b>腕部旋转</b></td><td>±180° · 翻转0.8s（标签面向下）</td></tr>
+<tr><td><b>视触觉</b></td><td>指尖传感器 · 力分辨率0.1N · 100Hz采样</td></tr>
+<tr><td><b>自重</b></td><td>≤1.5kg（关键：末端惯量∝m·r²）</td></tr>
+</table>
+
+<!-- ═══ 运动性能计算 ═══ -->
+<h2>三、末端运动性能计算</h2>
+<h3>3.1 运动学分解（≤15s节拍·ATS场景）</h3>
+<table>
+<tr><th>步骤</th><th>行程(m)</th><th>时间(s)</th><th>平均速度(m/s)</th><th>峰值速度(m/s)</th><th>加速度(m/s²)</th></tr>
+<tr><td>取料·从料盒取模块</td><td>0.15</td><td>2.0</td><td>0.08</td><td>0.25</td><td>0.5</td></tr>
+<tr><td>扫码·扫SN二维码</td><td>0.30</td><td>2.5</td><td>0.12</td><td>0.35</td><td>0.6</td></tr>
+<tr><td>翻转·标签面向下</td><td>180°</td><td>1.5</td><td>-</td><td>150°/s</td><td>250°/s²</td></tr>
+<tr><td>对位+插入·EVB插槽</td><td>0.25</td><td>3.0</td><td>0.08</td><td>0.25</td><td>1.8(力控)</td></tr>
+<tr><td>拔出·力控拉出</td><td>0.25</td><td>1.5</td><td>0.17</td><td>0.35</td><td>1.8</td></tr>
+<tr><td>AOI飞拍·金手指检测</td><td>6面</td><td>3.0</td><td>-</td><td>0.6m/s</td><td>2.0</td></tr>
+<tr><td>分拣·Pass/Fail料盘</td><td>0.40</td><td>1.5</td><td>0.27</td><td>0.6</td><td>1.5</td></tr>
+<tr><td><b>合计</b></td><td>-</td><td><b>15.0s</b></td><td colspan="3"><b>AOI3s：金手指正反2面飞拍+4侧面飞拍</b></td></tr><td colspan="3"><b>（不含测试等待·14s≤15s ✓）</b></td></tr>
+<tr><td colspan="6" style="background:#0d1520;color:#00d4aa"><b>要求：末端峰值速度 ≥0.6 m/s · 峰值加速度 ≥2 m/s² · 腕部峰值转速 ≥200°/s</b></td></tr>
+</table>
+<h3>3.2 节拍验证</h3>
+<div class="note">
+<b>关键路径（ATS场景·≤15s））：</b>取料2.0s + 扫码2.5s + 翻转1.5s + 对位插入3.0s + 拔出1.5s + AOI飞拍3.0s + 分拣1.5s = <b>15.0s</b>（不含异步测试50s）✓<br>
+<b>异步能力：</b>机台A测试50s期间（异步不计入节拍），机器人执行机台B上下料→ 等效单颗节拍＜3s
+</div>
+
+<!-- ═══ 五大场景 ═══ -->
+<h2>四、五大作业场景详细定义（仿真级描述）</h2>
+
+<h3>场景 1 · FW Loading + EEPROM 写/读校验</h3>
+<p><b>场景整体：</b>桌面型测试工位。工作台尺寸1.2m×0.75m×0.85m(高)，浅灰色防静电台面。左侧为来料区，中间为EVB测试区，右侧为分拣区。</p>
+<table>
+<tr><th>物体</th><th>形状</th><th>尺寸(mm)</th><th>颜色/材质</th><th>位置</th><th>说明</th></tr>
+<tr><td><b>工作台</b></td><td>长方体</td><td>1200×750×850</td><td>浅灰·防静电胶皮</td><td>场景中心</td><td>四角圆角R10·下方储物格</td></tr>
+<tr><td><b>吸塑盒(来料)</b></td><td>矩形托盘</td><td>300×200×30</td><td>黑色防静电ABS</td><td>台面左侧</td><td>4×5=20穴位·每穴放1颗光模块</td></tr>
+<tr><td><b>光模块(QSFP-DD)</b></td><td>长方体·带散热片</td><td>18×72×8</td><td>银色金属外壳</td><td>吸塑盒穴位内</td><td>顶面散热翅片·前端金手指·侧面标签</td></tr>
+<tr><td><b>EVB测试子板</b></td><td>PCB板</td><td>200×150×2</td><td>绿色PCB·金色焊盘</td><td>台面中央</td><td>中央有QSFP插座·四周测试点</td></tr>
+<tr><td><b>EVB主板</b></td><td>PCB板</td><td>300×200×3</td><td>蓝色PCB</td><td>EVB子板下方</td><td>通过排针连接·USB线至PC</td></tr>
+<tr><td><b>QSFP插座</b></td><td>矩形槽</td><td>20×75×9</td><td>黑色塑料·金色触点</td><td>EVB子板中央</td><td>导向槽·弹簧卡扣·插入深度35mm</td></tr>
+<tr><td><b>扫码枪</b></td><td>手持式</td><td>160×95×70</td><td>黑灰双色</td><td>台面右侧支架</td><td>红色十字激光瞄准线</td></tr>
+<tr><td><b>Pass料盘</b></td><td>矩形托盘</td><td>250×180×25</td><td>绿色防静电</td><td>台面右前</td><td>3×4=12穴位·合格品</td></tr>
+<tr><td><b>Fail料盘</b></td><td>矩形托盘</td><td>250×180×25</td><td>红色防静电</td><td>台面右后</td><td>3×4=12穴位·不合格品</td></tr>
+<tr><td><b>PC显示器</b></td><td>16:9屏幕</td><td>540×320×50</td><td>黑色边框</td><td>工作台后方</td><td>显示FW下载进度·测试结果</td></tr>
+</table>
+<p><b>动作序列（9步·≤6s）：</b>①取料(0.6s)：夹爪从吸塑盒穴位抓取光模块 → ②扫码(1.0s)：移至扫码枪前稳定0.3s后扫描 → ③翻转(0.8s)：腕部旋转180°使标签面朝下 → ④对位(0.5s)：视觉定位EVB插座导向槽 → ⑤插入(0.7s)：沿导向槽直推35mm，力控≤2N → ⑥测试(异步50~90s)：PC自动执行，机器人转向另一机台 → ⑦拔出(0.8s)：力控拉出模块 → ⑧AOI(0.6s)：移至检测位旋转模块检查金手指 → ⑨分拣(0.8s)：按Pass/Fail放入对应料盘。</p>
+
+<h3>场景 2 · 料盘/治具上下料搬运</h3>
+<p><b>场景整体：</b>跨工位物料流转区。包含料盘缓存架、治具对接台、AGV停靠位。地面有磁导航带(黄色虚线)。</p>
+<table>
+<tr><th>物体</th><th>形状</th><th>尺寸(mm)</th><th>颜色/材质</th><th>位置</th><th>说明</th></tr>
+<tr><td><b>料盘缓存架</b></td><td>多层货架</td><td>800×500×1200</td><td>银灰铝合金</td><td>场景左侧</td><td>4层·每层放2盘·共8盘位</td></tr>
+<tr><td><b>吸塑盒料盘</b></td><td>矩形托盘</td><td>300×200×30</td><td>黑色ABS</td><td>缓存架各层</td><td>防静电·可堆叠·带定位销</td></tr>
+<tr><td><b>华夫盒</b></td><td>方形网格盘</td><td>200×200×20</td><td>透明PS</td><td>缓存架中层</td><td>10×10网格·放裸芯片</td></tr>
+<tr><td><b>治具对接台</b></td><td>矩形台面</td><td>600×400×900</td><td>深灰钢制</td><td>场景中央</td><td>顶面有定位销·气动锁紧</td></tr>
+<tr><td><b>贴装治具</b></td><td>矩形模板</td><td>300×200×15</td><td>黑色铝合金</td><td>对接台面上</td><td>4×5穴位·精密定位孔</td></tr>
+<tr><td><b>键合治具</b></td><td>矩形模板</td><td>250×180×12</td><td>金色铜制</td><td>对接台面上</td><td>加热区域200×150mm</td></tr>
+<tr><td><b>AGV停靠标识</b></td><td>地面标记</td><td>1000×800</td><td>黄色虚线框</td><td>治具台前方</td><td>磁导航对接·定位±10mm</td></tr>
+<tr><td><b>芯片(裸die)</b></td><td>矩形小片</td><td>3×3×0.3</td><td>银灰色硅片</td><td>华夫盒网格内</td><td>表面有电路图案·极脆</td></tr>
+<tr><td><b>光模块半成品</b></td><td>长方体</td><td>18×72×8</td><td>银色金属</td><td>料盘穴位内</td><td>已贴片未键合·有金手指</td></tr>
+</table>
+<p><b>动作序列（L1→L2→L3递进）：</b>L1料盘级：识别货架层位→抓取整盘→放置至对接台→满盘取走→空盘补位。L2治具级：视觉定位治具定位孔→精密对位±0.1mm→插入物料→确认到位→流转。L3治具内：芯片2D外观检测→3D尺寸验证→金线焊点显微复检→缺陷分级(良/可修/报废)。</p>
+
+<h3>场景 3 · BI老化箱模块插拔</h3>
+<p><b>场景整体：</b>高大设备区。老化箱高约2m，多层多列抽屉排列。环境温度35-45°C，箱体表面有温度显示屏和状态指示灯。</p>
+<table>
+<tr><th>物体</th><th>形状</th><th>尺寸(mm)</th><th>颜色/材质</th><th>位置</th><th>说明</th></tr>
+<tr><td><b>老化箱体</b></td><td>大型柜体</td><td>1200×900×2000</td><td>灰白烤漆钢板</td><td>场景中央</td><td>4列×8层=32抽屉·前面板有温控屏</td></tr>
+<tr><td><b>老化抽屉</b></td><td>抽屉式托盘</td><td>280×850×80</td><td>不锈钢</td><td>箱体各层</td><td>QSFP:10插座/屉·OSFP:16插座/屉</td></tr>
+<tr><td><b>抽屉滑轨</b></td><td>三节滚珠轨</td><td>长850</td><td>银灰钢制</td><td>抽屉两侧</td><td>承重15kg·拉出行程800mm</td></tr>
+<tr><td><b>QSFP测试插座</b></td><td>矩形槽</td><td>20×75×9</td><td>黑色耐高温</td><td>抽屉内每格</td><td>弹簧触点·自动锁紧·耐温125°C</td></tr>
+<tr><td><b>光模块(成品)</b></td><td>长方体·带散热片</td><td>18×72×8</td><td>银色金属</td><td>测试插座内</td><td>已组装完成·待老化验证</td></tr>
+<tr><td><b>温度显示屏</b></td><td>LED面板</td><td>200×100×30</td><td>黑底红字</td><td>箱体正面</td><td>显示各层实时温度85°C±1°C</td></tr>
+<tr><td><b>状态指示灯</b></td><td>LED灯柱</td><td>φ30×100</td><td>红/绿/黄三色</td><td>每抽屉左侧</td><td>绿=老化中·黄=完成·红=异常</td></tr>
+<tr><td><b>机器人升降立柱</b></td><td>垂直导轨</td><td>行程1200</td><td>银灰铝合金</td><td>AMR箱体上</td><td>电动丝杆·定位±1mm·载臂升降</td></tr>
+</table>
+<p><b>动作序列：</b>①识别：读取箱体显示屏确认目标层位 → ②升降：立柱升至目标层高度 → ③拉出：夹爪抓取抽屉把手·沿滑轨拉出800mm → ④批量插入：从料盘依次取模块·插入QSFP插座(单颗≤6s)·共10-16颗 → ⑤关闭：推回抽屉·确认锁紧 → ⑥老化(异步1-4h)：状态灯变绿 → ⑦拉出：同步骤③ → ⑧批量拔出：依次拔出所有模块·放入成品料盘 → ⑨分拣：按老化结果Pass/Fail分类。</p>
+
+<h3>场景 4 · 热海柜体电口+光口插拔</h3>
+<p><b>场景整体：</b>环境测试柜体区。柜体约50cm高、600mm宽，顶部有光纤收纳槽，侧面有清洁工具架。</p>
+<table>
+<tr><th>物体</th><th>形状</th><th>尺寸(mm)</th><th>颜色/材质</th><th>位置</th><th>说明</th></tr>
+<tr><td><b>热海柜体</b></td><td>矩形柜体</td><td>600×500×500</td><td>浅灰钢制</td><td>场景中央</td><td>前面板24个模块槽位·6列×4行</td></tr>
+<tr><td><b>模块槽位</b></td><td>矩形槽</td><td>20×75×40</td><td>黑色塑料·金属触点</td><td>柜体前面板</td><td>每槽含电口(底部)+光口×2(上部)</td></tr>
+<tr><td><b>光口LC适配器</b></td><td>方形双口</td><td>13×13×30</td><td>蓝色塑料</td><td>槽位上部</td><td>双LC接口·带防尘帽</td></tr>
+<tr><td><b>光纤跳线</b></td><td>细长柔性线</td><td>φ2×1000</td><td>黄色单模·蓝色多模</td><td>柜体顶部收纳槽</td><td>LC双工接头·最小弯曲半径30mm</td></tr>
+<tr><td><b>气缸顶出机构</b></td><td>活塞推杆</td><td>行程30mm</td><td>银灰金属</td><td>每槽位后方</td><td>测试完成后自动顶出模块</td></tr>
+<tr><td><b>清洁棉签</b></td><td>细棒</td><td>φ2×120</td><td>白色无尘棉</td><td>侧面工具架</td><td>专用光纤端面清洁·一用一弃</td></tr>
+<tr><td><b>喷气罐</b></td><td>圆柱罐</td><td>φ50×180</td><td>蓝白罐体</td><td>侧面工具架</td><td>压缩空气·除尘除静电</td></tr>
+<tr><td><b>光口检测探头</b></td><td>笔式探头</td><td>φ15×100</td><td>黑色金属</td><td>夹爪侧面</td><td>端面检测·红光照明确认清洁度</td></tr>
+</table>
+<p><b>动作序列（≤20s）：</b>①取料(2s)：从料盘取模块 → ②插电口(2s)：对准槽位底部电口·导向±0.5mm直推 → ③光口检测(1.5s)：探头检查光口端面清洁度 → ④插光口×2(4s)：依次插入两根光纤LC接头 → ⑤清洁(2s)：若检测不通过，棉签清洁后重新检测 → ⑥测试(异步)：柜体执行环境测试 → ⑦拉出电口(1.5s)：模块顶出后拔出 → ⑧拔光口×2(3s)：断开两根光纤 → ⑨分拣(1s)+移动(3s)：按结果分拣至料盘。</p>
+
+<h3>场景 5 · ATS / 线外检测插接（核心挑战场景）</h3>
+<p><b>场景整体：</b>精密光学测试工位。ATS测试座置于光学平台上，四周遮光帘(黑色)，环境照度<1lux，温控23±1°C。</p>
+<table>
+<tr><th>物体</th><th>形状</th><th>尺寸(mm)</th><th>颜色/材质</th><th>位置</th><th>说明</th></tr>
+<tr><td><b>光学平台</b></td><td>大型台面</td><td>1500×900×800</td><td>黑色蜂窝钢板</td><td>场景中央</td><td>M6螺孔网格·隔振支撑</td></tr>
+<tr><td><b>ATS测试座</b></td><td>精密夹具</td><td>300×200×150</td><td>黑色阳极氧化铝</td><td>平台中央</td><td>气动锁紧·含电口+光口+温控</td></tr>
+<tr><td><b>光模块托架</b></td><td>V型槽</td><td>20×75×5</td><td>黑色PEEK</td><td>ATS座前端</td><td>模块放入后气动夹紧</td></tr>
+<tr><td><b>光纤耦合器</b></td><td>圆筒形</td><td>φ25×80</td><td>银色金属</td><td>ATS座光口</td><td>精密陶瓷插芯·插入损耗<0.3dB</td></tr>
+<tr><td><b>光功率计探头</b></td><td>方形探头</td><td>50×50×30</td><td>黑色</td><td>ATS座侧面</td><td>大面积InGaAs探测器</td></tr>
+<tr><td><b>遮光帘</b></td><td>矩形帘布</td><td>2000×1800</td><td>黑色遮光布</td><td>四周悬挂</td><td>完全遮光·底部配重</td></tr>
+<tr><td><b>清洁工具套装</b></td><td>套装盒</td><td>200×150×50</td><td>蓝白塑料盒</td><td>平台右侧</td><td>含棉签×20·喷气罐×1·酒精瓶×1</td></tr>
+<tr><td><b>扫码模块</b></td><td>固定式读码器</td><td>60×40×30</td><td>黑色</td><td>ATS座上方</td><td>自动读取模块SN标签</td></tr>
+</table>
+<p><b>动作序列（≤15s·动作链超集）：</b>①扫码(1s)：模块放入托架后自动扫码SN → ②插光口检测(1.5s)：模块插入ATS座光口·功率计初测 → ③清洁度检测(1s)：端面检测探头检查 → ④清洁(2s可选)：棉签/喷气清洁端面 → ⑤插电口(1.2s)：连接EVB电口·上电初始化 → ⑥插光纤(1.5s)：连接测试光纤至耦合器 → ⑦测试(异步30~120s)：光功率/眼图/误码率测试 → ⑧拔光纤(1s)：断开光纤连接 → ⑨拔模块(0.8s)：从ATS座取出 → ⑩目检金手指(1s)：AOI检查金手指完整性 → ⑪分拣(0.8s)：Pass/Fail分类 → ⑫移动(2.2s)：移至下一工位。</p>
+
+<!-- ═══ 换型兼容 ═══ -->
+<h3>换型兼容要求</h3>
+<p>软件切换型号，无需二次编程开发，换型时间≤0.5H。至少兼容QSFP系列(QSFP-DD/QSFP112/QSFP28)、OSFP系列(OSFP112 RHS/HIS)、SFP系列。通用夹爪+换型参数化(原子技能库复用)。</p>
+
+<!-- ═══ 模型架构 ═══ -->
+<h2>五、机器人模型架构</h2>
+<table>
+<tr><th>模块</th><th>输入</th><th>输出</th><th>推理延迟</th></tr>
+<tr><td><b>动作模型</b></td><td>多维观测状态(关节+视觉+力觉)</td><td>四维动作指令(xyz平移+夹爪开合)</td><td rowspan="3"><b>＜70ms</b></td></tr>
+<tr><td><b>引导模型</b></td><td>多维观测状态+四维动作指令</td><td>预测下一状态+接触概率</td></tr>
+<tr><td><b>状态机</b></td><td>动作指令+接触信号</td><td>8阶段调制后动作输出</td></tr>
+<tr><td colspan="5" style="background:#0d1520;color:#00d4aa"><b>模型算力需求 ≤20 TOPS</b></td></tr>
+</table>
+
+
+<!-- ═══ 性能指标 ═══ -->
+<h2>六、性能指标体系</h2>
+<table>
+<tr><th>指标</th><th>目标</th><th>监督方式</th></tr>
+<tr><td>全流程成功率</td><td>≥99%</td><td>大屏KPI实时</td></tr>
+<tr><td>子动作成功率</td><td>各≥99.5%</td><td>大屏动作级指标</td></tr>
+<tr><td>节拍(场景1)</td><td>≤6s</td><td>大屏节拍计时</td></tr>
+<tr><td>节拍(场景5)</td><td>≤15s</td><td>大屏节拍计时</td></tr>
+<tr><td>节拍(场景4)</td><td>≤20s</td><td>大屏节拍计时</td></tr>
+<tr><td>定位精度	±0.1mm · 重复±0.02mm</td><td>激光跟踪仪</td></tr>
+<tr><td>力控精度</td><td>±0.1N</td><td>六维力传感器</td></tr>
+<tr><td>金手指保护</td><td>零划痕</td><td>AOI复核</td></tr>
+</table>
+
+<!-- ═══ 验收 ═══ -->
+<h2>七、验收标准</h2>
+<div class="note">
+<b>验收条件：</b>甲方指定环境 · 连续72h · 累计有效插拔≥5000次<br>
+<b>成功率：</b>成功/总尝试×100%（机器人原因失败允许重试1次，重试成功仍计失败）<br>
+<b>节拍：</b>中间稳定段≥200颗平均值（测试等待不计入）<br>
+<b>换型：</b>软件切换型号≤0.5H · QSFP/OSFP/SFP兼容<br>
+<b>留痕：</b>大屏action-log全记录 · 双方签字确认
+</div>
+
+<!-- ═══ BOM成本与投资收益 ═══ -->
+<h2>八、BOM成本分析与投资回报</h2>
+
+<h3>8.1 单车BOM成本（基础配置≤25万·可升级）</h3>
+<table>
+<tr><th>子系统</th><th>核心部件</th><th>参考来源</th><th>成本(万元)</th></tr>
+<tr><td colspan="4" style="background:#0d1520;color:#f0a500"><b>□ 基础配置（标配·不可省略）</b></td></tr>
+<tr><td><b>AMR移动底盘</b></td><td>差速驱动轮组×2+万向轮×2 · 铝合金车架700×600×350mm · 悬挂系统</td><td>参考：国产AGV底盘(1.5-2.5万)·松灵SCOUT(2-3万)·寻迹智行(2-3万)</td><td>4~5</td></tr>
+<tr><td><b>激光雷达+导航</b></td><td>单线激光雷达(20m) · 深度相机(Intel D435i) · IMU · 导航控制器(NVIDIA Jetson或RK3588)</td><td>参考：思岚RPLIDAR S2(0.3万)·Intel D435i(0.2万)·SLAMTEC(0.2-0.4万)</td><td>1.5~2</td></tr>
+<tr><td><b>电池系统</b></td><td>48V 5kWh磷酸铁锂电池组 · BMS · 充电器 · 电量显示</td><td>参考：宁德时代/比亚迪48V模组(0.5-0.8万)·国轩高科(0.4-0.6万)</td><td>1.5~2</td></tr>
+<tr><td><b>电气系统</b></td><td>DC-DC电源模块 · 整车线束 · 急停回路 · 继电器 · 配电箱 · 保险丝</td><td>参考：明纬电源(0.1万)·施耐德继电器(0.1万)·定制线束(0.2-0.3万)</td><td>1~1.5</td></tr>
+<tr><td><b>人形躯干工具箱</b></td><td>铝合金框架+ABS面板 · 4区功能分仓 · 防静电内衬 · 臂安装法兰×2</td><td>参考：汽车工具箱·钣金加工·激光切割</td><td>1.5~2</td></tr>
+<tr><td><b>单台协作臂（6/7轴或4轴）</b></td><td>J1-J6关节模组 · 谐波减速器+无框力矩电机 · 臂展≥800mm · 负载5kg</td><td>参考：越疆CR5(3-5万)·节卡Zu3(4-5万)·遨博i3(3-4万)·国产新品牌(2-3万)</td><td>5~7</td></tr>
+<tr><td><b>末端执行器</b></td><td>伺服夹爪(开合0-50mm·1-20N) · 腕部旋转模组 · 快换法兰</td><td>参考：慧灵Z-EFG(0.3-0.5万)·大寰AG(0.4-0.6万)·定制夹爪(0.2-0.4万)</td><td>1~1.5</td></tr>
+<tr><td><b>引导视觉系统</b></td><td>800万像素工业相机×1 · 定焦镜头 · 环形LED光源 · USB3.0</td><td>参考：海康CA系列(0.2-0.3万)·大恒图像(0.15-0.25万)·迈德威视(0.1-0.2万)</td><td>0.5~0.8</td></tr>
+<tr><td><b>边缘计算单元</b></td><td>瑞芯微RK3588(8核·6TOPS NPU) · 16GB RAM · 256GB SSD · 工业级</td><td>参考：RK3588工业主板(0.15-0.3万)·Firefly(0.2-0.3万)·香橙派5(0.1万)</td><td>0.5~0.8</td></tr>
+<tr><td><b>散热/防护/杂项</b></td><td>散热风扇×2 · 防尘网 · 急停按钮 · 状态指示灯 · 紧固件 · 密封条</td><td>—</td><td>0.3~0.5</td></tr>
+<tr><td><b>软件/模型授权</b></td><td>动作模型+引导模型 · 200原子技能库 · 场景工艺包 · 导航软件 · 远程运维平台</td><td>内部研发摊薄(200台/年)</td><td>2~3</td></tr>
+<tr style="background:#0d1520"><td colspan="3"><b>基础配置合计（AMR+单臂+激光雷达+相机+电池+电气+软件）</b></td><td><b>18.8~27.1</b></td></tr>
+<tr><td colspan="4" style="background:#0d1520;color:#58a6ff"><b>☑ 可选升级模块（按需选配）</b></td></tr>
+<tr><td><b>+ 第二台协作臂</b></td><td>同规格6/7轴协作臂 · 末端执行器 · 臂安装法兰·双臂协同标定</td><td>同上</td><td>+5~7</td></tr>
+<tr style="background:#0d1520"><td colspan="3"><b>双臂配置合计</b></td><td><b>20.3~30.5</b></td></tr>
+<tr><td><b>+ AOI光学检测模组</b></td><td>金手指飞拍检测镜头 · 端面检测探头 · 红光照明 · 4侧面旋转台 · 缺陷分类算法</td><td>参考：自研飞拍模组(2-4万)·基恩士CV-X传感器(3-5万)</td><td>+3~5</td></tr>
+<tr><td><b>+ FW固件刷写模组</b></td><td>EVB测试子板×2 · 主板 · USB/I2C/SPI接口 · FW下载软件 · EEPROM校验</td><td>参考：自研EVB板(0.5-1万)·成品FW刷写器(1-2万)</td><td>+2~4</td></tr>
+<tr style="background:#0d1520"><td colspan="3"><b>全配款合计（双臂+AOI+FW）</b></td><td><b>28.3~42.5</b></td></tr>
+</table>
+<div class="note"><b>成本控制策略：</b>全部采用国产供应链——越疆/遨博协作臂(3-5万·非进口品牌)、思岚激光雷达(0.3万·非Velodyne)、RK3588国产芯片(0.2万·非Jetson Orin)、国产48V锂电池(0.6万)。核心降本路径：批量采购(100台/年)→协作臂批量价可降至3~4万。<br>
+<b>价格来源：</b>1688企业购·淘宝工业品·2026年8月询价·含13%增值税<br>
+🥉 <b>基础款</b>(AMR+单臂+激光+相机+电气+软件):<b>≤25万</b> ✓<br>
+🥈 <b>双臂款</b>(基础+第二臂):<b>≤30万</b> ✓<br>
+🥇 <b>全配款</b>(双臂+AOI+FW):<b>≤40万</b></div>
+
+<h3>8.2 整机售价与毛利</h3>
+<table>
+<tr><th>项目</th><th>金额(万元)</th><th>说明</th></tr>
+<tr><td>BOM成本</td><td>22~43</td><td>基础款22-25万·双臂款28-32万·全配款38-43万</td></tr>
+<tr><td>装配调试</td><td>2~3</td><td>系统集成·标定·72h老化测试</td></tr>
+<tr><td>软件/模型授权</td><td>3~5</td><td>动作模型+引导模型·200原子技能库·场景工艺包</td></tr>
+<tr><td>毛利</td><td>5~7</td><td>15~18%</td></tr>
+<tr><td><b>整机售价(建议)</b></td><td><b>35~65</b></td><td>基础款35-42万·双臂款45-52万·全配款55-65万·含首年软件订阅+安装培训</td></tr>
+</table>
+
+<h3>8.3 客户侧投资回报</h3>
+<table>
+<tr><th>模式</th><th>R MPV投入</th><th>年省人工</th><th>回收期</th><th>3年净收益</th></tr>
+<tr><td><b>单班替代(1人)</b></td><td>35万</td><td>12~15万/年</td><td>2.3~2.9年</td><td>—</td></tr>
+<tr><td><b>两班替代(2人)</b></td><td>40~50万</td><td>24~30万/年</td><td>1.3~2.1年 ✓</td><td>32~50万</td></tr>
+<tr><td><b>三班+良率提升</b></td><td>52万</td><td>36~45万/年</td><td>1.2~1.4年 ✓</td><td>56~83万</td></tr>
+<tr><td><b>RaaS订阅(可选)</b></td><td>1.5~2万/月</td><td>—</td><td>零首付·按颗计费</td><td>—</td></tr>
+</table>
+
+<h3>8.4 行业对标</h3>
+<table>
+<tr><th>对标产品</th><th>类型</th><th>参考价格(万元)</th><th>R MPV优势</th></tr>
+<tr><td>五菱工业·移动底盘</td><td>移动底盘</td><td>5~10</td><td>MPV自带工具箱+协作臂·一车多用</td></tr>
+<tr><td>海康机器人·潜伏AGV</td><td>搬运AGV</td><td>8~15</td><td>MPV除搬运外还能精密插拔·检测</td></tr>
+<tr><td>节卡Zu 7协作臂</td><td>协作臂</td><td>8~12</td><td>MPV含双臂+移动底盘</td></tr>
+<tr><td>欧姆龙VT-M12 AOI</td><td>光学检测</td><td>15~25</td><td>MPV集成飞拍AOI·省去固定设备</td></tr>
+<tr><td><b>R MPV Z700</b></td><td><b>机器人多功能车</b></td><td><b>25~45</b></td><td><b>基础款22-25万·全配38-45万·五合一</b></td></tr>
+</table>
+<div class="note"><b>核心经济性：</b>单台R MPV全配款(45万)替代五台独立设备:AGV搬运车(7万)+2台协作臂(14万)+AOI检测台(20万)+FW固件诊断仪(10万)=51万设备投入。R MPV以45万实现全部功能+自主移动，首年设备投入即省6万。加上人工节省(2班倒×15万/年=30万)，综合回收期＜1.5年。</div>
+
+<p style="text-align:center;margin:16px 0;color:#555;font-size:11px">
+  <a href="/supplier-model.html">🤝 供应商合作方案</a> · 
+  <a href="/factory-dashboard.html">📊 工厂大屏</a> · 
+  <a href="/scene-3d.html?scene=insert">🔌 场景仿真</a>
+</p>
+</body></html>
