@@ -55,7 +55,7 @@ body{font-family:'Segoe UI',-apple-system,'PingFang SC','Microsoft YaHei',sans-s
 .lib-body.collapsed{display:none}
 .lib-item{padding:5px 10px 5px 22px;font-size:10px;cursor:grab;color:#ccc;border-left:3px solid transparent;transition:all .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lib-item:hover{background:#333;color:#fff;border-left-color:#555}
-.lib-item.c{border-left-color:#a371f7}.lib-item.m{border-left-color:#58a6ff}.lib-item.a{border-left-color:#00d4aa}.lib-item.s{border-left-color:#d4a800}.lib-item.h{border-left-color:#ff4444}.lib-item.sub{border-left-color:#ff6b35;font-weight:700}
+.lib-item.c{border-left-color:#a371f7}.lib-item.m{border-left-color:#58a6ff}.lib-item.a{border-left-color:#00d4aa}.lib-item.s{border-left-color:#d4a800}.lib-item.h{border-left-color:#ff4444}.lib-item.sub{border-left-color:#ff6b35;font-weight:700}.lib-item.ss{border-left-color:#00bcd4}.lib-item.sm{border-left-color:#ff80ab}
 /* === Canvas === */
 #cv{position:fixed;top:36px;left:200px;right:0;bottom:0;overflow:hidden;cursor:default;background:#2a2a2a}
 /* === Log Panel === */
@@ -83,6 +83,7 @@ body{font-family:'Segoe UI',-apple-system,'PingFang SC','Microsoft YaHei',sans-s
 <span style="color:#00d4aa;font-weight:800;font-size:12px;margin-right:8px;letter-spacing:1px">Z-MAX</span><span style="color:#333;margin-right:8px">|</span><button class="btn btn-r" onclick="run()">▶ 执行</button>
 <button class="btn btn-r" onclick="Lg('⏹ 已停止')" style="background:#00d4aa;color:#000">⏹ 停止</button>
 <button class="btn btn-r" onclick="step()" style="background:#a371f7">▷ 单步调试</button>
+<button class="btn" onclick="preset('statespace')" style="background:#00bcd4;color:#000;border:1px solid #00bcd4">🌀 状态空间</button>
 
 <div id="menu-wrap" style="position:relative;display:inline-block">
   <button class="btn" style="background:#1a1f2b;color:#c8d1d9;border:1px solid #2a3040" onclick="toggleMenu()">⋮ 更多 ▾</button>
@@ -94,6 +95,7 @@ body{font-family:'Segoe UI',-apple-system,'PingFang SC','Microsoft YaHei',sans-s
     <a href="#" onclick="preset('insert');closeMenu();return false" style="display:block;padding:7px 14px;color:#c8d1d9;text-decoration:none;font-size:11px;transition:background .15s" onmouseover="this.style.background='#131726'" onmouseout="this.style.background=''">🔌 力控插入</a>
     <a href="#" onclick="preset('pick');closeMenu();return false" style="display:block;padding:7px 14px;color:#c8d1d9;text-decoration:none;font-size:11px;transition:background .15s" onmouseover="this.style.background='#131726'" onmouseout="this.style.background=''">📦 取料·100G</a>
     <a href="#" onclick="preset('aoi');closeMenu();return false" style="display:block;padding:7px 14px;color:#c8d1d9;text-decoration:none;font-size:11px;transition:background .15s" onmouseover="this.style.background='#131726'" onmouseout="this.style.background=''">🔍 AOI检测</a>
+    <a href="#" onclick="preset('statespace');closeMenu();return false" style="display:block;padding:7px 14px;color:#00bcd4;text-decoration:none;font-size:11px;transition:background .15s" onmouseover="this.style.background='#131726'" onmouseout="this.style.background=''">🌀 状态空间·39D</a>
     <div style="padding:6px 14px;font-size:10px;color:#8b949e;border-bottom:1px solid #1a1f2b;margin:4px 0">
       <select id="drawio-file" onchange="loadDrawioDAG();closeMenu()" style="width:100%;padding:5px;background:#0d1117;color:#c8d1d9;border:1px solid #1a1f2b;border-radius:4px;font-size:10px;cursor:pointer">
         <option value="">📐 选择管线...</option>
@@ -174,6 +176,30 @@ document.addEventListener('click', function(e){
 <div class="lib-item m" draggable="true" data-t="model" data-n="X-Hybrid" style="border-left:3px solid#ff6b6b">X-Hybrid</div>
 </div></div>
 
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🌀 状态空间 · 39D (8)</div>
+<div class="lib-body">
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS0 状态空间·39D">SS0 状态空间·39D</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS1 末端位置[0:3]">SS1 末端位置[0:3]</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS2 夹爪开度[3]">SS2 夹爪开度[3]</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS3 工件位置[4:7]">SS3 工件位置[4:7]</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS4 工件姿态[7:11]">SS4 工件姿态[7:11]</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS5 pad[11:18]">SS5 pad[11:18]</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS6 上一帧[18:36]">SS6 上一帧[18:36]</div>
+<div class="lib-item ss" draggable="true" data-t="statespace" data-n="SS7 目标位[36:39]">SS7 目标位[36:39]</div>
+</div></div>
+
+<div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🎛 状态机 · 8阶段 (8)</div>
+<div class="lib-body">
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM1 接近">SM1 接近</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM2 对位">SM2 对位</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM3 下降">SM3 下降</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM4 抓取">SM4 抓取</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM5 抬起">SM5 抬起</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM6 转移">SM6 转移</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM7 插入">SM7 插入</div>
+<div class="lib-item sm" draggable="true" data-t="statemachine" data-n="SM8 完成">SM8 完成</div>
+</div></div>
+
 <div class="lib-cat"><div class="lib-hdr" onclick="var b=this.nextElementSibling;b.classList.toggle('collapsed');this.querySelector('.arr').textContent=b.classList.contains('collapsed')?'▶':'▼'"><span class="arr">▼</span> 🟡 System 系统 (8)</div>
 <div class="lib-body">
 <div class="lib-item s" draggable="true" data-t="system" data-n="Sys0">Sys0</div>
@@ -236,7 +262,7 @@ document.addEventListener('mousemove',function(e){if(!logDrag)return;var h=logSH
 document.addEventListener('mouseup',function(){logDrag=false});
 document.getElementById('log').onmousemove=function(e){this.style.cursor=e.offsetY<8?'ns-resize':'default'};
 var N=[],L=[],drag=null,dx=0,dy=0,px=0,py=0,fromNode=null,selected=null,copied=null,undoStack=[],zoom=1,connected=false,connOverlays=[],stage=0,pipelineTimer=null,macPackets=0,forwardedMB=0,diskGB=0,orinRecording=false,orinOnline=false,hoverLink=-1;
-var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444',subsystem:'#ff6b35'},GS=20;
+var canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),dh=50,colors={condition:'#a371f7',model:'#58a6ff',action:'#00d4aa',system:'#d4a800',hardware:'#ff4444',subsystem:'#ff6b35',statespace:'#00bcd4',statemachine:'#ff80ab'},GS=20;
 function snap(v){return Math.round(v/GS)*GS}
 // 高清渲染
 var dpr=window.devicePixelRatio||1;
@@ -440,7 +466,9 @@ canvas.addEventListener('contextmenu',function(e){
     {t:'model',label:'🔵 模型',c:'#58a6ff'},
     {t:'action',label:'🟢 动作',c:'#00d4aa'},
     {t:'system',label:'🟡 系统',c:'#d4a800'},
-    {t:'hardware',label:'🔴 硬件',c:'#ff4444'}
+    {t:'hardware',label:'🔴 硬件',c:'#ff4444'},
+    {t:'statespace',label:'🌀 状态空间',c:'#00bcd4'},
+    {t:'statemachine',label:'🎛 状态机',c:'#ff80ab'}
   ];
   var menu=document.createElement('div');
   menu.id='ctx-menu';
@@ -712,6 +740,10 @@ function localPassThrough(nodeNames,edgeCount){
   if(badEdges>0)Lg('  ⚠️ 无效连线: '+badEdges+'条');
   else Lg('  ✅ 连线验证: '+L.length+'条全部有效');
   var sensors=N.filter(function(n){return n.type==='hardware'||n.name.indexOf('D405')>=0||n.name.indexOf('力')>=0||n.name.indexOf('关节')>=0||n.name.indexOf('MES')>=0||n.name.indexOf('安全')>=0}).length;
+  var states=N.filter(function(n){return n.type==='statespace'}).length;
+  var machines=N.filter(function(n){return n.type==='statemachine'}).length;
+  if(states>0)Lg('  🌀 状态空间节点: '+states+'个 (39D观测分解)');
+  if(machines>0)Lg('  🎛 状态机节点: '+machines+'个 (8阶段调制)');
   var models=N.filter(function(n){return n.type==='model'||n.name.indexOf('编码')>=0||n.name.indexOf('融合')>=0}).length;
   var actions=N.filter(function(n){return n.type==='action'||n.name.indexOf('A0')>=0||n.name.indexOf('取料')>=0||n.name.indexOf('光引擎')>=0}).length;
   var executors=N.filter(function(n){return n.type==='system'||n.name.indexOf('Orin')>=0||n.name.indexOf('Z700')>=0}).length;
@@ -931,6 +963,17 @@ function preset(t){
           insert:[{t:'condition',n:'C004 插入·100G',x:80,y:200},{t:'model',n:'VLA-T · Sys21',x:280,y:200},{t:'action',n:'A04 力控插入',x:480,y:200}],
           pick:[{t:'condition',n:'C001 取料·100G',x:80,y:200},{t:'model',n:'ACT · Sys1',x:280,y:200},{t:'action',n:'A01 取料·100G',x:480,y:200}],
           aoi:[{t:'condition',n:'C008 AOI·100G',x:80,y:200},{t:'model',n:'VLA-T · Sys21',x:280,y:200},{t:'action',n:'A09 AOI',x:480,y:200}],
+          statespace:[
+            {t:'statespace',n:'SS0 状态空间·39D',x:40,y:60},
+            {t:'statespace',n:'SS1 末端位置[0:3]',x:40,y:140},{t:'statespace',n:'SS2 夹爪开度[3]',x:40,y:210},
+            {t:'statespace',n:'SS3 工件位置[4:7]',x:40,y:280},{t:'statespace',n:'SS4 工件姿态[7:11]',x:40,y:350},
+            {t:'statemachine',n:'SM1 接近',x:260,y:60},{t:'statemachine',n:'SM2 对位',x:260,y:120},
+            {t:'statemachine',n:'SM3 下降',x:260,y:180},{t:'statemachine',n:'SM4 抓取',x:260,y:240},
+            {t:'statemachine',n:'SM5 抬起',x:260,y:300},{t:'statemachine',n:'SM6 转移',x:260,y:360},
+            {t:'statemachine',n:'SM7 插入',x:260,y:420},{t:'statemachine',n:'SM8 完成',x:260,y:480},
+            {t:'model',n:'动作模型 · 39D→4D',x:480,y:120},{t:'model',n:'引导模型 · 接触预测',x:480,y:240},
+            {t:'action',n:'A04 力控插入',x:680,y:180}
+          ],
           pipeline:[
             // Stage 1: 条件输入 — 5 sensors
             {t:'condition',n:'📷 D405 视觉',x:30,y:40},{t:'condition',n:'🖐️ 六维力觉',x:30,y:120},{t:'condition',n:'🔧 关节状态',x:30,y:200},
@@ -976,6 +1019,16 @@ function preset(t){
     L.push({f:ids[21],t:ids[22]}); L.push({f:ids[22],t:ids[23]});
     // Closed loop: DDS sync → GR00T training (22→13)
     L.push({f:ids[22],t:ids[13]});
+  } else if(t==='statespace'){
+    var ids=p.statespace.map(function(pp){return add(pp.t,pp.n,pp.x,pp.y)});
+    // SS1-SS4 (状态空间分量) → SM1 接近 (状态机入口)
+    L.push({f:ids[1],t:ids[5]}); L.push({f:ids[2],t:ids[5]}); L.push({f:ids[3],t:ids[5]}); L.push({f:ids[4],t:ids[5]});
+    // 状态机串联 接近→对位→下降→抓取→抬起→转移→插入→完成
+    for(var i=5;i<12;i++)L.push({f:ids[i],t:ids[i+1]});
+    // 状态空间 → 动作模型 + 引导模型
+    L.push({f:ids[0],t:ids[13]}); L.push({f:ids[0],t:ids[14]});
+    // 状态机(插入) + 动作模型 → 力控插入
+    L.push({f:ids[11],t:ids[15]}); L.push({f:ids[13],t:ids[15]});
   } else {
     var ids=(p[t]||p.insert).map(function(pp){return add(pp.t,pp.n,pp.x,pp.y)});
     for(var i=0;i<ids.length-1;i++)L.push({f:ids[i],t:ids[i+1]});
@@ -1241,7 +1294,7 @@ function showACTArch(){
   m.innerHTML='<div style="background:#0d1117;border:1px solid #1e2740;border-radius:12px;padding:24px;max-width:780px;width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.8)">'+
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'+
     '<span style="color:#00d4aa;font-size:16px;font-weight:700">📊 ACT 推理引擎 · 架构总览</span>'+
-    '<button onclick="document.getElementById('act-arch-modal').remove()" style="background:none;border:none;color:#8b949e;font-size:20px;cursor:pointer;line-height:1">&times;</button>'+
+    '<button onclick="document.getElementById(&quot;act-arch-modal&quot;).remove()" style="background:none;border:none;color:#8b949e;font-size:20px;cursor:pointer;line-height:1">&times;</button>'+
     '</div>'+
     '<svg viewBox="0 0 720 460" width="100%" style="max-width:720px;display:block;margin:0 auto">'+
     '<defs>'+

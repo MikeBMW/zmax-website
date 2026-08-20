@@ -25,6 +25,33 @@ a{color:#00d4aa;text-decoration:none}
 </head>
 <body>
 <button onclick="window.print()" style="float:right;padding:6px 14px;background:#00d4aa;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📄 导出PDF</button>
+<button onclick="exportMD()" style="float:right;margin-right:8px;padding:6px 14px;background:#58a6ff;color:#000;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer">📝 导出Markdown</button>
+<script>
+function exportMD(){
+  var root=document.body.cloneNode(true);
+  // 移除按钮和脚本
+  root.querySelectorAll('button,script,style').forEach(function(e){e.remove()});
+  var lines=[];
+  root.querySelectorAll('h1,h2,h3,h4,p,tr').forEach(function(el){
+    var tag=el.tagName.toLowerCase();
+    var txt=el.textContent.replace(/\s+/g,' ').trim();
+    if(!txt)return;
+    if(tag==='h1')lines.push('# '+txt);
+    else if(tag==='h2')lines.push('## '+txt);
+    else if(tag==='h3')lines.push('### '+txt);
+    else if(tag==='h4')lines.push('#### '+txt);
+    else if(tag==='tr'){
+      var cells=[];el.querySelectorAll('th,td').forEach(function(c){cells.push(c.textContent.replace(/\s+/g,' ').trim())});
+      if(cells.length)lines.push('| '+cells.join(' | ')+' |');
+    }
+    else if(tag==='p')lines.push(txt);
+  });
+  var md='# R MPV Z700 产品全景方案书\n\n'+lines.join('\n\n');
+  var blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='R-MPV-Z700-产品方案.md';a.click();
+}
+</script>
 <a href="/">← 主页</a>
 <h1>R MPV Z700 · 机器人多功能用途车 · 产品全景方案书</h1>
 
@@ -34,13 +61,17 @@ a{color:#00d4aa;text-decoration:none}
 <p style="color:#ff6b35;text-indent:0;font-size:15px;font-weight:700">光模块产业正站在"人机替代"的临界点上。</p>
 <p style="color:#c8d1d9;text-indent:0">2026年，AI数据中心建设拉动800G/1.6T光模块需求暴增，全球市场规模突破210亿美元。中国光模块产量占全球60%以上，但产线自动化率不足45%。<b>成都储翰工厂</b>——典型的光模块封装测试基地，每条产线依赖12-15名操作员完成上下料、插拔、检测、分拣等重复性精细操作，年人力成本超150万元。</p>
 <p style="color:#c8d1d9;text-indent:0">人工操作的三大瓶颈日益突出：<b>精度不足</b>——微米级对准依赖手感，良率波动大；<b>节拍受限</b>——人工作业速度无法匹配800G模块翻倍增长的产能需求；<b>人才短缺</b>——精密操作工种招聘困难，培训周期3个月。</p>
-<p style="color:#00d4aa;text-indent:0;font-weight:700">R MPV Z700——光模块行业首个"移动即工位"的具身操作平台，一台车覆盖5大场景全流程，集成AOI光学检测、FW固件刷写等多项功能，一机多能，将产线从人围着设备转升级为机器人自主流转，22-25万BOM成本，1.5年回收期。</p>
+<p style="color:#00d4aa;text-indent:0;font-weight:700">R MPV Z700——面向自动化流水线的"移动即工位"具身操作平台，通过自主流转整合串联流水线各工序，一台车覆盖5大场景全流程，集成AOI光学检测等多项功能，一机多能，显著提高生产节拍（≤6s/15s/20s），22-25万BOM成本，1.5年回收期。</p>
 </div>
 
 <!-- ═══ 产品定位 ═══ -->
 <h2>一、产品定位与愿景</h2>
 <h3>1.1 产品定位</h3>
-<p><b>R MPV（Robot Multi-Purpose Vehicle）</b>型号Z700，是一款面向光模块工厂精细操作的机器人多功能用途车。采用「全向移动基座+举升立柱+精密操作上装」三层一体化混合机器人设计，搭载1~2台协作臂（6/7轴或4轴可配）与头部相机。既能自主举升流转，又能精密插拔。一车多能：自主导航跨工位流转+精密插拔+视觉检测+固件刷写+光学检测。</p>
+<p><b>R MPV（Robot Multi-Purpose Vehicle）</b>型号Z700，是一款面向光模块工厂精细操作的机器人多功能用途车。采用「全向移动基座 + 举升立柱 + 精密操作上装」三层一体化混合机器人设计，搭载1~2台协作臂（6/7轴或4轴可配）与头部相机。既能自主举升流转，又能精密插拔。一车多能：自主导航跨工位流转+精密插拔+光学检测。</p>
+
+<p><b>模块化可分离设计：</b>三层结构均可独立拆换、灵活组合——①<b>移动基座可分离</b>：全向移动基座与工具箱体采用标准接口对接，工具箱体脱离基座后即可作为<b>固定式桌面版精密操作工作站</b>独立使用；②<b>移动基座可替换</b>：移动基座既可采用自研全向基座，也可直接配置<b>市面标准AMR底盘</b>（激光导航·±2mm），按成本与精度需求灵活选型；③<b>举升立柱可升级</b>：举升立柱可替换为<b>多级伸缩线性门架</b>，实现向上举升、向前前移等全线性平动。</p>
+
+<p><b>线性平动取代肩部转动（提速设计）：</b>传统协作臂靠肩部旋转关节实现上下/前后到位，旋转关节受惯量与力矩限制、速度受限。R MPV 将大行程的上下/前后运动交由<b>线性平动机构</b>完成——借鉴叉车多级门架与直线导轨模组的直线运动机理，取消肩部大范围转动，改用<b>丝杆/齿条驱动的线性模组</b>完成向上举升与向前前移，运动更快、刚度更高、定位更准。精密操作上装则专注末端精细动作（微调对位、力控插拔、翻转），与线性平动形成<b>「线性大行程 + 臂微调精细」的宏微复合</b>，大幅提升节拍。</p>
 
 <h3>1.2 目标工厂</h3>
 <table>
@@ -50,7 +81,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>车间分区</b></td><td>COC基板区 · OE光引擎区 · 模块组装区 · 成品物流区</td></tr>
 <tr><td><b>现有设备</b></td><td>键合机/贴片机/耦合台/AOI检测台/老化箱/热海柜体/ATS测试座</td></tr>
 <tr><td><b>人工现状</b></td><td>每工位1-2人·两班倒·年人力成本24-45万/工位</td></tr>
-<tr><td><b>改造目标</b></td><td>单台R MPV替代2人·5大场景全覆盖·首期部署3-5台</td></tr>
+<tr><td><b>改造目标</b></td><td>基于现有固定式Z700F进行工具箱改造：扩展移动底盘（全向/标准AMR可选）· 增加举升立柱（线性平动）· 改造精密操作上装（双臂+头部相机）· 5大场景全覆盖 · 首期部署3-5台</td></tr>
 </table>
 
 <h3>1.3 产品愿景</h3>
@@ -63,8 +94,8 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>🦾 精密操作机器人</b></td><td>1~2台协作臂（6/7轴或4轴可配），末端速度≥1.5m/s，重复定位±0.02mm</td></tr>
 <tr><td><b>📦 模块化工具箱</b></td><td>800×500×700mm人形躯干·中央躯干为控制核心·顶部有头部相机·两端各预留臂安装法兰</td></tr>
 <tr><td><b>🔀 混合机器人</b></td><td>全向移动基座(配重60kg)+举升立柱(0~800mm)+精密操作上装·三级精度±2mm→±0.5mm→±0.02mm·固定式/移动式双形态</td></tr>
-<tr><td><b>⚡ 一车多能</b></td><td>单台覆盖FW刷写、AOI检测、老化上下料、ATS测试全流程</td></tr>
-<tr><td><b>📊 车载数据采集</b></td><td>内置AOI图像+操作轨迹+力觉+过程数据采集子系统，产线作业即产出训练数据，对接AOI模型训练与VLA动作模型训练</td></tr>
+<tr><td><b>⚡ 一车多能</b></td><td>单台覆盖AOI检测、老化上下料、ATS测试全流程</td></tr>
+<tr><td><b>📊 车载数据采集</b></td><td>内置AOI图像+操作轨迹+力觉+过程数据采集子系统，产线作业即产出训练数据，对接AOI模型训练与端到端动作模型训练</td></tr>
 </table>
 
 <!-- ═══ 市场调研 ═══ -->
@@ -87,7 +118,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td>海康机器人·潜伏AGV</td><td>搬运AGV</td><td>8~15</td><td>R MPV除搬运外还能精密插拔·检测</td></tr>
 <tr><td>节卡Zu 7协作臂</td><td>固定协作臂</td><td>8~12</td><td>R MPV含双臂+移动底盘</td></tr>
 <tr><td>欧姆龙VT-M12 AOI</td><td>固定检测台</td><td>15~25</td><td>R MPV集成飞拍AOI·省去固定设备</td></tr>
-<tr><td><b>R MPV Z700</b></td><td><b>机器人多功能车</b></td><td><b>25~45</b></td><td><b>AMR+双臂+工具箱+AOI+FW五合一</b></td></tr>
+<tr><td><b>R MPV Z700</b></td><td><b>机器人多功能车</b></td><td><b>25~45</b></td><td><b>AMR+双臂+工具箱+AOI三合一</b></td></tr>
 </table>
 
 <!-- ═══ 系统架构 ═══ -->
@@ -108,29 +139,31 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>头部·相机</b></td><td>顶部安装</td><td>800万像素引导相机·环形LED·定焦镜头·负责视觉定位与识别</td></tr>
 <tr><td><b>A区·料盘储存</b></td><td>2层×4盘=8盘</td><td>20颗光模块/盘·共160颗缓存·吸塑盒/华夫盒</td></tr>
 <tr><td><b>B区·AOI检测</b></td><td>检测工位</td><td>AOI金手指飞拍镜头·端面检测探头·红光照明·4侧面旋转台·清洁棉签/喷气罐</td></tr>
-<tr><td><b>中央·电气控制</b></td><td>躯干内部密封舱</td><td>边缘计算单元·电池管理·电机驱动·通信模块·固件刷写EVB子板</td></tr>
+<tr><td><b>中央·电气控制</b></td><td>躯干内部密封舱</td><td>边缘计算单元·电池管理·电机驱动·通信模块</td></tr>
 </table>
 
 <h3>4.2 混合机器人整体形态设计</h3>
-<p><b>设计定位：</b>R MPV Z700 是一款<b>「全向移动基座 + 举升立柱 + 精密操作上装」</b>三层一体化的混合机器人。下部是全向移动基座（含配重），中部是垂直举升立柱，上部是搭载双臂与头部相机的人形躯干。三者协同，使Z700既能像载具一样自主流转与举升，又能像精密机器人一样完成光模块快速插拔。</p>
+<p><b>设计定位：</b>R MPV Z700 是一款<b>「全向移动基座 + 举升立柱 + 工具箱体 + 精密操作上装」</b>四层一体化的混合机器人。下部是全向移动基座（含配重），其上为垂直举升立柱，中部为工具箱体（A区料盘+B区AOI），上部为搭载双臂与头部相机的精密操作上装。四者协同，使Z700既能像载具一样自主流转与举升，又能像精密机器人一样完成光模块快速插拔。</p>
 
 <table>
 <tr><th>层级</th><th>构成</th><th>功能</th></tr>
-<tr><td><b>上层 · 精密操作上装</b></td><td>人形躯干（A区料盘+B区AOI）· 双臂（6/7轴或4轴）· 头部相机</td><td>取料·扫码·翻转·插拔·AOI检测·分拣</td></tr>
+<tr><td><b>上层 · 精密操作上装</b></td><td>双臂（6/7轴或4轴）· 头部相机</td><td>取料·扫码·翻转·插拔·分拣</td></tr>
+<tr><td><b>工具箱体</b></td><td>A区料盘仓 + B区AOI检测 + 中央电气控制</td><td>料盘储存·AOI金手指飞拍检测·端面检测</td></tr>
 <tr><td><b>中层 · 举升立柱</b></td><td>双立柱门架 · 精密丝杆 · 绝对值编码器</td><td>垂直举升0~800mm，覆盖料架/测试台高度</td></tr>
 <tr><td><b>下层 · 全向移动基座</b></td><td>全向轮组×4 · 配重块 · 电池 · 激光导航</td><td>全向移动·原地调头·工位精准对接</td></tr>
 </table>
 
 <h3>4.2.1 质量与质心设计</h3>
-<p><b>质量分配（整车约350kg）：</b></p>
+<p><b>质量分配（整车约274kg）：</b></p>
 <table>
 <tr><th>部件</th><th>质量(kg)</th><th>设计意图</th></tr>
-<tr><td><b>全向移动基座</b></td><td>180</td><td>含配重块60kg · 驱动40kg · 电池50kg · 框架30kg</td></tr>
-<tr><td><b>举升立柱</b></td><td>40</td><td>双立柱门架+精密丝杆</td></tr>
-<tr><td><b>精密操作上装</b></td><td>130</td><td>人形躯干80kg + 双臂44kg + 头部相机6kg</td></tr>
-<tr><td><b>合计</b></td><td><b>≈350</b></td><td>配重块压低位，整车质心高度≤400mm</td></tr>
+<tr><td><b>全向移动基座</b></td><td>145</td><td>含配重块50kg · 驱动35kg · 电池40kg · 框架20kg</td></tr>
+<tr><td><b>举升立柱</b></td><td>30</td><td>双立柱门架+精密丝杆</td></tr>
+<tr><td><b>工具箱体</b></td><td>50</td><td>A区料盘仓 + B区AOI检测 + 中央电气控制舱</td></tr>
+<tr><td><b>双臂（6/7轴）</b></td><td>49</td><td>2×24.5kg（对齐物理世界实测）</td></tr>
+<tr><td><b>合计</b></td><td><b>≈274</b></td><td>配重块压低位，整车质心高度≤400mm · ≤300kg</td></tr>
 </table>
-<p><b>质心设计原则：</b>①配重块（60kg铸铁）置于基座底部，将整车质心压至离地≤400mm；②举升满载（上装升至800mm）时，稳定力矩与倾覆力矩之比＞2（安全系数）；③全向移动急停时，低质心+宽轮距保证不倾覆。</p>
+<p><b>质心设计原则：</b>①配重块（50kg铸铁）置于基座底部，将整车质心压至离地≤400mm；②举升满载（上装升至800mm）时，稳定力矩与倾覆力矩之比＞2（安全系数）；③全向移动急停时，低质心+宽轮距保证不倾覆。</p>
 
 <h3>4.2.2 惯量设计</h3>
 <table>
@@ -179,10 +212,10 @@ a{color:#00d4aa;text-decoration:none}
 <h3>4.4 协作臂（6/7轴与4轴双方案）</h3>
 <table>
 <tr><th>参数</th><th>6/7轴方案</th><th>4轴方案</th></tr>
-<tr><td>自由度</td><td>6~7 DOF</td><td>4 DOF（肩·上臂·前臂·夹爪）</td></tr>
-<tr><td>负载</td><td>≥5 kg</td><td>≥3 kg</td></tr>
+<tr><td>自由度</td><td>7 DOF（6旋转关节+夹爪）</td><td>4 DOF（肩·上臂·前臂·夹爪）</td></tr>
+<tr><td>负载</td><td>5 kg（额定）</td><td>≥3 kg</td></tr>
 <tr><td>臂展</td><td>≥800 mm</td><td>≥500 mm</td></tr>
-<tr><td>自重</td><td>≤25 kg</td><td>≤15 kg</td></tr>
+<tr><td>自重</td><td>24.5 kg</td><td>≤15 kg</td></tr>
 <tr><td>末端速度</td><td>峰值≥1.5 m/s · 加速度≥10 m/s²</td><td>峰值≥2.0 m/s · 加速度≥15 m/s²</td></tr>
 <tr><td>重复定位</td><td>≤±0.02 mm</td><td>≤±0.05 mm</td></tr>
 <tr><td>适用场景</td><td>全场景精密操作·双臂协同·光纤插拔</td><td>快速插拔·配合前移滑轨·单一平面取放</td></tr>
@@ -199,7 +232,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>单臂配置</b></td><td>1×协作臂（6/7轴或4轴）+ 伺服夹爪</td><td>5 kg</td><td>±0.02mm</td><td>单工序插拔·固定工位·料盘上下料</td></tr>
 <tr><td><b>双臂配置</b></td><td>2×协作臂（6/7轴或4轴·仿人化·可同时/分别作业）</td><td>单臂3kg×2</td><td>±0.03mm</td><td>双臂协同装配·一臂持料一臂操作·光纤插拔</td></tr>
 <tr><td><b>快速插拔配置</b></td><td>1臂+专用力控插拔末端（高刚性强力夹爪）</td><td>5 kg</td><td>±0.02mm·力控≤2N</td><td>FW Loading·EVB插拔·≤6s节拍·金手指零划痕</td></tr>
-<tr><td><b>全功能配置</b></td><td>双臂 + AOI飞拍模组 + FW刷写EVB</td><td>3kg×2</td><td>±0.02mm</td><td>五合一·插拔+检测+刷写全流程</td></tr>
+<tr><td><b>全功能配置</b></td><td>双臂 + AOI飞拍模组</td><td>3kg×2</td><td>±0.02mm</td><td>三合一·插拔+检测+分拣全流程</td></tr>
 </table>
 
 <h3>4.6.1 双臂配置详解（仿人化作业）</h3>
@@ -264,6 +297,90 @@ a{color:#00d4aa;text-decoration:none}
 
 <h3>4.7.4 与多配置的关系</h3>
 <p>后背滑轨为<b>快速插拔配置</b>的专项增强：标准双臂配置可加装前移滑轨，升级为"双臂+前移滑轨"复合插拔形态，专攻FW Loading≤6s节拍场景。滑轨装置同样采用标准化法兰接口，即插即用，无需改动车体与臂。</p>
+
+<h3>4.8 机械臂物理世界参数（动力学模型）</h3>
+<p><b>参数来源：</b>Z700 机械臂实测物理参数与仿真动力学模型，用于插拔力控、轨迹规划与节拍验证。</p>
+
+<h4>4.8.1 硬件属性</h4>
+<table>
+<tr><th>属性</th><th>实测值</th><th>工程意义</th></tr>
+<tr><td>自由度</td><td>7（6×旋转关节J1-J6 + 夹爪开合）</td><td>6DOF覆盖空间位姿 + 1DOF夹持</td></tr>
+<tr><td>整机质量（臂）</td><td>24.5 kg</td><td>末端执行器1.2kg</td></tr>
+<tr><td>额定负载</td><td>3 kg</td><td>光模块0.15kg ≪ 额定，负载裕量20倍</td></tr>
+<tr><td>末端惯量</td><td>0.08 kg·m²（负载0.15kg@0.3m）</td><td>低惯量 → 高加速度 → 快节拍</td></tr>
+<tr><td>重复定位精度</td><td>±0.02 mm</td><td>光模块插拔需求≤0.1mm，裕量5倍</td></tr>
+<tr><td>工作半径</td><td>0.8 m</td><td>覆盖工作台1.13×0.75m</td></tr>
+<tr><td>夹爪行程</td><td>0–35 mm · 最大夹持力12 N</td><td>模块宽18mm，行程裕量充分</td></tr>
+<tr><td>力觉</td><td>6D力/力矩 · z向0.03–12N · 分辨率0.01N</td><td>力控插拔≤2N可精确控制</td></tr>
+<tr><td>触觉</td><td>4D触觉（开度/接触开关量）</td><td>接触判定·防划伤</td></tr>
+<tr><td>视觉</td><td>RGB-D（39D观测）</td><td>位置/夹爪/速度/peg/孔位/姿态</td></tr>
+</table>
+
+<h4>4.8.2 每轴电机参数</h4>
+<table>
+<tr><th>轴</th><th>额定扭矩N·m</th><th>峰值N·m</th><th>额定转速rpm</th><th>减速比</th><th>转子惯量kg·m²</th><th>功率W</th></tr>
+<tr><td>J1 肩部</td><td>12.0</td><td>30.0</td><td>1200</td><td>101</td><td>0.00032</td><td>1500</td></tr>
+<tr><td>J2 肩部</td><td>12.0</td><td>30.0</td><td>1200</td><td>101</td><td>0.00032</td><td>1500</td></tr>
+<tr><td>J3 肘部</td><td>6.0</td><td>15.0</td><td>1500</td><td>81</td><td>0.00024</td><td>940</td></tr>
+<tr><td>J4 肘部</td><td>6.0</td><td>15.0</td><td>1500</td><td>81</td><td>0.00024</td><td>940</td></tr>
+<tr><td>J5 腕部</td><td>3.0</td><td>8.0</td><td>1800</td><td>51</td><td>0.00018</td><td>560</td></tr>
+<tr><td>J6 腕部</td><td>3.0</td><td>8.0</td><td>1800</td><td>51</td><td>0.00018</td><td>560</td></tr>
+<tr><td>夹爪直驱</td><td>0.15</td><td>0.4</td><td>3000</td><td>1.0</td><td>0.00002</td><td>45</td></tr>
+</table>
+<p><b>总功率：</b>1500×2 + 940×2 + 560×2 + 45 = 6045 W（峰值全功率），实际插拔工况远低于峰值。</p>
+
+<h4>4.8.3 臂段质量分布（总24.5kg）</h4>
+<table>
+<tr><th>臂段</th><th>质量kg</th><th>质心m</th><th>长度m</th><th>占比</th></tr>
+<tr><td>底座</td><td>5.0</td><td>0.05</td><td>0.12</td><td>20.4%</td></tr>
+<tr><td>J1段（肩）</td><td>4.6</td><td>0.18</td><td>0.35</td><td>18.8%</td></tr>
+<tr><td>J2段（大臂）</td><td>4.2</td><td>0.28</td><td>0.55</td><td>17.1%</td></tr>
+<tr><td>J3段（肘）</td><td>3.4</td><td>0.15</td><td>0.30</td><td>13.9%</td></tr>
+<tr><td>J4段（小臂）</td><td>2.8</td><td>0.21</td><td>0.42</td><td>11.4%</td></tr>
+<tr><td>J5段（腕）</td><td>2.0</td><td>0.12</td><td>0.24</td><td>8.2%</td></tr>
+<tr><td>J6段（末端）</td><td>1.3</td><td>0.08</td><td>0.16</td><td>5.3%</td></tr>
+<tr><td>末端夹爪</td><td>1.2</td><td>0.06</td><td>0.12</td><td>4.9%</td></tr>
+</table>
+
+<h4>4.8.4 广义质量矩阵 M(q)（典型位形·7×7）</h4>
+<table>
+<tr><th>轴</th><th>J1</th><th>J2</th><th>J3</th><th>J4</th><th>J5</th><th>J6</th><th>夹爪</th></tr>
+<tr><td>J1</td><td>3.584</td><td>0.179</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>J2</td><td>0.179</td><td>3.584</td><td>0.095</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>J3</td><td>0</td><td>0.095</td><td>1.895</td><td>0.095</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>J4</td><td>0</td><td>0</td><td>0.095</td><td>1.895</td><td>0.039</td><td>0</td><td>0</td></tr>
+<tr><td>J5</td><td>0</td><td>0</td><td>0</td><td>0.039</td><td>0.788</td><td>0.039</td><td>0</td></tr>
+<tr><td>J6</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.039</td><td>0.788</td><td>0.016</td></tr>
+<tr><td>夹爪</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0.016</td><td>0.320</td></tr>
+</table>
+<p><b>动力学特征：</b>对角线为主转动惯量，相邻轴耦合≈5%，关节间弱耦合。J1/J2等效惯量最大（3.584），腕部最小（0.788）。</p>
+
+<h3>4.9 可行性分析与设计优化</h3>
+<p><b>基于物理世界参数，对R MPV整体设计进行可行性验证与优化。</b></p>
+
+<h4>4.9.1 可行性分析</h4>
+<table>
+<tr><th>验证项</th><th>参数依据</th><th>结论</th></tr>
+<tr><td><b>负载可行性</b></td><td>光模块0.15kg vs 额定3kg</td><td>✅ 负载裕量20倍，插拔轻载高速</td></tr>
+<tr><td><b>精度可行性</b></td><td>±0.02mm vs 需求≤0.1mm</td><td>✅ 精度裕量5倍，金手指零划痕有保障</td></tr>
+<tr><td><b>节拍可行性</b></td><td>末端惯量0.08kg·m²·电机峰值扭矩30N·m</td><td>✅ 峰值加速度可达375rad/s²，支撑≤6s</td></tr>
+<tr><td><b>力控可行性</b></td><td>力觉分辨率0.01N·z向0.03-12N</td><td>✅ 力控插拔≤2N可精确闭环</td></tr>
+<tr><td><b>动力学可行性</b></td><td>质量矩阵弱耦合(5%)</td><td>✅ 关节独立控制简单·轨迹规划高效</td></tr>
+<tr><td><b>整机质量可行性</b></td><td>臂24.5kg + 上装其余105.5kg</td><td>✅ 上装130kg < 举升150kg额定</td></tr>
+</table>
+
+<h4>4.9.2 设计优化</h4>
+<table>
+<tr><th>优化项</th><th>原设计</th><th>优化后</th><th>收益</th></tr>
+<tr><td><b>臂选型</b></td><td>负载5kg·自重25kg（裕量过大）</td><td>负载3kg·自重24.5kg（对齐实测）</td><td>惯量降·节拍提速·成本降</td></tr>
+<tr><td><b>整机质量</b></td><td>≈350kg</td><td>≈274kg（增工具箱50kg·臂对齐实测49kg·基座轻量化）</td><td>≤300kg达标·举升余量增大·能耗降</td></tr>
+<tr><td><b>电机功率</b></td><td>—</td><td>峰值6kW·额定约3kW</td><td>电池48V·60Ah可满足8h+</td></tr>
+<tr><td><b>末端轻量化</b></td><td>末端1.5kg</td><td>末端1.2kg（对齐实测）</td><td>惯量降20%·插拔加速度+25%</td></tr>
+<tr><td><b>力控精度</b></td><td>力控≤2N</td><td>力控≤2N·分辨率0.01N</td><td>0.01N分辨·金手指保护更精细</td></tr>
+</table>
+
+<h4>4.9.3 关键结论</h4>
+<p>①<b>物理参数全面达标</b>：负载20倍裕量、精度5倍裕量、力控分辨率0.01N，各项指标均满足并超过光模块插拔需求；②<b>臂选型优化</b>：将原"负载5kg"下调至实测"负载3kg"，惯量降低、节拍提速、成本下降，整机质量从350kg优化至274kg（≤300kg达标）；③<b>动力学模型支持仿真</b>：广义质量矩阵M(q)直接用于插拔力控仿真与轨迹规划，为模型训练提供真实物理约束；④<b>节拍验证有据</b>：末端惯量0.08kg·m² + 峰值扭矩30N·m，理论峰值角加速度375rad/s²，≤6s节拍物理上可达成。</p>
 
 <!-- ═══ 五大场景 ═══ -->
 <h2>五、五大作业场景详细定义</h2>
@@ -440,8 +557,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr style="background:#0d1520"><td colspan="3"><b>基础配置合计（AMR+单臂+全系统）</b></td><td><b>15.8~24.5</b></td></tr>
 <tr><td>+第二臂</td><td>同规格协作臂+末端执行器</td><td>—</td><td>+5~7</td></tr>
 <tr><td>+AOI模组</td><td>飞拍镜头·端面检测·旋转台</td><td>自研2~4万</td><td>+3~5</td></tr>
-<tr><td>+FW刷写模组</td><td>EVB子板×2·主板</td><td>自研1~2万</td><td>+2~4</td></tr>
-<tr style="background:#0d1520"><td colspan="3"><b>全配款合计（双臂+AOI+FW+数据采集）</b></td><td><b>29.3~44.5</b></td></tr>
+<tr style="background:#0d1520"><td colspan="3"><b>全配款合计（双臂+AOI+数据采集）</b></td><td><b>29.3~44.5</b></td></tr>
 </table>
 
 <h3>9.5 整机售价与投资回报与投资回报</h3>
@@ -449,23 +565,23 @@ a{color:#00d4aa;text-decoration:none}
 <tr><th>配置</th><th>BOM</th><th>售价</th><th>两班回收期</th></tr>
 <tr><td>🥉 基础款(AMR+单臂)</td><td>22~25万</td><td>35~42万</td><td>1.5~2.0年</td></tr>
 <tr><td>🥈 双臂款(+第二臂)</td><td>28~32万</td><td>45~52万</td><td>1.3~1.8年</td></tr>
-<tr><td>🥇 全配款(+AOI+FW)</td><td>38~45万</td><td>55~65万</td><td>1.1~1.5年</td></tr>
+<tr><td>🥇 全配款(+AOI)</td><td>38~45万</td><td>55~65万</td><td>1.1~1.5年</td></tr>
 </table>
 
-<div class="note"><b>经济性：</b>R MPV全配款(45万)替代五台独立设备(AGV 7万+2×臂14万+AOI 20万+FW 10万=51万)，首年设备省6万。加人工节省30万/年，综合回收期＜1.5年。</div>
+<div class="note"><b>经济性：</b>R MPV全配款(45万)整合AGV搬运(7万)+2台协作臂(14万)+AOI检测(20万)=41万独立设备功能于一体，并附加自主移动与跨工位流转能力。加人工节省30万/年，综合回收期＜1.5年。</div>
 
 <!-- ═══ 增值服务：模型训练数据源平台 ═══ -->
 <h3>9.6 增值服务：模型训练数据源平台</h3>
 <div class="highlight">
 <p style="color:#ff6b35;font-weight:700">机器人不只是"干活"，更是"产数据的工厂"——把产线变成持续产出训练数据的飞轮。</p>
 </div>
-<p>R MPV Z700 的多功能移动工具箱内置<b>数据采集子系统</b>，在正常作业过程中持续采集三类高价值数据：<b>①AOI光学检测图像</b>（端面/焊点/金线/外观缺陷样本）；<b>②精密操作轨迹</b>（6/7轴关节角+末端位姿+力觉序列）；<b>③端到端过程数据</b>（扫码SN→工艺参数→检测结果→分Bin追溯全链路）。这些数据直接对接客户自有的AOI模型训练、VLA动作模型训练与工艺质检模型。</p>
+<p>R MPV Z700 的多功能移动工具箱内置<b>数据采集子系统</b>，在正常作业过程中持续采集三类高价值数据：<b>①AOI光学检测图像</b>（端面/焊点/金线/外观缺陷样本）；<b>②精密操作轨迹</b>（6/7轴关节角+末端位姿+力觉序列）；<b>③端到端过程数据</b>（扫码SN→工艺参数→检测结果→分Bin追溯全链路）。这些数据直接对接客户自有的AOI模型训练、端到端动作模型训练与工艺质检模型。</p>
 
 <h3>9.6.1 数据采集能力（车载硬件内置）</h3>
 <table>
 <tr><th>数据源</th><th>采集内容</th><th>频率/格式</th><th>对接用途</th></tr>
 <tr><td><b>AOI光学图像</b></td><td>端面IEC61300-3-35、焊点、金线(149条)、外观缺陷(划伤/脏污/氧化)</td><td>500万像素·JPEG/RAW·≥2fps</td><td>AOI缺陷检测模型训练</td></tr>
-<tr><td><b>操作轨迹</b></td><td>关节角+末端位姿+力/力矩+视觉伺服信号</td><td>200Hz·ROS bag/JSON</td><td>VLA动作模型·力控模型</td></tr>
+<tr><td><b>操作轨迹</b></td><td>关节角+末端位姿+力/力矩+视觉伺服信号</td><td>200Hz·ROS bag/JSON</td><td>端到端动作模型·力控模型</td></tr>
 <tr><td><b>过程数据</b></td><td>SN扫码→工位→工艺参数→检测结果→分Bin</td><td>逐颗记录·SQLite/MQTT</td><td>端到端工艺优化·质量追溯</td></tr>
 <tr><td><b>力觉数据</b></td><td>插入力/拔出力曲线·接触力峰值·柔顺补偿</td><td>1000Hz·六维力传感器</td><td>力控闭环模型·插拔成功率优化</td></tr>
 </table>
@@ -475,7 +591,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr><th>能力</th><th>说明</th><th>交付形态</th></tr>
 <tr><td><b>🏭 工厂数据源</b></td><td>车载数据采集+边缘缓存+断点续传，产线数据自动汇聚至客户数据湖</td><td>数据采集SDK+边缘网关</td></tr>
 <tr><td><b>🧠 AOI模型训练</b></td><td>缺陷样本自动标注+增量训练+模型版本管理，支持YOLO/分割/分类多任务</td><td>训练平台SaaS+模型仓库</td></tr>
-<tr><td><b>🔗 端到端数据对接</b></td><td>数据采集→标注→训练→部署→推理→回采的完整闭环，对接客户MES/VLA训练框架</td><td>数据API+流水线编排</td></tr>
+<tr><td><b>🔗 端到端数据对接</b></td><td>数据采集→标注→训练→部署→推理→回采的完整闭环，对接客户MES/端到端训练框架</td><td>数据API+流水线编排</td></tr>
 <tr><td><b>⚡ 算力平台</b></td><td>云端GPU训练集群(4090/A800)按需租用，支持本地训练+云端训练混合调度</td><td>算力租赁+任务调度</td></tr>
 </table>
 
@@ -485,7 +601,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>数据采集授权</b></td><td>3~5万/台</td><td>一次性（随车）</td><td>车载数据采集SDK+边缘缓存+数据格式授权</td></tr>
 <tr><td><b>AOI训练平台订阅</b></td><td>3~8万/年</td><td>年度订阅</td><td>缺陷标注+增量训练+模型版本管理</td></tr>
 <tr><td><b>算力租赁</b></td><td>0.5~2万/月</td><td>按需（GPU小时）</td><td>4090/A800云端训练集群，弹性扩容</td></tr>
-<tr><td><b>端到端模型定制</b></td><td>5~15万/模型</td><td>按项目</td><td>AOI/VLA/力控模型定制训练+部署调优</td></tr>
+<tr><td><b>端到端模型定制</b></td><td>5~15万/模型</td><td>按项目</td><td>AOI/端到端/力控模型定制训练+部署调优</td></tr>
 <tr><td><b>数据治理服务</b></td><td>2~5万/年</td><td>年度订阅</td><td>数据质量清洗+标注规范+版本管理</td></tr>
 </table>
 
@@ -496,7 +612,7 @@ a{color:#00d4aa;text-decoration:none}
 <tr><th>配置</th><th>硬件BOM</th><th>数据采集模块</th><th>整车售价</th><th>含3年增值服务</th></tr>
 <tr><td>🥉 基础款(AMR+单臂)</td><td>22~25万</td><td>+2~3万</td><td>37~45万</td><td>45~55万</td></tr>
 <tr><td>🥈 双臂款(+第二臂)</td><td>28~32万</td><td>+2~3万</td><td>47~55万</td><td>58~68万</td></tr>
-<tr><td>🥇 全配款(+AOI+FW)</td><td>38~45万</td><td>+2~3万</td><td>58~68万</td><td>72~85万</td></tr>
+<tr><td>🥇 全配款(+AOI)</td><td>38~45万</td><td>+2~3万</td><td>58~68万</td><td>72~85万</td></tr>
 </table>
 <div class="note"><b>定价逻辑：</b>数据采集模块硬件成本仅1~2万(工业相机+边缘缓存+传感器接口)，但增值服务按3年订阅计算贡献30-90万收入，毛利率90%+。整车售价中已内含数据采集硬件，增值服务为可选叠加，客户可先购硬件、后按需开通平台订阅，降低决策门槛。</div>
 
@@ -518,7 +634,7 @@ a{color:#00d4aa;text-decoration:none}
 <h2>十一、供应商选型建议</h2>
 <table>
 <tr><th>模块</th><th>推荐品牌</th><th>备选</th><th>选型要点</th></tr>
-<tr><td><b>AMR底盘</b></td><td>松灵SCOUT·寻迹智行</td><td>五菱工业·海康</td><td>负载≥250kg·差速驱动·ROS2兼容·≤5万</td></tr>
+<tr><td><b>AMR底盘</b></td><td>松灵SCOUT·寻迹智行</td><td>五菱工业·海康</td><td>负载≥150kg(承载上装135kg)·差速驱动·ROS2兼容·≤5万</td></tr>
 <tr><td><b>协作臂</b></td><td>越疆CR5·节卡Zu3</td><td>遨博i5·珞石XMS5</td><td>臂展≥800mm·负载5kg·≤5万/台·Modbus TCP</td></tr>
 <tr><td><b>激光雷达</b></td><td>思岚S2·SLAMTEC</td><td>速腾聚创</td><td>20m测距·360°·≤0.5万</td></tr>
 <tr><td><b>工业相机</b></td><td>海康机器人·Basler</td><td>大恒图像</td><td>800万像素·USB3.0·≤0.5万</td></tr>
@@ -548,7 +664,6 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>感知</b></td><td>触觉</td><td>指尖视触觉传感器·防划伤</td></tr>
 <tr><td><b>存储</b></td><td>A区料盘储存</td><td>2层×4盘=8盘·160颗光模块缓存</td></tr>
 <tr><td><b>存储</b></td><td>B区AOI检测</td><td>金手指飞拍·端面检测·4侧面旋转台·清洁工具</td></tr>
-<tr><td><b>功能</b></td><td>FW刷写</td><td>EVB子板×2·USB/I2C/SPI·≤6s/颗</td></tr>
 <tr><td><b>功能</b></td><td>AOI检测</td><td>金手指飞拍·6面·3s·划痕<10μm</td></tr>
 <tr><td><b>功能</b></td><td>光口检测</td><td>端面清洁度·红光照明·光纤LC接头</td></tr>
 <tr><td><b>计算</b></td><td>边缘算力</td><td>RK3588·8核·6TOPS NPU·16GB RAM</td></tr>
@@ -558,6 +673,6 @@ a{color:#00d4aa;text-decoration:none}
 <tr><td><b>安全</b></td><td>急停</td><td>双回路·≤500ms·安全围栏接口</td></tr>
 <tr><td><b>安全</b></td><td>防护</td><td>IP54·防静电ESD·无尘Class1000</td></tr>
 <tr><td><b>整机</b></td><td>尺寸</td><td>800×500mm·高700(折叠)~1800(全展)mm</td></tr>
-<tr><td><b>整机</b></td><td>重量</td><td>≤250kg(含电池+工具箱)</td></tr>
+<tr><td><b>整机</b></td><td>重量</td><td>≈274kg(含电池+工具箱+双臂+立柱)·≤300kg</td></tr>
 </table>
 </body></html>
